@@ -25,6 +25,12 @@ namespace inspiral
 		public override void Logout()
 		{
 			client = null;
+			if(location != null)
+			{
+				location.contents.Remove(this);
+				location.ShowToContents($"{GameText.Capitalize(GetString("short_description"))} departs to their rest.");
+				location = null;
+			}
 		}
 	}
 }

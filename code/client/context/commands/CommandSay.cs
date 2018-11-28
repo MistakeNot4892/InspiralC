@@ -12,7 +12,7 @@ namespace inspiral
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
 			invocation = GameText.FormatProse(invocation);
-			invoker.currentGameObject.ShowNearby(invoker.currentGameObject, $"You say, \"{invocation}\"", $"{invoker.clientId} says, \"{invocation}\"");
+			invoker.currentGameObject.ShowNearby(invoker.currentGameObject, $"You say, \"{invocation}\"", $"{invoker.currentGameObject.GetString("short_description")} says, \"{invocation}\"");
 			return true;
 		}
 	}

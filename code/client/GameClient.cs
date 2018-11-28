@@ -11,9 +11,11 @@ namespace inspiral
 	{
 		internal string clientId;
 		internal GameClientObject currentGameObject;
-		private TcpClient client;
-		private NetworkStream stream;
-		private GameContext context;
+		private string lastPrompt = null;
+		internal TcpClient client;
+		internal NetworkStream stream;
+		internal GameContext context;
+		internal PlayerAccount currentAccount = null;
 
 		internal GameClient(TcpClient _client, string _clientId)
 		{
@@ -33,8 +35,15 @@ namespace inspiral
 
 		public void SetContext(GameContext new_context)
 		{
-			context = new_context;
-			context.OnContextSet(this);
+			if(context != new_context)
+			{
+				if(context != null)
+				{
+					context.OnContextUnset(this);
+				}
+				context = new_context;
+				context.OnContextSet(this);
+			}
 		}
 		private string SanitizeInput(string input)
 		{
@@ -65,12 +74,15 @@ namespace inspiral
 					ReceiveInput(SanitizeInput(System.Text.Encoding.ASCII.GetString(bytes, 0, i)));
 				}
 			}
-			catch (ObjectDisposedException e)
+			catch (Exception e)
 			{
 				Console.WriteLine($"{clientId}: disconnected ({e.ToString()}).");
 			}
 			Disconnect();
-			client.Close();
+			if(client != null)
+			{
+				client.Close();
+			}
 		}
 
 		internal void Disconnect()
@@ -83,7 +95,6 @@ namespace inspiral
 		}
 		internal void ReceiveInput(string inputMessage)
 		{
-			Console.WriteLine("{0}: received: {1}", clientId, inputMessage);
 			string cmd = inputMessage.ToLower().Split(" ")[0];
 			if(inputMessage.Length > cmd.Length)
 			{
@@ -98,7 +109,15 @@ namespace inspiral
 		internal void WriteLinePrompted(string message)
 		{
 			string prompt = context.GetPrompt(this);
-			WriteLine($"{message}{prompt}");
+			if(prompt != lastPrompt)
+			{
+				lastPrompt = prompt;
+				WriteLine($"{message}{prompt}");
+			}
+			else
+			{
+				WriteLine($"{message}");
+			}
 		}
 		internal void WriteLine(string message)
 		{
@@ -111,12 +130,10 @@ namespace inspiral
 		{
 			byte[] msg = System.Text.Encoding.ASCII.GetBytes(message);
 			stream.Write(msg, 0, msg.Length);
-			Console.WriteLine("{0}: sent: {1}", clientId, message);
 		}
 
 		internal void Quit()
 		{
-			WriteToStream("Goodbye!");
 			client.Close();
 		}
 	}

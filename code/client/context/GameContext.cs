@@ -39,6 +39,7 @@ namespace inspiral
 		}
 		internal virtual void Initialize() {}
 		internal virtual void OnContextSet(GameClient viewer) {}
+		internal virtual void OnContextUnset(GameClient viewer) {}
 		internal virtual string GetPrompt(GameClient viewer) 
 		{
 			return "";
