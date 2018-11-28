@@ -11,16 +11,8 @@ namespace inspiral
 		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
-			invoker.WriteToStream($"You say, \"{invocation}\"");
-			string showToOthers = $"{invoker.clientId} says, \"{invocation}\"";
-
-			foreach(GameClient client in Program.clients)
-			{
-				if(invoker.clientId != client.clientId)
-				{
-					client.WriteToStream(showToOthers);
-				}
-			}
+			invocation = GameText.FormatProse(invocation);
+			invoker.currentGameObject.ShowNearby(invoker.currentGameObject, $"You say, \"{invocation}\"", $"{invoker.clientId} says, \"{invocation}\"");
 			return true;
 		}
 	}

@@ -11,15 +11,8 @@ namespace inspiral
 		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
-			invoker.WriteToStream($"You emote: {invoker.clientId} {invocation}");
-			string showToOthers = $"{invoker.clientId} {invocation}";
-			foreach(GameClient client in Program.clients)
-			{
-				if(invoker.clientId != client.clientId)
-				{
-					client.WriteToStream(showToOthers);
-				}
-			}
+			string emoteText = GameText.FormatProse($"{invoker.clientId} {invocation}");
+			invoker.currentGameObject.ShowNearby(invoker.currentGameObject, $"You emote: {emoteText}", emoteText);
 			return true;
 		}
 	}

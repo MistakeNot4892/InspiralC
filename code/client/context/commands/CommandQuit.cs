@@ -11,6 +11,13 @@ namespace inspiral
 		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
+			foreach(GameClient client in Program.clients)
+			{
+				if(invoker.clientId != client.clientId)
+				{
+					client.WriteLinePrompted($"{invoker.clientId} has disconnected.");
+				}
+			}
 			invoker.Quit();
 			return true;
 		}

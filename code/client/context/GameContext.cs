@@ -4,7 +4,7 @@ namespace inspiral
 {
 	class GameContext
 	{
-		private Dictionary<string, GameCommand> commands;
+		internal Dictionary<string, GameCommand> commands;
 		internal GameContext()
 		{
 			commands = new Dictionary<string, GameCommand>();
@@ -32,6 +32,16 @@ namespace inspiral
 			}
 			return false;
 		}
+
+		internal virtual bool TakeInput(GameClient invoker, string command, string arguments)
+		{
+			return InvokeCommand(invoker, command, arguments);
+		}
 		internal virtual void Initialize() {}
+		internal virtual void OnContextSet(GameClient viewer) {}
+		internal virtual string GetPrompt(GameClient viewer) 
+		{
+			return "";
+		}
 	}
 }
