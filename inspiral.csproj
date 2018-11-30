@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Telnet" Version="0.8.1"/>
+    <PackageReference Include="System.Data.SQLite" Version="1.0.109.2"/>
+    <PackageReference Include="BCrypt.Net" Version="0.1.0"/>
   </ItemGroup>
 </Project>

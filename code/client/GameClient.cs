@@ -95,14 +95,15 @@ namespace inspiral
 		}
 		internal void ReceiveInput(string inputMessage)
 		{
-			string cmd = inputMessage.ToLower().Split(" ")[0];
+			string rawCmd = inputMessage.Split(" ")[0];
+			string cmd = rawCmd.ToLower();
 			if(inputMessage.Length > cmd.Length)
 			{
 				inputMessage = inputMessage.Substring(cmd.Length+1);
 			}
-			if(!context.TakeInput(this, cmd, inputMessage))
+			if(!context.TakeInput(this, cmd, rawCmd, inputMessage))
 			{
-				WriteToStream($"Unknown command '{cmd}'.");
+				WriteToStream($"Unknown command '{rawCmd}'.");
 			}
 		}
 

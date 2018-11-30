@@ -33,7 +33,7 @@ namespace inspiral
 			return false;
 		}
 
-		internal virtual bool TakeInput(GameClient invoker, string command, string arguments)
+		internal virtual bool TakeInput(GameClient invoker, string command, string rawCommand, string arguments)
 		{
 			return InvokeCommand(invoker, command, arguments);
 		}

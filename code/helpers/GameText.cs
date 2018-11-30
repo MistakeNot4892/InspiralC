@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	public static class GameText
+	internal static class GameText
 	{
 		internal static string Capitalize(string input)
 		{

@@ -14,7 +14,7 @@ namespace inspiral
 		}
 		internal override void OnContextSet(GameClient viewer)
 		{
-			viewer.WriteLine($"Welcome, {viewer.clientId}.");
+			viewer.WriteLine($"Welcome, {viewer.currentGameObject.GetString("short_description")}.");
 			viewer.currentGameObject.Move(Program.spawnRoom);
 		}
 		internal override string GetPrompt(GameClient viewer) 
