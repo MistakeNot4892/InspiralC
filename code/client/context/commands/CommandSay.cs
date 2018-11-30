@@ -11,14 +11,14 @@ namespace inspiral
 		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
-			invocation = GameText.FormatProse(invocation);
-			if(invocation == "")
+			if(invocation.Length <= 0)
 			{
-				invoker.currentGameObject.ShowNearby(invoker.currentGameObject, $"You open your mouth but say nothing.", $"{invoker.currentGameObject.GetString("short_description")} opens their mouth but says nothing.");
+				invoker.currentGameObject.ShowNearby(invoker.currentGameObject, $"You open your mouth but say nothing.", $"{invoker.currentGameObject.GetString(Text.FieldShortDesc)} opens their mouth but says nothing.");
 			}
 			else
 			{
-				invoker.currentGameObject.ShowNearby(invoker.currentGameObject, $"You say, \"{invocation}\"", $"{invoker.currentGameObject.GetString("short_description")} says, \"{invocation}\"");
+				invocation = Text.FormatProse(invocation);
+				invoker.currentGameObject.ShowNearby(invoker.currentGameObject, $"You say, \"{invocation}\"", $"{invoker.currentGameObject.GetString(Text.FieldShortDesc)} says, \"{invocation}\"");
 			}
 			return true;
 		}

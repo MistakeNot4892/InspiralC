@@ -7,28 +7,28 @@ namespace inspiral
 	{
 		private GameClient client;
 
-		public override bool HasClient()
+		internal override bool HasClient()
 		{
 			return (client != null);
 		}
 
-		public override GameClient GetClient()
+		internal override GameClient GetClient()
 		{
 			return client;
 		}
 
-		public override void Login(GameClient _client)
+		internal override void Login(GameClient _client)
 		{
 			client = _client;
 		}
 
-		public override void Logout()
+		internal override void Logout()
 		{
 			client = null;
 			if(location != null)
 			{
 				location.contents.Remove(this);
-				location.ShowToContents($"{GameText.Capitalize(GetString("short_description"))} departs to their rest.");
+				location.ShowToContents($"{Text.Capitalize(GetString(Text.FieldShortDesc))} departs to their rest.");
 				location = null;
 			}
 		}

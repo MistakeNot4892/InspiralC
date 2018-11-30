@@ -1,6 +1,7 @@
+using System;
+using System.Linq;
 using System.Collections.Generic;
 using BCrypt.Net;
-using System.Linq;
 
 namespace inspiral
 {
@@ -9,7 +10,7 @@ namespace inspiral
 		private Dictionary<GameClient, string> loginState;
 		private Dictionary<GameClient, string> passwordConfirmations;
 
-		public ContextLogin()
+		internal ContextLogin()
 		{
 			loginState = new Dictionary<GameClient, string>();
 			passwordConfirmations = new Dictionary<GameClient, string>();
@@ -30,10 +31,10 @@ namespace inspiral
 
 		private void ShowSplashScreen(GameClient viewer)
 		{
-			viewer.WriteLine($"{GameColours.Fg("    =========", "cyan")}{GameColours.Fg(" Welcome to Inspiral, Coalescence, Ringdown ", "boldcyan")}{GameColours.Fg("=========", "cyan")}");
-			viewer.WriteLine(GameColours.Fg("\n         - Enter a username to log in.", "white"));
-			viewer.WriteLine($"{GameColours.Fg("         - Enter ","white")}{GameColours.Fg("register [username]", "boldwhite")}{GameColours.Fg(" to register a new account.", "white")}");
-			viewer.WriteLine(GameColours.Fg("\n    ==============================================================", "cyan"));
+			viewer.WriteLine($"{Colours.Fg("    =========", Colours.Cyan)}{Colours.Fg(" Welcome to Inspiral, Coalescence, Ringdown ", Colours.BoldCyan)}{Colours.Fg("=========", Colours.Cyan)}");
+			viewer.WriteLine(Colours.Fg("\n         - Enter a username to log in.", Colours.White));
+			viewer.WriteLine($"{Colours.Fg("         - Enter ",Colours.White)}{Colours.Fg("register [username]", Colours.BoldWhite)}{Colours.Fg(" to register a new account.", Colours.White)}");
+			viewer.WriteLine(Colours.Fg("\n    ==============================================================", Colours.Cyan));
 		}
 
 		private bool ValidateUsername(string givenName)
@@ -46,16 +47,14 @@ namespace inspiral
 
 		private void HandleLogin(GameClient invoker)
 		{
-			invoker.currentGameObject.SetString("short_description", GameText.Capitalize(invoker.currentAccount.username));
-			invoker.currentGameObject.SetString("room_description", $"{invoker.currentGameObject.GetString("short_description")} is here.");
-			foreach(GameClient client in Program.clients)
+			Game.Clients.LogoutDuplicateAccounts(invoker);
+			GameObjectTemplate temp = (GameObjectTemplate)Game.Templates.Get(invoker.currentAccount.templateId);
+			if(temp == null)
 			{
-				if(client != invoker && client.currentAccount == invoker.currentAccount)
-				{
-					client.WriteLine("Another connection has been made with this account, so you are being logged out. Goodbye!");
-					client.Quit();
-				}
+				Console.WriteLine($"No existing template for user {invoker.currentAccount.id}, creating a temporary one.");
+				temp = (GameObjectTemplate)Game.Templates.CreateNewInstance(true);
 			}
+			invoker.currentGameObject.templateId = temp.id;
 			invoker.SetContext(new ContextGeneral());			
 		}
 		internal override bool TakeInput(GameClient invoker, string command, string rawCommand, string arguments)
@@ -70,7 +69,7 @@ namespace inspiral
 				else
 				{
 					string newUser = tokens[0].ToLower();
-					if(AccountRepository.GetAccount(newUser) != null)
+					if(Game.Accounts.GetAccountByUser(newUser) != null)
 					{
 						invoker.WriteLine($"An account already exists with that username.");
 					}
@@ -80,7 +79,7 @@ namespace inspiral
 					}
 					else
 					{
-						invoker.clientId = newUser;
+						invoker.id = newUser;
 						loginState.Remove(invoker);
 						loginState.Add(invoker, "registering_entering_password");
 						invoker.WriteLine("Enter a new password. Remember that Telnet is not secure; do not reuse an important personal password.");
@@ -92,10 +91,10 @@ namespace inspiral
 				switch(loginState[invoker])
 				{
 					case "connected":
-						PlayerAccount acct = AccountRepository.GetAccount(command);
+						PlayerAccount acct = Game.Accounts.GetAccountByUser(command);
 						if(acct == null)
 						{
-							invoker.WriteLine($"No account exists for '{command}'. Use {GameColours.Fg("register [username]", "boldwhite")} to create one.");
+							invoker.WriteLine($"No account exists for '{command}'. Use {Colours.Fg("register [username]", Colours.BoldWhite)} to create one.");
 						}
 						else
 						{
@@ -131,7 +130,7 @@ namespace inspiral
 					case "registering_confirming_password":
 						if(passwordConfirmations.ContainsKey(invoker) && passwordConfirmations[invoker] == rawCommand)
 						{
-							invoker.currentAccount = AccountRepository.CreateAccount(invoker.clientId, BCrypt.Net.BCrypt.HashPassword(passwordConfirmations[invoker], 10));
+							invoker.currentAccount = Game.Accounts.CreateAccount(invoker.id, BCrypt.Net.BCrypt.HashPassword(passwordConfirmations[invoker], 10));
 							invoker.WriteLine("Account created.");
 							HandleLogin(invoker);
 						}

@@ -5,18 +5,19 @@ namespace inspiral
 {
 	class GameObject
 	{
-		private long templateId;
-		private Dictionary<string, string> strings;
+		internal long id;
+		internal long templateId;
+		internal Dictionary<string, string> strings;
 		internal List<GameObject> contents;
 		internal GameObject location;
 
-		public GameObject()
+		internal GameObject()
 		{
 			contents = new List<GameObject>();
 			strings = new Dictionary<string, string>();
 		}
 
-		public bool Move(GameObject destination)
+		internal bool Move(GameObject destination)
 		{
 			bool canMove = true;
 			if(location != null)
@@ -31,17 +32,17 @@ namespace inspiral
 			return canMove;
 		}
 
-		public bool OnDeparture(GameObject departing)
+		internal bool OnDeparture(GameObject departing)
 		{
 			return true;
 		}
 
-		public bool OnEntry(GameObject entering)
+		internal bool OnEntry(GameObject entering)
 		{
 			return true;
 		}
 
-		public bool Exited(GameObject leaving)
+		internal bool Exited(GameObject leaving)
 		{
 			if(!contents.Contains(leaving) || !leaving.OnDeparture(this))
 			{
@@ -51,7 +52,7 @@ namespace inspiral
 			return true;
 		}
 
-		public bool Entered(GameObject entering)
+		internal bool Entered(GameObject entering)
 		{
 			if(contents.Contains(entering) || !entering.OnEntry(this))
 			{
@@ -65,27 +66,27 @@ namespace inspiral
 			return true;
 		}
 
-		public void SetString(string field, string newString)
+		internal void SetString(string field, string newString)
 		{
 			strings.Remove(field);
 			strings.Add(field, newString);
 		}
-		public string GetString(string field)
+		internal string GetString(string field)
 		{
 			if(strings.ContainsKey(field))
 			{
 				return strings[field];
 			}
-			GameObject gameObjTemplate = GameEntityRepository.GetObject(templateId);
-			if(gameObjTemplate != null)
+			GameObjectTemplate gameTemplate = (GameObjectTemplate)Game.Templates.Get(templateId);
+			if(gameTemplate != null)
 			{
-				gameObjTemplate.GetString(field);
+				return gameTemplate.GetString(field);
 			}
-			return $"unknown {field}";
+			return $"?{field}?";
 		}
-		public void ExaminedBy(GameClient viewer, bool fromInside)
+		internal void ExaminedBy(GameClient viewer, bool fromInside)
 		{
-			string mainDesc = $"{GameColours.Fg(GetString("short_description"),"boldwhite")}\n{GameColours.Fg(GetString("examined_description"), "boldblack")}";
+			string mainDesc = $"{Colours.Fg(Text.Capitalize(GetString(Text.FieldShortDesc)),Colours.BoldWhite)}.\n{Colours.Fg(GetString(Text.FieldExaminedDesc), Colours.BoldBlack)}";
 			if(contents.Count > 0)
 			{
 				List<string> roomAppearances = new List<string>();
@@ -104,12 +105,12 @@ namespace inspiral
 			viewer.WriteLinePrompted(mainDesc);
 		}
 
-		public virtual string GetRoomAppearance()
+		internal virtual string GetRoomAppearance()
 		{
-			return GetString("room_description");
+			return GetString(Text.FieldRoomDesc);
 		}
 
-		public void ShowToContents(string message)
+		internal void ShowToContents(string message)
 		{
 			foreach(GameObject obj in contents)
 			{
@@ -117,12 +118,12 @@ namespace inspiral
 			}
 		}
 
-		public void ShowToContents(GameObject source, string message)
+		internal void ShowToContents(GameObject source, string message)
 		{
 			ShowToContents(source, message, message);
 		}
 
-		public void ShowToContents(GameObject source, string message1p, string message3p)
+		internal void ShowToContents(GameObject source, string message1p, string message3p)
 		{
 			source.ShowMessage(message1p);
 			foreach(GameObject obj in contents)
@@ -133,7 +134,7 @@ namespace inspiral
 				}
 			}
 		}
-		public virtual void ShowMessage(string message)
+		internal virtual void ShowMessage(string message)
 		{
 			if(HasClient())
 			{
@@ -141,17 +142,17 @@ namespace inspiral
 			}
 		}
 
-		public virtual bool HasClient()
+		internal virtual bool HasClient()
 		{
 			return false;
 		}
 
-		public virtual GameClient GetClient()
+		internal virtual GameClient GetClient()
 		{
 			return null;
 		}
 
-		public virtual void ShowNearby(GameObject source, string message1p, string message3p)
+		internal virtual void ShowNearby(GameObject source, string message1p, string message3p)
 		{
 			if(source.location != null)
 			{
@@ -162,7 +163,7 @@ namespace inspiral
 				source.ShowMessage(message1p);
 			}
 		}
-		public virtual void Logout() {}
-		public virtual void Login(GameClient _client) {}
+		internal virtual void Logout() {}
+		internal virtual void Login(GameClient _client) {}
 	}
 }

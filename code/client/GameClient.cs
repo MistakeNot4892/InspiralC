@@ -9,7 +9,7 @@ namespace inspiral
 {
 	class GameClient
 	{
-		internal string clientId;
+		internal string id;
 		internal GameClientObject currentGameObject;
 		private string lastPrompt = null;
 		internal TcpClient client;
@@ -17,23 +17,19 @@ namespace inspiral
 		internal GameContext context;
 		internal PlayerAccount currentAccount = null;
 
-		internal GameClient(TcpClient _client, string _clientId)
+		internal GameClient(TcpClient _client, string _id)
 		{
 			client =   _client;
-			clientId = _clientId;
+			id = _id;
 			stream =   _client.GetStream();
 
 			currentGameObject = new GameClientObject();
-			currentGameObject.SetString("short_description",    "UNNAMED");
-			currentGameObject.SetString("room_description",     "UNNAMED is here.");
-			currentGameObject.SetString("examined_description", "This is some kind of generic mob.");
 			currentGameObject.Login(this);
-
-			Console.WriteLine($"{clientId}: client created.");
+			Console.WriteLine($"{id}: client created.");
 			SetContext(new ContextLogin());
 		}
 
-		public void SetContext(GameContext new_context)
+		internal void SetContext(GameContext new_context)
 		{
 			if(context != new_context)
 			{
@@ -76,7 +72,7 @@ namespace inspiral
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine($"{clientId}: disconnected ({e.ToString()}).");
+				Console.WriteLine($"{id}: disconnected ({e.ToString()}).");
 			}
 			Disconnect();
 			if(client != null)
@@ -91,7 +87,7 @@ namespace inspiral
 			{
 				currentGameObject.Logout();
 			}
-			Program.clients.Remove(this);
+			Game.Clients.RemoveClient(this);
 		}
 		internal void ReceiveInput(string inputMessage)
 		{
@@ -101,9 +97,13 @@ namespace inspiral
 			{
 				inputMessage = inputMessage.Substring(cmd.Length+1);
 			}
+			else
+			{
+				inputMessage = "";
+			}
 			if(!context.TakeInput(this, cmd, rawCmd, inputMessage))
 			{
-				WriteToStream($"Unknown command '{rawCmd}'.");
+				WriteLinePrompted($"Unknown command '{rawCmd}'.");
 			}
 		}
 
@@ -124,6 +124,7 @@ namespace inspiral
 		{
 			if(message != "")
 			{
+				Console.WriteLine($"sending: {message}");
 				WriteToStream($"{message}\n");
 			}
 		}
@@ -132,7 +133,6 @@ namespace inspiral
 			byte[] msg = System.Text.Encoding.ASCII.GetBytes(message);
 			stream.Write(msg, 0, msg.Length);
 		}
-
 		internal void Quit()
 		{
 			client.Close();

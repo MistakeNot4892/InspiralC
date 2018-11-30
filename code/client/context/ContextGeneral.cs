@@ -11,16 +11,23 @@ namespace inspiral
 			AddCommand(new CommandQuit());
 			AddCommand(new CommandLook());
 			AddCommand(new CommandColours());
+			AddCommand(new CommandCreate());
 		}
 		internal override void OnContextSet(GameClient viewer)
 		{
-			viewer.WriteLine($"Welcome, {viewer.currentGameObject.GetString("short_description")}.");
-			viewer.currentGameObject.Move(Program.spawnRoom);
+			viewer.WriteLine($"Welcome, {viewer.currentGameObject.GetString(Text.FieldShortDesc)}.");
+			if(Game.Rooms.spawnRoom == null)
+			{
+				viewer.WriteLine("Room is null!");
+			}
+			else
+			{
+				viewer.currentGameObject.Move(Game.Rooms.spawnRoom);
+			}
 		}
 		internal override string GetPrompt(GameClient viewer) 
 		{
 			return "\n>";
 		}
-
 	}
 }

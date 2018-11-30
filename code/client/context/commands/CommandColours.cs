@@ -11,7 +11,7 @@ namespace inspiral
 		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
-			GameColours.ShowTo(invoker);
+			Colours.ShowTo(invoker);
 			return true;
 		}
 	}
