@@ -11,9 +11,9 @@ namespace inspiral
 			AddCommand(new CommandEmote());
 			AddCommand(new CommandQuit());
 			AddCommand(new CommandLook());
-			AddCommand(new CommandColours());
 			AddCommand(new CommandCreate());
 			AddCommand(new CommandAddroom());
+			AddCommand(new CommandTest());
 		}
 		internal override void OnContextSet(GameClient viewer)
 		{
@@ -70,7 +70,7 @@ namespace inspiral
 		}
 		internal override string GetPrompt(GameClient viewer) 
 		{
-			return "\n>";
+			return $"{Colours.Fg("\n> ", Colours.Yellow)}";
 		}
 	}
 }

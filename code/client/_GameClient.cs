@@ -11,11 +11,11 @@ namespace inspiral
 	{
 		internal string id;
 		internal GameObject shell;
-		private string lastPrompt = null;
 		internal TcpClient client;
 		internal NetworkStream stream;
 		internal GameContext context;
 		internal PlayerAccount currentAccount = null;
+		private enum Options {}
 
 		internal GameClient(TcpClient _client, string _id)
 		{
@@ -56,15 +56,35 @@ namespace inspiral
 			}
 			return builder.ToString();
 		}
+
+		internal void SendTelnetCommand(byte[] sequence)
+		{
+			WriteToStream(sequence);
+		}
 		internal void Begin()
 		{
 			int i;
 			byte[] bytes = new byte[256];
 			try
 			{
+				// Prod them to check if they support GMCP first.
+				SendTelnetCommand(new byte[] {Telnet.IAC, Telnet.WILL, Telnet.GMCP});
+
+				// Now start the actual loop.
 				while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
 				{
-					ReceiveInput(SanitizeInput(System.Text.Encoding.ASCII.GetString(bytes, 0, i)));
+					if(bytes[0] == Telnet.IAC)
+					{
+						Telnet.Parse(this, bytes, i);
+					}
+					else
+					{
+						string inputReceived = SanitizeInput(System.Text.Encoding.ASCII.GetString(bytes, 0, i));
+						if(inputReceived.Length > 0)
+						{
+							ReceiveInput(inputReceived);
+						}
+					}
 				}
 			}
 			catch (Exception e)
@@ -77,7 +97,6 @@ namespace inspiral
 				client.Close();
 			}
 		}
-
 		internal void Disconnect()
 		{
 			if(shell != null && shell.HasComponent(Components.Client))
@@ -121,16 +140,18 @@ namespace inspiral
 		{
 			if(message != "")
 			{
-				string prompt = context.GetPrompt(this);
-				if(prompt != lastPrompt)
+				message = $"{message}{context.GetPrompt(this).ToString()}";
+				byte[] bMessage = System.Text.Encoding.ASCII.GetBytes(message);
+				byte[] outgoing = new byte[bMessage.Length+2];
+				int i = 0;
+				while(i < bMessage.Length)
 				{
-					//lastPrompt = prompt;
-					WriteLine($"{message}{prompt}");
+					outgoing[i] = bMessage[i];
+					i++;
 				}
-				else
-				{
-					WriteLine($"{message}");
-				}
+				outgoing[i] = Telnet.IAC;
+				outgoing[i+1] = Telnet.GA;
+				WriteToStream(outgoing);
 			}
 		}
 		internal void WriteLine(string message)
@@ -141,10 +162,13 @@ namespace inspiral
 				WriteToStream($"{message}\n");
 			}
 		}
-		private void WriteToStream(string message)
+		public void WriteToStream(string message)
 		{
-			byte[] msg = System.Text.Encoding.ASCII.GetBytes(message);
-			stream.Write(msg, 0, msg.Length);
+			WriteToStream(System.Text.Encoding.ASCII.GetBytes(message));
+		}
+		public void WriteToStream(byte[] message)
+		{
+			stream.Write(message, 0, message.Length);
 		}
 		internal void Quit()
 		{

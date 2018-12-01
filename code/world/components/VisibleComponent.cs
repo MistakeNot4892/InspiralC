@@ -65,7 +65,7 @@ namespace inspiral
 			if(parent.HasComponent(Components.Room))
 			{
 				RoomComponent roomComp = (RoomComponent)parent.GetComponent(Components.Room);
-				mainDesc = $"{mainDesc}\n{roomComp.GetExitString()}";
+				mainDesc = $"{mainDesc}\n{Colours.Fg(roomComp.GetExitString(), Colours.BoldCyan)}";
 			}
 			viewer.WriteLinePrompted(mainDesc);
 		}
