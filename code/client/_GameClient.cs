@@ -5,6 +5,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Collections.Generic;
 
+//TODO: https://www.gammon.com.au/mushclient/addingservermxp.htm
+
 namespace inspiral
 {
 	class GameClient
@@ -15,7 +17,8 @@ namespace inspiral
 		internal NetworkStream stream;
 		internal GameContext context;
 		internal PlayerAccount currentAccount = null;
-		private enum Options {}
+		internal List<string> gmcpFlags = new List<string>();
+		internal Dictionary<string, string> gmcpValues = new Dictionary<string, string>();
 
 		internal GameClient(TcpClient _client, string _id)
 		{
@@ -123,7 +126,7 @@ namespace inspiral
 			{
 				inputMessage = "";
 			}
-			if(!context.TakeInput(this, cmd, rawCmd, inputMessage))
+			if(!context.TakeInput(this, cmd, rawCmd, inputMessage.Trim()))
 			{
 				if(Text.exits.Contains(cmd))
 				{
@@ -173,6 +176,50 @@ namespace inspiral
 		internal void Quit()
 		{
 			client.Close();
+		}
+		internal void Farewell(string farewell)
+		{
+			if(gmcpFlags.Contains("gmcpEnabled"))
+			{
+				Telnet.SendGMCPPacket(this, $"Core.Goodbye \"{farewell}\"");
+			}
+			else
+			{
+				WriteLine($"{farewell}");
+			}
+			Quit();
+		}
+
+		internal void Keepalive()
+		{
+			return; // todo when timeout is added
+		}
+		internal string GetClientSummary()
+		{
+
+			Dictionary<string, List<string>> reply = new Dictionary<string, List<string>>();
+
+			reply.Add("Client Information", new List<string>());
+			reply["Client Information"].Add($"Logged in as: {shell?.name ?? "null"}");
+
+			if(!gmcpFlags.Contains("gmcpEnabled"))
+			{
+				reply["Client Information"].Add($"GMCP not enabled.");
+			}
+			else
+			{
+				reply.Add("GMCP Flags", new List<string>());
+				foreach(string gmcpFlag in gmcpFlags)
+				{
+					reply["GMCP Flags"].Add($"- {gmcpFlag}");
+				}
+				reply.Add("GMCP Values", new List<string>());
+				foreach(KeyValuePair<string, string> gmcpValue in gmcpValues)
+				{
+					reply["GMCP Values"].Add($"- {gmcpValue.Key}: {gmcpValue.Value}");
+				}
+			}
+			return Text.FormatBlock(reply);
 		}
 	}
 }

@@ -18,7 +18,7 @@ namespace inspiral
 			switch(field)
 			{
 				case Text.FieldEnterMessage:
-					leaveMessage = newValue;
+					enterMessage = newValue;
 					break;
 				case Text.FieldLeaveMessage:
 					leaveMessage = newValue;

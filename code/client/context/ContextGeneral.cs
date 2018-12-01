@@ -13,6 +13,7 @@ namespace inspiral
 			AddCommand(new CommandLook());
 			AddCommand(new CommandCreate());
 			AddCommand(new CommandAddroom());
+			AddCommand(new CommandClient());
 			AddCommand(new CommandTest());
 		}
 		internal override void OnContextSet(GameClient viewer)

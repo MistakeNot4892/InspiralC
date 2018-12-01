@@ -72,6 +72,12 @@ namespace inspiral
 		}
 		internal static void HandleGMCPNegotiation(GameClient sender, List<byte> gmcpSequence)
 		{
+			// Pretty safe bet they can handle it if we're getting packets from them.
+			if(!sender.gmcpFlags.Contains("gmcpEnabled"))
+			{
+				sender.gmcpFlags.Add("gmcpEnabled");
+			}
+
 			string someSequence = "";
 			foreach(byte b in gmcpSequence)
 			{
@@ -85,10 +91,13 @@ namespace inspiral
 				switch(gmcpToken)
 				{
 					case "core.keepalive":
-						Console.WriteLine($"Got a keepalive ping from {sender.id}.");
+						sender.Keepalive();
 						break;
 					default:
-						Console.WriteLine($"Got unknown GMCP signal ({gmcpToken}) from {sender.id}.");
+						if(!sender.gmcpFlags.Contains(gmcpToken))
+						{
+							sender.gmcpFlags.Add(gmcpToken);
+						}
 						break;
 				}
 			}
@@ -96,32 +105,34 @@ namespace inspiral
 			{
 				string gmcpToken =    someSequence.Substring(0,tokenSplitIndex).Trim().ToLower();
 				string gmcpContents = someSequence.Substring(gmcpToken.Length).Trim();
-				Dictionary<string, string> packetContents = null;
-
 				switch(gmcpToken.ToLower())
 				{
 					case "core.hello":
-						packetContents = JsonConvert.DeserializeObject<Dictionary<string, string>>(gmcpContents);
+						foreach(KeyValuePair<string, string> token in JsonConvert.DeserializeObject<Dictionary<string, string>>(gmcpContents))
+						{
+							string tokenKey = token.Key.ToLower();
+							if(sender.gmcpValues.ContainsKey(tokenKey))
+							{
+								sender.gmcpValues.Remove(tokenKey);
+							}
+							sender.gmcpValues.Add(tokenKey, token.Value);
+						}
 						break;
 					case "core.supports.set":
-						packetContents = new Dictionary<string, string>();
 						foreach(string token in JsonConvert.DeserializeObject<List<string>>(gmcpContents))
 						{
 							string[] tokenSplit = token.Split(" ");
-							packetContents.Add(tokenSplit[0], tokenSplit[1]);
+							string tokenKey = tokenSplit[0].ToLower();
+							if(sender.gmcpValues.ContainsKey(tokenKey))
+							{
+								sender.gmcpValues.Remove(tokenKey);
+							}
+							sender.gmcpValues.Add(tokenKey, tokenSplit[1]);
 						}
 						break;
 					default:
 						Console.WriteLine($"Got unknown GMCP packet ({gmcpToken}) from {sender.id}. [{gmcpContents}]");
 						break;
-				}
-				if(packetContents != null)
-				{
-					Console.WriteLine($"Got GMCP packet ({gmcpToken}) from {sender.id}. Contents:");
-					foreach(KeyValuePair<string, string> token in packetContents)
-					{
-						Console.WriteLine($"- {token.Key} = {token.Value}"); 
-					}
 				}
 			}
 		}

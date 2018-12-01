@@ -20,8 +20,7 @@ namespace inspiral
 			{
 				if(client != invoker && client.currentAccount == invoker.currentAccount)
 				{
-					client.WriteLine("Another connection has been made with this account, so you are being logged out. Goodbye!");
-					client.Quit();
+					client.Farewell("Another connection has been made with this account, so you are being logged out. Goodbye!");
 				}
 			}
 		}

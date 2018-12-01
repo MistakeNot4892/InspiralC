@@ -32,10 +32,18 @@ namespace inspiral
 
 		private void ShowSplashScreen(GameClient viewer)
 		{
-			viewer.WriteLine($"{Colours.Fg("    =========", Colours.Cyan)}{Colours.Fg(" Welcome to Inspiral, Coalescence, Ringdown ", Colours.BoldCyan)}{Colours.Fg("=========", Colours.Cyan)}");
-			viewer.WriteLine(Colours.Fg("\n         - Enter a username to log in.", Colours.White));
-			viewer.WriteLine($"{Colours.Fg("         - Enter ",Colours.White)}{Colours.Fg("register [username]", Colours.BoldWhite)}{Colours.Fg(" to register a new account.", Colours.White)}");
-			viewer.WriteLine(Colours.Fg("\n    ==============================================================", Colours.Cyan));
+			List<string> splashText = new List<string>();
+			splashText.Add("- Enter a username to log in.");
+			splashText.Add("- Enter <register [username]> to register a new account.");
+			viewer.WriteLine(Text.FormatPopup("Welcome to Inspiral, Coalescence, Ringdown", splashText));
+		}
+
+		private bool ValidatePassword(string givenPass)
+		{
+			return (givenPass.Length <= 30 && 
+				givenPass.Length >= 6 && 
+				!givenPass.All(char.IsLetter)
+				);
 		}
 
 		private bool ValidateUsername(string givenName)
@@ -79,7 +87,7 @@ namespace inspiral
 						invoker.id = newUser;
 						loginState.Remove(invoker);
 						loginState.Add(invoker, "registering_entering_password");
-						invoker.WriteLine("Enter a new password. Remember that Telnet is not secure; do not reuse an important personal password.");
+						invoker.WriteLine("Enter a new password of at least 6 characters, including at least one number or symbol.\nRemember that Telnet is not secure; do not reuse an important personal password.");
 					}
 				}
 			}
@@ -118,11 +126,19 @@ namespace inspiral
 						}
 						break;
 					case "registering_entering_password":
-						passwordConfirmations.Remove(invoker);
-						passwordConfirmations.Add(invoker, rawCommand);
-						loginState.Remove(invoker);
-						loginState.Add(invoker, "registering_confirming_password");
-						invoker.WriteLine("Please reenter your password to confirm.");
+
+						if(!ValidatePassword(rawCommand))
+						{
+							invoker.WriteLine($"Passwords must be 6 to 30 characters long and must contain at least one symbol or number.");
+						}
+						else
+						{
+							passwordConfirmations.Remove(invoker);
+							passwordConfirmations.Add(invoker, rawCommand);
+							loginState.Remove(invoker);
+							loginState.Add(invoker, "registering_confirming_password");
+							invoker.WriteLine("Please reenter your password to confirm.");
+						}
 						break;
 					case "registering_confirming_password":
 						if(passwordConfirmations.ContainsKey(invoker) && passwordConfirmations[invoker] == rawCommand)

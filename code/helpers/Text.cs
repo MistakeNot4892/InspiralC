@@ -76,5 +76,98 @@ namespace inspiral
 			}
 			return Capitalize(input);
 		}
+		
+		private static string sideBar = Colours.Fg("||", Colours.Blue);
+
+		internal static string FormatPopup(string header, List<string> boxContents)
+		{
+			int maxLine = 70;
+			int totalLine = 80;
+			if(header.Length > maxLine)
+			{
+				header = $"{header.Substring(0, maxLine-3)}...";
+			}
+			List<string> splitContents = new List<string>();
+			foreach(string splitLine in boxContents)
+			{
+				string pruneLine = splitLine;
+				while(pruneLine.Length > maxLine)
+				{
+					splitContents.Add(pruneLine.Substring(0, maxLine));
+					pruneLine = pruneLine.Substring(maxLine);
+				}
+				splitContents.Add(pruneLine);
+			}
+
+			List<string> result = new List<string>();
+
+			int padNeeded = totalLine - (header.Length + 6);
+			int padLeft = padNeeded/2;
+			int padRight = padLeft;
+			while(padLeft + padRight != padNeeded)
+			{
+				padRight++;
+			}
+			result.Add($"{Colours.Fg($"[{new String('=', padLeft)}\\", Colours.Cyan)} {Colours.Fg(header, Colours.BoldCyan)} {Colours.Fg($"/{new String('=', padRight)}]",Colours.Cyan)}");
+			string emptyLine = $" {sideBar}{new String(' ', totalLine-6)}{sideBar}";
+			result.Add(emptyLine);
+			foreach(string splitLine in splitContents)
+			{
+				result.Add($" {sideBar}     {Colours.Fg(splitLine, Colours.BoldWhite)}{new String(' ', totalLine - splitLine.Length - 11)}{sideBar}");
+			}
+			result.Add(emptyLine);
+			result.Add(Colours.Fg($"[{new String('=', totalLine-2)}]", Colours.Cyan));
+			return string.Join("\n", result.ToArray());
+		}
+
+
+		internal static string FormatBlock(Dictionary<string, List<string>> formatLines)
+		{
+
+			int longestLine = 30;
+			foreach(KeyValuePair<string, List<string>> subSection in formatLines)
+			{
+				if(subSection.Key.Length > longestLine)
+				{
+					longestLine = subSection.Key.Length;
+				}
+				foreach(string line in subSection.Value)
+				{
+					if(line.Length > longestLine)
+					{
+						longestLine = line.Length;
+					}
+				}
+			}
+			longestLine += 5;
+
+			string divider = Colours.Fg($"[{new String('=', longestLine-2)}]", Colours.Cyan);
+			string emptyLine = $" {sideBar}{new String(' ', longestLine-6)}{sideBar}";
+	
+			List<string> result = new List<string>();
+
+			foreach(KeyValuePair<string, List<string>> subSection in formatLines)
+			{
+				int padNeeded = longestLine - (subSection.Key.Length + 6);
+				int padLeft = padNeeded/2;
+				int padRight = padLeft;
+				while(padLeft + padRight != padNeeded)
+				{
+					padRight++;
+				}
+
+				result.Add(divider);
+				result.Add($" {sideBar}{new String(' ', padLeft)}{Colours.Fg(subSection.Key, Colours.BoldCyan)}{new String(' ', padRight)}{sideBar}");
+				result.Add(divider);
+				result.Add(emptyLine);
+				foreach(string line in subSection.Value)
+				{
+					result.Add($" {sideBar}     {Colours.Fg(line, Colours.BoldWhite)}{new String(' ', longestLine - line.Length - 11)}{sideBar}");
+				}
+				result.Add(emptyLine);
+			}
+			result.Add(divider);
+			return string.Join("\n", result.ToArray());
+		}
 	}
 }

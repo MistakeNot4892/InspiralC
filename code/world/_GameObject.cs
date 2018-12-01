@@ -77,6 +77,18 @@ namespace inspiral
 		{
 			GetComponent(component)?.SetValue(field, newField);
 		}
+		internal GameObject FindInContents(string token)
+		{
+			string checkToken = token.ToLower();
+			foreach(GameObject gameObj in contents)
+			{
+				if($"{gameObj.id}" == checkToken || gameObj.name.ToLower() == checkToken || gameObj.aliases.Contains(checkToken))
+				{
+					return gameObj;
+				}
+			}
+			return null;
+		}
 
 
 
