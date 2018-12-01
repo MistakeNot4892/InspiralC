@@ -10,7 +10,7 @@ namespace inspiral
 	{
 		internal string userName;
 		internal long id;
-		internal long templateId;
+		internal long objectId;
 		internal string passwordHash;
 		internal PlayerAccount(long _id)
 		{
@@ -34,7 +34,7 @@ namespace inspiral
 				id,
 				userName, 
 				passwordHash,
-				userTemplate
+				objectId
 				) 
 				VALUES (
 					@p0,
@@ -45,7 +45,7 @@ namespace inspiral
 			dbTableSchema = @"id INTEGER PRIMARY KEY UNIQUE, 
 				userName TEXT NOT NULL UNIQUE, 
 				passwordHash TEXT NOT NULL,
-				userTemplate INTEGER NOT NULL UNIQUE";
+				objectId INTEGER NOT NULL UNIQUE";
 			}
 
 		internal override void InstantiateFromRecord(SQLiteDataReader reader)
@@ -53,7 +53,7 @@ namespace inspiral
 			PlayerAccount acct = (PlayerAccount)CreateRepositoryType((long)reader["id"]);
 			acct.userName =      reader["userName"].ToString();
 			acct.passwordHash =  reader["passwordHash"].ToString();
-			acct.templateId =    (long)reader["userTemplate"];
+			acct.objectId =    (long)reader["objectId"];
 			accounts.Add(acct.userName, acct);
 			contents.Add(acct.id, acct);
 			Console.WriteLine($"Loaded account for {acct.userName} (#{acct.id}).");
@@ -72,13 +72,24 @@ namespace inspiral
 			PlayerAccount acct = (PlayerAccount)CreateNewInstance(GetUnusedIndex(), false);
 			acct.userName = userName;
 			acct.passwordHash = passwordHash;
-			GameObjectTemplate temp = (GameObjectTemplate)Game.Templates.CreateNewInstance(false);
-			acct.templateId = temp.id;
-			temp.SetString(Text.FieldShortDesc, Text.Capitalize(acct.userName));
-			temp.SetString(Text.FieldRoomDesc, $"{temp.GetString(Text.FieldShortDesc)} is here.");
+
+			GameObject gameObj = (GameObject)Game.Objects.CreateNewInstance(false);
+			acct.objectId = gameObj.id;
+			gameObj.name = Text.Capitalize(acct.userName);
+
+			gameObj.AddComponent(Components.Visible);
+			gameObj.SetString(Components.Visible, Text.FieldShortDesc, gameObj.name);
+			gameObj.SetString(Components.Visible, Text.FieldRoomDesc, $"{gameObj.name} is here.");
+			gameObj.SetString(Components.Visible, Text.FieldExaminedDesc, $"They are completely boring.");
+
+			gameObj.AddComponent(Components.Mobile);
+			gameObj.SetString(Components.Mobile, Text.FieldEnterMessage, $"{gameObj.name} enters from the $DIR.");
+			gameObj.SetString(Components.Mobile, Text.FieldLeaveMessage, $"{gameObj.name} leaves to the $DIR.");
+			gameObj.SetString(Components.Mobile, Text.FieldDeathMessage, $"The corpse of {gameObj.name} lies here.");
+
+			Game.Objects.AddDatabaseEntry(gameObj);
 			accounts.Add(acct.userName, acct);
 			AddDatabaseEntry(acct);
-			Game.Templates.AddDatabaseEntry(temp);
 			return acct;
 		}
 
@@ -91,7 +102,7 @@ namespace inspiral
 			command.Parameters.AddWithValue("@p0", acct.id);
 			command.Parameters.AddWithValue("@p1", acct.userName);
 			command.Parameters.AddWithValue("@p2", acct.passwordHash);
-			command.Parameters.AddWithValue("@p3", acct.templateId);
+			command.Parameters.AddWithValue("@p3", acct.objectId);
 		}
 	}
 }

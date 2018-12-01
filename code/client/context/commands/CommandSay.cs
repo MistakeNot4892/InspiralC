@@ -13,12 +13,12 @@ namespace inspiral
 		{
 			if(invocation.Length <= 0)
 			{
-				invoker.currentGameObject.ShowNearby(invoker.currentGameObject, $"You open your mouth but say nothing.", $"{invoker.currentGameObject.GetString(Text.FieldShortDesc)} opens their mouth but says nothing.");
+				invoker.shell.ShowNearby(invoker.shell, $"You open your mouth but say nothing.", $"{invoker.shell.GetString(Components.Visible, Text.FieldShortDesc)} opens their mouth but says nothing.");
 			}
 			else
 			{
 				invocation = Text.FormatProse(invocation);
-				invoker.currentGameObject.ShowNearby(invoker.currentGameObject, $"You say, \"{invocation}\"", $"{invoker.currentGameObject.GetString(Text.FieldShortDesc)} says, \"{invocation}\"");
+				invoker.shell.ShowNearby(invoker.shell, $"You say, \"{invocation}\"", $"{invoker.shell.GetString(Components.Visible, Text.FieldShortDesc)} says, \"{invocation}\"");
 			}
 			return true;
 		}

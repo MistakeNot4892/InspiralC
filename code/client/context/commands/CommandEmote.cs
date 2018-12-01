@@ -11,8 +11,8 @@ namespace inspiral
 		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
-			string emoteText = Text.FormatProse($"{invoker.currentGameObject.GetString(Text.FieldShortDesc)} {invocation}");
-			invoker.currentGameObject.ShowNearby(invoker.currentGameObject, $"You emote: {emoteText}", emoteText);
+			string emoteText = Text.FormatProse($"{invoker.shell.GetString(Components.Visible, Text.FieldShortDesc)} {invocation}");
+			invoker.shell.ShowNearby(invoker.shell, $"You emote: {emoteText}", emoteText);
 			return true;
 		}
 	}

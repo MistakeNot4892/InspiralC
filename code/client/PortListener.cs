@@ -32,7 +32,7 @@ namespace inspiral
 					Console.WriteLine("{0}: waiting for a connection...", id);
 					TcpClient client = server.AcceptTcpClient();
 					Console.WriteLine("{0}: new connection from {1}", id, ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString());
-					GameClient joiner = Game.Clients.Create(client, $"{id}-{Game.Clients.CountClients()+1}");
+					GameClient joiner = Clients.Create(client, $"{id}-{Clients.CountClients()+1}");
 					Task.Run(() => joiner.Begin());
 				}
 			}

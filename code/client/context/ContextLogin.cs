@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Diagnostics;
 using System.Collections.Generic;
 using BCrypt.Net;
 
@@ -44,17 +45,13 @@ namespace inspiral
 				givenName.All(char.IsLetter)
 				);
 		}
-
 		private void HandleLogin(GameClient invoker)
 		{
-			Game.Clients.LogoutDuplicateAccounts(invoker);
-			GameObjectTemplate temp = (GameObjectTemplate)Game.Templates.Get(invoker.currentAccount.templateId);
-			if(temp == null)
-			{
-				Console.WriteLine($"No existing template for user {invoker.currentAccount.id}, creating a temporary one.");
-				temp = (GameObjectTemplate)Game.Templates.CreateNewInstance(true);
-			}
-			invoker.currentGameObject.templateId = temp.id;
+			invoker.shell = (GameObject)Game.Objects.Get(invoker.currentAccount.objectId);
+			invoker.shell.AddComponent(Components.Client);
+			ClientComponent clientComp = (ClientComponent)invoker.shell.GetComponent(Components.Client);
+			clientComp.Login(invoker);
+			Clients.LogoutDuplicateAccounts(invoker);
 			invoker.SetContext(new ContextGeneral());			
 		}
 		internal override bool TakeInput(GameClient invoker, string command, string rawCommand, string arguments)

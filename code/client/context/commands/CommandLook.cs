@@ -11,9 +11,9 @@ namespace inspiral
 		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
-			if(invoker.currentGameObject.location != null)
+			if(invoker.shell.location != null)
 			{
-				invoker.currentGameObject.location.ExaminedBy(invoker, true);
+				invoker.shell.location.ExaminedBy(invoker, true);
 			}
 			else
 			{

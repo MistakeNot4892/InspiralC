@@ -5,16 +5,16 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal class ClientRepository
+	internal static class Clients
 	{
-		List<GameClient> clients = new List<GameClient>();
-		public GameClient Create(TcpClient client, string id)
+		private static List<GameClient> clients = new List<GameClient>();
+		internal static GameClient Create(TcpClient client, string id)
 		{
 			GameClient newClient = new GameClient(client, id);
 			clients.Add(newClient);
 			return newClient;
 		}
-		public void LogoutDuplicateAccounts(GameClient invoker)
+		internal static void LogoutDuplicateAccounts(GameClient invoker)
 		{
 			foreach(GameClient client in clients)
 			{
@@ -25,11 +25,11 @@ namespace inspiral
 				}
 			}
 		}
-		public void RemoveClient(GameClient client)
+		internal static void RemoveClient(GameClient client)
 		{
 			clients.Remove(client);
 		}
-		public int CountClients()
+		internal static int CountClients()
 		{
 			return clients.Count;
 		}

@@ -10,7 +10,7 @@ namespace inspiral
 	class GameClient
 	{
 		internal string id;
-		internal GameClientObject currentGameObject;
+		internal GameObject shell;
 		private string lastPrompt = null;
 		internal TcpClient client;
 		internal NetworkStream stream;
@@ -22,9 +22,6 @@ namespace inspiral
 			client =   _client;
 			id = _id;
 			stream =   _client.GetStream();
-
-			currentGameObject = new GameClientObject();
-			currentGameObject.Login(this);
 			Console.WriteLine($"{id}: client created.");
 			SetContext(new ContextLogin());
 		}
@@ -83,11 +80,17 @@ namespace inspiral
 
 		internal void Disconnect()
 		{
-			if(currentGameObject != null && currentGameObject.HasClient() && currentGameObject.GetClient() == this)
+			if(shell != null && shell.HasComponent(Components.Client))
 			{
-				currentGameObject.Logout();
+				ClientComponent clientComp = (ClientComponent)shell.GetComponent(Components.Client);
+				if(clientComp.client == this)
+				{
+					clientComp.Logout();
+					shell.RemoveComponent(Components.Client);
+				}
 			}
-			Game.Clients.RemoveClient(this);
+			shell = null;
+			Clients.RemoveClient(this);
 		}
 		internal void ReceiveInput(string inputMessage)
 		{

@@ -117,6 +117,7 @@ namespace inspiral
 			}
 			dbConnection.Close();
 		}
+		public virtual void DumpToConsole() { Console.WriteLine("Repo dump not implemented for this repo, sorry."); }
 		internal virtual void InstantiateFromRecord(SQLiteDataReader reader) {}
 		internal virtual Object CreateRepositoryType(long id) { return null; }
 		internal virtual void AddCommandParameters(SQLiteCommand command, Object instance) {}

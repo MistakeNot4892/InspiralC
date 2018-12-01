@@ -15,56 +15,27 @@ namespace inspiral
 			string[] tokens = invocation.Split(" ");
 			if(tokens.Length <= 0)
 			{
-				invoker.WriteLinePrompted("What do you want to create (template, object, room)?");
+				invoker.WriteLinePrompted("What do you want to create (object, room)?");
 			}
 			else
 			{
 				switch(tokens[0].ToLower())
 				{
-					case "template":
-						GameObjectTemplate template = (GameObjectTemplate)Game.Templates.CreateNewInstance(true);
-						invoker.WriteLinePrompted($"Created a new blank template (#{template.id}).");
-						break;
 					case "object":
-						if(tokens.Length < 1)
-						{
-							invoker.WriteLinePrompted("You must specify a valid template number for a new object.");
-						}
-						else
-						{
-							long templateId = 0;
-							bool noTemplate = false;
-							try
-							{
-								templateId = Convert.ToInt64(tokens[1]);
-								if(Game.Templates.Get(templateId) == null)
-								{
-									noTemplate = true;
-								}
-							}
-							catch(Exception E)
-							{
-								noTemplate = true;
-							}
-							if(noTemplate)
-							{
-								invoker.WriteLinePrompted("You must specify a valid template number for a new object.");
-							}
-							else
-							{
-								GameObject gameObject = (GameObject)Game.Objects.CreateNewInstance(false);
-								gameObject.templateId = templateId;
-								Game.Objects.AddDatabaseEntry(gameObject);
-								invoker.WriteLinePrompted($"Created {gameObject.GetString(Text.FieldShortDesc)} (#{gameObject.id}) from template #{gameObject.templateId}.");
-							}
-						}
+						GameObject gameObject = (GameObject)Game.Objects.CreateNewInstance(false);
+						gameObject.AddComponent(Components.Visible);
+						Game.Objects.AddDatabaseEntry(gameObject);
+						invoker.WriteLinePrompted($"Created {gameObject.GetString(Components.Visible, Text.FieldShortDesc)} (#{gameObject.id}).");
 						break;
 					case "room":
-						GameRoomObject room = (GameRoomObject)Game.Rooms.CreateNewInstance(true);
-						invoker.WriteLinePrompted($"Created {room.GetString(Text.FieldShortDesc)} (#{room.id}).");
+						GameObject room = (GameObject)Game.Objects.CreateNewInstance(false);
+						room.AddComponent(Components.Visible);
+						room.AddComponent(Components.Room);
+						Game.Objects.AddDatabaseEntry(room);
+						invoker.WriteLinePrompted($"Created {room.GetString(Components.Visible, Text.FieldShortDesc)} (#{room.id}).");
 						break;
 					default:
-						invoker.WriteLinePrompted("What do you want to create (template, object, room)?");
+						invoker.WriteLinePrompted("What do you want to create (object, room)?");
 						break;
 				}
 			}
