@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
+
 namespace inspiral
 {
 	internal class VisibleComponent : GameComponent
@@ -60,7 +62,26 @@ namespace inspiral
 					mainDesc = $"{mainDesc}\n{string.Join(" ", roomAppearances.ToArray())}";
 				}
 			}
+			if(parent.HasComponent(Components.Room))
+			{
+				RoomComponent roomComp = (RoomComponent)parent.GetComponent(Components.Room);
+				mainDesc = $"{mainDesc}\n{roomComp.GetExitString()}";
+			}
 			viewer.WriteLinePrompted(mainDesc);
+		}
+		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
+		{
+			shortDescription =    reader["shortDescription"].ToString();
+			roomDescription =     reader["roomDescription"].ToString();
+			examinedDescription = reader["examinedDescription"].ToString();
+		}
+		internal override void AddCommandParameters(SQLiteCommand command) 
+		{
+			command.Parameters.AddWithValue("@p0", parent.id);
+			command.Parameters.AddWithValue("@p1", shortDescription);
+			command.Parameters.AddWithValue("@p2", roomDescription);
+			command.Parameters.AddWithValue("@p3", examinedDescription);
 		}
 	}
 }
+

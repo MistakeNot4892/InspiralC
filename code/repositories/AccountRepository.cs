@@ -46,9 +46,10 @@ namespace inspiral
 				userName TEXT NOT NULL UNIQUE, 
 				passwordHash TEXT NOT NULL,
 				objectId INTEGER NOT NULL UNIQUE";
-			}
+			dbUpdateQuery = "UPDATE player_accounts SET userName = @p1, passwordHash = @p2, objectId = @p3 WHERE id = @p0;";
+		}
 
-		internal override void InstantiateFromRecord(SQLiteDataReader reader)
+		internal override void InstantiateFromRecord(SQLiteDataReader reader, SQLiteConnection dbConnection)
 		{
 			PlayerAccount acct = (PlayerAccount)CreateRepositoryType((long)reader["id"]);
 			acct.userName =      reader["userName"].ToString();

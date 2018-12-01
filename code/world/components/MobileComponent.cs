@@ -1,3 +1,5 @@
+using System.Data.SQLite;
+
 namespace inspiral
 {
 	internal class MobileComponent : GameComponent
@@ -39,6 +41,24 @@ namespace inspiral
 				default:
 					return null;
 			}
+		}
+		internal bool CanMove()
+		{
+			return true;
+		}
+
+		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
+		{
+			enterMessage = reader["enterMessage"].ToString();
+			leaveMessage = reader["leaveMessage"].ToString();
+			deathMessage = reader["deathMessage"].ToString();
+		}
+		internal override void AddCommandParameters(SQLiteCommand command) 
+		{
+			command.Parameters.AddWithValue("@p0", parent.id);
+			command.Parameters.AddWithValue("@p1", enterMessage);
+			command.Parameters.AddWithValue("@p2", leaveMessage);
+			command.Parameters.AddWithValue("@p3", deathMessage);
 		}
 	}
 }

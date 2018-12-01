@@ -7,7 +7,7 @@ namespace inspiral
 		internal override void Initialize() 
 		{
 			commandString = "say";
-			aliases = new List<string>() {"say", "s"};
+			aliases = new List<string>() {"say", "'"};
 		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{

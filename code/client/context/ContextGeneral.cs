@@ -13,32 +13,60 @@ namespace inspiral
 			AddCommand(new CommandLook());
 			AddCommand(new CommandColours());
 			AddCommand(new CommandCreate());
+			AddCommand(new CommandAddroom());
 		}
 		internal override void OnContextSet(GameClient viewer)
 		{
 			viewer.WriteLine($"Welcome, {viewer.shell.name}.");
 			if(viewer.shell.location == null)
 			{
-				Console.WriteLine($"Loc for {viewer.shell.name} was null, moving them to a room.");
 				if(Components.Rooms.Count <= 0)
 				{
 					Console.WriteLine("Cannot find a room, creating a new one.");
-					GameObject tmpRoom = (GameObject)Game.Objects.CreateNewInstance(false);
-					tmpRoom.AddComponent(Components.Room);
-					tmpRoom.AddComponent(Components.Visible);
-					tmpRoom.SetString(Components.Visible, Text.FieldShortDesc, Text.DefaultRoomShort);
-					tmpRoom.SetString(Components.Visible, Text.FieldExaminedDesc, Text.DefaultRoomLong);
-					Game.Objects.AddDatabaseEntry(tmpRoom);
-				}
-
-				foreach(GameComponent comp in Components.Rooms)
-				{
-					Console.WriteLine($"Candidate room #{comp.key} - {comp.parent?.name ?? "null parent"}.");
+					Game.Objects.CreateNewEmptyRoom();
 				}
 				GameObject room = (GameObject)Components.Rooms[0].parent;
-				Console.WriteLine($"Room id is {room.id}.");
 				viewer.shell.Move(room);
 			}
+			else
+			{
+				viewer.shell.location.ExaminedBy(viewer, true);
+			}
+		}
+
+		internal override bool TakeInput(GameClient invoker, string command, string rawCommand, string arguments)
+		{
+			if(invoker.shell != null && invoker.shell.location != null && invoker.shell.location.HasComponent(Components.Room) && invoker.shell.HasComponent(Components.Mobile))
+			{
+				MobileComponent mob = (MobileComponent)invoker.shell.GetComponent(Components.Mobile);
+				if(mob.CanMove())
+				{
+					string tmp = command;
+					if(Text.shortExits.ContainsKey(tmp))
+					{
+						tmp = Text.shortExits[tmp];
+					}
+					RoomComponent room = (RoomComponent)invoker.shell.location.GetComponent(Components.Room);
+					if(room.exits.ContainsKey(tmp))
+					{
+						GameObject destination = (GameObject)Game.Objects.Get(room.exits[tmp]);
+						if(destination == null)
+						{
+							invoker.WriteLine($"Strangely, there is nothing to the {tmp}. You stay where you are.");
+						}
+						else
+						{
+							GameObject loc = invoker.shell.location;
+							invoker.WriteLine($"You depart to the {tmp}.");
+							destination.ShowToContents($"{mob.GetStringValue(Text.FieldEnterMessage).Replace("$DIR", tmp)}");
+							invoker.shell.Move(destination);
+							loc.ShowToContents($"{mob.GetStringValue(Text.FieldLeaveMessage).Replace("$DIR", tmp)}");
+						}
+						return true;
+					}
+				}
+			}
+			return InvokeCommand(invoker, command, arguments);
 		}
 		internal override string GetPrompt(GameClient viewer) 
 		{

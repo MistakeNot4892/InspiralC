@@ -6,49 +6,55 @@ namespace inspiral
 {
 	internal class ObjectRepository : GameRepository
 	{
-
+		private Dictionary<long, long> postInitLocations;
 		internal ObjectRepository()
 		{
+			postInitLocations = new Dictionary<long, long>();
 			repoName = "objects";
 			dbTableName = "game_objects";
 			dbInsertQuery = $@"INSERT INTO {dbTableName} (
 				id, 
 				name,
 				aliases, 
-				shortDescription, 
-				roomDescription, 
-				examinedDescription,
-				enterMessage, 
-				leaveMessage, 
-				deathMessage, 
 				components, 
-				flags
+				flags,
+				location
 			) VALUES (
 				@p0,
 				@p1,
 				@p2,
 				@p3,
 				@p4,
-				@p5,
-				@p6,
-				@p7,
-				@p8,
-				@p9,
-				@p10
+				@p5
 			);";
-			dbTableSchema = $@"id INTEGER PRIMARY KEY,
+			dbTableSchema = $@"id INTEGER PRIMARY KEY UNIQUE,
 				name TEXT DEFAULT '{Text.DefaultName}', 
 				aliases TEXT DEFAULT ' ',
-				shortDescription TEXT DEFAULT '{Text.DefaultShortDescription}',
-				roomDescription TEXT DEFAULT '{Text.DefaultRoomDescription}',
-				examinedDescription TEXT DEFAULT '{Text.DefaultExaminedDescription}',
-				enterMessage TEXT DEFAULT '{Text.DefaultEnterMessage}', 
-				leaveMessage TEXT DEFAULT '{Text.DefaultLeaveMessage}', 
-				deathMessage TEXT DEFAULT '{Text.DefaultDeathMessage}',
 				components TEXT DEFAULT ' ',
-				flags INTEGER DEFAULT -1";
+				flags INTEGER DEFAULT -1,
+				location INTEGER";
+			dbUpdateQuery =  "UPDATE game_objects SET name = @p1, aliases = @p2, components = @p3, flags = @p4, location = @p5 WHERE id = @p0;";
 		}
-		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
+
+		internal override void HandleSecondarySQLInitialization(SQLiteConnection dbConnection)
+		{
+			foreach(KeyValuePair<int, string> schema in Components.tableSchemas)
+			{
+				using( SQLiteCommand command = new SQLiteCommand($"CREATE TABLE IF NOT EXISTS {schema.Value};", dbConnection) )
+				{
+					try
+					{
+						command.ExecuteNonQuery();
+					}
+					catch(Exception e)
+					{
+						Console.WriteLine($"Component SQL exception ({schema.Key}): {e.ToString()} - entire query is [CREATE TABLE IF NOT EXISTS {schema.Value};]");
+					}
+				}
+			}
+		}
+
+		internal override void InstantiateFromRecord(SQLiteDataReader reader, SQLiteConnection dbConnection) 
 		{
 			GameObject gameObj = (GameObject)CreateRepositoryType((long)reader["id"]);
 			gameObj.name = reader["name"].ToString();
@@ -66,21 +72,34 @@ namespace inspiral
 				{
 					int comp = Int32.Parse(componentArray[i]);
 					gameObj.AddComponent(comp);
+					if(Components.loadSchemas.ContainsKey(comp))
+					{
+						GameComponent component = gameObj.GetComponent(comp);
+						using( SQLiteCommand command = new SQLiteCommand($"SELECT * FROM {Components.loadSchemas[comp]} WHERE id = @p0;", dbConnection))
+						{
+							try
+							{
+								command.Parameters.AddWithValue("@p0", gameObj.id);
+								SQLiteDataReader secondReader = command.ExecuteReader();
+								while(secondReader.Read())
+								{
+									component.InstantiateFromRecord(secondReader);
+								}
+							}
+							catch(Exception e)
+							{
+								Console.WriteLine($"SQL exception 4 ({repoName}): {e.ToString()} - entire query is [SELECT * FROM {Components.loadSchemas[comp]} WHERE id = @p0;]");
+							}
+						}
+					}
 				}
 				catch(Exception e)
 				{
 					Console.WriteLine($"Exception when converting component record to key: {e.ToString()}");
 				}
 			}
-			gameObj.SetString(Components.Visible, Text.FieldShortDesc,    reader["shortDescription"].ToString());
-			gameObj.SetString(Components.Visible, Text.FieldRoomDesc,     reader["roomDescription"].ToString());
-			gameObj.SetString(Components.Visible, Text.FieldExaminedDesc, reader["examinedDescription"].ToString());
-			gameObj.SetString(Components.Mobile,  Text.FieldEnterMessage, reader["enterMessage"].ToString());
-			gameObj.SetString(Components.Mobile,  Text.FieldLeaveMessage, reader["leaveMessage"].ToString());
-			gameObj.SetString(Components.Mobile,  Text.FieldDeathMessage, reader["deathMessage"].ToString());
 			contents.Add(gameObj.id, gameObj);
-			Console.WriteLine($"Loaded object #{gameObj.id}, {gameObj.GetString(Components.Visible, Text.FieldShortDesc)}.");
-
+			postInitLocations.Add(gameObj.id, (long)reader["location"]);
 		}
 		internal override Object CreateRepositoryType(long id) 
 		{
@@ -88,48 +107,93 @@ namespace inspiral
 			gameObj.id = id;
 			return gameObj;
 		}
+
+		public override void HandleAdditionalSQLInsertion(Object newInstance, SQLiteConnection dbConnection) 
+		{
+			GameObject gameObj = (GameObject)newInstance;
+			foreach(KeyValuePair<int, GameComponent> comp in gameObj.components)
+			{
+				if(!Components.insertSchemas.ContainsKey(comp.Key))
+				{
+					continue;
+				}
+				using( SQLiteCommand command = new SQLiteCommand(Components.insertSchemas[comp.Key], dbConnection))
+				{
+					try
+					{
+						comp.Value.AddCommandParameters(command);
+						command.ExecuteNonQuery();
+					}
+					catch(Exception e)
+					{
+						Console.WriteLine($"SQL exception 5 ({repoName}): {e.ToString()} - entire query is [{Components.insertSchemas[comp.Key]}]");
+					}
+				}
+			}
+		}
 		internal override void AddCommandParameters(SQLiteCommand command, Object instance) 
 		{
 			GameObject gameObj = (GameObject)instance;
 			command.Parameters.AddWithValue("@p0", gameObj.id);
 			command.Parameters.AddWithValue("@p1", gameObj.name);
 			command.Parameters.AddWithValue("@p2", string.Join("|", gameObj.aliases));
-			command.Parameters.AddWithValue("@p3", (gameObj.GetComponent(Components.Visible)?
-				.GetStringValue(Text.FieldShortDesc))    ?? Text.DefaultShortDescription);
-			command.Parameters.AddWithValue("@p4", (gameObj.GetComponent(Components.Visible)?
-				.GetStringValue(Text.FieldRoomDesc))     ?? Text.DefaultRoomDescription);
-			command.Parameters.AddWithValue("@p5", (gameObj.GetComponent(Components.Visible)?
-				.GetStringValue(Text.FieldExaminedDesc)) ?? Text.DefaultExaminedDescription);
-			command.Parameters.AddWithValue("@p6", (gameObj.GetComponent(Components.Mobile)?
-				.GetStringValue(Text.FieldEnterMessage)) ?? Text.DefaultEnterMessage);
-			command.Parameters.AddWithValue("@p7", (gameObj.GetComponent(Components.Mobile)?
-				.GetStringValue(Text.FieldLeaveMessage)) ?? Text.DefaultLeaveMessage);
-			command.Parameters.AddWithValue("@p8", (gameObj.GetComponent(Components.Mobile)?
-				.GetStringValue(Text.FieldDeathMessage)) ?? Text.DefaultDeathMessage);
 			List<string> componentKeys = new List<string>();
 			foreach(KeyValuePair<int, GameComponent> comp in gameObj.components)
 			{
 				componentKeys.Add($"{comp.Key}");
 			}
-			command.Parameters.AddWithValue("@p9", string.Join("|", componentKeys.ToArray()));
-			command.Parameters.AddWithValue("@p10", gameObj.flags);
+			command.Parameters.AddWithValue("@p3", string.Join("|", componentKeys.ToArray()));
+			command.Parameters.AddWithValue("@p4", gameObj.flags);
+			command.Parameters.AddWithValue("@p5", gameObj.location?.id ?? 0);
 		}
-
-		public override void DumpToConsole() {
-			Console.WriteLine($"Dumping {repoName}.");
-			foreach(KeyValuePair<long, Object> obj in contents)
+		internal long CreateNewEmptyRoom()
+		{
+			GameObject tmpRoom = (GameObject)Game.Objects.CreateNewInstance(false);
+			tmpRoom.AddComponent(Components.Room);
+			tmpRoom.AddComponent(Components.Visible);
+			tmpRoom.SetString(Components.Visible, Text.FieldShortDesc, Text.DefaultRoomShort);
+			tmpRoom.SetString(Components.Visible, Text.FieldExaminedDesc, Text.DefaultRoomLong);
+			Game.Objects.AddDatabaseEntry(tmpRoom);
+			return tmpRoom.id;
+		}
+		internal override void PostInitialize() 
+		{
+			foreach(KeyValuePair<long, long> loc in postInitLocations)
 			{
-				try
+				if(loc.Value > 0)
 				{
-					GameObject gameObj = (GameObject)obj.Value;
-					Console.WriteLine($"#{gameObj.id} (#{obj.Key} in db) - {gameObj.name} - V[{gameObj.HasComponent(Components.Visible)}] M[{gameObj.HasComponent(Components.Mobile)}] R[{gameObj.HasComponent(Components.Room)}] C[{gameObj.HasComponent(Components.Client)}]");
-				}
-				catch(Exception e)
-				{
-					Console.WriteLine($"Malformed or excepting entry in dump - {e.ToString()}");
+					GameObject obj =   (GameObject)Get(loc.Key);
+					GameObject other = (GameObject)Get(loc.Value);
+					if(obj != null && other != null)
+					{
+						obj.Move(other);
+					}
 				}
 			}
-			Console.WriteLine($"Done.");
+		}
+		public override void HandleAdditionalObjectSave(Object objInstance, SQLiteConnection dbConnection) 
+		{
+			GameObject gameObj = (GameObject) objInstance;
+			Console.WriteLine($"Saving modules for {gameObj.id}.");
+			foreach(KeyValuePair<int, GameComponent> comp in gameObj.components)
+			{
+				if(!Components.updateSchemas.ContainsKey(comp.Key))
+				{
+					continue;
+				}
+				using(SQLiteCommand command = new SQLiteCommand(Components.updateSchemas[comp.Key], dbConnection))
+				{
+					try
+					{
+						comp.Value.AddCommandParameters(command);
+						command.ExecuteNonQuery();
+					}
+					catch(Exception e)
+					{
+						Console.WriteLine($"Component SQL exception 2 ({comp.Key}): {e.ToString()} - enter query is [{Components.updateSchemas[comp.Key]}]");
+					}
+				}
+			}
 		}
 	}
 }	

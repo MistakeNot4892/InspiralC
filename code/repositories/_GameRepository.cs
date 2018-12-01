@@ -13,6 +13,7 @@ namespace inspiral
 		internal string dbTableSchema;
 		internal string dbTableName;
 		internal string dbInsertQuery;
+		internal string dbUpdateQuery;
 		internal Dictionary<long, Object> contents = new Dictionary<long, Object>();
 
 		internal virtual void Load() {
@@ -23,27 +24,22 @@ namespace inspiral
 			{
 				Console.WriteLine("No database found, creating empty.");
 				SQLiteConnection.CreateFile(dbPath);
-				dbConnection = new SQLiteConnection($"Data Source={dbPath};Version={dbVersion};");
-				dbConnection.Open();
-				using(SQLiteCommand command = new SQLiteCommand($"CREATE TABLE {dbTableName} ({dbTableSchema});", dbConnection))
+			}
+
+			dbConnection = new SQLiteConnection($"Data Source={dbPath};Version={dbVersion};");
+			dbConnection.Open();
+			using(SQLiteCommand command = new SQLiteCommand($"CREATE TABLE IF NOT EXISTS {dbTableName} ({dbTableSchema});", dbConnection))
+			{
+				try
 				{
-					try
-					{
-						Console.WriteLine("Created empty database.");
-						command.ExecuteNonQuery();
-					}
-					catch(Exception e)
-					{
-						Console.WriteLine($"SQL exception ({repoName}): {e.ToString()}");
-					}
+					command.ExecuteNonQuery();
+				}
+				catch(Exception e)
+				{
+					Console.WriteLine($"SQL exception 1 ({repoName}): {e.ToString()} - entire query is [CREATE TABLE IF NOT EXISTS {dbTableName} ({dbTableSchema});]");
 				}
 			}
-			else
-			{
-				Console.WriteLine("Loaded.");
-				dbConnection = new SQLiteConnection($"Data Source={dbPath};Version={dbVersion};");
-				dbConnection.Open();
-			}
+			HandleSecondarySQLInitialization(dbConnection);
 			Console.WriteLine($"Finished loading {repoName}.");
 			dbConnection.Close();			
 		}
@@ -59,12 +55,12 @@ namespace inspiral
 					SQLiteDataReader reader = command.ExecuteReader();
 					while(reader.Read())
 					{
-						InstantiateFromRecord(reader);
+						InstantiateFromRecord(reader, dbConnection);
 					}
 				}
 				catch(Exception e)
 				{
-					Console.WriteLine($"SQL exception ({repoName}): {e.ToString()}");
+					Console.WriteLine($"SQL exception 2 ({repoName}): {e.ToString()} - entire query is [SELECT * FROM {dbTableName};]");
 				}
 			}
 			Console.WriteLine($"Finished initializing {repoName}.");
@@ -112,14 +108,41 @@ namespace inspiral
 				}
 				catch(Exception e)
 				{
-					Console.WriteLine($"SQL exception ({repoName}): {e.ToString()}");
+					Console.WriteLine($"SQL exception 3 ({repoName}): {e.ToString()} - enter query is [{dbInsertQuery}]");
 				}
 			}
+			HandleAdditionalSQLInsertion(newInstance, dbConnection);
 			dbConnection.Close();
 		}
+
+		public void SaveObject(Object objInstance)
+		{
+			Console.WriteLine($"Saving {objInstance.ToString()}");
+			SQLiteConnection dbConnection = new SQLiteConnection($"Data Source={dbPath};Version={dbVersion};");
+			dbConnection.Open();
+			using(SQLiteCommand command = new SQLiteCommand(dbUpdateQuery, dbConnection))
+			{
+				try
+				{
+					AddCommandParameters(command, objInstance);
+					command.ExecuteNonQuery();
+				}
+				catch(Exception e)
+				{
+					Console.WriteLine($"SQL exception 6 ({repoName}): {e.ToString()} - enter query is [{dbUpdateQuery}]");
+				}
+			}
+			HandleAdditionalObjectSave(objInstance, dbConnection);
+			dbConnection.Close();
+		}
+
+		public virtual void HandleAdditionalObjectSave(Object objInstance, SQLiteConnection dbConnection) {}
+		public virtual void HandleAdditionalSQLInsertion(Object newInstance, SQLiteConnection dbConnection) {}
 		public virtual void DumpToConsole() { Console.WriteLine("Repo dump not implemented for this repo, sorry."); }
-		internal virtual void InstantiateFromRecord(SQLiteDataReader reader) {}
+		internal virtual void InstantiateFromRecord(SQLiteDataReader reader, SQLiteConnection dbConnection) {}
 		internal virtual Object CreateRepositoryType(long id) { return null; }
 		internal virtual void AddCommandParameters(SQLiteCommand command, Object instance) {}
+		internal virtual void HandleSecondarySQLInitialization(SQLiteConnection dbConnection) {}
+
 	}
 }

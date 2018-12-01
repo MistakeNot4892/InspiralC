@@ -106,21 +106,31 @@ namespace inspiral
 			}
 			if(!context.TakeInput(this, cmd, rawCmd, inputMessage))
 			{
-				WriteLinePrompted($"Unknown command '{rawCmd}'.");
+				if(Text.exits.Contains(cmd))
+				{
+					WriteLinePrompted($"There is no exit to the {cmd}.");
+				}
+				else
+				{
+					WriteLinePrompted($"Unknown command '{rawCmd}'.");
+				}
 			}
 		}
 
 		internal void WriteLinePrompted(string message)
 		{
-			string prompt = context.GetPrompt(this);
-			if(prompt != lastPrompt)
+			if(message != "")
 			{
-				lastPrompt = prompt;
-				WriteLine($"{message}{prompt}");
-			}
-			else
-			{
-				WriteLine($"{message}");
+				string prompt = context.GetPrompt(this);
+				if(prompt != lastPrompt)
+				{
+					//lastPrompt = prompt;
+					WriteLine($"{message}{prompt}");
+				}
+				else
+				{
+					WriteLine($"{message}");
+				}
 			}
 		}
 		internal void WriteLine(string message)

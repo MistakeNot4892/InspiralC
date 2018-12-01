@@ -12,6 +12,10 @@ namespace inspiral
 		internal const int FieldLeaveMessage = 4;
 		internal const int FieldDeathMessage = 5;
 
+		internal static List<string> exits = new List<string>();
+		internal static Dictionary<string, string> shortExits = new Dictionary<string, string>();
+		internal static Dictionary<string, string> reversedExits = new Dictionary<string, string>();
+
 		internal const string DefaultRoomShort =           "an empty room";
 		internal const string DefaultRoomLong =            "This is a completely empty room.";
 		internal const string DefaultName =                "object";
@@ -21,6 +25,44 @@ namespace inspiral
 		internal const string DefaultEnterMessage =        "A generic object enters from the $DIR.";
 		internal const string DefaultLeaveMessage =        "A generic object leaves to the $DIR";
 		internal const string DefaultDeathMessage =        "A generic object lies here, dead.";
+
+		static Text()
+		{
+			exits.Add("north");
+			exits.Add("south");
+			exits.Add("east");
+			exits.Add("west");
+			exits.Add("northeast");
+			exits.Add("southeast");
+			exits.Add("northwest");
+			exits.Add("southwest");
+			exits.Add("up");
+			exits.Add("down");
+			exits.Add("in");
+			exits.Add("out");
+
+			shortExits.Add("n","north");
+			shortExits.Add("s","south");
+			shortExits.Add("e","east");
+			shortExits.Add("w","west");
+			shortExits.Add("ne","northeast");
+			shortExits.Add("se","southeast");
+			shortExits.Add("nw","northwest");
+			shortExits.Add("sw","southwest");
+			shortExits.Add("u","up");
+			shortExits.Add("d","down");
+
+			reversedExits.Add("south","north");
+			reversedExits.Add("north","south");
+			reversedExits.Add("west","east");
+			reversedExits.Add("east","west");
+			reversedExits.Add("southwest","northeast");
+			reversedExits.Add("northwest","southeast");
+			reversedExits.Add("southeast","northwest");
+			reversedExits.Add("northeast","southwest");
+			reversedExits.Add("down","up");
+			reversedExits.Add("up","down");
+		}
 		internal static string Capitalize(string input)
 		{
 			return $"{input.Substring(0,1).ToUpper()}{input.Substring(1)}";

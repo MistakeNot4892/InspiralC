@@ -1,4 +1,5 @@
 using System;
+using System.Data.SQLite;
 
 namespace inspiral
 {
@@ -22,5 +23,7 @@ namespace inspiral
 		internal virtual void SetValue(int key, long newValue) {}
 		internal virtual string GetStringValue(int key) { return null; }
 		internal virtual long GetLongValue(int key) { return 0; }
+		internal virtual void InstantiateFromRecord(SQLiteDataReader reader) {}
+		internal virtual void AddCommandParameters(SQLiteCommand command) {}
 	}
 }
