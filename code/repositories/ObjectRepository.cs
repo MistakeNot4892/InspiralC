@@ -151,6 +151,7 @@ namespace inspiral
 			GameObject tmpRoom = (GameObject)Game.Objects.CreateNewInstance(false);
 			tmpRoom.AddComponent(Components.Room);
 			tmpRoom.AddComponent(Components.Visible);
+			tmpRoom.name = "room";
 			tmpRoom.SetString(Components.Visible, Text.FieldShortDesc, Text.DefaultRoomShort);
 			tmpRoom.SetString(Components.Visible, Text.FieldExaminedDesc, Text.DefaultRoomLong);
 			Game.Objects.AddDatabaseEntry(tmpRoom);

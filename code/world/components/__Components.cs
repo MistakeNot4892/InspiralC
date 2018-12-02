@@ -77,7 +77,7 @@ namespace inspiral
 
 			updateSchemas = new Dictionary<int, string>();
 			updateSchemas.Add(Visible, "UPDATE components_visible SET shortDescription = @p1, roomDescription = @p2, examinedDescription = @p3 WHERE id = @p0;");
-			updateSchemas.Add(Mobile,  "UPDATE components_mobile SET x enterMessage = @p1, leaveMessage = @p2, deathMessage = @p3 WHERE id = @p0");
+			updateSchemas.Add(Mobile,  "UPDATE components_mobile SET enterMessage = @p1, leaveMessage = @p2, deathMessage = @p3 WHERE id = @p0");
 			updateSchemas.Add(Room,    "UPDATE components_room SET exits = @p1 WHERE id = @p0;");
 
 			allComponents = new Dictionary<int, List<GameComponent>>();

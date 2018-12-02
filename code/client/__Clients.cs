@@ -14,16 +14,7 @@ namespace inspiral
 			clients.Add(newClient);
 			return newClient;
 		}
-		internal static void LogoutDuplicateAccounts(GameClient invoker)
-		{
-			foreach(GameClient client in clients)
-			{
-				if(client != invoker && client.currentAccount == invoker.currentAccount)
-				{
-					client.Farewell("Another connection has been made with this account, so you are being logged out. Goodbye!");
-				}
-			}
-		}
+
 		internal static void RemoveClient(GameClient client)
 		{
 			clients.Remove(client);

@@ -32,10 +32,10 @@ namespace inspiral
 
 		private void ShowSplashScreen(GameClient viewer)
 		{
-			List<string> splashText = new List<string>();
-			splashText.Add("- Enter a username to log in.");
-			splashText.Add("- Enter <register [username]> to register a new account.");
-			viewer.WriteLine(Text.FormatPopup("Welcome to Inspiral, Coalescence, Ringdown", splashText));
+			viewer.WriteLine(Text.FormatPopup(
+				"Inspiral, Coalescence, Ringdown", 
+				$"{Colours.Fg("- Enter your character name to log in.", Colours.BoldWhite)}\n{Colours.Fg("- Enter ", Colours.BoldWhite)}{Colours.Fg("register [username]", Colours.BoldYellow)}{Colours.Fg(" to register a new account.", Colours.BoldWhite)}",viewer.config.wrapwidth
+				));
 		}
 
 		private bool ValidatePassword(string givenPass)
@@ -56,11 +56,15 @@ namespace inspiral
 		private void HandleLogin(GameClient invoker)
 		{
 			invoker.shell = (GameObject)Game.Objects.Get(invoker.currentAccount.objectId);
+			if(invoker.shell.HasComponent(Components.Client))
+			{
+				ClientComponent oldClient = (ClientComponent)invoker.shell.GetComponent(Components.Client);
+				oldClient.client?.Farewell("Another connection has been made with this account, so you are being logged out. Goodbye!");
+			}
 			invoker.shell.AddComponent(Components.Client);
 			ClientComponent clientComp = (ClientComponent)invoker.shell.GetComponent(Components.Client);
 			clientComp.Login(invoker);
-			Clients.LogoutDuplicateAccounts(invoker);
-			invoker.SetContext(new ContextGeneral());			
+			invoker.SetContext(Contexts.General);
 		}
 		internal override bool TakeInput(GameClient invoker, string command, string rawCommand, string arguments)
 		{

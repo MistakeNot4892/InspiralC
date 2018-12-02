@@ -9,6 +9,11 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
+
+	class ClientConfig
+	{
+		internal int wrapwidth = 80;
+	}
 	class GameClient
 	{
 		internal string id;
@@ -20,13 +25,18 @@ namespace inspiral
 		internal List<string> gmcpFlags = new List<string>();
 		internal Dictionary<string, string> gmcpValues = new Dictionary<string, string>();
 
+		internal ClientConfig config = new ClientConfig();
+
+		private byte[] inputBuffer = new byte[Telnet.MaxBufferSize];
+		private int inputBufferIndex = 0;
+
 		internal GameClient(TcpClient _client, string _id)
 		{
 			client =   _client;
 			id = _id;
 			stream =   _client.GetStream();
 			Console.WriteLine($"{id}: client created.");
-			SetContext(new ContextLogin());
+			SetContext(Contexts.Login);
 		}
 
 		internal void SetContext(GameContext new_context)
@@ -67,25 +77,40 @@ namespace inspiral
 		internal void Begin()
 		{
 			int i;
-			byte[] bytes = new byte[256];
+			byte[] socketBuffer = new byte[Telnet.MaxBufferSize];
 			try
 			{
 				// Prod them to check if they support GMCP first.
 				SendTelnetCommand(new byte[] {Telnet.IAC, Telnet.WILL, Telnet.GMCP});
 
 				// Now start the actual loop.
-				while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+				while ((i = stream.Read(socketBuffer, 0, socketBuffer.Length)) != 0)
 				{
-					if(bytes[0] == Telnet.IAC)
+					for(int j = 0;j<i;j++)
 					{
-						Telnet.Parse(this, bytes, i);
-					}
-					else
-					{
-						string inputReceived = SanitizeInput(System.Text.Encoding.ASCII.GetString(bytes, 0, i));
-						if(inputReceived.Length > 0)
+						if((char)socketBuffer[j] == '\n' || (char)socketBuffer[j] == Telnet.SE || inputBufferIndex >= Telnet.MaxBufferSize)
 						{
-							ReceiveInput(inputReceived);
+							if(inputBufferIndex > 0)
+							{
+								if(inputBuffer[0] == Telnet.IAC)
+								{
+									Telnet.Parse(this, inputBuffer, inputBufferIndex);
+								}
+								else
+								{
+									string sendingInput = SanitizeInput(System.Text.Encoding.ASCII.GetString(inputBuffer, 0, inputBufferIndex));
+									if(sendingInput.Length > 0)
+									{
+										ReceiveInput(sendingInput);
+									}
+								}
+								inputBufferIndex = 0;
+							}
+						}
+						else
+						{
+							inputBuffer[inputBufferIndex] = socketBuffer[j];
+							inputBufferIndex++;
 						}
 					}
 				}
@@ -139,10 +164,20 @@ namespace inspiral
 			}
 		}
 
+		private string FormatOutgoingString(string message)
+		{
+			message = Text.Wrap(message, config.wrapwidth);
+			if(!gmcpFlags.Contains("gmcpEnabled"))
+			{
+				message = message.Replace("\n","\r\n");
+			}
+			return message;
+		}
 		internal void WriteLinePrompted(string message)
 		{
 			if(message != "")
 			{
+				message = FormatOutgoingString(message);
 				message = $"{message}{context.GetPrompt(this).ToString()}";
 				byte[] bMessage = System.Text.Encoding.ASCII.GetBytes(message);
 				byte[] outgoing = new byte[bMessage.Length+2];
@@ -161,8 +196,8 @@ namespace inspiral
 		{
 			if(message != "")
 			{
-				Console.WriteLine($"sending: {message}");
-				WriteToStream($"{message}\n");
+				message = FormatOutgoingString($"{message}\n");
+				WriteToStream($"{message}");
 			}
 		}
 		public void WriteToStream(string message)
@@ -204,7 +239,7 @@ namespace inspiral
 
 			if(!gmcpFlags.Contains("gmcpEnabled"))
 			{
-				reply["Client Information"].Add($"GMCP not enabled.");
+				reply["Client Information"].Add($"\nGMCP is not enabled.");
 			}
 			else
 			{
@@ -219,7 +254,7 @@ namespace inspiral
 					reply["GMCP Values"].Add($"- {gmcpValue.Key}: {gmcpValue.Value}");
 				}
 			}
-			return Text.FormatBlock(reply);
+			return Text.FormatBlock(reply, config.wrapwidth);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace inspiral
 {
@@ -25,7 +26,8 @@ namespace inspiral
 		internal const string DefaultEnterMessage =        "A generic object enters from the $DIR.";
 		internal const string DefaultLeaveMessage =        "A generic object leaves to the $DIR";
 		internal const string DefaultDeathMessage =        "A generic object lies here, dead.";
-
+		internal static string stripRegexPattern = $"{'\u001b'}\\[\\d+;*\\d*m";
+		internal static Regex stripRegex = new Regex(stripRegexPattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		static Text()
 		{
 			exits.Add("north");
@@ -63,6 +65,87 @@ namespace inspiral
 			reversedExits.Add("down","up");
 			reversedExits.Add("up","down");
 		}
+
+		internal static string Wrap(string input, int wrapwidth)
+		{
+			if(wrapwidth <= 0)
+			{
+				return input;
+			}
+			string result = "";
+			int counter = 0;
+			int lastEnding = -1;
+			int i = 0;
+			while(i < input.Length)
+			{
+				result += input[i];
+
+				// Skip straight over colour codes.
+				if(input[i] == '\u001b')
+				{
+					while(i < input.Length && input[i] != 'm')
+					{
+						i++;
+						result += input[i];
+					}
+				}
+				else
+				{
+					// Track valid splitting points for nicer formatting of the final wrapped lines.
+					if(input[i] == ' ' || input[i] == '.' || input[i] == '?' || input[i] == ',' || input[i] == '-')
+					{
+						lastEnding = i;
+						counter++;
+					}
+					// If we hit a newline we can count that as a wrap.
+					else if(input[i] == '\n')
+					{
+						counter = 0;
+						lastEnding = -1;
+					}
+					else
+					{
+						counter++;
+					}
+
+					// Every x characters, split with a newline.
+					if(counter >= wrapwidth)
+					{
+						// Backtrack a little if we saw a decent split point earlier.
+						if(lastEnding != -1 && i != lastEnding)
+						{
+							int skip = i - lastEnding;
+							i = lastEnding;
+							result = result.Substring(0, result.Length - skip);
+						}
+						lastEnding = -1;
+						result += '\n';
+						counter = 0;
+					}
+					// Trailing spaces at the start of a line are annoying.
+					/*
+					else if(input[i] == ' ' && counter == 1)
+					{
+						result = result.Substring(0, result.Length-1);
+					}
+					*/
+				}
+				i++;
+			}
+			return result;
+		}
+
+		internal static string StripColours(string input)
+		{
+			int removed = 0;
+			foreach (Match match in stripRegex.Matches(input))
+			{
+				string tmp = $"{input.Substring(0, match.Index-removed)}{input.Substring((match.Index-removed)+match.Length)}";
+				input = tmp;
+				removed += match.Length;
+			}
+			return input;
+		}
 		internal static string Capitalize(string input)
 		{
 			return $"{input.Substring(0,1).ToUpper()}{input.Substring(1)}";
@@ -79,95 +162,63 @@ namespace inspiral
 		
 		private static string sideBar = Colours.Fg("||", Colours.Blue);
 
-		internal static string FormatPopup(string header, List<string> boxContents)
+		internal static string FormatPopup(string header, string boxContents, int wrapwidth)
 		{
-			int maxLine = 70;
-			int totalLine = 80;
-			if(header.Length > maxLine)
+
+			string useHeader = Wrap(header, wrapwidth - 14).Split('\n')[0];
+			int padNeeded = wrapwidth - (StripColours(useHeader).Length + 7);
+			string result = $"{Colours.Fg($"[{new String('=', padNeeded/2)}\\", Colours.Cyan)} {Colours.Fg(useHeader, Colours.BoldCyan)} {Colours.Fg($"/{new String('=', padNeeded-(padNeeded/2))}]",Colours.Cyan)}";
+
+			string emptyLine = $" {sideBar}{new String(' ', wrapwidth-7)}{sideBar}";
+			result += $"\n{emptyLine}";
+
+			string[] useContents = Wrap(boxContents, wrapwidth - 10).Split('\n');
+			for(int i = 0;i < useContents.Length;i++)
 			{
-				header = $"{header.Substring(0, maxLine-3)}...";
-			}
-			List<string> splitContents = new List<string>();
-			foreach(string splitLine in boxContents)
-			{
-				string pruneLine = splitLine;
-				while(pruneLine.Length > maxLine)
-				{
-					splitContents.Add(pruneLine.Substring(0, maxLine));
-					pruneLine = pruneLine.Substring(maxLine);
-				}
-				splitContents.Add(pruneLine);
+				string useLine = useContents[i];
+				result += $"\n {sideBar}  {Colours.Fg(useLine, Colours.BoldWhite)}{new String(' ', wrapwidth - StripColours(useLine).Length - 9)}{sideBar}";
 			}
 
-			List<string> result = new List<string>();
-
-			int padNeeded = totalLine - (header.Length + 6);
-			int padLeft = padNeeded/2;
-			int padRight = padLeft;
-			while(padLeft + padRight != padNeeded)
-			{
-				padRight++;
-			}
-			result.Add($"{Colours.Fg($"[{new String('=', padLeft)}\\", Colours.Cyan)} {Colours.Fg(header, Colours.BoldCyan)} {Colours.Fg($"/{new String('=', padRight)}]",Colours.Cyan)}");
-			string emptyLine = $" {sideBar}{new String(' ', totalLine-6)}{sideBar}";
-			result.Add(emptyLine);
-			foreach(string splitLine in splitContents)
-			{
-				result.Add($" {sideBar}     {Colours.Fg(splitLine, Colours.BoldWhite)}{new String(' ', totalLine - splitLine.Length - 11)}{sideBar}");
-			}
-			result.Add(emptyLine);
-			result.Add(Colours.Fg($"[{new String('=', totalLine-2)}]", Colours.Cyan));
-			return string.Join("\n", result.ToArray());
+			result += $"\n{emptyLine}";
+			result += $"\n{Colours.Fg($"[{new String('=', wrapwidth-3)}]", Colours.Cyan)}";
+			return result;
 		}
 
-
-		internal static string FormatBlock(Dictionary<string, List<string>> formatLines)
+		internal static string FormatBlock(Dictionary<string, List<string>> formatLines, int wrapwidth)
 		{
 
-			int longestLine = 30;
+			string divider = Colours.Fg($"[{new String('=', wrapwidth-3)}]", Colours.Cyan);
+			string emptyLine = $" {sideBar}{new String(' ', wrapwidth-7)}{sideBar}";
+			string result = "";
+
 			foreach(KeyValuePair<string, List<string>> subSection in formatLines)
 			{
-				if(subSection.Key.Length > longestLine)
+				result += $"\n{divider}";
+				string[] headerLines = Text.Wrap(subSection.Key, wrapwidth-13).Split('\n');
+				for(int i = 0;i < headerLines.Length;i++)
 				{
-					longestLine = subSection.Key.Length;
+					string headerLine = headerLines[i];
+					int padNeeded = wrapwidth - (StripColours(headerLine).Length+7);
+					int padLeft = padNeeded/2;
+					int padRight = padNeeded-padLeft;
+					result += $"\n {sideBar}{new String(' ', padLeft)}{Colours.Fg(headerLine, Colours.BoldCyan)}{new String(' ', padRight)}{sideBar}";
 				}
+				result += $"\n{divider}";
+				result += $"\n{emptyLine}";
+
 				foreach(string line in subSection.Value)
 				{
-					if(line.Length > longestLine)
+					string[] subLines = Wrap(line, wrapwidth-13).Split("\n");
+					for(int i = 0;i<subLines.Length;i++)
 					{
-						longestLine = line.Length;
+						string subLine = subLines[i];
+						result += $"\n {sideBar}   {Colours.Fg(subLine, Colours.BoldWhite)}{new String(' ', wrapwidth - StripColours(subLine).Length - 10)}{sideBar}";
 					}
 				}
+				result += $"\n{emptyLine}";
 			}
-			longestLine += 5;
-
-			string divider = Colours.Fg($"[{new String('=', longestLine-2)}]", Colours.Cyan);
-			string emptyLine = $" {sideBar}{new String(' ', longestLine-6)}{sideBar}";
-	
-			List<string> result = new List<string>();
-
-			foreach(KeyValuePair<string, List<string>> subSection in formatLines)
-			{
-				int padNeeded = longestLine - (subSection.Key.Length + 6);
-				int padLeft = padNeeded/2;
-				int padRight = padLeft;
-				while(padLeft + padRight != padNeeded)
-				{
-					padRight++;
-				}
-
-				result.Add(divider);
-				result.Add($" {sideBar}{new String(' ', padLeft)}{Colours.Fg(subSection.Key, Colours.BoldCyan)}{new String(' ', padRight)}{sideBar}");
-				result.Add(divider);
-				result.Add(emptyLine);
-				foreach(string line in subSection.Value)
-				{
-					result.Add($" {sideBar}     {Colours.Fg(line, Colours.BoldWhite)}{new String(' ', longestLine - line.Length - 11)}{sideBar}");
-				}
-				result.Add(emptyLine);
-			}
-			result.Add(divider);
-			return string.Join("\n", result.ToArray());
+			result += $"\n{divider}";
+			return result;
 		}
 	}
 }

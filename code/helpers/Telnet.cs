@@ -27,6 +27,8 @@ namespace inspiral
 		internal const byte DO =               (byte)253;
 		internal const byte DONT =             (byte)254;
 		internal const byte IAC =              (byte)255;
+		internal const int MaxBufferSize = 1024;
+
 		internal static Dictionary<byte, string> bytesToStrings;
 
 		static Telnet()

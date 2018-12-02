@@ -7,14 +7,15 @@ namespace inspiral
 	{
 		internal override void Initialize() 
 		{
-			AddCommand(new CommandSay());
-			AddCommand(new CommandEmote());
-			AddCommand(new CommandQuit());
-			AddCommand(new CommandLook());
-			AddCommand(new CommandCreate());
-			AddCommand(new CommandAddroom());
-			AddCommand(new CommandClient());
-			AddCommand(new CommandTest());
+			AddCommand(Commands.Say);
+			AddCommand(Commands.Emote);
+			AddCommand(Commands.Quit);
+			AddCommand(Commands.Look);
+			AddCommand(Commands.Create);
+			AddCommand(Commands.Addroom);
+			AddCommand(Commands.Edit);
+			AddCommand(Commands.Client);
+			AddCommand(Commands.Test);
 		}
 		internal override void OnContextSet(GameClient viewer)
 		{
@@ -34,7 +35,6 @@ namespace inspiral
 				viewer.shell.location.ExaminedBy(viewer, true);
 			}
 		}
-
 		internal override bool TakeInput(GameClient invoker, string command, string rawCommand, string arguments)
 		{
 			if(invoker.shell != null && invoker.shell.location != null && invoker.shell.location.HasComponent(Components.Room) && invoker.shell.HasComponent(Components.Mobile))
@@ -71,7 +71,14 @@ namespace inspiral
 		}
 		internal override string GetPrompt(GameClient viewer) 
 		{
-			return $"{Colours.Fg("\n> ", Colours.Yellow)}";
+			if(viewer.gmcpFlags.Contains("gmcpEnabled"))
+			{
+				return $"{Colours.Fg("\n> ", Colours.Yellow)}";
+			}
+			else
+			{
+				return $"{Colours.Fg("\r\n> ", Colours.Yellow)}";
+			}
 		}
 	}
 }
