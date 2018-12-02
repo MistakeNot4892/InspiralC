@@ -33,9 +33,9 @@ namespace inspiral
 
 		internal GameClient(TcpClient _client, string _id)
 		{
-			client =   _client;
-			id = _id;
-			stream =   _client.GetStream();
+			client = _client;
+			stream = _client.GetStream();
+			id =     _id;
 			Debug.WriteLine($"{id}: client created.");
 			SetContext(Contexts.Login);
 		}
@@ -118,7 +118,7 @@ namespace inspiral
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"{id}: disconnected ({e.ToString()}).");
+				Debug.WriteLine($"{id}: disconnected ({e.Message}).");
 			}
 			Disconnect();
 			if(client != null)
@@ -164,7 +164,6 @@ namespace inspiral
 				}
 			}
 		}
-
 		private string FormatOutgoingString(string message)
 		{
 			message = Text.Wrap(message, config.wrapwidth);
@@ -234,6 +233,7 @@ namespace inspiral
 
 			reply.Add("Client Information", new List<string>());
 			reply["Client Information"].Add($"Logged in as: {shell?.name ?? "null"}");
+			reply["Client Information"].Add($"Connecting from: {((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString()}");
 
 			if(!gmcpFlags.Contains("gmcpEnabled"))
 			{

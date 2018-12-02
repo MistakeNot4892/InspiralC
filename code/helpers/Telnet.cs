@@ -11,23 +11,23 @@ namespace inspiral
 
 	internal static class Telnet
 	{
-		internal const byte GMCP =             (byte)201;
-		internal const byte SE =               (byte)240;
-		internal const byte NOP =              (byte)241;
-		internal const byte DataMark =         (byte)242;
-		internal const byte Break =            (byte)243;
-		internal const byte InterruptProcess = (byte)244;
-		internal const byte AbortOutput =      (byte)245;
-		internal const byte AYT =              (byte)246;
-		internal const byte EC =               (byte)247;
-		internal const byte EL =               (byte)248;
-		internal const byte GA =               (byte)249;
-		internal const byte SB =               (byte)250;
-		internal const byte WILL =             (byte)251;
-		internal const byte WONT =             (byte)252;
-		internal const byte DO =               (byte)253;
-		internal const byte DONT =             (byte)254;
-		internal const byte IAC =              (byte)255;
+		internal const byte GMCP = (byte)201;
+		internal const byte SE =   (byte)240;
+		internal const byte NOP =  (byte)241;
+		internal const byte DM =   (byte)242;
+		internal const byte B =    (byte)243;
+		internal const byte IP =   (byte)244;
+		internal const byte AO =   (byte)245;
+		internal const byte AYT =  (byte)246;
+		internal const byte EC =   (byte)247;
+		internal const byte EL =   (byte)248;
+		internal const byte GA =   (byte)249;
+		internal const byte SB =   (byte)250;
+		internal const byte WILL = (byte)251;
+		internal const byte WONT = (byte)252;
+		internal const byte DO =   (byte)253;
+		internal const byte DONT = (byte)254;
+		internal const byte IAC =  (byte)255;
 		internal const int MaxBufferSize = 1024;
 
 		internal static Dictionary<byte, string> bytesToStrings;
@@ -36,22 +36,22 @@ namespace inspiral
 		{
 			bytesToStrings = new Dictionary<byte, string>();
 			bytesToStrings.Add(GMCP, "GMCP Action");
-			bytesToStrings.Add(SE, "End of Subnegotiation");
-			bytesToStrings.Add(NOP, "No Operation");
-			bytesToStrings.Add(DataMark, "Data Mark");
-			bytesToStrings.Add(Break, "Break");
-			bytesToStrings.Add(InterruptProcess, "Interrupt Process");
-			bytesToStrings.Add(AbortOutput, "Abort Output");
-			bytesToStrings.Add(AYT, "Are You There");
-			bytesToStrings.Add(EC, "Erase Character");
-			bytesToStrings.Add(EL, "Erase Line");
-			bytesToStrings.Add(GA, "Go Ahead");
-			bytesToStrings.Add(SB, "Begin Subnegotiation");
+			bytesToStrings.Add(SE,   "End of Subnegotiation");
+			bytesToStrings.Add(NOP,  "No Operation");
+			bytesToStrings.Add(DM,   "Data Mark");
+			bytesToStrings.Add(B,    "Break");
+			bytesToStrings.Add(IP,   "Interrupt Process");
+			bytesToStrings.Add(AO,   "Abort Output");
+			bytesToStrings.Add(AYT,  "Are You There");
+			bytesToStrings.Add(EC,   "Erase Character");
+			bytesToStrings.Add(EL,   "Erase Line");
+			bytesToStrings.Add(GA,   "Go Ahead");
+			bytesToStrings.Add(SB,   "Begin Subnegotiation");
 			bytesToStrings.Add(WILL, "Will");
 			bytesToStrings.Add(WONT, "Won't");
-			bytesToStrings.Add(DO, "Do");
+			bytesToStrings.Add(DO,   "Do");
 			bytesToStrings.Add(DONT, "Don't");
-			bytesToStrings.Add(IAC, "Incoming Action");
+			bytesToStrings.Add(IAC,  "Incoming Action");
 		}
 
 		internal static void SendGMCPPacket(GameClient recipient, string gmcpPacket)
@@ -75,12 +75,6 @@ namespace inspiral
 		}
 		internal static void HandleGMCPNegotiation(GameClient sender, List<byte> gmcpSequence)
 		{
-			// Pretty safe bet they can handle it if we're getting packets from them.
-			if(!sender.gmcpFlags.Contains("gmcpEnabled"))
-			{
-				sender.gmcpFlags.Add("gmcpEnabled");
-			}
-
 			string someSequence = "";
 			foreach(byte b in gmcpSequence)
 			{
@@ -111,6 +105,10 @@ namespace inspiral
 				switch(gmcpToken.ToLower())
 				{
 					case "core.hello":
+						if(!sender.gmcpFlags.Contains("gmcpEnabled"))
+						{
+							sender.gmcpFlags.Add("gmcpEnabled");
+						}
 						foreach(KeyValuePair<string, string> token in JsonConvert.DeserializeObject<Dictionary<string, string>>(gmcpContents))
 						{
 							string tokenKey = token.Key.ToLower();
@@ -126,11 +124,28 @@ namespace inspiral
 						{
 							string[] tokenSplit = token.Split(" ");
 							string tokenKey = tokenSplit[0].ToLower();
-							if(sender.gmcpValues.ContainsKey(tokenKey))
+							if(tokenSplit[1] == "1")
 							{
-								sender.gmcpValues.Remove(tokenKey);
+								if(!sender.gmcpFlags.Contains(tokenKey))
+								{
+									sender.gmcpFlags.Add(tokenKey);
+								}
 							}
-							sender.gmcpValues.Add(tokenKey, tokenSplit[1]);
+							else if(tokenSplit[1] == "0")
+							{
+								if(sender.gmcpFlags.Contains(tokenKey))
+								{
+									sender.gmcpFlags.Remove(tokenKey);
+								}
+							}
+							else
+							{
+								if(sender.gmcpValues.ContainsKey(tokenKey))
+								{
+									sender.gmcpValues.Remove(tokenKey);
+								}
+								sender.gmcpValues.Add(tokenKey, tokenSplit[1]);
+							}
 						}
 						break;
 					default:
@@ -185,10 +200,10 @@ namespace inspiral
 						gmcpSequence = new List<byte>();
 						break;
 
-					case DataMark:
-					case Break:
-					case InterruptProcess:
-					case AbortOutput:
+					case DM:
+					case B:
+					case IP:
+					case AO:
 					case AYT:
 					case EC:
 					case EL:

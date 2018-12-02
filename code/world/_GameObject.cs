@@ -175,14 +175,6 @@ namespace inspiral
 			return null;
 		}
 
-
-
-
-
-
-
-
-
 		internal bool Move(GameObject destination)
 		{
 			bool canMove = true;
@@ -268,7 +260,6 @@ namespace inspiral
 				clientComp.client.WriteLinePrompted(message);
 			}
 		}
-
 		internal virtual void ShowNearby(GameObject source, string message1p, string message3p)
 		{
 			if(source.location != null)
