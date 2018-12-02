@@ -5,7 +5,7 @@ namespace inspiral
 {
 	class CommandCreate : GameCommand
 	{
-		internal override void Initialize() 
+		internal CommandCreate() 
 		{
 			commandString = "create";
 			aliases = new List<string>() {"create"};

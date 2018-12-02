@@ -4,7 +4,7 @@ namespace inspiral
 {
 	class CommandEmote : GameCommand
 	{
-		internal override void Initialize() 
+		internal CommandEmote() 
 		{
 			commandString = "emote";
 			aliases = new List<string>() {"emote", "em", "me"};

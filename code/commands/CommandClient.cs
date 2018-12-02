@@ -4,7 +4,7 @@ namespace inspiral
 {
 	class CommandClient : GameCommand
 	{
-		internal override void Initialize() 
+		internal CommandClient() 
 		{
 			commandString = "client";
 			aliases = new List<string>() {"client"};

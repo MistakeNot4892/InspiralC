@@ -49,7 +49,7 @@ namespace inspiral
 		}
 		private void HandleLogin(GameClient invoker)
 		{
-			invoker.shell = (GameObject)Game.Objects.Get(invoker.currentAccount.objectId);
+			invoker.shell = (GameObject)Game.Objects.Get(invoker.account.objectId);
 			if(invoker.shell.HasComponent(Components.Client))
 			{
 				ClientComponent oldClient = (ClientComponent)invoker.shell.GetComponent(Components.Client);
@@ -101,14 +101,14 @@ namespace inspiral
 						}
 						else
 						{
-							invoker.currentAccount = acct;
+							invoker.account = acct;
 							invoker.WriteLine("Enter your password.");
 							loginState.Remove(invoker);
 							loginState.Add(invoker, "entering_password");
 						}
 						break;
 					case "entering_password":
-						bool correctPass = invoker.currentAccount.CheckPassword(rawCommand);
+						bool correctPass = invoker.account.CheckPassword(rawCommand);
 						if(correctPass)
 						{
 							invoker.WriteLine("Password correct.");
@@ -117,7 +117,7 @@ namespace inspiral
 						else
 						{
 							invoker.WriteLine("Incorrect password.");
-							invoker.currentAccount = null;
+							invoker.account = null;
 							loginState.Remove(invoker);
 							loginState.Add(invoker, "connected");
 							ShowSplashScreen(invoker);
@@ -141,7 +141,7 @@ namespace inspiral
 					case "registering_confirming_password":
 						if(passwordConfirmations.ContainsKey(invoker) && passwordConfirmations[invoker] == rawCommand)
 						{
-							invoker.currentAccount = Game.Accounts.CreateAccount(invoker.id, BCrypt.Net.BCrypt.HashPassword(passwordConfirmations[invoker], 10));
+							invoker.account = Game.Accounts.CreateAccount(invoker.id, BCrypt.Net.BCrypt.HashPassword(passwordConfirmations[invoker], 10));
 							invoker.WriteLine("Account created.");
 							HandleLogin(invoker);
 						}

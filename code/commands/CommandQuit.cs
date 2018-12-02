@@ -4,7 +4,7 @@ namespace inspiral
 {
 	class CommandQuit : GameCommand
 	{
-		internal override void Initialize() 
+		internal CommandQuit() 
 		{
 			commandString = "quit";
 			aliases = new List<string>() {"quit", "qq"};

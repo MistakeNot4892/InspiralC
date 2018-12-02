@@ -4,7 +4,7 @@ namespace inspiral
 {
 	class CommandEdit : GameCommand
 	{
-		internal override void Initialize() 
+		internal CommandEdit() 
 		{
 			commandString = "edit";
 			aliases = new List<string>() {"edit"};

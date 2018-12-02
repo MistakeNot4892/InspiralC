@@ -4,7 +4,7 @@ namespace inspiral
 {
 	class CommandSay : GameCommand
 	{
-		internal override void Initialize() 
+		internal CommandSay() 
 		{
 			commandString = "say";
 			aliases = new List<string>() {"say", "'"};

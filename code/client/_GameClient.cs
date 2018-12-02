@@ -22,7 +22,8 @@ namespace inspiral
 		internal TcpClient client;
 		internal NetworkStream stream;
 		internal GameContext context;
-		internal PlayerAccount currentAccount = null;
+		internal PlayerAccount account = null;
+
 		internal List<string> gmcpFlags = new List<string>();
 		internal Dictionary<string, string> gmcpValues = new Dictionary<string, string>();
 
@@ -39,7 +40,6 @@ namespace inspiral
 			Debug.WriteLine($"{id}: client created.");
 			SetContext(Contexts.Login);
 		}
-
 		internal void SetContext(GameContext new_context)
 		{
 			if(context != new_context)

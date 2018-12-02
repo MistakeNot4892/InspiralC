@@ -5,7 +5,7 @@ namespace inspiral
 {
 	class CommandLook : GameCommand
 	{
-		internal override void Initialize() 
+		internal CommandLook() 
 		{
 			commandString = "look";
 			aliases = new List<string>() {"look", "l", "ql"};

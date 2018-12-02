@@ -6,7 +6,7 @@ namespace inspiral
 {
 	class CommandAddroom : GameCommand
 	{
-		internal override void Initialize() 
+		internal CommandAddroom() 
 		{
 			commandString = "addroom";
 			aliases = new List<string>() {"addroom"};

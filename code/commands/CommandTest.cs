@@ -4,7 +4,7 @@ namespace inspiral
 {
 	class CommandTest : GameCommand
 	{
-		internal override void Initialize() 
+		internal CommandTest() 
 		{
 			commandString = "test";
 			aliases = new List<string>() {"test"};

@@ -6,18 +6,6 @@ namespace inspiral
 {
 	class ContextGeneral : GameContext
 	{
-		internal override void Initialize() 
-		{
-			AddCommand(Commands.Say);
-			AddCommand(Commands.Emote);
-			AddCommand(Commands.Quit);
-			AddCommand(Commands.Look);
-			AddCommand(Commands.Create);
-			AddCommand(Commands.Addroom);
-			AddCommand(Commands.Edit);
-			AddCommand(Commands.Client);
-			AddCommand(Commands.Test);
-		}
 		internal override void OnContextSet(GameClient viewer)
 		{
 			viewer.WriteLine($"Welcome, {viewer.shell.name}.");

@@ -1,6 +1,7 @@
 using System;
 using System.Data.SQLite;
 using System.Collections.Generic;
+using System.Diagnostics;
 using BCrypt.Net;
 
 namespace inspiral
@@ -11,6 +12,8 @@ namespace inspiral
 		internal long id;
 		internal long objectId;
 		internal string passwordHash;
+		internal List<GameRole> roles = new List<GameRole>();
+
 		internal PlayerAccount(long _id)
 		{
 			id = _id;
@@ -87,7 +90,10 @@ namespace inspiral
 		}
 		internal override Object CreateRepositoryType(long id) 
 		{
-			return new PlayerAccount(id);
+			PlayerAccount acct = new PlayerAccount(id);
+			acct.roles.Add(Roles.Player);
+			acct.roles.Add(Roles.Builder);
+			return acct;
 		}
 		internal override void AddCommandParameters(SQLiteCommand command, Object instance)
 		{
