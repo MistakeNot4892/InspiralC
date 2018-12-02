@@ -22,9 +22,12 @@ namespace inspiral
 
 		internal void Begin()
 		{
+			IPAddress ipAddress = IPAddress.Parse("0.0.0.0"); //Dns.Resolve("127.0.0.1").AddressList[0];
 			try
 			{
-				server = new TcpListener(IPAddress.Parse("127.0.0.1"), port);
+
+				Console.WriteLine($"{id}: Connecting to address {ipAddress.ToString()} on port {port}");
+				server = new TcpListener(ipAddress, port);
 				server.Start();
 
 				while (true)

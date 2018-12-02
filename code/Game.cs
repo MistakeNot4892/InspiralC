@@ -16,11 +16,23 @@ namespace inspiral
 		}
 		internal static void Load()
 		{
+
+			System.IO.Directory.CreateDirectory("data");
+
 			Accounts.Load();
 			Objects.Load();
 		}
 		internal static void Initialize() 
 		{
+
+			// Create port listeners.
+			List<int> ports = new List<int>() {9090, 2323};
+			foreach(int port in ports)
+			{
+				PortListener portListener = new PortListener(port);
+				Task.Run(() => portListener.Begin());
+			}
+
 			Accounts.Initialize();
 			Objects.Initialize();
 
