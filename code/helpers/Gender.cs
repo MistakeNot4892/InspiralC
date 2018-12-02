@@ -5,12 +5,11 @@ namespace inspiral
 {
 	internal static class Gender
 	{
-		internal const int Male =      0;
-		internal const int Female =    1;
-		internal const int Neuter =    2;
-		internal const int Plural =    3;
-		internal const int Inanimate = 4;
-
+		internal const int Inanimate = 0;
+		internal const int Male =      1;
+		internal const int Female =    2;
+		internal const int Neuter =    3;
+		internal const int Androgyne =    4;
 		internal static string His(int g) {
 			switch(g)
 			{
@@ -59,7 +58,7 @@ namespace inspiral
 		internal static string Is(int g) {
 			switch(g)
 			{
-				case Plural:
+				case Androgyne:
 					return "are";
 				default:
 					return "is";
@@ -68,7 +67,7 @@ namespace inspiral
 		internal static string Self(int g) {
 			switch(g)
 			{
-				case Plural:
+				case Androgyne:
 					return "selves";
 				default:
 					return "self";

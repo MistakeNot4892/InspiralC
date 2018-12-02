@@ -12,11 +12,9 @@ namespace inspiral
 		internal const int FieldEnterMessage = 3;
 		internal const int FieldLeaveMessage = 4;
 		internal const int FieldDeathMessage = 5;
-
 		internal static List<string> exits = new List<string>();
 		internal static Dictionary<string, string> shortExits = new Dictionary<string, string>();
 		internal static Dictionary<string, string> reversedExits = new Dictionary<string, string>();
-
 		internal const string DefaultRoomShort =           "an empty room";
 		internal const string DefaultRoomLong =            "This is a completely empty room.";
 		internal const string DefaultName =                "object";
@@ -42,7 +40,6 @@ namespace inspiral
 			exits.Add("down");
 			exits.Add("in");
 			exits.Add("out");
-
 			shortExits.Add("n","north");
 			shortExits.Add("s","south");
 			shortExits.Add("e","east");
@@ -53,7 +50,6 @@ namespace inspiral
 			shortExits.Add("sw","southwest");
 			shortExits.Add("u","up");
 			shortExits.Add("d","down");
-
 			reversedExits.Add("south","north");
 			reversedExits.Add("north","south");
 			reversedExits.Add("west","east");
@@ -65,7 +61,6 @@ namespace inspiral
 			reversedExits.Add("down","up");
 			reversedExits.Add("up","down");
 		}
-
 		internal static string Wrap(string input, int wrapwidth)
 		{
 			if(wrapwidth <= 0)
@@ -79,7 +74,6 @@ namespace inspiral
 			while(i < input.Length)
 			{
 				result += input[i];
-
 				// Skip straight over colour codes.
 				if(input[i] == '\u001b')
 				{
@@ -107,7 +101,6 @@ namespace inspiral
 					{
 						counter++;
 					}
-
 					// Every x characters, split with a newline.
 					if(counter >= wrapwidth)
 					{
@@ -122,19 +115,11 @@ namespace inspiral
 						result += '\n';
 						counter = 0;
 					}
-					// Trailing spaces at the start of a line are annoying.
-					/*
-					else if(input[i] == ' ' && counter == 1)
-					{
-						result = result.Substring(0, result.Length-1);
-					}
-					*/
 				}
 				i++;
 			}
 			return result;
 		}
-
 		internal static string StripColours(string input)
 		{
 			int removed = 0;
@@ -159,38 +144,29 @@ namespace inspiral
 			}
 			return Capitalize(input);
 		}
-		
 		private static string sideBar = Colours.Fg("||", Colours.Blue);
-
 		internal static string FormatPopup(string header, string boxContents, int wrapwidth)
 		{
-
 			string useHeader = Wrap(header, wrapwidth - 14).Split('\n')[0];
 			int padNeeded = wrapwidth - (StripColours(useHeader).Length + 7);
 			string result = $"{Colours.Fg($"[{new String('=', padNeeded/2)}\\", Colours.Cyan)} {Colours.Fg(useHeader, Colours.BoldCyan)} {Colours.Fg($"/{new String('=', padNeeded-(padNeeded/2))}]",Colours.Cyan)}";
-
 			string emptyLine = $" {sideBar}{new String(' ', wrapwidth-7)}{sideBar}";
 			result += $"\n{emptyLine}";
-
 			string[] useContents = Wrap(boxContents, wrapwidth - 10).Split('\n');
 			for(int i = 0;i < useContents.Length;i++)
 			{
 				string useLine = useContents[i];
 				result += $"\n {sideBar}  {Colours.Fg(useLine, Colours.BoldWhite)}{new String(' ', wrapwidth - StripColours(useLine).Length - 9)}{sideBar}";
 			}
-
 			result += $"\n{emptyLine}";
 			result += $"\n{Colours.Fg($"[{new String('=', wrapwidth-3)}]", Colours.Cyan)}";
 			return result;
 		}
-
 		internal static string FormatBlock(Dictionary<string, List<string>> formatLines, int wrapwidth)
 		{
-
 			string divider = Colours.Fg($"[{new String('=', wrapwidth-3)}]", Colours.Cyan);
 			string emptyLine = $" {sideBar}{new String(' ', wrapwidth-7)}{sideBar}";
 			string result = "";
-
 			foreach(KeyValuePair<string, List<string>> subSection in formatLines)
 			{
 				result += $"\n{divider}";
@@ -205,7 +181,6 @@ namespace inspiral
 				}
 				result += $"\n{divider}";
 				result += $"\n{emptyLine}";
-
 				foreach(string line in subSection.Value)
 				{
 					string[] subLines = Wrap(line, wrapwidth-13).Split("\n");

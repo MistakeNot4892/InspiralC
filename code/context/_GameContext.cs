@@ -22,7 +22,6 @@ namespace inspiral
 				}
 			}
 		}
-
 		internal bool InvokeCommand(GameClient client, string command, string commandString)
 		{
 			if(commands.ContainsKey(command))
@@ -32,7 +31,6 @@ namespace inspiral
 			}
 			return false;
 		}
-
 		internal virtual bool TakeInput(GameClient invoker, string command, string rawCommand, string arguments)
 		{
 			return InvokeCommand(invoker, command, arguments);

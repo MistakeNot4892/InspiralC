@@ -16,6 +16,7 @@ namespace inspiral
 			dbInsertQuery = $@"INSERT INTO {dbTableName} (
 				id, 
 				name,
+				gender,
 				aliases, 
 				components, 
 				flags,
@@ -26,17 +27,18 @@ namespace inspiral
 				@p2,
 				@p3,
 				@p4,
-				@p5
+				@p5,
+				@p6
 			);";
 			dbTableSchema = $@"id INTEGER PRIMARY KEY UNIQUE,
-				name TEXT DEFAULT '{Text.DefaultName}', 
+				name TEXT DEFAULT '{Text.DefaultName}',
+				gender INTEGER DEFAULT 0, 
 				aliases TEXT DEFAULT ' ',
 				components TEXT DEFAULT ' ',
 				flags INTEGER DEFAULT -1,
 				location INTEGER";
-			dbUpdateQuery =  "UPDATE game_objects SET name = @p1, aliases = @p2, components = @p3, flags = @p4, location = @p5 WHERE id = @p0;";
+			dbUpdateQuery =  "UPDATE game_objects SET name = @p1, gender = @p2, aliases = @p3, components = @p4, flags = @p5, location = @p6 WHERE id = @p0;";
 		}
-
 		internal override void HandleSecondarySQLInitialization(SQLiteConnection dbConnection)
 		{
 			foreach(KeyValuePair<int, string> schema in Components.tableSchemas)
@@ -54,12 +56,12 @@ namespace inspiral
 				}
 			}
 		}
-
 		internal override void InstantiateFromRecord(SQLiteDataReader reader, SQLiteConnection dbConnection) 
 		{
 			GameObject gameObj = (GameObject)CreateRepositoryType((long)reader["id"]);
 			gameObj.name = reader["name"].ToString();
 			gameObj.flags = (long)reader["flags"];
+			gameObj.gender = (long)reader["gender"];
 			gameObj.aliases = new List<string>();
 			string[] aliasArray = reader["aliases"].ToString().Split("|");
 			for(int i = 0;i < aliasArray.Length; i++)
@@ -108,7 +110,6 @@ namespace inspiral
 			gameObj.id = id;
 			return gameObj;
 		}
-
 		public override void HandleAdditionalSQLInsertion(Object newInstance, SQLiteConnection dbConnection) 
 		{
 			GameObject gameObj = (GameObject)newInstance;
@@ -137,15 +138,16 @@ namespace inspiral
 			GameObject gameObj = (GameObject)instance;
 			command.Parameters.AddWithValue("@p0", gameObj.id);
 			command.Parameters.AddWithValue("@p1", gameObj.name);
-			command.Parameters.AddWithValue("@p2", string.Join("|", gameObj.aliases));
+			command.Parameters.AddWithValue("@p2", gameObj.gender);
+			command.Parameters.AddWithValue("@p3", string.Join("|", gameObj.aliases));
 			List<string> componentKeys = new List<string>();
 			foreach(KeyValuePair<int, GameComponent> comp in gameObj.components)
 			{
 				componentKeys.Add($"{comp.Key}");
 			}
-			command.Parameters.AddWithValue("@p3", string.Join("|", componentKeys.ToArray()));
-			command.Parameters.AddWithValue("@p4", gameObj.flags);
-			command.Parameters.AddWithValue("@p5", gameObj.location?.id ?? 0);
+			command.Parameters.AddWithValue("@p4", string.Join("|", componentKeys.ToArray()));
+			command.Parameters.AddWithValue("@p5", gameObj.flags);
+			command.Parameters.AddWithValue("@p6", gameObj.location?.id ?? 0);
 		}
 		internal long CreateNewEmptyRoom()
 		{

@@ -14,7 +14,6 @@ namespace inspiral
 			clients.Add(newClient);
 			return newClient;
 		}
-
 		internal static void RemoveClient(GameClient client)
 		{
 			clients.Remove(client);

@@ -14,23 +14,19 @@ namespace inspiral
 		internal TcpListener server = null;
 		internal int port;
 		internal string id;
-
 		internal PortListener(int _port)
 		{
 			port = _port;
 			id = port.ToString();
 		}
-
 		internal void Begin()
 		{
 			IPAddress ipAddress = IPAddress.Parse("0.0.0.0");
 			try
 			{
-
 				Console.WriteLine($"{id}: Connecting to address {ipAddress.ToString()} on port {port}");
 				server = new TcpListener(ipAddress, port);
 				server.Start();
-
 				while (true)
 				{
 					Console.WriteLine("{0}: waiting for a connection...", id);

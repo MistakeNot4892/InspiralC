@@ -9,7 +9,6 @@ namespace inspiral
 		internal string shortDescription = "a generic object";
 		internal string roomDescription = "A generic object is here.";
 		internal string examinedDescription = "This is a generic object. Fascinating stuff.";
-
 		internal VisibleComponent()
 		{
 			key = Components.Visible;
@@ -43,7 +42,6 @@ namespace inspiral
 					return null;
 			}
 		}
-
 		internal void ExaminedBy(GameClient viewer, bool fromInside)
 		{
 			string mainDesc = $"{Colours.Fg(Text.Capitalize(shortDescription),Colours.BoldWhite)}.\n{Colours.Fg(examinedDescription, Colours.BoldBlack)}";

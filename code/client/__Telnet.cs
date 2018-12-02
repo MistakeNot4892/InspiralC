@@ -29,7 +29,6 @@ namespace inspiral
 		internal const byte DONT = (byte)254;
 		internal const byte IAC =  (byte)255;
 		internal const int MaxBufferSize = 1024;
-
 		internal static Dictionary<byte, string> bytesToStrings;
 
 		static Telnet()
@@ -53,7 +52,6 @@ namespace inspiral
 			bytesToStrings.Add(DONT, "Don't");
 			bytesToStrings.Add(IAC,  "Incoming Action");
 		}
-
 		internal static void SendGMCPPacket(GameClient recipient, string gmcpPacket)
 		{
 			// IAC SB GMCP Package[.SubPackages].Message <data> IAC SE 
@@ -80,7 +78,6 @@ namespace inspiral
 			{
 				someSequence += (char)b; 
 			}
-
 			int tokenSplitIndex = someSequence.IndexOf(' ');
 			if(tokenSplitIndex == -1)
 			{
@@ -154,23 +151,18 @@ namespace inspiral
 				}
 			}
 		}
-
 		internal static void Parse(GameClient sender, byte[] bytes, int i)
 		{
-
 			List<byte> sequence = new List<byte>();
 			List<List<byte>> allSequences = new List<List<byte>>();
 			List<byte> gmcpSequence = null;
-
 			for(int j = 0;j < i;j++)
 			{
 				byte b = bytes[j];
 				switch(b)
 				{
-
 					case NOP:
 						continue;
-
 					case IAC:
 					case SB:
 					case SE:
@@ -188,7 +180,6 @@ namespace inspiral
 							gmcpSequence = null;
 						}
 						break;
-
 					case GMCP:
 						if(gmcpSequence != null)
 						{
@@ -199,7 +190,6 @@ namespace inspiral
 						}
 						gmcpSequence = new List<byte>();
 						break;
-
 					case DM:
 					case B:
 					case IP:
@@ -222,7 +212,6 @@ namespace inspiral
 						}
 						sequence.Add(b);
 						break;
-
 					default:
 						if(gmcpSequence != null)
 						{
@@ -243,7 +232,6 @@ namespace inspiral
 			{
 				HandleGMCPNegotiation(sender, gmcpSequence);
 			}
-	
 			foreach(List<byte> someSequence in allSequences)
 			{
 				string humanReadableSequence = "";

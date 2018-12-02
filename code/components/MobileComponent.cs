@@ -7,12 +7,10 @@ namespace inspiral
 		internal string enterMessage = "A generic object enters from the $DIR.";
 		internal string leaveMessage = "A generic object leaves to the $DIR.";
 		internal string deathMessage = "A generic object lies here, dead.";
-
 		internal MobileComponent()
 		{
 			key = Components.Mobile;
 		}
-
 		internal override void SetValue(int field, string newValue)
 		{
 			switch(field)
@@ -46,7 +44,6 @@ namespace inspiral
 		{
 			return true;
 		}
-
 		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
 		{
 			enterMessage = reader["enterMessage"].ToString();

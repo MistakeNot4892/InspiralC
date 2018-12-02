@@ -17,7 +17,6 @@ namespace inspiral
 				invoker.WriteLinePrompted("You cannot see anything here.");
 				return true;
 			}
-
 			GameObject examining = null;
 			string[] tokens = invocation.Split(" ");
 			if(tokens.Length >= 2 && tokens[0] == "at")
@@ -32,7 +31,6 @@ namespace inspiral
 			{
 				examining = invoker.shell.FindGameObjectNearby("here");
 			}
-
 			if(examining != null)
 			{
 				examining.ExaminedBy(invoker, false);

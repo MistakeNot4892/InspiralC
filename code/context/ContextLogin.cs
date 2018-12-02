@@ -10,26 +10,22 @@ namespace inspiral
 	{
 		private Dictionary<GameClient, string> loginState;
 		private Dictionary<GameClient, string> passwordConfirmations;
-
 		internal ContextLogin()
 		{
 			loginState = new Dictionary<GameClient, string>();
 			passwordConfirmations = new Dictionary<GameClient, string>();
 		}
-
 		internal override void OnContextUnset(GameClient viewer)
 		{
 			loginState.Remove(viewer);
 			passwordConfirmations.Remove(viewer);
 		}
-
 		internal override void OnContextSet(GameClient viewer)
 		{
 			loginState.Add(viewer, "connected");
 			passwordConfirmations.Remove(viewer);
 			ShowSplashScreen(viewer);
 		}
-
 		private void ShowSplashScreen(GameClient viewer)
 		{
 			viewer.WriteLine(Text.FormatPopup(
@@ -37,7 +33,6 @@ namespace inspiral
 				$"{Colours.Fg("- Enter your character name to log in.", Colours.BoldWhite)}\n{Colours.Fg("- Enter ", Colours.BoldWhite)}{Colours.Fg("register [username]", Colours.BoldYellow)}{Colours.Fg(" to register a new account.", Colours.BoldWhite)}",viewer.config.wrapwidth
 				));
 		}
-
 		private bool ValidatePassword(string givenPass)
 		{
 			return (givenPass.Length <= 30 && 
@@ -45,7 +40,6 @@ namespace inspiral
 				!givenPass.All(char.IsLetter)
 				);
 		}
-
 		private bool ValidateUsername(string givenName)
 		{
 			return (givenName.Length <= 16 && 

@@ -5,7 +5,6 @@ using BCrypt.Net;
 
 namespace inspiral
 {
-
 	internal class PlayerAccount
 	{
 		internal string userName;
@@ -21,7 +20,6 @@ namespace inspiral
 			return BCrypt.Net.BCrypt.Verify(pass, passwordHash);
 		}
 	}
-
 	internal class AccountRepository : GameRepository
 	{
 		private Dictionary<string, PlayerAccount> accounts;
@@ -48,7 +46,6 @@ namespace inspiral
 				objectId INTEGER NOT NULL UNIQUE";
 			dbUpdateQuery = "UPDATE player_accounts SET userName = @p1, passwordHash = @p2, objectId = @p3 WHERE id = @p0;";
 		}
-
 		internal override void InstantiateFromRecord(SQLiteDataReader reader, SQLiteConnection dbConnection)
 		{
 			PlayerAccount acct = (PlayerAccount)CreateRepositoryType((long)reader["id"]);
@@ -66,34 +63,30 @@ namespace inspiral
 			}
 			return null;
 		}
-
 		internal PlayerAccount CreateAccount(string userName, string passwordHash)
 		{
 			PlayerAccount acct = (PlayerAccount)CreateNewInstance(GetUnusedIndex(), false);
 			acct.userName = userName;
 			acct.passwordHash = passwordHash;
-
 			GameObject gameObj = (GameObject)Game.Objects.CreateNewInstance(false);
 			acct.objectId = gameObj.id;
 			gameObj.name = Text.Capitalize(acct.userName);
-
+			gameObj.gender = Gender.Androgyne;
 			gameObj.AddComponent(Components.Visible);
 			gameObj.SetString(Components.Visible, Text.FieldShortDesc, gameObj.name);
 			gameObj.SetString(Components.Visible, Text.FieldRoomDesc, $"{gameObj.name} is here.");
 			gameObj.SetString(Components.Visible, Text.FieldExaminedDesc, $"They are completely boring.");
-
 			gameObj.AddComponent(Components.Mobile);
 			gameObj.SetString(Components.Mobile, Text.FieldEnterMessage, $"{gameObj.name} enters from the $DIR.");
 			gameObj.SetString(Components.Mobile, Text.FieldLeaveMessage, $"{gameObj.name} leaves to the $DIR.");
 			gameObj.SetString(Components.Mobile, Text.FieldDeathMessage, $"The corpse of {gameObj.name} lies here.");
-
 			Game.Objects.AddDatabaseEntry(gameObj);
 			accounts.Add(acct.userName, acct);
 			AddDatabaseEntry(acct);
 			return acct;
 		}
-
-		internal override Object CreateRepositoryType(long id) {
+		internal override Object CreateRepositoryType(long id) 
+		{
 			return new PlayerAccount(id);
 		}
 		internal override void AddCommandParameters(SQLiteCommand command, Object instance)

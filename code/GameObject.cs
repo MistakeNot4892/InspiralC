@@ -10,6 +10,7 @@ namespace inspiral
 		internal long id;
 		internal string name = "object";
 		internal long flags = 0;
+		internal long gender = Gender.Inanimate;
 		internal List<string> aliases = new List<string>();
 		internal Dictionary<int, GameComponent> components;
 		internal GameObject()
@@ -17,7 +18,6 @@ namespace inspiral
 			contents = new List<GameObject>();
 			components = new Dictionary<int, GameComponent>();
 		}
-
 		internal GameComponent GetComponent(int componentKey) 
 		{
 			if(HasComponent(componentKey))
@@ -44,7 +44,6 @@ namespace inspiral
 				component.Removed(this);
 			}
 		}
-
 		internal bool HasComponent(int componentKey)
 		{
 			return components.ContainsKey(componentKey);
@@ -77,7 +76,6 @@ namespace inspiral
 		{
 			GetComponent(component)?.SetValue(field, newField);
 		}
-
 		internal GameObject FindGameObjectNearby(string token)
 		{
 			string checkToken = token.ToLower();
@@ -100,7 +98,6 @@ namespace inspiral
 			}
 			return null;
 		}
-
 		internal void EditValue(GameClient editor, string field, string value)
 		{
 			string lastVal = "";
@@ -174,7 +171,6 @@ namespace inspiral
 			}
 			return null;
 		}
-
 		internal bool Move(GameObject destination)
 		{
 			bool canMove = true;
@@ -192,17 +188,14 @@ namespace inspiral
 			}
 			return canMove;
 		}
-
 		internal bool OnDeparture(GameObject departing)
 		{
 			return true;
 		}
-
 		internal bool OnEntry(GameObject entering)
 		{
 			return true;
 		}
-
 		internal bool Exited(GameObject leaving)
 		{
 			if(!contents.Contains(leaving) || !leaving.OnDeparture(this))
@@ -212,7 +205,6 @@ namespace inspiral
 			contents.Remove(leaving);
 			return true;
 		}
-
 		internal bool Entered(GameObject entering)
 		{
 			if(contents.Contains(entering) || !entering.OnEntry(this))
@@ -227,7 +219,6 @@ namespace inspiral
 			}
 			return true;
 		}
-
 		internal void ShowToContents(string message)
 		{
 			foreach(GameObject obj in contents)
@@ -235,12 +226,10 @@ namespace inspiral
 				obj.ShowMessage(message);
 			}
 		}
-
 		internal void ShowToContents(GameObject source, string message)
 		{
 			ShowToContents(source, message, message);
 		}
-
 		internal void ShowToContents(GameObject source, string message1p, string message3p)
 		{
 			source.ShowMessage(message1p);

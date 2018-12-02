@@ -45,7 +45,6 @@ namespace inspiral
 					{
 						exitString = $"{exitString}, {exit.Key}";
 					}
-
 				}
 				return $"You can see exits leading {exitString}.";
 			}

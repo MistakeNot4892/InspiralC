@@ -14,14 +14,12 @@ namespace inspiral
 		internal const int Visible = 1;
 		internal const int Mobile =  2;
 		internal const int Room =    3;
-
 		internal static List<GameComponent> Clients =>  GetComponents(Room);
 		internal static List<GameComponent> Visibles => GetComponents(Room);
 		internal static List<GameComponent> Mobiles =>  GetComponents(Room);
 		internal static List<GameComponent> Rooms =>    GetComponents(Room);
 		static Components()
 		{
-
 			tableSchemas = new Dictionary<int, string>();
 			tableSchemas.Add(Visible,  @"components_visible (
 				id INTEGER NOT NULL PRIMARY KEY UNIQUE,
@@ -69,17 +67,14 @@ namespace inspiral
 				@p0,
 				@p1
 				);");
-
 			loadSchemas = new Dictionary<int, string>();
 			loadSchemas.Add(Visible,   "components_visible");
 			loadSchemas.Add(Mobile,    "components_mobile");
 			loadSchemas.Add(Room,      "components_room");
-
 			updateSchemas = new Dictionary<int, string>();
 			updateSchemas.Add(Visible, "UPDATE components_visible SET shortDescription = @p1, roomDescription = @p2, examinedDescription = @p3 WHERE id = @p0;");
 			updateSchemas.Add(Mobile,  "UPDATE components_mobile SET enterMessage = @p1, leaveMessage = @p2, deathMessage = @p3 WHERE id = @p0");
 			updateSchemas.Add(Room,    "UPDATE components_room SET exits = @p1 WHERE id = @p0;");
-
 			allComponents = new Dictionary<int, List<GameComponent>>();
 			allComponents.Add(Client,  new List<GameComponent>());
 			allComponents.Add(Visible, new List<GameComponent>());

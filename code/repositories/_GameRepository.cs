@@ -67,7 +67,6 @@ namespace inspiral
 			Debug.WriteLine($"Finished initializing {repoName}.");
 			dbConnection.Close();
 		}
-
 		internal virtual void PostInitialize() {}
 		internal Object Get(long id)
 		{
@@ -81,7 +80,6 @@ namespace inspiral
 		{
 			return (long)contents.Count+1;
 		}
-
 		internal virtual Object CreateNewInstance(bool addToDatabase)
 		{
 			return CreateNewInstance(GetUnusedIndex(), addToDatabase);
@@ -115,7 +113,6 @@ namespace inspiral
 			HandleAdditionalSQLInsertion(newInstance, dbConnection);
 			dbConnection.Close();
 		}
-
 		public void SaveObject(Object objInstance)
 		{
 			SQLiteConnection dbConnection = new SQLiteConnection($"Data Source={dbPath};Version={dbVersion};");
@@ -135,7 +132,6 @@ namespace inspiral
 			HandleAdditionalObjectSave(objInstance, dbConnection);
 			dbConnection.Close();
 		}
-
 		public virtual void HandleAdditionalObjectSave(Object objInstance, SQLiteConnection dbConnection) {}
 		public virtual void HandleAdditionalSQLInsertion(Object newInstance, SQLiteConnection dbConnection) {}
 		public virtual void DumpToConsole() { Debug.WriteLine("Repo dump not implemented for this repo, sorry."); }
@@ -143,6 +139,5 @@ namespace inspiral
 		internal virtual Object CreateRepositoryType(long id) { return null; }
 		internal virtual void AddCommandParameters(SQLiteCommand command, Object instance) {}
 		internal virtual void HandleSecondarySQLInitialization(SQLiteConnection dbConnection) {}
-
 	}
 }

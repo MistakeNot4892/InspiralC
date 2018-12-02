@@ -11,14 +11,12 @@ namespace inspiral
 		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
-
 			string[] tokens = invocation.Split(" ");
 			if(tokens.Length < 3)
 			{
 				invoker.WriteLinePrompted("Usage: EDIT <target> <field> <value>");
 				return true;
 			}
-
 			GameObject editing = invoker.shell.FindGameObjectNearby(tokens[0].ToLower());
 			if(editing == null)
 			{
