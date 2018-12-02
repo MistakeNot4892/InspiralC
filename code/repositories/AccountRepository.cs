@@ -57,7 +57,6 @@ namespace inspiral
 			acct.objectId =    (long)reader["objectId"];
 			accounts.Add(acct.userName, acct);
 			contents.Add(acct.id, acct);
-			Console.WriteLine($"Loaded account for {acct.userName} (#{acct.id}).");
 		}
 		internal PlayerAccount GetAccountByUser(string user)
 		{

@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 //TODO: https://www.gammon.com.au/mushclient/addingservermxp.htm
 
@@ -35,7 +36,7 @@ namespace inspiral
 			client =   _client;
 			id = _id;
 			stream =   _client.GetStream();
-			Console.WriteLine($"{id}: client created.");
+			Debug.WriteLine($"{id}: client created.");
 			SetContext(Contexts.Login);
 		}
 
@@ -117,7 +118,7 @@ namespace inspiral
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine($"{id}: disconnected ({e.ToString()}).");
+				Debug.WriteLine($"{id}: disconnected ({e.ToString()}).");
 			}
 			Disconnect();
 			if(client != null)
@@ -167,10 +168,7 @@ namespace inspiral
 		private string FormatOutgoingString(string message)
 		{
 			message = Text.Wrap(message, config.wrapwidth);
-			if(!gmcpFlags.Contains("gmcpEnabled"))
-			{
-				message = message.Replace("\n","\r\n");
-			}
+			message = message.Replace("\n","\r\n");
 			return message;
 		}
 		internal void WriteLinePrompted(string message)

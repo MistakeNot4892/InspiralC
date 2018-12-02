@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Diagnostics;
 
 namespace inspiral
 {
@@ -63,7 +64,7 @@ namespace inspiral
 					}
 					catch(Exception e)
 					{
-						Console.WriteLine($"Exception during exit conversion: {e.ToString()}");
+						Debug.WriteLine($"Exception during exit conversion: {e.ToString()}");
 					}
 				}
 			}

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace inspiral
@@ -24,7 +25,7 @@ namespace inspiral
 			{
 				if(Components.Rooms.Count <= 0)
 				{
-					Console.WriteLine("Cannot find a room, creating a new one.");
+					Debug.WriteLine("First run: cannot find a room, creating a new one.");
 					Game.Objects.CreateNewEmptyRoom();
 				}
 				GameObject room = (GameObject)Components.Rooms[0].parent;
@@ -71,14 +72,7 @@ namespace inspiral
 		}
 		internal override string GetPrompt(GameClient viewer) 
 		{
-			if(viewer.gmcpFlags.Contains("gmcpEnabled"))
-			{
-				return $"{Colours.Fg("\n> ", Colours.Yellow)}";
-			}
-			else
-			{
-				return $"{Colours.Fg("\r\n> ", Colours.Yellow)}";
-			}
+			return $"{Colours.Fg("\r\n> ", Colours.Yellow)}";
 		}
 	}
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace inspiral
 {
@@ -133,7 +134,7 @@ namespace inspiral
 						}
 						break;
 					default:
-						Console.WriteLine($"Got unknown GMCP packet ({gmcpToken}) from {sender.id}. [{gmcpContents}]");
+						Debug.WriteLine($"Got unknown GMCP packet ({gmcpToken}) from {sender.id}. [{gmcpContents}]");
 						break;
 				}
 			}

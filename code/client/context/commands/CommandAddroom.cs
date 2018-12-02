@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace inspiral
 {
@@ -54,7 +55,7 @@ namespace inspiral
 							}
 							catch(Exception e)
 							{
-								Console.WriteLine($"Room ID exception: {e.ToString()}.");
+								Debug.WriteLine($"Room ID exception: {e.ToString()}.");
 							}
 						}
 						if(roomId == -1 || Game.Objects.Get(roomId) == null)
@@ -64,7 +65,6 @@ namespace inspiral
 						else
 						{
 							GameObject linkingRoom = (GameObject)Game.Objects.Get(roomId);
-							Console.WriteLine($"{tokens.Length}");
 							if((tokens.Length >= 3 && tokens[2].ToLower() == "one-way") || !linkingRoom.HasComponent(Components.Room) || !Text.reversedExits.ContainsKey(exitToAdd))
 							{
 								room.exits.Add(exitToAdd, roomId);

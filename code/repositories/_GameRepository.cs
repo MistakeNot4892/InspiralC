@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Data.SQLite;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace inspiral
 {
@@ -17,12 +18,12 @@ namespace inspiral
 		internal Dictionary<long, Object> contents = new Dictionary<long, Object>();
 
 		internal virtual void Load() {
-			Console.WriteLine($"Loading {repoName}.");
+			Debug.WriteLine($"Loading {repoName}.");
 			SQLiteConnection dbConnection = null;
 			dbPath = $"data/{dbTableName}.sqlite";
 			if(!File.Exists(dbPath))
 			{
-				Console.WriteLine("No database found, creating empty.");
+				Debug.WriteLine("No database found, creating empty.");
 				SQLiteConnection.CreateFile(dbPath);
 			}
 
@@ -36,16 +37,16 @@ namespace inspiral
 				}
 				catch(Exception e)
 				{
-					Console.WriteLine($"SQL exception 1 ({repoName}): {e.ToString()} - entire query is [CREATE TABLE IF NOT EXISTS {dbTableName} ({dbTableSchema});]");
+					Debug.WriteLine($"SQL exception 1 ({repoName}): {e.ToString()} - entire query is [CREATE TABLE IF NOT EXISTS {dbTableName} ({dbTableSchema});]");
 				}
 			}
 			HandleSecondarySQLInitialization(dbConnection);
-			Console.WriteLine($"Finished loading {repoName}.");
+			Debug.WriteLine($"Finished loading {repoName}.");
 			dbConnection.Close();			
 		}
 		internal virtual void Initialize() 
 		{
-			Console.WriteLine($"Initializing {repoName}.");
+			Debug.WriteLine($"Initializing {repoName}.");
 			SQLiteConnection dbConnection = new SQLiteConnection($"Data Source={dbPath};Version={dbVersion};");
 			dbConnection.Open();
 			using( SQLiteCommand command = new SQLiteCommand($"SELECT * FROM {dbTableName};", dbConnection))
@@ -60,10 +61,10 @@ namespace inspiral
 				}
 				catch(Exception e)
 				{
-					Console.WriteLine($"SQL exception 2 ({repoName}): {e.ToString()} - entire query is [SELECT * FROM {dbTableName};]");
+					Debug.WriteLine($"SQL exception 2 ({repoName}): {e.ToString()} - entire query is [SELECT * FROM {dbTableName};]");
 				}
 			}
-			Console.WriteLine($"Finished initializing {repoName}.");
+			Debug.WriteLine($"Finished initializing {repoName}.");
 			dbConnection.Close();
 		}
 
@@ -108,7 +109,7 @@ namespace inspiral
 				}
 				catch(Exception e)
 				{
-					Console.WriteLine($"SQL exception 3 ({repoName}): {e.ToString()} - enter query is [{dbInsertQuery}]");
+					Debug.WriteLine($"SQL exception 3 ({repoName}): {e.ToString()} - enter query is [{dbInsertQuery}]");
 				}
 			}
 			HandleAdditionalSQLInsertion(newInstance, dbConnection);
@@ -117,7 +118,6 @@ namespace inspiral
 
 		public void SaveObject(Object objInstance)
 		{
-			Console.WriteLine($"Saving {objInstance.ToString()}");
 			SQLiteConnection dbConnection = new SQLiteConnection($"Data Source={dbPath};Version={dbVersion};");
 			dbConnection.Open();
 			using(SQLiteCommand command = new SQLiteCommand(dbUpdateQuery, dbConnection))
@@ -129,7 +129,7 @@ namespace inspiral
 				}
 				catch(Exception e)
 				{
-					Console.WriteLine($"SQL exception 6 ({repoName}): {e.ToString()} - enter query is [{dbUpdateQuery}]");
+					Debug.WriteLine($"SQL exception 6 ({repoName}): {e.ToString()} - enter query is [{dbUpdateQuery}]");
 				}
 			}
 			HandleAdditionalObjectSave(objInstance, dbConnection);
@@ -138,7 +138,7 @@ namespace inspiral
 
 		public virtual void HandleAdditionalObjectSave(Object objInstance, SQLiteConnection dbConnection) {}
 		public virtual void HandleAdditionalSQLInsertion(Object newInstance, SQLiteConnection dbConnection) {}
-		public virtual void DumpToConsole() { Console.WriteLine("Repo dump not implemented for this repo, sorry."); }
+		public virtual void DumpToConsole() { Debug.WriteLine("Repo dump not implemented for this repo, sorry."); }
 		internal virtual void InstantiateFromRecord(SQLiteDataReader reader, SQLiteConnection dbConnection) {}
 		internal virtual Object CreateRepositoryType(long id) { return null; }
 		internal virtual void AddCommandParameters(SQLiteCommand command, Object instance) {}

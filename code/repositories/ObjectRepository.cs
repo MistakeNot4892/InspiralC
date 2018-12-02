@@ -1,6 +1,7 @@
 using System;
 using System.Data.SQLite;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace inspiral
 {
@@ -48,7 +49,7 @@ namespace inspiral
 					}
 					catch(Exception e)
 					{
-						Console.WriteLine($"Component SQL exception ({schema.Key}): {e.ToString()} - entire query is [CREATE TABLE IF NOT EXISTS {schema.Value};]");
+						Debug.WriteLine($"Component SQL exception ({schema.Key}): {e.ToString()} - entire query is [CREATE TABLE IF NOT EXISTS {schema.Value};]");
 					}
 				}
 			}
@@ -88,14 +89,14 @@ namespace inspiral
 							}
 							catch(Exception e)
 							{
-								Console.WriteLine($"SQL exception 4 ({repoName}): {e.ToString()} - entire query is [SELECT * FROM {Components.loadSchemas[comp]} WHERE id = @p0;]");
+								Debug.WriteLine($"SQL exception 4 ({repoName}): {e.ToString()} - entire query is [SELECT * FROM {Components.loadSchemas[comp]} WHERE id = @p0;]");
 							}
 						}
 					}
 				}
 				catch(Exception e)
 				{
-					Console.WriteLine($"Exception when converting component record to key: {e.ToString()}");
+					Debug.WriteLine($"Exception when converting component record to key: {e.ToString()}");
 				}
 			}
 			contents.Add(gameObj.id, gameObj);
@@ -126,7 +127,7 @@ namespace inspiral
 					}
 					catch(Exception e)
 					{
-						Console.WriteLine($"SQL exception 5 ({repoName}): {e.ToString()} - entire query is [{Components.insertSchemas[comp.Key]}]");
+						Debug.WriteLine($"SQL exception 5 ({repoName}): {e.ToString()} - entire query is [{Components.insertSchemas[comp.Key]}]");
 					}
 				}
 			}
@@ -175,7 +176,6 @@ namespace inspiral
 		public override void HandleAdditionalObjectSave(Object objInstance, SQLiteConnection dbConnection) 
 		{
 			GameObject gameObj = (GameObject) objInstance;
-			Console.WriteLine($"Saving modules for {gameObj.id}.");
 			foreach(KeyValuePair<int, GameComponent> comp in gameObj.components)
 			{
 				if(!Components.updateSchemas.ContainsKey(comp.Key))
@@ -191,7 +191,7 @@ namespace inspiral
 					}
 					catch(Exception e)
 					{
-						Console.WriteLine($"Component SQL exception 2 ({comp.Key}): {e.ToString()} - enter query is [{Components.updateSchemas[comp.Key]}]");
+						Debug.WriteLine($"Component SQL exception 2 ({comp.Key}): {e.ToString()} - enter query is [{Components.updateSchemas[comp.Key]}]");
 					}
 				}
 			}

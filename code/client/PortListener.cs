@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace inspiral
 {
@@ -22,7 +23,7 @@ namespace inspiral
 
 		internal void Begin()
 		{
-			IPAddress ipAddress = IPAddress.Parse("0.0.0.0"); //Dns.Resolve("127.0.0.1").AddressList[0];
+			IPAddress ipAddress = IPAddress.Parse("0.0.0.0");
 			try
 			{
 
@@ -41,7 +42,7 @@ namespace inspiral
 			}
 			catch (SocketException e)
 			{
-				Console.WriteLine("SocketException: {0}", e);
+				Debug.WriteLine("SocketException: {0}", e);
 			}
 			finally
 			{
