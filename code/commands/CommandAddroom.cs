@@ -68,7 +68,7 @@ namespace inspiral
 							if((tokens.Length >= 3 && tokens[2].ToLower() == "one-way") || !linkingRoom.HasComponent(Components.Room) || !Text.reversedExits.ContainsKey(exitToAdd))
 							{
 								room.exits.Add(exitToAdd, roomId);
-								Game.Objects.SaveObject(room.parent);
+								Game.Objects.QueueForUpdate(room.parent);
 								invoker.SendLineWithPrompt($"You have connected {room.parent.id} to {roomId} via a one-way exit to the {exitToAdd}.");
 							}
 							else
@@ -78,15 +78,15 @@ namespace inspiral
 								if(otherRoom.exits.ContainsKey(otherExit))
 								{
 									room.exits.Add(exitToAdd, roomId);
-									Game.Objects.SaveObject(room.parent);
+									Game.Objects.QueueForUpdate(room.parent);
 									invoker.SendLineWithPrompt($"Target room already has an exit to the {otherExit}.\nYou have connected {room.parent.id} to {roomId} via a one-way exit to the {exitToAdd}.");
 								}
 								else
 								{
 									room.exits.Add(exitToAdd, roomId);
-									Game.Objects.SaveObject(room.parent);
+									Game.Objects.QueueForUpdate(room.parent);
 									otherRoom.exits.Add(otherExit, room.parent.id);
-									Game.Objects.SaveObject(otherRoom.parent);
+									Game.Objects.QueueForUpdate(otherRoom.parent);
 									invoker.SendLineWithPrompt($"You have connected {room.parent.id} to {roomId} via a bidirectional exit to the {exitToAdd}.");
 								}
 							}

@@ -5,7 +5,6 @@ namespace inspiral
 {
 	internal class GameComponent
 	{
-		internal int id;
 		internal int key;
 		internal GameObject parent;
 		internal virtual void Added(GameObject addedTo)

@@ -136,7 +136,7 @@ namespace inspiral
 					return;
 			}
 			editor.SendLineWithPrompt($"Set field '{field}' of object #{id} ({GetString(Components.Visible, Text.FieldShortDesc)}) to '{value}'.\nFor reference, previous value was '{lastVal}'.");
-			Game.Objects.SaveObject(this);
+			Game.Objects.QueueForUpdate(this);
 		}
 		internal GameObject FindGameObjectInContents(string token)
 		{
