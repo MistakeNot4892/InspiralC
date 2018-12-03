@@ -7,7 +7,7 @@ namespace inspiral
 {
 	internal static class Clients
 	{
-		private static List<GameClient> clients = new List<GameClient>();
+		internal static List<GameClient> clients = new List<GameClient>();
 		internal static GameClient Create(TcpClient client, string id)
 		{
 			GameClient newClient = new GameClient(client, id);

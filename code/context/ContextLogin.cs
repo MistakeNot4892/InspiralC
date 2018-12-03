@@ -28,7 +28,7 @@ namespace inspiral
 		}
 		private void ShowSplashScreen(GameClient viewer)
 		{
-			viewer.WriteLine(Text.FormatPopup(
+			viewer.SendLine(Text.FormatPopup(
 				"Inspiral, Coalescence, Ringdown", 
 				$"{Colours.Fg("- Enter your character name to log in.", Colours.BoldWhite)}\n{Colours.Fg("- Enter ", Colours.BoldWhite)}{Colours.Fg("register [username]", Colours.BoldYellow)}{Colours.Fg(" to register a new account.", Colours.BoldWhite)}",viewer.config.wrapwidth
 				));
@@ -67,25 +67,25 @@ namespace inspiral
 				string[] tokens = arguments.Split(" ");
 				if(tokens.Length < 1)
 				{
-					invoker.WriteLine($"Please supply a desired username when registering.");
+					invoker.SendLine($"Please supply a desired username when registering.");
 				}
 				else
 				{
 					string newUser = tokens[0].ToLower();
 					if(Game.Accounts.GetAccountByUser(newUser) != null)
 					{
-						invoker.WriteLine($"An account already exists with that username.");
+						invoker.SendLine($"An account already exists with that username.");
 					}
 					else if(!ValidateUsername(newUser))
 					{
-						invoker.WriteLine($"Usernames must be 2 to 16 characters long and can only contain letters.");
+						invoker.SendLine($"Usernames must be 2 to 16 characters long and can only contain letters.");
 					}
 					else
 					{
 						invoker.id = newUser;
 						loginState.Remove(invoker);
 						loginState.Add(invoker, "registering_entering_password");
-						invoker.WriteLine("Enter a new password of at least 6 characters, including at least one number or symbol.\nRemember that Telnet is not secure; do not reuse an important personal password.");
+						invoker.SendLine("Enter a new password of at least 6 characters, including at least one number or symbol.\nRemember that Telnet is not secure; do not reuse an important personal password.");
 					}
 				}
 			}
@@ -97,12 +97,12 @@ namespace inspiral
 						PlayerAccount acct = Game.Accounts.GetAccountByUser(command);
 						if(acct == null)
 						{
-							invoker.WriteLine($"No account exists for '{command}'. Use {Colours.Fg("register [username]", Colours.BoldWhite)} to create one.");
+							invoker.SendLine($"No account exists for '{command}'. Use {Colours.Fg("register [username]", Colours.BoldWhite)} to create one.");
 						}
 						else
 						{
 							invoker.account = acct;
-							invoker.WriteLine("Enter your password.");
+							invoker.SendLine("Enter your password.");
 							loginState.Remove(invoker);
 							loginState.Add(invoker, "entering_password");
 						}
@@ -111,12 +111,12 @@ namespace inspiral
 						bool correctPass = invoker.account.CheckPassword(rawCommand);
 						if(correctPass)
 						{
-							invoker.WriteLine("Password correct.");
+							invoker.SendLine("Password correct.");
 							HandleLogin(invoker);
 						}
 						else
 						{
-							invoker.WriteLine("Incorrect password.");
+							invoker.SendLine("Incorrect password.");
 							invoker.account = null;
 							loginState.Remove(invoker);
 							loginState.Add(invoker, "connected");
@@ -127,7 +127,7 @@ namespace inspiral
 
 						if(!ValidatePassword(rawCommand))
 						{
-							invoker.WriteLine($"Passwords must be 6 to 30 characters long and must contain at least one symbol or number.");
+							invoker.SendLine($"Passwords must be 6 to 30 characters long and must contain at least one symbol or number.");
 						}
 						else
 						{
@@ -135,19 +135,19 @@ namespace inspiral
 							passwordConfirmations.Add(invoker, rawCommand);
 							loginState.Remove(invoker);
 							loginState.Add(invoker, "registering_confirming_password");
-							invoker.WriteLine("Please reenter your password to confirm.");
+							invoker.SendLine("Please reenter your password to confirm.");
 						}
 						break;
 					case "registering_confirming_password":
 						if(passwordConfirmations.ContainsKey(invoker) && passwordConfirmations[invoker] == rawCommand)
 						{
 							invoker.account = Game.Accounts.CreateAccount(invoker.id, BCrypt.Net.BCrypt.HashPassword(passwordConfirmations[invoker], 10));
-							invoker.WriteLine("Account created.");
+							invoker.SendLine("Account created.");
 							HandleLogin(invoker);
 						}
 						else
 						{
-							invoker.WriteLine("Passwords do not match.");
+							invoker.SendLine("Passwords do not match.");
 							passwordConfirmations.Remove(invoker);
 							loginState.Remove(invoker);
 							loginState.Add(invoker, "connected");

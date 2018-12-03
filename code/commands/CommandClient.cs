@@ -11,7 +11,7 @@ namespace inspiral
 		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
-			invoker.WriteLinePrompted(invoker.GetClientSummary());
+			invoker.SendLineWithPrompt(invoker.GetClientSummary());
 			return true;
 		}
 	}

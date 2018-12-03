@@ -32,6 +32,9 @@ namespace inspiral
 		private byte[] inputBuffer = new byte[Telnet.MaxBufferSize];
 		private int inputBufferIndex = 0;
 
+		private byte[] outputBuffer = new byte[2048];
+		private int outputBufferIndex = 0;
+
 		internal GameClient(TcpClient _client, string _id)
 		{
 			client = _client;
@@ -156,11 +159,11 @@ namespace inspiral
 			{
 				if(Text.exits.Contains(cmd))
 				{
-					WriteLinePrompted($"There is no exit to the {cmd}.");
+					SendLineWithPrompt($"There is no exit to the {cmd}.");
 				}
 				else
 				{
-					WriteLinePrompted($"Unknown command '{rawCmd}'.");
+					SendLineWithPrompt($"Unknown command '{rawCmd}'.");
 				}
 			}
 		}
@@ -170,7 +173,7 @@ namespace inspiral
 			message = message.Replace("\n","\r\n");
 			return message;
 		}
-		internal void WriteLinePrompted(string message)
+		internal void WriteLineWithPrompt(string message)
 		{
 			if(message != "")
 			{
@@ -189,12 +192,24 @@ namespace inspiral
 				WriteToStream(outgoing);
 			}
 		}
+
+		internal void SendLine(string message)
+		{
+			WriteLine(message);
+			SendAll();
+		}
+
+		internal void SendLineWithPrompt(string message)
+		{
+			WriteLineWithPrompt(message);
+			SendAll();
+		}
+
 		internal void WriteLine(string message)
 		{
 			if(message != "")
 			{
-				message = FormatOutgoingString($"{message}\n");
-				WriteToStream($"{message}");
+				WriteToStream(FormatOutgoingString($"{message}\n"));
 			}
 		}
 		public void WriteToStream(string message)
@@ -203,7 +218,21 @@ namespace inspiral
 		}
 		public void WriteToStream(byte[] message)
 		{
-			stream.Write(message, 0, message.Length);
+			for(int i = 0;i<message.Length;i++)
+			{
+				if(outputBufferIndex > Telnet.MaxBufferSize)
+				{
+					SendAll();
+				}
+				outputBufferIndex++;
+				outputBuffer[outputBufferIndex] = message[i];
+			}
+		}
+
+		public void SendAll()
+		{
+			stream.Write(outputBuffer, 0, outputBufferIndex+1);
+			outputBufferIndex = 0;
 		}
 		internal void Quit()
 		{
@@ -215,10 +244,7 @@ namespace inspiral
 			{
 				Telnet.SendGMCPPacket(this, $"Core.Goodbye \"{farewell}\"");
 			}
-			else
-			{
-				WriteLine($"{farewell}");
-			}
+			SendLine($"{farewell}");
 			Quit();
 		}
 

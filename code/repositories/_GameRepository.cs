@@ -8,6 +8,8 @@ namespace inspiral
 {
 	class GameRepository
 	{
+
+		//internal SQLiteConnection dbConnection;
 		internal string repoName = "unnamed repository";
 		internal string dbPath;
 		internal string dbVersion = "3";
@@ -139,5 +141,6 @@ namespace inspiral
 		internal virtual Object CreateRepositoryType(long id) { return null; }
 		internal virtual void AddCommandParameters(SQLiteCommand command, Object instance) {}
 		internal virtual void HandleSecondarySQLInitialization(SQLiteConnection dbConnection) {}
+		internal virtual void Exit() {}
 	}
 }

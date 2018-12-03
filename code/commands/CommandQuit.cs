@@ -11,7 +11,7 @@ namespace inspiral
 		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
-			invoker.WriteLine("Goodbye!");
+			invoker.SendLine("Goodbye!");
 			invoker.Quit();
 			return true;
 		}

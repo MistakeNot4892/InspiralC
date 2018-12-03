@@ -20,7 +20,7 @@ namespace inspiral
 			dialogue["Options"].Add("1. Stand fast. You have done nothing wrong.");
 			dialogue["Options"].Add("2. Shield yourself with seven proxies.");
 			dialogue["Options"].Add("3. Purchase a dog.");
-			invoker.WriteLinePrompted(Text.FormatBlock(dialogue, invoker.config.wrapwidth));
+			invoker.SendLineWithPrompt(Text.FormatBlock(dialogue, invoker.config.wrapwidth));
 			return true;
 		}
 	}

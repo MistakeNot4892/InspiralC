@@ -42,7 +42,7 @@ namespace inspiral
 						GameObject destination = (GameObject)Game.Objects.Get(room.exits[tmp]);
 						if(destination == null)
 						{
-							invoker.WriteLine($"Strangely, there is nothing to the {tmp}. You stay where you are.");
+							invoker.SendLine($"Strangely, there is nothing to the {tmp}. You stay where you are.");
 						}
 						else
 						{

@@ -15,7 +15,7 @@ namespace inspiral
 			string[] tokens = invocation.Split(" ");
 			if(tokens.Length <= 0)
 			{
-				invoker.WriteLinePrompted("What do you want to create (object, room)?");
+				invoker.SendLineWithPrompt("What do you want to create (object, room)?");
 			}
 			else
 			{
@@ -26,14 +26,14 @@ namespace inspiral
 						gameObject.AddComponent(Components.Visible);
 						gameObject.Move(invoker.shell.location);
 						Game.Objects.AddDatabaseEntry(gameObject);
-						invoker.WriteLinePrompted($"Created {gameObject.GetString(Components.Visible, Text.FieldShortDesc)} (#{gameObject.id}).");
+						invoker.SendLineWithPrompt($"Created {gameObject.GetString(Components.Visible, Text.FieldShortDesc)} (#{gameObject.id}).");
 						break;
 					case "room":
 						GameObject room = (GameObject)Game.Objects.Get(Game.Objects.CreateNewEmptyRoom());
-						invoker.WriteLinePrompted($"Created {room.GetString(Components.Visible, Text.FieldShortDesc)} (#{room.id}).");
+						invoker.SendLineWithPrompt($"Created {room.GetString(Components.Visible, Text.FieldShortDesc)} (#{room.id}).");
 						break;
 					default:
-						invoker.WriteLinePrompted("What do you want to create (object, room)?");
+						invoker.SendLineWithPrompt("What do you want to create (object, room)?");
 						break;
 				}
 			}

@@ -2,6 +2,7 @@ using System;
 using System.Data.SQLite;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace inspiral
 {
@@ -62,43 +63,30 @@ namespace inspiral
 			gameObj.name = reader["name"].ToString();
 			gameObj.flags = (long)reader["flags"];
 			gameObj.gender = (long)reader["gender"];
-			gameObj.aliases = new List<string>();
-			string[] aliasArray = reader["aliases"].ToString().Split("|");
-			for(int i = 0;i < aliasArray.Length; i++)
+			gameObj.aliases = JsonConvert.DeserializeObject<List<string>>(reader["aliases"].ToString());
+
+			foreach(int comp in JsonConvert.DeserializeObject<List<int>>(reader["components"].ToString()))
 			{
-				gameObj.aliases.Add(aliasArray[i]);
-			}
-			string[] componentArray = reader["components"].ToString().Split("|");
-			for(int i = 0;i < componentArray.Length; i++)
-			{
-				try
+				gameObj.AddComponent(comp);
+				if(Components.loadSchemas.ContainsKey(comp))
 				{
-					int comp = Int32.Parse(componentArray[i]);
-					gameObj.AddComponent(comp);
-					if(Components.loadSchemas.ContainsKey(comp))
+					GameComponent component = gameObj.GetComponent(comp);
+					using( SQLiteCommand command = new SQLiteCommand($"SELECT * FROM {Components.loadSchemas[comp]} WHERE id = @p0;", dbConnection))
 					{
-						GameComponent component = gameObj.GetComponent(comp);
-						using( SQLiteCommand command = new SQLiteCommand($"SELECT * FROM {Components.loadSchemas[comp]} WHERE id = @p0;", dbConnection))
+						try
 						{
-							try
+							command.Parameters.AddWithValue("@p0", gameObj.id);
+							SQLiteDataReader secondReader = command.ExecuteReader();
+							while(secondReader.Read())
 							{
-								command.Parameters.AddWithValue("@p0", gameObj.id);
-								SQLiteDataReader secondReader = command.ExecuteReader();
-								while(secondReader.Read())
-								{
-									component.InstantiateFromRecord(secondReader);
-								}
-							}
-							catch(Exception e)
-							{
-								Debug.WriteLine($"SQL exception 4 ({repoName}): {e.ToString()} - entire query is [SELECT * FROM {Components.loadSchemas[comp]} WHERE id = @p0;]");
+								component.InstantiateFromRecord(secondReader);
 							}
 						}
+						catch(Exception e)
+						{
+							Debug.WriteLine($"SQL exception 4 ({repoName}): {e.ToString()} - entire query is [SELECT * FROM {Components.loadSchemas[comp]} WHERE id = @p0;]");
+						}
 					}
-				}
-				catch(Exception e)
-				{
-					Debug.WriteLine($"Exception when converting component record to key: {e.ToString()}");
 				}
 			}
 			contents.Add(gameObj.id, gameObj);
@@ -139,13 +127,13 @@ namespace inspiral
 			command.Parameters.AddWithValue("@p0", gameObj.id);
 			command.Parameters.AddWithValue("@p1", gameObj.name);
 			command.Parameters.AddWithValue("@p2", gameObj.gender);
-			command.Parameters.AddWithValue("@p3", string.Join("|", gameObj.aliases));
-			List<string> componentKeys = new List<string>();
+			command.Parameters.AddWithValue("@p3", JsonConvert.SerializeObject(gameObj.aliases));
+			List<int> componentKeys = new List<int>();
 			foreach(KeyValuePair<int, GameComponent> comp in gameObj.components)
 			{
-				componentKeys.Add($"{comp.Key}");
+				componentKeys.Add(comp.Key);
 			}
-			command.Parameters.AddWithValue("@p4", string.Join("|", componentKeys.ToArray()));
+			command.Parameters.AddWithValue("@p4", JsonConvert.SerializeObject(componentKeys));
 			command.Parameters.AddWithValue("@p5", gameObj.flags);
 			command.Parameters.AddWithValue("@p6", gameObj.location?.id ?? 0);
 		}

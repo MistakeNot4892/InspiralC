@@ -11,8 +11,14 @@ namespace inspiral
 		{
 			Game.Load();
 			Game.Initialize();
-			Console.WriteLine("Server launched. Hit enter to exit.");
+			Console.WriteLine("Inspiral server launched. Hit enter at any time to terminate.");
 			Console.Read();
+		}
+
+		static void OnProcessExit(object sender, EventArgs e)
+		{
+			Game.Exit();
+			Console.WriteLine ("Terminating.");
 		}
 	}
 }

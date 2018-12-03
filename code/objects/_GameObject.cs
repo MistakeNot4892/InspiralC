@@ -57,7 +57,7 @@ namespace inspiral
 			}
 			else
 			{
-				viewer.WriteLinePrompted("There is nothing there.");
+				viewer.SendLineWithPrompt("There is nothing there.");
 			}
 		}
 		internal string GetString(int component, int field)
@@ -132,10 +132,10 @@ namespace inspiral
 					SetString(Components.Mobile, Text.FieldDeathMessage, value);
 					break;
 				default:
-					editor.WriteLinePrompted("Unknown field. Valid fields are: name, short, room, examined, enter, leave, dead.");
+					editor.SendLineWithPrompt("Unknown field. Valid fields are: name, short, room, examined, enter, leave, dead.");
 					return;
 			}
-			editor.WriteLinePrompted($"Set field '{field}' of object #{id} ({GetString(Components.Visible, Text.FieldShortDesc)}) to '{value}'.\nFor reference, previous value was '{lastVal}'.");
+			editor.SendLineWithPrompt($"Set field '{field}' of object #{id} ({GetString(Components.Visible, Text.FieldShortDesc)}) to '{value}'.\nFor reference, previous value was '{lastVal}'.");
 			Game.Objects.SaveObject(this);
 		}
 		internal GameObject FindGameObjectInContents(string token)
@@ -246,7 +246,7 @@ namespace inspiral
 			ClientComponent clientComp = (ClientComponent)GetComponent(Components.Client);
 			if(clientComp != null && clientComp.client != null)
 			{
-				clientComp.client.WriteLinePrompted(message);
+				clientComp.client.SendLineWithPrompt(message);
 			}
 		}
 		internal virtual void ShowNearby(GameObject source, string message1p, string message3p)

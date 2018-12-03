@@ -195,5 +195,36 @@ namespace inspiral
 			result += $"\n{divider}";
 			return result;
 		}
+		internal static string EnglishList(List<string> input)
+		{
+			string result = "";
+			int i = 0;
+			while(i < input.Count)
+			{
+				if(i == 0)
+				{
+					result = $"{input[i]}";
+				}
+				else if(i+1 == input.Count)
+				{
+					result = $"{result} and {input[i]}";
+				}
+				else
+				{
+					result = $"{result}, {input[i]}";
+				}
+				i++;
+			}
+			return result;
+		}
+		internal static string EnglishList<T>(Dictionary<string, T> input)
+		{
+			List<string> keys = new List<string>();
+			foreach(KeyValuePair<string, T> entry in input)
+			{
+				keys.Add(entry.Key);
+			}
+			return EnglishList(keys);
+		}
 	}
 }

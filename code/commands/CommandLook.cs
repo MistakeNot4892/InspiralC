@@ -14,7 +14,7 @@ namespace inspiral
 		{
 			if(invoker.shell.location == null)
 			{
-				invoker.WriteLinePrompted("You cannot see anything here.");
+				invoker.SendLineWithPrompt("You cannot see anything here.");
 				return true;
 			}
 			GameObject examining = null;
@@ -37,7 +37,7 @@ namespace inspiral
 			}
 			else
 			{
-				invoker.WriteLinePrompted("You can see nothing here by that name.");
+				invoker.SendLineWithPrompt("You can see nothing here by that name.");
 			}
 			return true;
 		}

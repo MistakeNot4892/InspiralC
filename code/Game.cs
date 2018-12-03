@@ -27,10 +27,21 @@ namespace inspiral
 				PortListener portListener = new PortListener(port);
 				Task.Run(() => portListener.Begin());
 			}
+
 			Accounts.Initialize();
 			Objects.Initialize();
+
 			Accounts.PostInitialize();
 			Objects.PostInitialize();
+		}
+		internal static void Exit()
+		{
+			foreach(GameClient client in Clients.clients)
+			{
+				client.Farewell("The server is shutting down. Goodbye!");
+			}
+			Accounts.Exit();
+			Objects.Exit();
 		}
 	}
 }

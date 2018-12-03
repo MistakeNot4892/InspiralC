@@ -14,13 +14,13 @@ namespace inspiral
 			string[] tokens = invocation.Split(" ");
 			if(tokens.Length < 3)
 			{
-				invoker.WriteLinePrompted("Usage: EDIT <target> <field> <value>");
+				invoker.SendLineWithPrompt("Usage: EDIT <target> <field> <value>");
 				return true;
 			}
 			GameObject editing = invoker.shell.FindGameObjectNearby(tokens[0].ToLower());
 			if(editing == null)
 			{
-				invoker.WriteLinePrompted("Cannot find object to edit.");
+				invoker.SendLineWithPrompt("Cannot find object to edit.");
 				return true;
 			}
 			editing.EditValue(invoker, tokens[1].ToLower(), invocation.Substring(tokens[0].Length + tokens[1].Length + 2));
