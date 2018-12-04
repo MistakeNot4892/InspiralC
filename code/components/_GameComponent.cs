@@ -10,6 +10,7 @@ namespace inspiral
 		internal virtual void Added(GameObject addedTo)
 		{
 			parent = addedTo;
+			Game.Objects.QueueForUpdate(parent);
 		}
 		internal virtual void Removed(GameObject takenFrom)
 		{
@@ -17,12 +18,14 @@ namespace inspiral
 			{
 				parent = null;
 			}
+			Game.Objects.QueueForUpdate(takenFrom);
 		}
-		internal virtual void SetValue(int key, string newValue) {}
-		internal virtual void SetValue(int key, long newValue) {}
-		internal virtual string GetStringValue(int key) { return null; }
-		internal virtual long GetLongValue(int key) { return 0; }
+		internal virtual bool SetValue(int key, string newValue) { return false; }
+		internal virtual bool SetValue(int key, long newValue) { return false; }
+		internal virtual string GetString(int key) { return null; }
+		internal virtual long GetLong(int key) { return 0; }
 		internal virtual void InstantiateFromRecord(SQLiteDataReader reader) {}
 		internal virtual void AddCommandParameters(SQLiteCommand command) {}
+		internal virtual string GetStringSummary() { return "No values."; }
 	}
 }

@@ -92,7 +92,7 @@ namespace inspiral
 				{
 					for(int j = 0;j<i;j++)
 					{
-						if((char)socketBuffer[j] == '\n' || (char)socketBuffer[j] == Telnet.SE || inputBufferIndex >= Telnet.MaxBufferSize)
+						if((char)socketBuffer[j] == '\n' || socketBuffer[j] == Telnet.SE || inputBufferIndex >= Telnet.MaxBufferSize)
 						{
 							if(inputBufferIndex > 0)
 							{
@@ -137,6 +137,9 @@ namespace inspiral
 				if(clientComp.client == this)
 				{
 					clientComp.Logout();
+					shell.ShowNearby(shell, $"{shell.GetString(Components.Visible, Text.FieldShortDesc)} falls asleep.");
+					shell.SetString(Components.Visible, Text.FieldRoomDesc, $"{shell.GetString(Components.Visible, Text.FieldShortDesc)} is sound asleep here.");
+					Game.Objects.QueueForUpdate(shell);
 					shell.RemoveComponent(Components.Client);
 				}
 			}

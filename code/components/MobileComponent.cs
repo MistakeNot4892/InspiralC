@@ -11,22 +11,36 @@ namespace inspiral
 		{
 			key = Components.Mobile;
 		}
-		internal override void SetValue(int field, string newValue)
+		internal override bool SetValue(int field, string newValue)
 		{
+			bool success = false;
 			switch(field)
 			{
 				case Text.FieldEnterMessage:
-					enterMessage = newValue;
+					if(enterMessage != newValue)
+					{
+						enterMessage = newValue;
+						success = true;
+					}
 					break;
 				case Text.FieldLeaveMessage:
-					leaveMessage = newValue;
+					if(leaveMessage != newValue)
+					{
+						leaveMessage = newValue;
+						success = true;
+					}
 					break;
 				case Text.FieldDeathMessage:
-					deathMessage = newValue;
+					if(deathMessage != newValue)
+					{
+						deathMessage = newValue;
+						success = true;
+					}
 					break;
 			}
+			return success;
 		}
-		internal override string GetStringValue(int field)
+		internal override string GetString(int field)
 		{
 			switch(field)
 			{
@@ -56,6 +70,13 @@ namespace inspiral
 			command.Parameters.AddWithValue("@p1", enterMessage);
 			command.Parameters.AddWithValue("@p2", leaveMessage);
 			command.Parameters.AddWithValue("@p3", deathMessage);
+		}
+		internal override string GetStringSummary() 
+		{
+			string result =    $"enterMessage: {enterMessage}";
+			result = $"{result}\nleaveMessage: {leaveMessage}";
+			result = $"{result}\ndeathMessage: {deathMessage}";
+			return result;
 		}
 	}
 }

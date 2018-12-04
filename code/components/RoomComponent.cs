@@ -41,5 +41,27 @@ namespace inspiral
 			command.Parameters.AddWithValue("@p0", parent.id);
 			command.Parameters.AddWithValue("@p1", JsonConvert.SerializeObject(exits));
 		}
+		internal override string GetStringSummary() 
+		{
+			string exitString = null;
+			if(exits.Count == 0)
+			{
+				exitString = "none";
+			}
+			else
+			{
+				exitString = "";
+				foreach(KeyValuePair<string, long> exit in exits)
+				{
+					if(exitString != "")
+					{
+						exitString = $"{exitString}, ";
+					}
+					exitString += $"{exit.Key} ({exit.Value})";
+				}
+			}
+			return $"exits: {exitString}";
+		}
+
 	}
 }

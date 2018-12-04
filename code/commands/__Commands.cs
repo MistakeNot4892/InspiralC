@@ -8,7 +8,8 @@ namespace inspiral
 		internal static CommandAddroom Addroom = new CommandAddroom();
 		internal static CommandClient  Client =  new CommandClient();
 		internal static CommandCreate  Create =  new CommandCreate();
-		internal static CommandEdit    Edit =    new CommandEdit();
+		internal static CommandSet     Set =     new CommandSet();
+		internal static CommandView    View =    new CommandView();
 		internal static CommandEmote   Emote =   new CommandEmote();
 		internal static CommandLook    Look =    new CommandLook();
 		internal static CommandQuit    Quit =    new CommandQuit();

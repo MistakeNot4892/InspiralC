@@ -10,6 +10,7 @@ namespace inspiral
 		internal static Dictionary<int, string> loadSchemas;
 		internal static Dictionary<int, string> updateSchemas;
 		internal static Dictionary<int, string> insertSchemas;
+		internal static Dictionary<int, string> Names = new Dictionary<int, string>();
 		internal const int Client =  0;
 		internal const int Visible = 1;
 		internal const int Mobile =  2;
@@ -18,8 +19,15 @@ namespace inspiral
 		internal static List<GameComponent> Visibles => GetComponents(Room);
 		internal static List<GameComponent> Mobiles =>  GetComponents(Room);
 		internal static List<GameComponent> Rooms =>    GetComponents(Room);
+
 		static Components()
 		{
+
+			Names.Add(Client,  "Client");
+			Names.Add(Visible, "Visible");
+			Names.Add(Mobile,  "Mobile");
+			Names.Add(Room,    "Room");
+
 			tableSchemas = new Dictionary<int, string>();
 			tableSchemas.Add(Visible,  @"components_visible (
 				id INTEGER NOT NULL PRIMARY KEY UNIQUE,

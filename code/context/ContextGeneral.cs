@@ -48,9 +48,9 @@ namespace inspiral
 						{
 							GameObject loc = invoker.shell.location;
 							invoker.WriteLine($"You depart to the {tmp}.");
-							destination.ShowToContents($"{mob.GetStringValue(Text.FieldEnterMessage).Replace("$DIR", tmp)}");
+							destination.ShowToContents($"{mob.GetString(Text.FieldEnterMessage).Replace("$DIR", tmp)}");
 							invoker.shell.Move(destination);
-							loc.ShowToContents($"{mob.GetStringValue(Text.FieldLeaveMessage).Replace("$DIR", tmp)}");
+							loc.ShowToContents($"{mob.GetString(Text.FieldLeaveMessage).Replace("$DIR", tmp)}");
 						}
 						return true;
 					}

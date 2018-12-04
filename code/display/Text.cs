@@ -24,10 +24,18 @@ namespace inspiral
 		internal const string DefaultEnterMessage =        "A generic object enters from the $DIR.";
 		internal const string DefaultLeaveMessage =        "A generic object leaves to the $DIR";
 		internal const string DefaultDeathMessage =        "A generic object lies here, dead.";
-		internal static string stripRegexPattern = $"{'\u001b'}\\[\\d+;*\\d*m";
-		internal static Regex stripRegex = new Regex(stripRegexPattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		internal static Dictionary<string, List<string>> speechVerbs = new Dictionary<string, List<string>>();
+		internal static Regex stripRegex = new Regex($"{'\u001b'}\\[\\d+;*\\d*m", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		internal static Regex mentionRegex = new Regex(@"\$([0-9a-z]+)_*[a-zA-Z]*\$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
 		static Text()
 		{
+
+			speechVerbs.Add(":)", new List<string>() {"smile and say", "smiles and says"});
+			speechVerbs.Add(":(", new List<string>() {"frown and say", "frowns and says"});
+			speechVerbs.Add("!", new List<string>()  {"shout", "shouts"});
+			speechVerbs.Add("?", new List<string>()  {"ask", "asks"});
+
 			exits.Add("north");
 			exits.Add("south");
 			exits.Add("east");
@@ -225,6 +233,100 @@ namespace inspiral
 				keys.Add(entry.Key);
 			}
 			return EnglishList(keys);
+		}
+
+		internal static string GameObjListToEnglishList(List<GameObject> input)
+		{
+			List<string> ids = new List<string>();
+			foreach(GameObject entry in input)
+			{
+				ids.Add($"{entry.name} (#{entry.id})");
+			}
+			return EnglishList(ids);
+		}
+
+		internal static string ReplacePronouns(GameObject other, string message, bool thirdPerson = false)
+		{
+			string token = other.name.ToLower();
+			if(!message.ToLower().Contains($"${token}"))
+			{
+				token = $"{other.id}";
+			}
+			return ReplacePronouns(token, other, message, thirdPerson);
+		}
+		internal static string ReplacePronouns(string token, GameObject other, string message, bool thirdPerson = false)
+		{
+			if(message.ToLower().Contains($"${token}"))
+			{
+				string replacementValue = thirdPerson ? Gender.He(other.gender) : "you";
+				message = Regex.Replace(
+					message,
+					$"\\${token}_(he|she|they|ey)\\$",
+					replacementValue,
+					RegexOptions.IgnoreCase
+				);
+				if(!message.ToLower().Contains($"${token}"))
+				{
+					return message;
+				}
+
+				replacementValue = thirdPerson ? Gender.His(other.gender) : "your";
+				message = Regex.Replace(
+					message,
+					$"\\${token}_(his|her|their|eir)\\$",
+					replacementValue,
+					RegexOptions.IgnoreCase
+				);
+				if(!message.ToLower().Contains($"${token}"))
+				{
+					return message;
+				}
+
+				replacementValue = thirdPerson ? Gender.Him(other.gender) : "you";
+				message = Regex.Replace(
+					message,
+					$"\\${token}_(him|her|them|em)\\$",
+					replacementValue,
+					RegexOptions.IgnoreCase
+				);
+				if(!message.ToLower().Contains($"${token}"))
+				{
+					return message;
+				}
+
+				replacementValue = thirdPerson ? Gender.Is(other.gender) : "are";
+				message = Regex.Replace(
+					message,
+					$"\\${token}_(is|are)\\$",
+					replacementValue,
+					RegexOptions.IgnoreCase
+				);
+				if(!message.ToLower().Contains($"${token}"))
+				{
+					return message;
+				}
+
+				replacementValue = thirdPerson ? Gender.Self(other.gender) : "self";
+				message = Regex.Replace(
+					message,
+					$"\\${token}_sel(ves|f)\\$",
+					replacementValue,
+					RegexOptions.IgnoreCase
+				);
+				if(!message.ToLower().Contains($"${token}"))
+				{
+					return message;
+				}
+
+				replacementValue = thirdPerson ? $"{other.GetString(Components.Visible, Text.FieldShortDesc)}" : "you";
+				message = Regex.Replace(
+					message,
+					$"\\${token}\\$",
+					replacementValue,
+					RegexOptions.IgnoreCase
+				);
+			}
+			return message;
 		}
 	}
 }

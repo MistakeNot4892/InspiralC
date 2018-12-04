@@ -11,7 +11,8 @@ namespace inspiral
 			AddCommand(Commands.Test);
 			AddCommand(Commands.Create);
 			AddCommand(Commands.Addroom);
-			AddCommand(Commands.Edit);
+			AddCommand(Commands.Set);
+			AddCommand(Commands.View);
 		}
 	}
 }

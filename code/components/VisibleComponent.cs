@@ -13,22 +13,36 @@ namespace inspiral
 		{
 			key = Components.Visible;
 		}
-		internal override void SetValue(int field, string newValue)
+		internal override bool SetValue(int field, string newValue)
 		{
+			bool success = false;
 			switch(field)
 			{
 				case Text.FieldShortDesc:
-					shortDescription = newValue;
+					if(shortDescription != newValue)
+					{
+						shortDescription = newValue;
+						success = true;
+					}
 					break;
 				case Text.FieldRoomDesc:
-					roomDescription = newValue;
+					if(roomDescription != newValue)
+					{
+						roomDescription = newValue;
+						success = true;
+					}
 					break;
 				case Text.FieldExaminedDesc:
-					examinedDescription = newValue;
+					if(examinedDescription != newValue)
+					{
+						examinedDescription = newValue;
+						success = true;
+					}
 					break;
 			}
+			return success;
 		}
-		internal override string GetStringValue(int field)
+		internal override string GetString(int field)
 		{
 			switch(field)
 			{
@@ -79,6 +93,13 @@ namespace inspiral
 			command.Parameters.AddWithValue("@p1", shortDescription);
 			command.Parameters.AddWithValue("@p2", roomDescription);
 			command.Parameters.AddWithValue("@p3", examinedDescription);
+		}
+		internal override string GetStringSummary() 
+		{
+			string result =    $"shortDescription:    {shortDescription}";
+			result = $"{result}\nroomDescription:     {roomDescription}";
+			result = $"{result}\nexaminedDescription: {examinedDescription}";
+			return result;
 		}
 	}
 }

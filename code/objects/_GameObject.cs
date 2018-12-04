@@ -5,13 +5,13 @@ namespace inspiral
 {
 	class GameObject
 	{
-		internal GameObject location;
-		internal List<GameObject> contents;
 		internal long id;
 		internal string name = "object";
-		internal long flags = 0;
 		internal long gender = Gender.Inanimate;
 		internal List<string> aliases = new List<string>();
+		internal GameObject location;
+		internal List<GameObject> contents;
+		internal long flags = 0;
 		internal Dictionary<int, GameComponent> components;
 		internal GameObject()
 		{
@@ -62,19 +62,33 @@ namespace inspiral
 		}
 		internal string GetString(int component, int field)
 		{
-			return GetComponent(component)?.GetStringValue(field) ?? null;
+			if(components.ContainsKey(component))
+			{
+				return components[component].GetString(field);
+			}
+			return null;
 		}
 		internal long GetLong(int component, int field)
 		{
-			return GetComponent(component)?.GetLongValue(field) ?? 0;
+			if(components.ContainsKey(component))
+			{
+				return components[component].GetLong(field);
+			}
+			return -1;
 		}
 		internal void SetLong(int component, int field, long newField)
 		{
-			GetComponent(component)?.SetValue(field, newField);
+			if((bool)(GetComponent(component)?.SetValue(field, newField)))
+			{
+				Game.Objects.QueueForUpdate(this);
+			}
 		}
 		internal void SetString(int component, int field, string newField)
 		{
-			GetComponent(component)?.SetValue(field, newField);
+			if((bool)(GetComponent(component)?.SetValue(field, newField)))
+			{
+				Game.Objects.QueueForUpdate(this);
+			}
 		}
 		internal GameObject FindGameObjectNearby(string token)
 		{
@@ -136,7 +150,6 @@ namespace inspiral
 					return;
 			}
 			editor.SendLineWithPrompt($"Set field '{field}' of object #{id} ({GetString(Components.Visible, Text.FieldShortDesc)}) to '{value}'.\nFor reference, previous value was '{lastVal}'.");
-			Game.Objects.QueueForUpdate(this);
 		}
 		internal GameObject FindGameObjectInContents(string token)
 		{
@@ -174,6 +187,7 @@ namespace inspiral
 		internal bool Move(GameObject destination)
 		{
 			bool canMove = true;
+			GameObject lastLocation = location;
 			if(location != null)
 			{
 				canMove = location.Exited(this);
@@ -185,6 +199,10 @@ namespace inspiral
 				{
 					destination.Entered(this);
 				}
+			}
+			if(location != lastLocation)
+			{
+				Game.Objects.QueueForUpdate(this);
 			}
 			return canMove;
 		}
@@ -232,10 +250,13 @@ namespace inspiral
 		}
 		internal void ShowToContents(GameObject source, string message1p, string message3p)
 		{
-			source.ShowMessage(message1p);
+			if(source.HasComponent(Components.Client))
+			{
+				source.ShowMessage(message1p);
+			}
 			foreach(GameObject obj in contents)
 			{
-				if(obj != source)
+				if(obj != source && obj.HasComponent(Components.Client))
 				{
 					obj.ShowMessage(message3p);
 				}
@@ -243,12 +264,39 @@ namespace inspiral
 		}
 		internal virtual void ShowMessage(string message)
 		{
-			ClientComponent clientComp = (ClientComponent)GetComponent(Components.Client);
-			if(clientComp != null && clientComp.client != null)
+			ClientComponent client = (ClientComponent)GetComponent(Components.Client);
+			if(client != null)
 			{
-				clientComp.client.SendLineWithPrompt(message);
+				client.client?.SendLineWithPrompt(message);
 			}
 		}
+
+		internal virtual void ShowNearby(GameObject source, string message, List<GameObject> exceptions)
+		{
+			if(source.location != null)
+			{
+				foreach(GameObject obj in source.location.contents)
+				{
+					if(!exceptions.Contains(obj))
+					{
+						obj.ShowMessage(message);
+					}
+				}
+			}
+			else
+			{
+				if(!exceptions.Contains(source))
+				{
+					source.ShowMessage(message);
+				}
+			}
+		}
+
+		internal virtual void ShowNearby(GameObject source, string message)
+		{
+			ShowNearby(source, message, message);
+		}
+
 		internal virtual void ShowNearby(GameObject source, string message1p, string message3p)
 		{
 			if(source.location != null)
@@ -257,8 +305,33 @@ namespace inspiral
 			}
 			else
 			{
-				source.ShowMessage(message1p);
+				if(source.HasComponent(Components.Client))
+				{
+					source.ShowMessage(message1p);
+				}
 			}
+		}
+		internal string GetStringSummary(GameClient invoker)
+		{
+			Dictionary<string, List<string>> summary = new Dictionary<string, List<string>>();
+
+			string fieldKey = $"Object summary for {name} (id #{id})";
+			summary.Add(fieldKey, new List<string>());
+			summary[fieldKey].Add($"Aliases:  {Text.EnglishList(aliases)}");
+			summary[fieldKey].Add($"Gender:   {Gender.Term(gender)} ({gender})");
+			if(location != null)
+			{
+				summary[fieldKey].Add($"Location: {location.id}");
+			}
+			else
+			{
+				summary[fieldKey].Add($"Location: null");
+			}
+			foreach(KeyValuePair<int, GameComponent> comp in components)
+			{
+				summary[fieldKey].Add($"\n{Text.FormatPopup(Components.Names[comp.Key], comp.Value.GetStringSummary(), invoker.config.wrapwidth-13)}");
+			}
+			return Text.FormatBlock(summary, invoker.config.wrapwidth);
 		}
 	}
 }

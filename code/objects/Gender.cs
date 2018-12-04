@@ -10,7 +10,24 @@ namespace inspiral
 		internal const int Female =    2;
 		internal const int Neuter =    3;
 		internal const int Androgyne =    4;
-		internal static string His(int g) {
+		internal static string Term(long g)
+		{
+			switch(g)
+			{
+				case Male:
+					return "male";
+				case Female:
+					return "female";
+				case Inanimate:
+					return "inanimate";
+				case Neuter:
+					return "neuter";
+				default:
+					return "androgyne";
+			}			
+		}
+		internal static string His(long g) 
+		{
 			switch(g)
 			{
 				case Male:
@@ -25,7 +42,8 @@ namespace inspiral
 					return "their";
 			}
 		}
-		internal static string Him(int g) {
+		internal static string Him(long g) 
+		{
 			switch(g)
 			{
 				case Male:
@@ -40,7 +58,8 @@ namespace inspiral
 					return "them";
 			}
 		}
-		internal static string He(int g) {
+		internal static string He(long g) 
+		{
 			switch(g)
 			{
 				case Male:
@@ -55,7 +74,8 @@ namespace inspiral
 					return "they";
 			}
 		}
-		internal static string Is(int g) {
+		internal static string Is(long g) 
+		{
 			switch(g)
 			{
 				case Androgyne:
@@ -64,7 +84,8 @@ namespace inspiral
 					return "is";
 			}
 		}
-		internal static string Self(int g) {
+		internal static string Self(long g) 
+		{
 			switch(g)
 			{
 				case Androgyne:
