@@ -4,14 +4,8 @@ using System.Text.RegularExpressions;
 
 namespace inspiral
 {
-	internal static class Text
+	internal static partial class Text
 	{
-		internal const int FieldShortDesc =    0;
-		internal const int FieldRoomDesc =     1;
-		internal const int FieldExaminedDesc = 2;
-		internal const int FieldEnterMessage = 3;
-		internal const int FieldLeaveMessage = 4;
-		internal const int FieldDeathMessage = 5;
 		internal static List<string> exits = new List<string>();
 		internal static Dictionary<string, string> shortExits = new Dictionary<string, string>();
 		internal static Dictionary<string, string> reversedExits = new Dictionary<string, string>();

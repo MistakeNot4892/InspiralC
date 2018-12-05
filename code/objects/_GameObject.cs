@@ -12,13 +12,13 @@ namespace inspiral
 		internal GameObject location;
 		internal List<GameObject> contents;
 		internal long flags = 0;
-		internal Dictionary<int, GameComponent> components;
+		internal Dictionary<string, GameComponent> components;
 		internal GameObject()
 		{
 			contents = new List<GameObject>();
-			components = new Dictionary<int, GameComponent>();
+			components = new Dictionary<string, GameComponent>();
 		}
-		internal GameComponent GetComponent(int componentKey) 
+		internal GameComponent GetComponent(string componentKey) 
 		{
 			if(HasComponent(componentKey))
 			{
@@ -26,7 +26,7 @@ namespace inspiral
 			}
 			return null;
 		}
-		internal void AddComponent(int componentKey) 
+		internal void AddComponent(string componentKey) 
 		{
 			if(!HasComponent(componentKey))
 			{
@@ -35,7 +35,7 @@ namespace inspiral
 				component.Added(this);
 			}
 		}
-		internal void RemoveComponent(int componentKey)
+		internal void RemoveComponent(string componentKey)
 		{
 			if(HasComponent(componentKey))
 			{
@@ -44,7 +44,7 @@ namespace inspiral
 				component.Removed(this);
 			}
 		}
-		internal bool HasComponent(int componentKey)
+		internal bool HasComponent(string componentKey)
 		{
 			return components.ContainsKey(componentKey);
 		}
@@ -60,7 +60,7 @@ namespace inspiral
 				viewer.SendLineWithPrompt("There is nothing there.");
 			}
 		}
-		internal string GetString(int component, int field)
+		internal string GetString(string component, string field)
 		{
 			if(components.ContainsKey(component))
 			{
@@ -68,7 +68,7 @@ namespace inspiral
 			}
 			return null;
 		}
-		internal long GetLong(int component, int field)
+		internal long GetLong(string component, string field)
 		{
 			if(components.ContainsKey(component))
 			{
@@ -76,14 +76,14 @@ namespace inspiral
 			}
 			return -1;
 		}
-		internal void SetLong(int component, int field, long newField)
+		internal void SetLong(string component, string field, long newField)
 		{
 			if((bool)(GetComponent(component)?.SetValue(field, newField)))
 			{
 				Game.Objects.QueueForUpdate(this);
 			}
 		}
-		internal void SetString(int component, int field, string newField)
+		internal void SetString(string component, string field, string newField)
 		{
 			if((bool)(GetComponent(component)?.SetValue(field, newField)))
 			{
@@ -327,9 +327,9 @@ namespace inspiral
 			{
 				summary[fieldKey].Add($"Location: null");
 			}
-			foreach(KeyValuePair<int, GameComponent> comp in components)
+			foreach(KeyValuePair<string, GameComponent> comp in components)
 			{
-				summary[fieldKey].Add($"\n{Text.FormatPopup(Components.Names[comp.Key], comp.Value.GetStringSummary(), invoker.config.wrapwidth-13)}");
+				summary[fieldKey].Add($"\n{Text.FormatPopup(comp.Value.name, comp.Value.GetStringSummary(), invoker.config.wrapwidth-13)}");
 			}
 			return Text.FormatBlock(summary, invoker.config.wrapwidth);
 		}

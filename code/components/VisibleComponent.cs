@@ -4,16 +4,57 @@ using System.Data.SQLite;
 
 namespace inspiral
 {
+	internal static partial class Components
+	{
+		internal const string Visible =   "visible";
+		internal static List<GameComponent> Visibles => GetComponents(Visible);
+	}
+
+	internal static partial class Text
+	{
+		internal const string FieldShortDesc    = "short";
+		internal const string FieldRoomDesc     =  "room";
+		internal const string FieldExaminedDesc = "examined";
+	}
+
+	internal class VisibleBuilder : GameComponentBuilder
+	{
+		internal override string Name         { get; set; } = Components.Visible;
+		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_visible WHERE id = @p0;";
+
+		internal override string TableSchema  { get; set; } = @"components_visible (
+			id INTEGER NOT NULL PRIMARY KEY UNIQUE,
+			shortDescription TEXT DEFAULT '',
+			roomDescription TEXT DEFAULT '',
+			examinedDescription TEXT DEFAULT ''
+			)";
+		internal override string UpdateSchema { get; set; } = @"UPDATE components_visible SET 
+			shortDescription = @p1, 
+			roomDescription = @p2, 
+			examinedDescription = @p3 
+			WHERE id = @p0;";
+		internal override string InsertSchema { get; set; } = @"INSERT INTO components_visible (
+			id, 
+			shortDescription, 
+			roomDescription, 
+			examinedDescription
+			) VALUES (
+			@p0, 
+			@p1, 
+			@p2, 
+			@p3 
+			);";
+		internal override GameComponent Build()
+		{
+			return new VisibleComponent();
+		}
+	}
 	internal class VisibleComponent : GameComponent
 	{
 		internal string shortDescription = "a generic object";
 		internal string roomDescription = "A generic object is here.";
 		internal string examinedDescription = "This is a generic object. Fascinating stuff.";
-		internal VisibleComponent()
-		{
-			key = Components.Visible;
-		}
-		internal override bool SetValue(int field, string newValue)
+		internal override bool SetValue(string field, string newValue)
 		{
 			bool success = false;
 			switch(field)
@@ -42,7 +83,7 @@ namespace inspiral
 			}
 			return success;
 		}
-		internal override string GetString(int field)
+		internal override string GetString(string field)
 		{
 			switch(field)
 			{
