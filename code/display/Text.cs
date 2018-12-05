@@ -313,6 +313,18 @@ namespace inspiral
 					return message;
 				}
 
+				replacementValue = thirdPerson ? $"{other.GetString(Components.Visible, Text.FieldShortDesc)}'s" : "your";
+				message = Regex.Replace(
+					message,
+					$"\\${token}'s\\$",
+					replacementValue,
+					RegexOptions.IgnoreCase
+				);
+				if(!message.ToLower().Contains($"${token}"))
+				{
+					return message;
+				}
+
 				replacementValue = thirdPerson ? $"{other.GetString(Components.Visible, Text.FieldShortDesc)}" : "you";
 				message = Regex.Replace(
 					message,
