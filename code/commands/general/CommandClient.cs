@@ -8,12 +8,9 @@ namespace inspiral
 	}
 	class CommandClient : GameCommand
 	{
+		internal override string Command { get; set; } = "client";
+		internal override List<string> Aliases { get; set; } = new List<string>() { "client" };
 		internal override string Usage { get; set; } = "client";
-		internal CommandClient() 
-		{
-			commandString = "client";
-			aliases = new List<string>() {"client"};
-		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
 			invoker.SendLineWithPrompt(invoker.GetClientSummary());

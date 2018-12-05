@@ -10,12 +10,9 @@ namespace inspiral
 	}
 	class CommandAddroom : GameCommand
 	{
+		internal override string Command { get; set; } = "addroom";
+		internal override List<string> Aliases { get; set; } = new List<string>() { "addroom", "connect" };
 		internal override string Usage { get; set; } = "addroom [direction] [room id or 'new'] <one-way>";
-		internal CommandAddroom() 
-		{
-			commandString = "addroom";
-			aliases = new List<string>() {"addroom"};
-		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
 			if(invoker.shell == null || invoker.shell.location == null || !invoker.shell.location.HasComponent(Components.Room))

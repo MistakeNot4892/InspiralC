@@ -32,8 +32,8 @@ namespace inspiral
 		}
 		internal void AddCommand(GameCommand command)
 		{
-			commands.Add(command.commandString, command);
-			foreach(string alias in command.aliases)
+			commands.Add(command.Command, command);
+			foreach(string alias in command.Aliases)
 			{
 				if(!commands.ContainsKey(alias))
 				{

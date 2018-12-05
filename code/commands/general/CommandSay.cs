@@ -9,12 +9,9 @@ namespace inspiral
 	}
 	class CommandSay : GameCommand
 	{
+		internal override string Command { get; set; } = "say";
+		internal override List<string> Aliases { get; set; } = new List<string>() { "say", "ask" };
 		internal override string Usage { get; set; } = "say <(emote text)> [speech text] <emoticon>";
-		internal CommandSay() 
-		{
-			commandString = "say";
-			aliases = new List<string>() {"say", "'"};
-		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
 

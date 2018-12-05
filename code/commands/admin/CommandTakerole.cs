@@ -9,12 +9,9 @@ namespace inspiral
 
 	class CommandTakerole : GameCommand
 	{
+		internal override string Command { get; set; } = "takerole";
+		internal override List<string> Aliases { get; set; } = new List<string>() { "takerole" };
 		internal override string Usage { get; set; } = "takerole [account name or id] [role name or id]";
-		internal CommandTakerole() 
-		{
-			commandString = "takerole";
-			aliases = new List<string>() {"takerole"};
-		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
 			string[] tokens = invocation.ToLower().Split(" ");

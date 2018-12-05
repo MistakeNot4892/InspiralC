@@ -10,12 +10,9 @@ namespace inspiral
 	}
 	class CommandEmote : GameCommand
 	{
+		internal override string Command { get; set; } = "emote";
+		internal override List<string> Aliases { get; set; } = new List<string>() { "emote", "em", "me" };
 		internal override string Usage { get; set; } = "emote <(preceeding text)> [following text]";
-		internal CommandEmote() 
-		{
-			commandString = "emote";
-			aliases = new List<string>() {"emote", "em", "me"};
-		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
 			string emoteText = invoker.shell.GetString(Components.Visible, Text.FieldShortDesc);

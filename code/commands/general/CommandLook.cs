@@ -9,12 +9,9 @@ namespace inspiral
 	}
 	class CommandLook : GameCommand
 	{
+		internal override string Command { get; set; } = "look";
+		internal override List<string> Aliases { get; set; } = new List<string>() { "look", "l", "ql" };
 		internal override string Usage { get; set; } = "look";
-		internal CommandLook() 
-		{
-			commandString = "look";
-			aliases = new List<string>() {"look", "l", "ql"};
-		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
 			if(invoker.shell.location == null)

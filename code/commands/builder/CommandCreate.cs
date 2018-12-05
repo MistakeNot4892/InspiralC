@@ -9,12 +9,9 @@ namespace inspiral
 	}
 	class CommandCreate : GameCommand
 	{
+		internal override string Command { get; set; } = "create";
+		internal override List<string> Aliases { get; set; } = new List<string>() { "create" };
 		internal override string Usage { get; set; } = "create [object or room]";
-		internal CommandCreate() 
-		{
-			commandString = "create";
-			aliases = new List<string>() {"create"};
-		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
 			string[] tokens = invocation.Split(" ");

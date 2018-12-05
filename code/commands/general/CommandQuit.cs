@@ -8,12 +8,9 @@ namespace inspiral
 	}
 	class CommandQuit : GameCommand
 	{
+		internal override string Command { get; set; } = "quit";
+		internal override List<string> Aliases { get; set; } = new List<string>() { "quit", "qq" };
 		internal override string Usage { get; set; } = "quit";
-		internal CommandQuit() 
-		{
-			commandString = "quit";
-			aliases = new List<string>() {"quit", "qq"};
-		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
 			invoker.SendLine("Goodbye!");

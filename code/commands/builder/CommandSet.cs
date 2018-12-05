@@ -8,12 +8,9 @@ namespace inspiral
 	}
 	class CommandSet : GameCommand
 	{
+		internal override string Command { get; set; } = "set";
+		internal override List<string> Aliases { get; set; } = new List<string>() { "set", "vs" };
 		internal override string Usage { get; set; } = "set [object name or id] [object field] [new value]";
-		internal CommandSet() 
-		{
-			commandString = "set";
-			aliases = new List<string>() {"vs"};
-		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
 			string[] tokens = invocation.Split(" ");

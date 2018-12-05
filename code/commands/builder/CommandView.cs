@@ -8,12 +8,9 @@ namespace inspiral
 	}
 	class CommandView : GameCommand
 	{
+		internal override string Command { get; set; } = "view";
+		internal override List<string> Aliases { get; set; } = new List<string>() { "view", "vv" };
 		internal override string Usage { get; set; } = "view [object name or id]";
-		internal CommandView() 
-		{
-			commandString = "view";
-			aliases = new List<string>() {"vv"};
-		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
 			string[] tokens = invocation.Split(" ");

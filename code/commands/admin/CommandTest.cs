@@ -9,12 +9,9 @@ namespace inspiral
 	}
 	class CommandTest : GameCommand
 	{
+		internal override string Command { get; set; } = "test";
+		internal override List<string> Aliases { get; set; } = new List<string>() { "test" };
 		internal override string Usage { get; set; } = "test";
-		internal CommandTest() 
-		{
-			commandString = "test";
-			aliases = new List<string>() {"test"};
-		}
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
 			string replaceWith = "FUCK";
