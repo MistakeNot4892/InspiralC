@@ -9,14 +9,13 @@ namespace inspiral
 	}
 	internal class RoleBuilder : GameRole
 	{
+		internal override string Name { get; set; } = "Builder";
 		internal override string Description { get; set; } = "Grants room and object viewing/modification functions.";
-		internal RoleBuilder()
-		{
-			name = "Builder";
-			AddCommand(Commands.Create);
-			AddCommand(Commands.Addroom);
-			AddCommand(Commands.Set);
-			AddCommand(Commands.View);
-		}
+		internal override List<GameCommand> UniqueCommands { get; set; } = new List<GameCommand>() {
+			Commands.Create,
+			Commands.Addroom,
+			Commands.Set,
+			Commands.View
+		};
 	}
 }

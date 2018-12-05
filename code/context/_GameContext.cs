@@ -18,9 +18,9 @@ namespace inspiral
 			}
 			foreach(GameRole role in invoker.account.roles)
 			{
-				if(role.commands.ContainsKey(command))
+				if(role.AllCommands.ContainsKey(command))
 				{
-					GameCommand gameCommand = role.commands[command];
+					GameCommand gameCommand = role.AllCommands[command];
 					return gameCommand.Invoke(invoker, arguments);
 				}
 			}

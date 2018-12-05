@@ -9,6 +9,7 @@ namespace inspiral
 
 	class CommandTakerole : GameCommand
 	{
+		internal override string Description { get; set; } = "Removes a role from an account.";
 		internal override string Command { get; set; } = "takerole";
 		internal override List<string> Aliases { get; set; } = new List<string>() { "takerole" };
 		internal override string Usage { get; set; } = "takerole [account name or id] [role name or id]";
@@ -46,7 +47,7 @@ namespace inspiral
 			{
 				acct.roles.Remove(role);
 				Game.Accounts.QueueForUpdate(acct);
-				invoker.SendLineWithPrompt($"Removed role '{role.name}' from '{acct.userName}'.");
+				invoker.SendLineWithPrompt($"Removed role '{role.Name}' from '{acct.userName}'.");
 			}
 			return true;
 		}

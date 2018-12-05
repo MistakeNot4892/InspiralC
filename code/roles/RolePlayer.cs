@@ -9,16 +9,16 @@ namespace inspiral
 	}
 	internal class RolePlayer : GameRole
 	{
+		internal override string Name { get; set; } = "Player";
 		internal override string Description { get; set; } = "Grants general world interaction and communication commands.";
-
-		internal RolePlayer()
-		{
-			name = "Player";
-			AddCommand(Commands.Say);
-			AddCommand(Commands.Emote);
-			AddCommand(Commands.Quit);
-			AddCommand(Commands.Look);
-			AddCommand(Commands.Client);
-		}
+		internal override List<GameCommand> UniqueCommands { get; set; } = new List<GameCommand>() {
+			Commands.Say,
+			Commands.Emote,
+			Commands.Quit,
+			Commands.Look,
+			Commands.Client,
+			Commands.Help,
+			Commands.Config
+		};
 	}
 }

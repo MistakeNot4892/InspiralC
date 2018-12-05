@@ -9,6 +9,7 @@ namespace inspiral
 	}
 	class CommandSay : GameCommand
 	{
+		internal override string Description { get; set; } = "Vocally communicates with the people and things around you.";
 		internal override string Command { get; set; } = "say";
 		internal override List<string> Aliases { get; set; } = new List<string>() { "say", "ask" };
 		internal override string Usage { get; set; } = "say <(emote text)> [speech text] <emoticon>";

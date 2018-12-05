@@ -7,6 +7,7 @@ namespace inspiral
 		internal virtual string Command { get; set; } = null;
 		internal virtual List<string> Aliases { get; set; } = null;
 		internal virtual string Usage { get; set; } = "No usage information supplied.";
+		internal virtual string Description { get; set; } = "No description supplied.";
 		internal virtual bool Invoke(GameClient invoker, string invocation) 
 		{
 			return false;

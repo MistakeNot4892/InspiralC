@@ -130,7 +130,7 @@ namespace inspiral
 			List<string> roleKeys = new List<string>();
 			foreach(GameRole role in acct.roles)
 			{
-				roleKeys.Add(role.name);
+				roleKeys.Add(role.Name);
 			}
 			command.Parameters.AddWithValue("@p4", JsonConvert.SerializeObject(roleKeys));
 		}

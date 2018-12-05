@@ -9,6 +9,7 @@ namespace inspiral
 	}
 	class CommandLook : GameCommand
 	{
+		internal override string Description { get; set; } = "Examines a creature, object or location.";
 		internal override string Command { get; set; } = "look";
 		internal override List<string> Aliases { get; set; } = new List<string>() { "look", "l", "ql" };
 		internal override string Usage { get; set; } = "look";

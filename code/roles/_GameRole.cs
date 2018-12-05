@@ -11,7 +11,7 @@ namespace inspiral
 		{
 			foreach(GameRole role in new List<GameRole>() {Administrator, Builder, Player})
 			{
-				roles.Add(role.name.ToLower(), role);
+				roles.Add(role.Name.ToLower(), role);
 			}
 		}
 		internal static GameRole GetRole(string key)
@@ -26,41 +26,35 @@ namespace inspiral
 	}
 	internal class GameRole
 	{
-		internal string name;
+		internal Dictionary<string, GameCommand> AllCommands { get; set; } = new Dictionary<string, GameCommand>();
+		internal virtual string Name { get; set; } = "unnamed";
 		internal virtual string Description { get; set; } = "No description supplied.";
-		internal Dictionary<string, GameCommand> commands = new Dictionary<string, GameCommand>();
+		internal virtual List<GameCommand> UniqueCommands { get; set; } = new List<GameCommand>();
+
+		internal GameRole()
+		{
+			foreach(GameCommand command in UniqueCommands)
+			{
+				if(!AllCommands.ContainsKey(command.Command))
+				{
+					AllCommands.Add(command.Command, command);
+				}
+			}
+		}
+
 		internal string GetSummary() 
 		{ 
 			string result = $"{Description}\n";
-			if(commands.Count <= 0)
+			if(AllCommands.Count <= 0)
 			{
 				return $"{result}\nThis role has no associated commands.";
 			}
 			result += "\nCommands:";
-			List<GameCommand> uniqueCommands = new List<GameCommand>();
-			foreach(KeyValuePair<string, GameCommand> command in commands)
-			{
-				if(!uniqueCommands.Contains(command.Value))
-				{
-					uniqueCommands.Add(command.Value);
-				}
-			}
-			foreach(GameCommand command in uniqueCommands)
+			foreach(GameCommand command in UniqueCommands)
 			{
 				result += $"\n   {command.GetSummary()}";
 			}
 			return result;
-		}
-		internal void AddCommand(GameCommand command)
-		{
-			commands.Add(command.Command, command);
-			foreach(string alias in command.Aliases)
-			{
-				if(!commands.ContainsKey(alias))
-				{
-					commands.Add(alias, command);
-				}
-			}
 		}
 	}
 }

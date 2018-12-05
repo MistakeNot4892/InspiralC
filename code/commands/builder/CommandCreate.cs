@@ -9,6 +9,7 @@ namespace inspiral
 	}
 	class CommandCreate : GameCommand
 	{
+		internal override string Description { get; set; } = "Creates a new database entry for an object or room.";
 		internal override string Command { get; set; } = "create";
 		internal override List<string> Aliases { get; set; } = new List<string>() { "create" };
 		internal override string Usage { get; set; } = "create [object or room]";

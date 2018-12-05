@@ -10,6 +10,7 @@ namespace inspiral
 	}
 	class CommandAddroom : GameCommand
 	{
+		internal override string Description { get; set; } = "Adds a new exit to a room.";
 		internal override string Command { get; set; } = "addroom";
 		internal override List<string> Aliases { get; set; } = new List<string>() { "addroom", "connect" };
 		internal override string Usage { get; set; } = "addroom [direction] [room id or 'new'] <one-way>";
