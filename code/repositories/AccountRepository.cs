@@ -3,6 +3,7 @@ using System.Data.SQLite;
 using System.Collections.Generic;
 using System.Diagnostics;
 using BCrypt.Net;
+using Newtonsoft.Json;
 
 namespace inspiral
 {
@@ -35,19 +36,22 @@ namespace inspiral
 				id,
 				userName, 
 				passwordHash,
-				objectId
+				objectId,
+				roles
 				) 
 				VALUES (
 					@p0,
 					@p1,
 					@p2,
-					@p3
+					@p3,
+					@p4
 				);";
 			dbTableSchema = @"id INTEGER PRIMARY KEY UNIQUE, 
 				userName TEXT NOT NULL UNIQUE, 
 				passwordHash TEXT NOT NULL,
-				objectId INTEGER NOT NULL UNIQUE";
-			dbUpdateQuery = "UPDATE player_accounts SET userName = @p1, passwordHash = @p2, objectId = @p3 WHERE id = @p0;";
+				objectId INTEGER NOT NULL UNIQUE,
+				roles TEXT DEFAULT ''";
+			dbUpdateQuery = "UPDATE player_accounts SET userName = @p1, passwordHash = @p2, objectId = @p3, roles = @p4 WHERE id = @p0;";
 		}
 		internal override void InstantiateFromRecord(SQLiteDataReader reader, SQLiteConnection dbConnection)
 		{
@@ -55,6 +59,14 @@ namespace inspiral
 			acct.userName =      reader["userName"].ToString();
 			acct.passwordHash =  reader["passwordHash"].ToString();
 			acct.objectId =    (long)reader["objectId"];
+			foreach(string role in JsonConvert.DeserializeObject<List<string>>(reader["roles"].ToString()))
+			{
+				GameRole foundRole = Roles.GetRole(role);
+				if(foundRole != null && !acct.roles.Contains(foundRole))
+				{
+					acct.roles.Add(foundRole);
+				}
+			}
 			accounts.Add(acct.userName, acct);
 			contents.Add(acct.id, acct);
 		}
@@ -115,6 +127,25 @@ namespace inspiral
 			command.Parameters.AddWithValue("@p1", acct.userName);
 			command.Parameters.AddWithValue("@p2", acct.passwordHash);
 			command.Parameters.AddWithValue("@p3", acct.objectId);
+			List<string> roleKeys = new List<string>();
+			foreach(GameRole role in acct.roles)
+			{
+				roleKeys.Add(role.name);
+			}
+			command.Parameters.AddWithValue("@p4", JsonConvert.SerializeObject(roleKeys));
+		}
+
+		internal PlayerAccount FindAccount(string searchstring)
+		{
+			foreach(KeyValuePair<string, PlayerAccount> account in accounts)
+			{
+				if(account.Value.userName.ToLower() == searchstring ||
+					$"{account.Value.id}" == searchstring)
+				{
+					return account.Value;
+				}
+			}
+			return null;
 		}
 	}
 }

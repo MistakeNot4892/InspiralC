@@ -8,6 +8,7 @@ namespace inspiral
 	}
 	class CommandQuit : GameCommand
 	{
+		internal override string Usage { get; set; } = "quit";
 		internal CommandQuit() 
 		{
 			commandString = "quit";

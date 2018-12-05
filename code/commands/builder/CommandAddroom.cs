@@ -10,6 +10,7 @@ namespace inspiral
 	}
 	class CommandAddroom : GameCommand
 	{
+		internal override string Usage { get; set; } = "addroom [direction] [room id or 'new'] <one-way>";
 		internal CommandAddroom() 
 		{
 			commandString = "addroom";

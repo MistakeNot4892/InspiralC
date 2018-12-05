@@ -9,6 +9,7 @@ namespace inspiral
 	}
 	class CommandLook : GameCommand
 	{
+		internal override string Usage { get; set; } = "look";
 		internal CommandLook() 
 		{
 			commandString = "look";

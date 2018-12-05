@@ -293,7 +293,7 @@ namespace inspiral
 			}
 			foreach(KeyValuePair<string, GameComponent> comp in components)
 			{
-				summary[fieldKey].Add($"\n{Text.FormatPopup(comp.Value.name, comp.Value.GetStringSummary(), invoker.config.wrapwidth-13)}");
+				summary[fieldKey].Add($"\n{Text.FormatPopup(comp.Value.name, comp.Value.GetStringSummary(), invoker.config.wrapwidth+Text.NestedWrapwidthModifier)}");
 			}
 			return Text.FormatBlock(summary, invoker.config.wrapwidth);
 		}

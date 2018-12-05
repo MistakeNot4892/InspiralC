@@ -8,6 +8,7 @@ namespace inspiral
 	}
 	class CommandClient : GameCommand
 	{
+		internal override string Usage { get; set; } = "client";
 		internal CommandClient() 
 		{
 			commandString = "client";

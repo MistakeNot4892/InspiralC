@@ -9,6 +9,7 @@ namespace inspiral
 	}
 	class CommandTest : GameCommand
 	{
+		internal override string Usage { get; set; } = "test";
 		internal CommandTest() 
 		{
 			commandString = "test";

@@ -10,6 +10,7 @@ namespace inspiral
 	}
 	class CommandEmote : GameCommand
 	{
+		internal override string Usage { get; set; } = "emote <(preceeding text)> [following text]";
 		internal CommandEmote() 
 		{
 			commandString = "emote";

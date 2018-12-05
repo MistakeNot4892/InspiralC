@@ -9,6 +9,7 @@ namespace inspiral
 	}
 	class CommandCreate : GameCommand
 	{
+		internal override string Usage { get; set; } = "create [object or room]";
 		internal CommandCreate() 
 		{
 			commandString = "create";

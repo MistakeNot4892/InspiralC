@@ -9,6 +9,8 @@ namespace inspiral
 	}
 	internal class RolePlayer : GameRole
 	{
+		internal override string Description { get; set; } = "Grants general world interaction and communication commands.";
+
 		internal RolePlayer()
 		{
 			name = "Player";

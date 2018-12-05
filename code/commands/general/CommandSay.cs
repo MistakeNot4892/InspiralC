@@ -9,6 +9,7 @@ namespace inspiral
 	}
 	class CommandSay : GameCommand
 	{
+		internal override string Usage { get; set; } = "say <(emote text)> [speech text] <emoticon>";
 		internal CommandSay() 
 		{
 			commandString = "say";

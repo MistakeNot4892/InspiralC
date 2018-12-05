@@ -8,6 +8,7 @@ namespace inspiral
 	}
 	class CommandSet : GameCommand
 	{
+		internal override string Usage { get; set; } = "set [object name or id] [object field] [new value]";
 		internal CommandSet() 
 		{
 			commandString = "set";

@@ -6,6 +6,7 @@ namespace inspiral
 {
 	internal static partial class Text
 	{
+		internal const int NestedWrapwidthModifier = -13;
 		internal static List<string> exits = new List<string>();
 		internal static Dictionary<string, string> shortExits = new Dictionary<string, string>();
 		internal static Dictionary<string, string> reversedExits = new Dictionary<string, string>();
@@ -172,7 +173,7 @@ namespace inspiral
 			foreach(KeyValuePair<string, List<string>> subSection in formatLines)
 			{
 				result += $"\n{divider}";
-				string[] headerLines = Text.Wrap(subSection.Key, wrapwidth-13).Split('\n');
+				string[] headerLines = Text.Wrap(subSection.Key, wrapwidth+Text.NestedWrapwidthModifier).Split('\n');
 				for(int i = 0;i < headerLines.Length;i++)
 				{
 					string headerLine = headerLines[i];
@@ -185,7 +186,7 @@ namespace inspiral
 				result += $"\n{emptyLine}";
 				foreach(string line in subSection.Value)
 				{
-					string[] subLines = Wrap(line, wrapwidth-13).Split("\n");
+					string[] subLines = Wrap(line, wrapwidth + Text.NestedWrapwidthModifier).Split("\n");
 					for(int i = 0;i<subLines.Length;i++)
 					{
 						string subLine = subLines[i];

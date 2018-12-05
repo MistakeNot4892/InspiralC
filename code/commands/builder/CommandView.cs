@@ -8,6 +8,7 @@ namespace inspiral
 	}
 	class CommandView : GameCommand
 	{
+		internal override string Usage { get; set; } = "view [object name or id]";
 		internal CommandView() 
 		{
 			commandString = "view";

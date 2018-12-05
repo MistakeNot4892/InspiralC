@@ -9,6 +9,7 @@ namespace inspiral
 	}
 	internal class RoleBuilder : GameRole
 	{
+		internal override string Description { get; set; } = "Grants room and object viewing/modification functions.";
 		internal RoleBuilder()
 		{
 			name = "Builder";
