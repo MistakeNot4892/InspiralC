@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
+	internal static partial class Commands
+	{
+		internal static CommandLook Look = new CommandLook();
+	}
 	class CommandLook : GameCommand
 	{
 		internal CommandLook() 

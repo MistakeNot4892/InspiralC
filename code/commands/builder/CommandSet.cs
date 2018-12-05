@@ -2,6 +2,10 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
+	internal static partial class Commands
+	{
+		internal static CommandSet Set = new CommandSet();
+	}
 	class CommandSet : GameCommand
 	{
 		internal CommandSet() 

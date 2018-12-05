@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
+	internal static partial class Commands
+	{
+		internal static CommandCreate Create = new CommandCreate();
+	}
 	class CommandCreate : GameCommand
 	{
 		internal CommandCreate() 

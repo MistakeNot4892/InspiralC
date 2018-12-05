@@ -68,9 +68,13 @@ namespace inspiral
 		}
 		internal PlayerAccount CreateAccount(string userName, string passwordHash)
 		{
+
+			// Create the new, blank account.
 			PlayerAccount acct = (PlayerAccount)CreateNewInstance(GetUnusedIndex(), false);
 			acct.userName = userName;
 			acct.passwordHash = passwordHash;
+
+			// Create the shell the client will be piloting around, saving data to, etc.
 			GameObject gameObj = (GameObject)Game.Objects.CreateNewInstance(false);
 			acct.objectId = gameObj.id;
 			gameObj.name = Text.Capitalize(acct.userName);
@@ -84,6 +88,16 @@ namespace inspiral
 			gameObj.SetString(Components.Mobile, Text.FieldLeaveMessage, $"{gameObj.name} leaves to the $DIR.");
 			gameObj.SetString(Components.Mobile, Text.FieldDeathMessage, $"The corpse of {gameObj.name} lies here.");
 			Game.Objects.AddDatabaseEntry(gameObj);
+
+			// If the account DB is empty, give them admin roles.
+			if(accounts.Count <= 0)
+			{
+				Debug.WriteLine($"No accounts found, giving admin roles to {acct.userName}.");
+				acct.roles.Add(Roles.Builder);
+				acct.roles.Add(Roles.Administrator);
+			}
+
+			// Finalize everything.
 			accounts.Add(acct.userName, acct);
 			AddDatabaseEntry(acct);
 			return acct;
@@ -92,7 +106,6 @@ namespace inspiral
 		{
 			PlayerAccount acct = new PlayerAccount(id);
 			acct.roles.Add(Roles.Player);
-			acct.roles.Add(Roles.Builder);
 			return acct;
 		}
 		internal override void AddCommandParameters(SQLiteCommand command, Object instance)

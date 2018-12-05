@@ -3,6 +3,10 @@ using System.Text.RegularExpressions;
 
 namespace inspiral
 {
+	internal static partial class Commands
+	{
+		internal static CommandTest Test = new CommandTest();
+	}
 	class CommandTest : GameCommand
 	{
 		internal CommandTest() 

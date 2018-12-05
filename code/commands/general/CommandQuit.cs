@@ -2,6 +2,10 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
+	internal static partial class Commands
+	{
+		internal static CommandQuit Quit = new CommandQuit();
+	}
 	class CommandQuit : GameCommand
 	{
 		internal CommandQuit() 

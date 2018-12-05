@@ -107,7 +107,7 @@ namespace inspiral
 				List<string> roomAppearances = new List<string>();
 				foreach(GameObject obj in parent.contents)
 				{
-					if(obj != viewer.shell && obj.HasComponent(Components.Visible))
+					if(obj != viewer.shell && obj.HasComponent(Components.Visible)) //&& !obj.flags.Contains(Text.FlagInvisible))
 					{
 						roomAppearances.Add(obj.GetString(Components.Visible, Text.FieldRoomDesc));
 					}

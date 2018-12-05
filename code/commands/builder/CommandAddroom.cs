@@ -4,6 +4,10 @@ using System.Diagnostics;
 
 namespace inspiral
 {
+	internal static partial class Commands
+	{
+		internal static CommandAddroom Addroom = new CommandAddroom();
+	}
 	class CommandAddroom : GameCommand
 	{
 		internal CommandAddroom() 

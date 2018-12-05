@@ -2,6 +2,10 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
+	internal static partial class Commands
+	{
+		internal static CommandView View = new CommandView();
+	}
 	class CommandView : GameCommand
 	{
 		internal CommandView() 

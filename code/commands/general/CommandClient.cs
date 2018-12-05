@@ -2,6 +2,10 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
+	internal static partial class Commands
+	{
+		internal static CommandClient Client  = new CommandClient();
+	}
 	class CommandClient : GameCommand
 	{
 		internal CommandClient() 
