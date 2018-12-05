@@ -33,7 +33,7 @@ namespace inspiral
 			);";
 			dbTableSchema = $@"id INTEGER PRIMARY KEY UNIQUE,
 				name TEXT DEFAULT '{Text.DefaultName}',
-				gender INTEGER DEFAULT 0, 
+				gender TEXT DEFAULT '{Gender.Inanimate}', 
 				aliases TEXT DEFAULT ' ',
 				components TEXT DEFAULT ' ',
 				flags INTEGER DEFAULT -1,
@@ -65,7 +65,7 @@ namespace inspiral
 			GameObject gameObj = (GameObject)CreateRepositoryType((long)reader["id"]);
 			gameObj.name = reader["name"].ToString();
 			gameObj.flags = (long)reader["flags"];
-			gameObj.gender = (long)reader["gender"];
+			gameObj.gender = Gender.GetByTerm(reader["gender"].ToString());
 			gameObj.aliases = JsonConvert.DeserializeObject<List<string>>(reader["aliases"].ToString());
 
 			foreach(string comp in JsonConvert.DeserializeObject<List<string>>(reader["components"].ToString()))
@@ -128,12 +128,15 @@ namespace inspiral
 			GameObject gameObj = (GameObject)instance;
 			command.Parameters.AddWithValue("@p0", gameObj.id);
 			command.Parameters.AddWithValue("@p1", gameObj.name);
-			command.Parameters.AddWithValue("@p2", gameObj.gender);
+			command.Parameters.AddWithValue("@p2", gameObj.gender.Term);
 			command.Parameters.AddWithValue("@p3", JsonConvert.SerializeObject(gameObj.aliases));
 			List<string> componentKeys = new List<string>();
 			foreach(KeyValuePair<string, GameComponent> comp in gameObj.components)
 			{
-				componentKeys.Add(comp.Key);
+				if(Components.builders[comp.Key].UpdateSchema != null)
+				{
+					componentKeys.Add(comp.Key);
+				}
 			}
 			command.Parameters.AddWithValue("@p4", JsonConvert.SerializeObject(componentKeys));
 			command.Parameters.AddWithValue("@p5", gameObj.flags);

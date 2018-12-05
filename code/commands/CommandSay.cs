@@ -55,7 +55,7 @@ namespace inspiral
 
 			if(invocation.Length <= 0)
 			{
-				invoker.shell.ShowNearby(invoker.shell, $"You open your mouth but say nothing.", $"{invoker.shell.GetString(Components.Visible, Text.FieldShortDesc)} opens {Gender.His(invoker.shell.gender)} mouth but says nothing.");
+				invoker.shell.ShowNearby(invoker.shell, $"You open your mouth but say nothing.", $"{invoker.shell.GetString(Components.Visible, Text.FieldShortDesc)} opens {invoker.shell.gender.His} mouth but says nothing.");
 				return true;
 			}
 			string prefix1p = $"You {speechVerb1p}";

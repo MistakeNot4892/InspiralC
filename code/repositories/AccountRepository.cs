@@ -74,7 +74,7 @@ namespace inspiral
 			GameObject gameObj = (GameObject)Game.Objects.CreateNewInstance(false);
 			acct.objectId = gameObj.id;
 			gameObj.name = Text.Capitalize(acct.userName);
-			gameObj.gender = Gender.Androgyne;
+			gameObj.gender = Gender.GetByTerm(Gender.Androgyne);
 			gameObj.AddComponent(Components.Visible);
 			gameObj.SetString(Components.Visible, Text.FieldShortDesc, gameObj.name);
 			gameObj.SetString(Components.Visible, Text.FieldRoomDesc, $"{gameObj.name} is here.");

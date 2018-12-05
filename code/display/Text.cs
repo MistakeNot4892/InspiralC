@@ -252,7 +252,7 @@ namespace inspiral
 		{
 			if(message.ToLower().Contains($"${token}"))
 			{
-				string replacementValue = thirdPerson ? Gender.He(other.gender) : "you";
+				string replacementValue = thirdPerson ? other.gender.He : "you";
 				message = Regex.Replace(
 					message,
 					$"\\${token}_(he|she|they|ey)\\$",
@@ -264,7 +264,7 @@ namespace inspiral
 					return message;
 				}
 
-				replacementValue = thirdPerson ? Gender.His(other.gender) : "your";
+				replacementValue = thirdPerson ? other.gender.His : "your";
 				message = Regex.Replace(
 					message,
 					$"\\${token}_(his|her|their|eir)\\$",
@@ -276,7 +276,7 @@ namespace inspiral
 					return message;
 				}
 
-				replacementValue = thirdPerson ? Gender.Him(other.gender) : "you";
+				replacementValue = thirdPerson ? other.gender.Him : "you";
 				message = Regex.Replace(
 					message,
 					$"\\${token}_(him|her|them|em)\\$",
@@ -288,7 +288,7 @@ namespace inspiral
 					return message;
 				}
 
-				replacementValue = thirdPerson ? Gender.Is(other.gender) : "are";
+				replacementValue = thirdPerson ? other.gender.Is : "are";
 				message = Regex.Replace(
 					message,
 					$"\\${token}_(is|are)\\$",
@@ -300,7 +300,7 @@ namespace inspiral
 					return message;
 				}
 
-				replacementValue = thirdPerson ? Gender.Self(other.gender) : "self";
+				replacementValue = thirdPerson ? other.gender.Self : "self";
 				message = Regex.Replace(
 					message,
 					$"\\${token}_sel(ves|f)\\$",

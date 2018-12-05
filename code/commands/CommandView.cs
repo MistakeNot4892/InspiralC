@@ -20,7 +20,7 @@ namespace inspiral
 			GameObject viewing = invoker.shell.FindGameObjectNearby(tokens[0].ToLower());
 			if(viewing == null)
 			{
-				invoker.SendLineWithPrompt("Cannot find '{tokens[0].ToLower()}' here.");
+				invoker.SendLineWithPrompt($"Cannot find '{tokens[0].ToLower()}' here.");
 				return true;
 			}
 			invoker.SendLineWithPrompt(viewing.GetStringSummary(invoker));

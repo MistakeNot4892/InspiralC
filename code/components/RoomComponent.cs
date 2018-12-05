@@ -14,21 +14,27 @@ namespace inspiral
 		internal static List<GameComponent> Rooms =>    GetComponents(Room);
 	}
 
+	internal static partial class Text
+	{
+		internal const string FieldExits = "exits";
+	}
+
 	internal class RoomBuilder : GameComponentBuilder
 	{
+		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldExits};
 		internal override string Name         { get; set; } = Components.Room;
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_room WHERE id = @p0;";
 
-		internal override string TableSchema  { get; set; } = @"components_room (
+		internal override string TableSchema  { get; set; } = $@"components_room (
 				id INTEGER NOT NULL PRIMARY KEY UNIQUE, 
-				exits TEXT DEFAULT ''
+				{Text.FieldExits} TEXT DEFAULT ''
 				)";
-		internal override string UpdateSchema { get; set; } = @"UPDATE components_room SET 
-				exits = @p1 
+		internal override string UpdateSchema { get; set; } = $@"UPDATE components_room SET 
+				{Text.FieldExits} = @p1 
 				WHERE id = @p0;";
-		internal override string InsertSchema { get; set; } = @"INSERT INTO components_room (
+		internal override string InsertSchema { get; set; } = $@"INSERT INTO components_room (
 				id,
-				exits
+				{Text.FieldExits}
 				) VALUES (
 				@p0,
 				@p1
@@ -65,34 +71,37 @@ namespace inspiral
 		}
 		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
 		{
-			exits = JsonConvert.DeserializeObject<Dictionary<string, long>>(reader["exits"].ToString());
+			exits = JsonConvert.DeserializeObject<Dictionary<string, long>>(reader[Text.FieldExits].ToString());
 		}
 		internal override void AddCommandParameters(SQLiteCommand command) 
 		{
 			command.Parameters.AddWithValue("@p0", parent.id);
 			command.Parameters.AddWithValue("@p1", JsonConvert.SerializeObject(exits));
 		}
-		internal override string GetStringSummary() 
+		internal override string GetString(string field)
 		{
-			string exitString = null;
-			if(exits.Count == 0)
+			if(field == Text.FieldExits)
 			{
-				exitString = "none";
-			}
-			else
-			{
-				exitString = "";
-				foreach(KeyValuePair<string, long> exit in exits)
+				string exitString = null;
+				if(exits.Count == 0)
 				{
-					if(exitString != "")
-					{
-						exitString = $"{exitString}, ";
-					}
-					exitString += $"{exit.Key} ({exit.Value})";
+					exitString = "none";
 				}
+				else
+				{
+					exitString = "";
+					foreach(KeyValuePair<string, long> exit in exits)
+					{
+						if(exitString != "")
+						{
+							exitString = $"{exitString}, ";
+						}
+						exitString += $"{exit.Key} ({exit.Value})";
+					}
+				}
+				return exitString;
 			}
-			return $"exits: {exitString}";
+			return null;
 		}
-
 	}
 }

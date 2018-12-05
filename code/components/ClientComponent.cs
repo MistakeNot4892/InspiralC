@@ -8,9 +8,14 @@ namespace inspiral
 		internal const string Client =    "client";
 		internal static List<GameComponent> Clients =>  GetComponents(Client);
 	}
+	internal static partial class Text
+	{
+		internal const string FieldClientId = "clientId";
+	}
 	internal class ClientBuilder : GameComponentBuilder
 	{
 		internal override string Name { get; set; } = Components.Client;
+		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldClientId};
 		internal override GameComponent Build()
 		{
 			return new ClientComponent();
@@ -28,9 +33,20 @@ namespace inspiral
 			client?.shell?.RemoveComponent(Components.Client);
 			client = null;
 		}
-		internal override string GetStringSummary() 
+		internal override string GetString(string field)
 		{
-			return $"Id: {client?.id ?? "no client"}";
+			if(field == Text.FieldClientId)
+			{
+				if(client != null)
+				{
+					return $"#{client.id}";
+				}
+				else
+				{
+					return "null client";
+				}
+			}
+			return null;
 		}
 	}
 }

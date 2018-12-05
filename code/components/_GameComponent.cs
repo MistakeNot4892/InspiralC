@@ -9,6 +9,11 @@ namespace inspiral
 	{
 		internal const string Foo = "foo";
 	}
+	internal static partial class Text
+	{
+		internal const string FieldFoo = "foofield";
+		internal const string FieldBar = "barfield";
+	}
 	internal class FooBuilder : GameComponentBuilder
 	{
 		internal override string Name         { get; set; } = Components.Foo;
@@ -23,7 +28,8 @@ namespace inspiral
 	}
 	internal class FooComponent : GameComponent
 	{
-		internal void FooMethod() {};
+		internal virtual List<string> editableFields { get; set; } = new List<string>() { Text.FieldFoo, Text.FieldBar };
+		internal virtual List<string> viewableFields { get; set; } = new List<string>() { Text.FieldBar };
 	}
 }
 */
@@ -38,11 +44,9 @@ namespace inspiral
 		internal virtual string UpdateSchema      { get; set; } = null;
 		internal virtual string InsertSchema      { get; set; } = null;
 		internal virtual string LoadSchema        { get; set; } = null;
-		internal virtual List<string> validFields { get; set; } = null;
+		internal virtual List<string> editableFields { get; set; } = null;
+		internal virtual List<string> viewableFields { get; set; } = null;
 		internal virtual GameComponent Build() { return null; }
-		internal bool AcceptsField(string field) {
-			return validFields != null && validFields.Contains(field);
-		}
 	}
 
 	internal class GameComponent
@@ -52,7 +56,10 @@ namespace inspiral
 		internal virtual void Added(GameObject addedTo)
 		{
 			parent = addedTo;
-			Game.Objects.QueueForUpdate(parent);
+			if(Components.builders[name].UpdateSchema != null)
+			{
+				Game.Objects.QueueForUpdate(parent);
+			}
 		}
 		internal virtual void Removed(GameObject takenFrom)
 		{
@@ -60,17 +67,59 @@ namespace inspiral
 			{
 				parent = null;
 			}
-			Game.Objects.QueueForUpdate(takenFrom);
+			if(Components.builders[name].UpdateSchema != null)
+			{
+				Game.Objects.QueueForUpdate(takenFrom);
+			}
 		}
+
+		internal string GetStringSummary() {
+			if(Components.builders.ContainsKey(name) && 
+				Components.builders[name].viewableFields != null && 
+				Components.builders[name].viewableFields.Count > 0)
+			{
+				string result = "";
+				foreach(string field in Components.builders[name].viewableFields)
+				{
+					if(Components.builders[name].editableFields != null && 
+						Components.builders[name].editableFields.Contains(field))
+					{
+						result = $"{result}\n{field}: {GetString(field)}";
+					}
+					else
+					{
+						result = $"{result}\n{field} (read-only): {GetString(field)}";
+					}
+				}
+				return result;
+			}
+			else
+			{
+				return "No viewable values.";
+			}
+		}
+
+		internal string SetValueOfEditableField(string field, string value) 
+		{
+			if(Components.builders.ContainsKey(name) && 
+				Components.builders[name].editableFields != null && 
+				Components.builders[name].editableFields.Count > 0)
+			{
+				if(GetString(field) != value)
+				{
+					SetValue(field, value);
+					Game.Objects.QueueForUpdate(parent);
+				}
+				return null;
+			}
+			return "Invalid field.";
+		}
+
 		internal virtual bool SetValue(string key, string newValue) { return false; }
 		internal virtual bool SetValue(string key, long newValue) { return false; }
 		internal virtual string GetString(string key) { return null; }
 		internal virtual long GetLong(string key) { return 0; }
 		internal virtual void InstantiateFromRecord(SQLiteDataReader reader) {}
 		internal virtual void AddCommandParameters(SQLiteCommand command) {}
-		internal virtual string GetStringSummary() { return "No values."; }
-		internal virtual string GetValueByField(string field) { return ""; }
-		internal virtual string SetValueByField(string field, string value) { return "Unimplemented method (string)."; }
-		internal virtual string SetValueByField(string field, long value) { return "Unimplemented method (long)."; }
 	}
 }

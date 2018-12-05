@@ -19,26 +19,27 @@ namespace inspiral
 
 	internal class VisibleBuilder : GameComponentBuilder
 	{
-		internal override List<string> validFields { get; set; } = new List<string>() {"short", "room", "examined"};
+		internal override List<string> editableFields { get; set; } = new List<string>() {Text.FieldShortDesc, Text.FieldRoomDesc, Text.FieldExaminedDesc};
+		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldShortDesc, Text.FieldRoomDesc, Text.FieldExaminedDesc};
 		internal override string Name         { get; set; } = Components.Visible;
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_visible WHERE id = @p0;";
 
-		internal override string TableSchema  { get; set; } = @"components_visible (
+		internal override string TableSchema  { get; set; } = $@"components_visible (
 			id INTEGER NOT NULL PRIMARY KEY UNIQUE,
-			shortDescription TEXT DEFAULT '',
-			roomDescription TEXT DEFAULT '',
-			examinedDescription TEXT DEFAULT ''
+			{Text.FieldShortDesc} TEXT DEFAULT '',
+			{Text.FieldRoomDesc} TEXT DEFAULT '',
+			{Text.FieldExaminedDesc} TEXT DEFAULT ''
 			)";
-		internal override string UpdateSchema { get; set; } = @"UPDATE components_visible SET 
-			shortDescription = @p1, 
-			roomDescription = @p2, 
-			examinedDescription = @p3 
+		internal override string UpdateSchema { get; set; } = $@"UPDATE components_visible SET 
+			{Text.FieldShortDesc} = @p1, 
+			{Text.FieldRoomDesc} = @p2, 
+			{Text.FieldExaminedDesc} = @p3 
 			WHERE id = @p0;";
-		internal override string InsertSchema { get; set; } = @"INSERT INTO components_visible (
+		internal override string InsertSchema { get; set; } = $@"INSERT INTO components_visible (
 			id, 
-			shortDescription, 
-			roomDescription, 
-			examinedDescription
+			{Text.FieldShortDesc}, 
+			{Text.FieldRoomDesc}, 
+			{Text.FieldExaminedDesc}
 			) VALUES (
 			@p0, 
 			@p1, 
@@ -125,9 +126,9 @@ namespace inspiral
 		}
 		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
 		{
-			shortDescription =    reader["shortDescription"].ToString();
-			roomDescription =     reader["roomDescription"].ToString();
-			examinedDescription = reader["examinedDescription"].ToString();
+			shortDescription =    reader[Text.FieldShortDesc].ToString();
+			roomDescription =     reader[Text.FieldRoomDesc].ToString();
+			examinedDescription = reader[Text.FieldExaminedDesc].ToString();
 		}
 		internal override void AddCommandParameters(SQLiteCommand command) 
 		{
@@ -135,45 +136,6 @@ namespace inspiral
 			command.Parameters.AddWithValue("@p1", shortDescription);
 			command.Parameters.AddWithValue("@p2", roomDescription);
 			command.Parameters.AddWithValue("@p3", examinedDescription);
-		}
-		internal override string GetStringSummary() 
-		{
-			string result =    $"shortDescription:    {shortDescription}";
-			result = $"{result}\nroomDescription:     {roomDescription}";
-			result = $"{result}\nexaminedDescription: {examinedDescription}";
-			return result;
-		}
-		internal override string GetValueByField(string field) 
-		{ 
-			switch(field)
-			{
-				case "short":
-					return GetString(Text.FieldShortDesc);
-				case "room":
-					return GetString(Text.FieldRoomDesc);
-				case "examined":
-					return GetString(Text.FieldExaminedDesc);
-				default:
-					return "Invalid field.";
-			}
-		}
-		internal override string SetValueByField(string field, string value) 
-		{
-			switch(field)
-			{
-				case "short":
-					SetValue(Text.FieldShortDesc, value);
-					break;
-				case "room":
-					SetValue(Text.FieldRoomDesc, value);
-					break;
-				case "examined":
-					SetValue(Text.FieldExaminedDesc, value);
-					break;
-				default:
-					return "Invalid field.";
-			}
-			return null;
 		}
 	}
 }

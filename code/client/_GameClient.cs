@@ -139,7 +139,6 @@ namespace inspiral
 					clientComp.Logout();
 					shell.ShowNearby(shell, $"{shell.GetString(Components.Visible, Text.FieldShortDesc)} falls asleep.");
 					shell.SetString(Components.Visible, Text.FieldRoomDesc, $"{shell.GetString(Components.Visible, Text.FieldShortDesc)} is sound asleep here.");
-					Game.Objects.QueueForUpdate(shell);
 					shell.RemoveComponent(Components.Client);
 				}
 			}

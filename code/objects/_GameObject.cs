@@ -7,7 +7,7 @@ namespace inspiral
 	{
 		internal long id;
 		internal string name = "object";
-		internal long gender = Gender.Inanimate;
+		internal GenderObject gender;
 		internal List<string> aliases = new List<string>();
 		internal GameObject location;
 		internal List<GameObject> contents;
@@ -17,6 +17,7 @@ namespace inspiral
 		{
 			contents = new List<GameObject>();
 			components = new Dictionary<string, GameComponent>();
+			gender = Gender.GetByTerm(Gender.Inanimate);
 		}
 		internal GameComponent GetComponent(string componentKey) 
 		{
@@ -31,6 +32,7 @@ namespace inspiral
 			if(!HasComponent(componentKey))
 			{
 				GameComponent component = Components.MakeComponent(componentKey);
+				component.name = componentKey;
 				components.Add(componentKey, component);
 				component.Added(this);
 			}
@@ -112,63 +114,7 @@ namespace inspiral
 			}
 			return null;
 		}
-		internal void EditValue(GameClient editor, string field, string value)
-		{
-			field = field.ToLower();
-			string lastVal = "";
-			string newVal = value;
-	
-			string invalidValue = null;
-			bool unknownValue = false;
-	
-			switch(field)
-			{
-				case "name":
-					lastVal = name;
-					name = value;
-					break;
 
-				case "gender":
-					lastVal = $"{Gender.Term(gender)} ({Gender.Term(gender)})";
-					gender = Gender.GetByTerm(value);
-					newVal = $"{Gender.Term(gender)} ({Gender.Term(gender)})";
-					break;
-
-				default:
-					unknownValue = true;
-					foreach(KeyValuePair<string, GameComponent> comp in components)
-					{
-						if(Components.builders[comp.Key].AcceptsField(field))
-						{
-							unknownValue = false;
-							lastVal = comp.Value.GetValueByField(field);
-							invalidValue = comp.Value.SetValueByField(field, value);
-							newVal = comp.Value.GetValueByField(field);
-						}
-					}
-					break;
-			}
-
-			if(unknownValue)
-			{
-				editor.SendLineWithPrompt($"Unknown field '{field}'. Check that the object has the module you are trying to edit.");
-			}
-			else if(invalidValue != null)
-			{
-				if(invalidValue != "")
-				{
-					editor.SendLineWithPrompt($"Invalid value '{value}' for field '{field}'. {invalidValue}");
-				}
-				else
-				{
-					editor.SendLineWithPrompt($"Invalid value '{value}' for field '{field}'.");
-				}
-			}
-			else
-			{
-				editor.SendLineWithPrompt($"Set field '{field}' of object #{id} ({GetString(Components.Visible, Text.FieldShortDesc)}) to '{newVal}'.\nFor reference, previous value was '{lastVal}'.");
-			}
-		}
 		internal GameObject FindGameObjectInContents(string token)
 		{
 			string checkToken = token.ToLower();
@@ -333,17 +279,17 @@ namespace inspiral
 		{
 			Dictionary<string, List<string>> summary = new Dictionary<string, List<string>>();
 
-			string fieldKey = $"Object summary for {name} (id #{id})";
+			string fieldKey = $"Object summary for {name} (#{id})";
 			summary.Add(fieldKey, new List<string>());
-			summary[fieldKey].Add($"Aliases:  {Text.EnglishList(aliases)}");
-			summary[fieldKey].Add($"Gender:   {Gender.Term(gender)} ({gender})");
+			summary[fieldKey].Add($"aliases:  {Text.EnglishList(aliases)}");
+			summary[fieldKey].Add($"gender:   {gender.Term}");
 			if(location != null)
 			{
-				summary[fieldKey].Add($"Location: {location.id}");
+				summary[fieldKey].Add($"location (read-only): {location.GetString(Components.Visible, Text.FieldShortDesc)} (#{location.id})");
 			}
 			else
 			{
-				summary[fieldKey].Add($"Location: null");
+				summary[fieldKey].Add($"location (read-only): null");
 			}
 			foreach(KeyValuePair<string, GameComponent> comp in components)
 			{

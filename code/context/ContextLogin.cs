@@ -52,7 +52,6 @@ namespace inspiral
 			GameObject wakingShell = (GameObject)Game.Objects.Get(invoker.account.objectId);
 			wakingShell.ShowNearby(wakingShell, $"{wakingShell.GetString(Components.Visible, Text.FieldShortDesc)} wakes up.");
 			wakingShell.SetString(Components.Visible, Text.FieldRoomDesc, $"{wakingShell.GetString(Components.Visible, Text.FieldShortDesc)} is here.");
-			Game.Objects.QueueForUpdate(wakingShell);
 
 			invoker.shell = wakingShell;
 			if(invoker.shell.HasComponent(Components.Client))
