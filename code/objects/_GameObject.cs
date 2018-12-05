@@ -114,42 +114,60 @@ namespace inspiral
 		}
 		internal void EditValue(GameClient editor, string field, string value)
 		{
+			field = field.ToLower();
 			string lastVal = "";
-			switch(field.ToLower())
+			string newVal = value;
+	
+			string invalidValue = null;
+			bool unknownValue = false;
+	
+			switch(field)
 			{
 				case "name":
 					lastVal = name;
 					name = value;
 					break;
-				case "short":
-					lastVal = GetString(Components.Visible, Text.FieldShortDesc);
-					SetString(Components.Visible, Text.FieldShortDesc, value);
+
+				case "gender":
+					lastVal = $"{Gender.Term(gender)} ({Gender.Term(gender)})";
+					gender = Gender.GetByTerm(value);
+					newVal = $"{Gender.Term(gender)} ({Gender.Term(gender)})";
 					break;
-				case "room":
-					lastVal = GetString(Components.Visible, Text.FieldRoomDesc);
-					SetString(Components.Visible, Text.FieldRoomDesc, value);
-					break;
-				case "examined":
-					lastVal = GetString(Components.Visible, Text.FieldExaminedDesc);
-					SetString(Components.Visible, Text.FieldExaminedDesc, value);
-					break;
-				case "enter":
-					lastVal = GetString(Components.Mobile, Text.FieldEnterMessage);
-					SetString(Components.Mobile, Text.FieldEnterMessage, value);
-					break;
-				case "leave":
-					lastVal = GetString(Components.Mobile, Text.FieldLeaveMessage);
-					SetString(Components.Mobile, Text.FieldLeaveMessage, value);
-					break;
-				case "dead":
-					lastVal = GetString(Components.Mobile, Text.FieldDeathMessage);
-					SetString(Components.Mobile, Text.FieldDeathMessage, value);
-					break;
+
 				default:
-					editor.SendLineWithPrompt("Unknown field. Valid fields are: name, short, room, examined, enter, leave, dead.");
-					return;
+					unknownValue = true;
+					foreach(KeyValuePair<string, GameComponent> comp in components)
+					{
+						if(Components.builders[comp.Key].AcceptsField(field))
+						{
+							unknownValue = false;
+							lastVal = comp.Value.GetValueByField(field);
+							invalidValue = comp.Value.SetValueByField(field, value);
+							newVal = comp.Value.GetValueByField(field);
+						}
+					}
+					break;
 			}
-			editor.SendLineWithPrompt($"Set field '{field}' of object #{id} ({GetString(Components.Visible, Text.FieldShortDesc)}) to '{value}'.\nFor reference, previous value was '{lastVal}'.");
+
+			if(unknownValue)
+			{
+				editor.SendLineWithPrompt($"Unknown field '{field}'. Check that the object has the module you are trying to edit.");
+			}
+			else if(invalidValue != null)
+			{
+				if(invalidValue != "")
+				{
+					editor.SendLineWithPrompt($"Invalid value '{value}' for field '{field}'. {invalidValue}");
+				}
+				else
+				{
+					editor.SendLineWithPrompt($"Invalid value '{value}' for field '{field}'.");
+				}
+			}
+			else
+			{
+				editor.SendLineWithPrompt($"Set field '{field}' of object #{id} ({GetString(Components.Visible, Text.FieldShortDesc)}) to '{newVal}'.\nFor reference, previous value was '{lastVal}'.");
+			}
 		}
 		internal GameObject FindGameObjectInContents(string token)
 		{

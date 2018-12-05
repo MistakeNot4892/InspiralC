@@ -18,6 +18,7 @@ namespace inspiral
 
 	internal class MobileBuilder : GameComponentBuilder
 	{
+		internal override List<string> validFields { get; set; } = new List<string>() {"enter", "leave", "death"};
 		internal override string Name         { get; set; } = Components.Mobile;
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_mobile WHERE id = @p0;";
 		internal override string TableSchema  { get; set; } = @"components_mobile (
@@ -119,6 +120,39 @@ namespace inspiral
 			result = $"{result}\nleaveMessage: {leaveMessage}";
 			result = $"{result}\ndeathMessage: {deathMessage}";
 			return result;
+		}
+
+		internal override string GetValueByField(string field) 
+		{ 
+			switch(field)
+			{
+				case "enter":
+					return GetString(Text.FieldEnterMessage);
+				case "leave":
+					return GetString(Text.FieldLeaveMessage);
+				case "death":
+					return GetString(Text.FieldDeathMessage);
+				default:
+					return "Invalid field.";
+			}
+		}
+		internal override string SetValueByField(string field, string value) 
+		{ 
+			switch(field)
+			{
+				case "enter":
+					SetValue(Text.FieldEnterMessage, value);
+					break;
+				case "leave":
+					SetValue(Text.FieldLeaveMessage, value);
+					break;
+				case "death":
+					SetValue(Text.FieldDeathMessage, value);
+					break;
+				default:
+					return "Invalid field.";
+			}
+			return null; 
 		}
 	}
 }

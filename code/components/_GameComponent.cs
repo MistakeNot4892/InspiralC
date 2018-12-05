@@ -1,5 +1,6 @@
 using System;
 using System.Data.SQLite;
+using System.Collections.Generic;
 
 /* Template for copypasting to new files:
 namespace inspiral
@@ -32,12 +33,16 @@ namespace inspiral
 
 	internal class GameComponentBuilder
 	{
-		internal virtual string Name         { get; set; } = null;
-		internal virtual string TableSchema  { get; set; } = null;
-		internal virtual string UpdateSchema { get; set; } = null;
-		internal virtual string InsertSchema { get; set; } = null;
-		internal virtual string LoadSchema   { get; set; } = null;
+		internal virtual string Name              { get; set; } = null;
+		internal virtual string TableSchema       { get; set; } = null;
+		internal virtual string UpdateSchema      { get; set; } = null;
+		internal virtual string InsertSchema      { get; set; } = null;
+		internal virtual string LoadSchema        { get; set; } = null;
+		internal virtual List<string> validFields { get; set; } = null;
 		internal virtual GameComponent Build() { return null; }
+		internal bool AcceptsField(string field) {
+			return validFields != null && validFields.Contains(field);
+		}
 	}
 
 	internal class GameComponent
@@ -64,5 +69,8 @@ namespace inspiral
 		internal virtual void InstantiateFromRecord(SQLiteDataReader reader) {}
 		internal virtual void AddCommandParameters(SQLiteCommand command) {}
 		internal virtual string GetStringSummary() { return "No values."; }
+		internal virtual string GetValueByField(string field) { return ""; }
+		internal virtual string SetValueByField(string field, string value) { return "Unimplemented method (string)."; }
+		internal virtual string SetValueByField(string field, long value) { return "Unimplemented method (long)."; }
 	}
 }

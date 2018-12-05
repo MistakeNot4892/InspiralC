@@ -19,6 +19,7 @@ namespace inspiral
 
 	internal class VisibleBuilder : GameComponentBuilder
 	{
+		internal override List<string> validFields { get; set; } = new List<string>() {"short", "room", "examined"};
 		internal override string Name         { get; set; } = Components.Visible;
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_visible WHERE id = @p0;";
 
@@ -141,6 +142,38 @@ namespace inspiral
 			result = $"{result}\nroomDescription:     {roomDescription}";
 			result = $"{result}\nexaminedDescription: {examinedDescription}";
 			return result;
+		}
+		internal override string GetValueByField(string field) 
+		{ 
+			switch(field)
+			{
+				case "short":
+					return GetString(Text.FieldShortDesc);
+				case "room":
+					return GetString(Text.FieldRoomDesc);
+				case "examined":
+					return GetString(Text.FieldExaminedDesc);
+				default:
+					return "Invalid field.";
+			}
+		}
+		internal override string SetValueByField(string field, string value) 
+		{
+			switch(field)
+			{
+				case "short":
+					SetValue(Text.FieldShortDesc, value);
+					break;
+				case "room":
+					SetValue(Text.FieldRoomDesc, value);
+					break;
+				case "examined":
+					SetValue(Text.FieldExaminedDesc, value);
+					break;
+				default:
+					return "Invalid field.";
+			}
+			return null;
 		}
 	}
 }

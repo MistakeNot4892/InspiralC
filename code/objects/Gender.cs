@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using BCrypt;
 
 namespace inspiral
 {
@@ -10,6 +10,32 @@ namespace inspiral
 		internal const int Female =    2;
 		internal const int Neuter =    3;
 		internal const int Androgyne =    4;
+		internal static int GetByTerm(string term)
+		{
+			term = term.ToLower();
+			switch(term)
+			{
+				case "male":
+					return Male;
+				case "female":
+					return Female;
+				case "neuter":
+					return Neuter;
+				case "androgyne":
+					return Androgyne;
+				case "inanimate":
+					return Inanimate;
+				default:
+				try
+				{
+					return Int32.Parse(term);
+				}
+				catch(Exception)
+				{
+					return Inanimate;
+				}
+			}
+		}
 		internal static string Term(long g)
 		{
 			switch(g)
