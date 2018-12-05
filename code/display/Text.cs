@@ -20,7 +20,7 @@ namespace inspiral
 		internal const string DefaultDeathMessage =        "A generic object lies here, dead.";
 		internal static Dictionary<string, List<string>> speechVerbs = new Dictionary<string, List<string>>();
 		internal static Regex stripRegex = new Regex($"{'\u001b'}\\[\\d+;*\\d*m", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-		internal static Regex mentionRegex = new Regex(@"\$([0-9a-z]+)_*[a-zA-Z]*\$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		internal static Regex mentionRegex = new Regex(@"\$([0-9a-z]+)_*([a-zA-Z]*)\$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
 		static Text()
 		{

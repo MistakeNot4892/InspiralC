@@ -17,7 +17,7 @@ namespace inspiral
 			if(invocation[0] == '(' && invocation.IndexOf(')') != -1)
 			{
 				int secondParen = invocation.IndexOf(')')-1;
-				emoteText = Text.FormatProse($"{invocation.Substring(1, secondParen)} {emoteText} {invocation.Substring(secondParen + emoteText.Length + 1)}");
+				emoteText = Text.FormatProse($"{invocation.Substring(1, secondParen)} {emoteText} {invocation.Substring(secondParen + emoteText.Length - 5)}");
 			}
 			else
 			{
@@ -30,14 +30,21 @@ namespace inspiral
 				foreach(Match m in Text.mentionRegex.Matches(emoteText))
 				{
 					GameObject mentioned = null;
-					string finding = m.Groups[1]?.Value.ToString().ToLower();
+					string findingRaw = m.Groups[1]?.Value.ToString();
+					string finding = findingRaw.ToLower();
 					if(finding != null)
 					{
 						mentioned = invoker.shell.FindGameObjectNearby(finding);
 					}
 					if(mentioned == null)
 					{
-						invoker.SendLineWithPrompt($"You cannot see '{finding}' here.");
+						invoker.SendLineWithPrompt($"You cannot see '{findingRaw}' here.");
+						return true;
+					}
+					string pronounToken = m.Groups[2]?.Value.ToString().ToLower();
+					if(pronounToken != null && pronounToken != "" && !Gender.Tokens.Contains(pronounToken))
+					{
+						invoker.SendLineWithPrompt($"Unknown token '{pronounToken}'. Valid tokens for emotes are: {Text.EnglishList(Gender.Tokens)}.");
 						return true;
 					}
 					if(!showingMessages.ContainsKey(mentioned))

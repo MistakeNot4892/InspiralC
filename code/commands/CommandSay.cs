@@ -25,7 +25,7 @@ namespace inspiral
 				}
 				if(target == null)
 				{
-					invoker.SendLineWithPrompt($"You cannot see anyone by the name of '{targetName}' here.");
+					invoker.SendLineWithPrompt($"You cannot see '{targetName}' here.");
 					return true;
 				}
 			}
