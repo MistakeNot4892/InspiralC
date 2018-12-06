@@ -2,10 +2,6 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Commands
-	{
-		internal static CommandDrop Drop = new CommandDrop();
-	}
 	class CommandDrop : GameCommand
 	{
 		internal override string Description { get; set; } = "Drops an object.";

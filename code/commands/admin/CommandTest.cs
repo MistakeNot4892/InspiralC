@@ -7,10 +7,6 @@ using Newtonsoft.Json;
 
 namespace inspiral
 {
-	internal static partial class Commands
-	{
-		internal static CommandTest Test = new CommandTest();
-	}
 	class CommandTest : GameCommand
 	{
 		internal override string Description { get; set; } = "Test command, please ignore.";

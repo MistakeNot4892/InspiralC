@@ -3,10 +3,6 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Commands
-	{
-		internal static CommandLook Look = new CommandLook();
-	}
 	class CommandLook : GameCommand
 	{
 		internal override string Description { get; set; } = "Examines a creature, object or location.";

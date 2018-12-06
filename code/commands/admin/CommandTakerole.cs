@@ -2,11 +2,6 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Commands
-	{
-		internal static CommandTakerole Takerole = new CommandTakerole();
-	}
-
 	class CommandTakerole : GameCommand
 	{
 		internal override string Description { get; set; } = "Removes a role from an account.";
@@ -47,7 +42,7 @@ namespace inspiral
 			{
 				acct.roles.Remove(role);
 				Game.Accounts.QueueForUpdate(acct);
-				invoker.SendLineWithPrompt($"Removed role '{role.Name}' from '{acct.userName}'.");
+				invoker.SendLineWithPrompt($"Removed role '{role.name}' from '{acct.userName}'.");
 			}
 			return true;
 		}

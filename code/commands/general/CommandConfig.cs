@@ -2,10 +2,6 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Commands
-	{
-		internal static CommandClient Config  = new CommandClient();
-	}
 	class CommandConfig : GameCommand
 	{
 		internal override string Description { get; set; } = "Configures various options related to gameplay and presentation. WIP.";

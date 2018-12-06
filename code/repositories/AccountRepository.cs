@@ -94,8 +94,8 @@ namespace inspiral
 			if(accounts.Count <= 0)
 			{
 				Debug.WriteLine($"No accounts found, giving admin roles to {acct.userName}.");
-				acct.roles.Add(Roles.Builder);
-				acct.roles.Add(Roles.Administrator);
+				acct.roles.Add(Roles.GetRole("builder"));
+				acct.roles.Add(Roles.GetRole("administrator"));
 			}
 
 			// Finalize everything.
@@ -106,7 +106,7 @@ namespace inspiral
 		internal override Object CreateRepositoryType(long id) 
 		{
 			PlayerAccount acct = new PlayerAccount(id);
-			acct.roles.Add(Roles.Player);
+			acct.roles.Add(Roles.GetRole("player"));
 			return acct;
 		}
 		internal override void AddCommandParameters(SQLiteCommand command, Object instance)
@@ -119,7 +119,7 @@ namespace inspiral
 			List<string> roleKeys = new List<string>();
 			foreach(GameRole role in acct.roles)
 			{
-				roleKeys.Add(role.Name);
+				roleKeys.Add(role.name);
 			}
 			command.Parameters.AddWithValue("@p4", JsonConvert.SerializeObject(roleKeys));
 		}

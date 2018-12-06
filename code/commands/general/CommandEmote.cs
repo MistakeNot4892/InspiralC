@@ -4,10 +4,6 @@ using System.Text.RegularExpressions;
 
 namespace inspiral
 {
-	internal static partial class Commands
-	{
-		internal static CommandEmote Emote = new CommandEmote();
-	}
 	class CommandEmote : GameCommand
 	{
 		internal override string Description { get; set; } = "Performs a complex narration or action.";

@@ -1,0 +1,5 @@
+{
+	"name" : "Builder",
+	"commands" : [ "create", "addroom", "set", "view" ],
+	"description" : "Grants room and object viewing/modification functions."
+}

@@ -1,0 +1,5 @@
+{
+	"name" : "Administrator",
+	"commands" : [ "test", "roles", "addrole", "takerole" ],
+	"description" : "Contains role and game administration functions."
+  }

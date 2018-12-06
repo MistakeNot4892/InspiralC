@@ -3,10 +3,6 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Commands
-	{
-		internal static CommandCreate Create = new CommandCreate();
-	}
 	class CommandCreate : GameCommand
 	{
 		internal override string Description { get; set; } = "Creates a new database entry for an object or room.";

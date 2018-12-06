@@ -2,10 +2,6 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Commands
-	{
-		internal static CommandAddrole Addrole = new CommandAddrole();
-	}
 	class CommandAddrole : GameCommand
 	{
 		internal override string Description { get; set; } = "Adds a role to an account.";
@@ -46,7 +42,7 @@ namespace inspiral
 			{
 				acct.roles.Add(role);
 				Game.Accounts.QueueForUpdate(acct);
-				invoker.SendLineWithPrompt($"Added role '{role.Name}' to '{acct.userName}'.");
+				invoker.SendLineWithPrompt($"Added role '{role.name}' to '{acct.userName}'.");
 			}
 
 			return true;

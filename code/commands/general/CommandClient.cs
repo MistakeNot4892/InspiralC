@@ -2,10 +2,6 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Commands
-	{
-		internal static CommandClient Client  = new CommandClient();
-	}
 	class CommandClient : GameCommand
 	{
 		internal override string Description { get; set; } = "Shows your client details.";

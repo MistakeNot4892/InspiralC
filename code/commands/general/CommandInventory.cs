@@ -2,10 +2,6 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Commands
-	{
-		internal static CommandInventory Inv  = new CommandInventory();
-	}
 	class CommandInventory : GameCommand
 	{
 		internal override string Description { get; set; } = "Shows your inventory.";

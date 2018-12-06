@@ -2,11 +2,6 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Commands
-	{
-		internal static CommandRoles Roles = new CommandRoles();
-	}
-
 	class CommandRoles : GameCommand
 	{
 		internal override string Description { get; set; } = "Shows the details of roles attached to an account.";
@@ -34,7 +29,7 @@ namespace inspiral
 			roleDetails.Add(header, new List<string>());
 			foreach(GameRole role in acct.roles)
 			{
-				roleDetails[header].Add(Text.FormatPopup(role.Name, role.GetSummary(), invoker.config.wrapwidth + Text.NestedWrapwidthModifier));
+				roleDetails[header].Add(Text.FormatPopup(role.name, role.GetSummary(), invoker.config.wrapwidth + Text.NestedWrapwidthModifier));
 			}
 			invoker.SendLineWithPrompt(Text.FormatBlock(roleDetails, invoker.config.wrapwidth));
 			return true;

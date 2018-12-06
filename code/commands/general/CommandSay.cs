@@ -3,10 +3,6 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Commands
-	{
-		internal static CommandSay Say = new CommandSay();
-	}
 	class CommandSay : GameCommand
 	{
 		internal override string Description { get; set; } = "Vocally communicates with the people and things around you.";

@@ -2,10 +2,6 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Commands
-	{
-		internal static CommandView View = new CommandView();
-	}
 	class CommandView : GameCommand
 	{
 		internal override string Description { get; set; } = "Views the components and fields of an object.";

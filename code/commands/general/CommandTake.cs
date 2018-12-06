@@ -2,10 +2,6 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Commands
-	{
-		internal static CommandTake Take = new CommandTake();
-	}
 	class CommandTake : GameCommand
 	{
 		internal override string Description { get; set; } = "Picks up an object.";

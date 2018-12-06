@@ -1,0 +1,5 @@
+{
+	"name" : "Player",
+	"commands" : [ "say", "emote", "take", "drop", "inventory", "quit", "look", "client", "help", "config" ],
+	"description" : "Grants general world interaction and communication commands."
+}

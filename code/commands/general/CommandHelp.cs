@@ -2,10 +2,6 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Commands
-	{
-		internal static CommandHelp Help = new CommandHelp();
-	}
 	class CommandHelp : GameCommand
 	{
 		internal override string Command { get; set; } = "help";
@@ -25,11 +21,7 @@ namespace inspiral
 				invoker.WriteLine("Available commands:");
 				foreach(GameRole role in invoker.account.roles)
 				{
-					invoker.WriteLine($"\n{role.Name}:");
-					foreach(GameCommand command in role.UniqueCommands)
-					{
-						invoker.WriteLine($"\n   {command.Command} [{Text.EnglishList(command.Aliases)}]:\n\n     Usage: {command.Usage}\n     {command.Description}");
-					}
+					invoker.WriteLine(role.GetHelp());
 				}
 				invoker.SendLineWithPrompt("\nEnd of command list.");
 			}
