@@ -14,6 +14,9 @@ namespace inspiral
 		internal override List<GameCommand> UniqueCommands { get; set; } = new List<GameCommand>() {
 			Commands.Say,
 			Commands.Emote,
+			Commands.Take,
+			Commands.Drop,
+			Commands.Inv,
 			Commands.Quit,
 			Commands.Look,
 			Commands.Client,

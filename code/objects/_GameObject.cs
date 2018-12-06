@@ -297,5 +297,9 @@ namespace inspiral
 			}
 			return Text.FormatBlock(summary, invoker.config.wrapwidth);
 		}
+		internal bool Collectable(GameObject collecting)
+		{
+			return !HasComponent(Components.Room) && !HasComponent(Components.Mobile);
+		}
 	}
 }
