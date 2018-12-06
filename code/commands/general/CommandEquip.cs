@@ -29,8 +29,21 @@ namespace inspiral
 				invoker.SendLine($"You cannot see '{tokenRaw}' anywhere.");
 				return true;
 			}
+
+			string slot = "default";
+			if(tokens.Length >= 2)
+			{
+				if(tokens[1].ToLower() == "to" && tokens.Length >= 3)
+				{
+					slot = tokens[2].ToLower();
+				}
+				else
+				{
+					slot = tokens[1].ToLower();
+				}
+			}
 			EquipmentComponent equipment = (EquipmentComponent)invoker.shell.GetComponent(Components.Equipment);
-			equipment.Equip(invoker.shell, equipping);
+			equipment.Equip(invoker.shell, equipping, slot);
 			return true;
 		}
 	}

@@ -1,0 +1,17 @@
+{
+	"name" : "humanoid",
+	"parts" : 
+	{
+		"lower body" : null,
+		"upper body" : "lower body",
+		"head" :       "upper body",
+		"left arm" :   "upper body" ,
+		"right arm" :  "upper body",
+		"left hand" :  "left arm" ,
+		"right hand" : "right arm",
+		"left leg" :   "lower body" ,
+		"right leg" :  "lower body",
+		"left foot" :  "left leg" ,
+		"right foot" : "right leg"
+	}
+}

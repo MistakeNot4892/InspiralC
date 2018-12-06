@@ -45,8 +45,8 @@ namespace inspiral
 
 	class EquipmentComponent : GameComponent
 	{
-		Dictionary<string, GameObject> equipped = new Dictionary<string, GameObject>();
-		List<string> equippableSlots = new List<string>() {"hands"};
+		internal Dictionary<string, GameObject> equipped = new Dictionary<string, GameObject>();
+		internal List<string> equippableSlots = new List<string>() {"hands"};
 		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
 		{
 			foreach(KeyValuePair<string, long> equippedId in JsonConvert.DeserializeObject<Dictionary<string, long>>(reader[Text.FieldEquippedSlots].ToString()))
@@ -62,7 +62,12 @@ namespace inspiral
 		internal override void AddCommandParameters(SQLiteCommand command) 
 		{
 			command.Parameters.AddWithValue("@p0", parent.id);
-			command.Parameters.AddWithValue("@p1", JsonConvert.SerializeObject(equipped));
+			Dictionary<string, long> equippedById = new Dictionary<string, long>();
+			foreach(KeyValuePair<string, GameObject> gameObj in equipped)
+			{
+				equippedById.Add(gameObj.Key, gameObj.Value.id);
+			}
+			command.Parameters.AddWithValue("@p1", JsonConvert.SerializeObject(equippedById));
 			command.Parameters.AddWithValue("@p2", JsonConvert.SerializeObject(equippableSlots));
 		}
 		internal bool Equip(GameObject equipper, GameObject equipment)
@@ -76,11 +81,18 @@ namespace inspiral
 			{
 				slot = equippableSlots[0];
 			}
+			else if(!equippableSlots.Contains(slot))
+			{
+				equipper.ShowMessage($"You cannot equip anything to your {slot}.");
+				return false;
+			}
+
 			if(equipped.ContainsKey(slot))
 			{
 				equipper.ShowMessage($"You already have {equipped[slot].GetString(Components.Visible, Text.FieldShortDesc)} equipped in your {slot}.");
 				return false;
 			}
+			Game.Objects.QueueForUpdate(parent);
 			equipped.Add(slot, equipment);
 			equipper.ShowNearby(equipper, 
 				$"You equip {equipped[slot].GetString(Components.Visible, Text.FieldShortDesc)} to your {slot}.",
@@ -111,11 +123,14 @@ namespace inspiral
 		
 		internal bool ForceUnequip(GameObject equipper, GameObject equipment)
 		{
-			string slot = GetSlot(equipment);
+			if(equipment != null)
 			{
-				if(slot != null)
+				string slot = GetSlot(equipment);
 				{
-					return Unequip(equipper, equipment, slot);
+					if(slot != null)
+					{
+						return Unequip(equipper, equipment, slot);
+					}
 				}
 			}
 			return true;
@@ -139,6 +154,7 @@ namespace inspiral
 				$"You unequip {equipment.GetString(Components.Visible, Text.FieldShortDesc)} from your {slot}.",
 				$"{Text.Capitalize(equipper.GetString(Components.Visible, Text.FieldShortDesc))} unequips {equipment.GetString(Components.Visible, Text.FieldShortDesc)} from {equipper.gender.His} {slot}."
 			);
+			Game.Objects.QueueForUpdate(parent);
 			return true;
 		}
 	}

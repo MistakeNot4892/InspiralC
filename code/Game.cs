@@ -6,6 +6,7 @@ namespace inspiral
 {
 	internal static class Game
 	{
+		internal static bool InitComplete = false;
 		internal static AccountRepository Accounts;
 		internal static ObjectRepository Objects;
 		static Game()
@@ -33,6 +34,8 @@ namespace inspiral
 
 			Accounts.PostInitialize();
 			Objects.PostInitialize();
+			
+			InitComplete = true;
 		}
 		internal static void Exit()
 		{

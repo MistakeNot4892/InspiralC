@@ -25,7 +25,7 @@ namespace inspiral
 
 		internal virtual void QueueForUpdate(Object obj)
 		{
-			if(!updateQueue.Contains(obj))
+			if(!updateQueue.Contains(obj) && Game.InitComplete)
 			{
 				updateQueue.Add(obj);
 			}

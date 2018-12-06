@@ -15,7 +15,7 @@ namespace inspiral
 		internal override string Usage { get; set; } = "test";
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
-			invoker.SendLineWithPrompt("No test code here boss.");
+			invoker.SendLineWithPrompt(Bodyplans.GetPlan("humanoid").GetSummary());
 			return true;
 		}
 	}

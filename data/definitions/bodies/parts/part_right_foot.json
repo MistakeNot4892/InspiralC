@@ -1,0 +1,7 @@
+{
+	"name" : "right foot",
+	"vital" : false,
+	"grasp" : false,
+	"slots" : ["feet"],
+	"stance" : true
+}

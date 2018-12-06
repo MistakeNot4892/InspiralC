@@ -1,5 +1,18 @@
 {
 	"name" : "Player",
-	"commands" : [ "say", "emote", "take", "drop", "inventory", "quit", "look", "client", "help", "config" ],
+	"commands" : [ 
+		"say", 
+		"emote", 
+		"take", 
+		"drop", 
+		"inventory", 
+		"quit", 
+		"look", 
+		"client", 
+		"help", 
+		"config",
+		"equip",
+		"unequip"
+	],
 	"description" : "Grants general world interaction and communication commands."
 }

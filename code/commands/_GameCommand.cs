@@ -34,12 +34,14 @@ namespace inspiral
 		}
 	}
 
+	/*
 	class GameCommandInput
 	{
 		internal string command;
 		internal string[] tokens;
 		internal string rawInput;
 	}
+	*/
 	class GameCommand
 	{
 		internal virtual string Command { get; set; } = null;

@@ -1,0 +1,7 @@
+{
+	"name" : "upper body",
+	"vital" : false,
+	"grasp" : false,
+	"slots" : [ "torso" ],
+	"stance" : false
+}

@@ -71,29 +71,39 @@ namespace inspiral
 			foreach(string comp in JsonConvert.DeserializeObject<List<string>>(reader["components"].ToString()))
 			{
 				gameObj.AddComponent(comp);
-				if(Components.builders[comp].LoadSchema != null)
+			}
+			if(Game.InitComplete)
+			{
+				LoadComponentData(gameObj);
+			}
+			contents.Add(gameObj.id, gameObj);
+			postInitLocations.Add(gameObj.id, (long)reader["location"]);
+		}
+
+		internal void LoadComponentData(GameObject gameObj)
+		{
+			foreach(KeyValuePair<string, GameComponent> comp in gameObj.components)
+			{
+				if(Components.builders[comp.Key].LoadSchema != null)
 				{
-					GameComponent component = gameObj.GetComponent(comp);
-					using( SQLiteCommand command = new SQLiteCommand(Components.builders[comp].LoadSchema, dbConnection))
+					using( SQLiteCommand command = new SQLiteCommand(Components.builders[comp.Key].LoadSchema, dbConnection))
 					{
 						try
 						{
 							command.Parameters.AddWithValue("@p0", gameObj.id);
-							SQLiteDataReader secondReader = command.ExecuteReader();
-							while(secondReader.Read())
+							SQLiteDataReader reader = command.ExecuteReader();
+							while(reader.Read())
 							{
-								component.InstantiateFromRecord(secondReader);
+								comp.Value.InstantiateFromRecord(reader);
 							}
 						}
 						catch(Exception e)
 						{
-							Debug.WriteLine($"SQL exception 4 ({repoName}): {e.ToString()} - entire query is [SELECT * FROM {Components.builders[comp].LoadSchema} WHERE id = @p0;]");
+							Debug.WriteLine($"SQL exception 4 ({repoName}): {e.ToString()} - entire query is [SELECT * FROM {Components.builders[comp.Key].LoadSchema} WHERE id = @p0;]");
 						}
 					}
 				}
 			}
-			contents.Add(gameObj.id, gameObj);
-			postInitLocations.Add(gameObj.id, (long)reader["location"]);
 		}
 
 		internal override Object CreateRepositoryType(long id) 
@@ -167,6 +177,10 @@ namespace inspiral
 						obj.Move(other);
 					}
 				}
+			}
+			foreach(KeyValuePair<long, Object> obj in contents)
+			{
+				LoadComponentData((GameObject)obj.Value);
 			}
 		}
 		public override void HandleAdditionalObjectSave(Object objInstance, SQLiteConnection dbConnection) 

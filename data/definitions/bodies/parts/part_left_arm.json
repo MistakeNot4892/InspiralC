@@ -1,0 +1,7 @@
+{
+	"name" : "left arm",
+	"vital" : false,
+	"grasp" : false,
+	"slots" : [ "arms" ],
+	"stance" : false
+}
