@@ -6,7 +6,7 @@ namespace inspiral
 	{
 		internal override string Description { get; set; } = "Shows your inventory.";
 		internal override string Command { get; set; } = "inventory";
-		internal override List<string> Aliases { get; set; } = new List<string>() { "inventory", "inv", "ii" };
+		internal override List<string> Aliases { get; set; } = new List<string>() { "inventory", "inv", "ii", "i" };
 		internal override string Usage { get; set; } = "inventory";
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{

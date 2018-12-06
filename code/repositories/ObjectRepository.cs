@@ -95,6 +95,7 @@ namespace inspiral
 			contents.Add(gameObj.id, gameObj);
 			postInitLocations.Add(gameObj.id, (long)reader["location"]);
 		}
+
 		internal override Object CreateRepositoryType(long id) 
 		{
 			GameObject gameObj = new GameObject();
@@ -198,17 +199,22 @@ namespace inspiral
 		internal GameObject CreateMob(string newName)
 		{
 			GameObject gameObj = (GameObject)Game.Objects.CreateNewInstance(false);
+
 			gameObj.name = newName;
 			gameObj.gender = Gender.GetByTerm(Gender.Plural);
+
 			gameObj.AddComponent(Components.Visible);
+			gameObj.AddComponent(Components.Mobile);
+			gameObj.AddComponent(Components.Inventory);
+			gameObj.AddComponent(Components.Equipment);
+
 			gameObj.SetString(Components.Visible, Text.FieldShortDesc, gameObj.name);
 			gameObj.SetString(Components.Visible, Text.FieldRoomDesc, $"{gameObj.name} is here.");
 			gameObj.SetString(Components.Visible, Text.FieldExaminedDesc, $"They are completely boring.");
-			gameObj.AddComponent(Components.Mobile);
 			gameObj.SetString(Components.Mobile, Text.FieldEnterMessage, $"{gameObj.name} enters from the $DIR.");
 			gameObj.SetString(Components.Mobile, Text.FieldLeaveMessage, $"{gameObj.name} leaves to the $DIR.");
 			gameObj.SetString(Components.Mobile, Text.FieldDeathMessage, $"The corpse of {gameObj.name} lies here.");
-			gameObj.AddComponent(Components.Inventory);
+
 			Game.Objects.AddDatabaseEntry(gameObj);
 			return gameObj;
 		}

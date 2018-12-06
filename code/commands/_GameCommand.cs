@@ -33,6 +33,13 @@ namespace inspiral
 			return null;
 		}
 	}
+
+	class GameCommandInput
+	{
+		internal string command;
+		internal string[] tokens;
+		internal string rawInput;
+	}
 	class GameCommand
 	{
 		internal virtual string Command { get; set; } = null;
@@ -47,5 +54,24 @@ namespace inspiral
 		{
 			return $"{Command} [{Text.EnglishList(Aliases)}]";//: {Usage}";
 		}
+		/*
+		internal virtual GameCommandInput Parse(string inputString)
+		{
+			GameCommandInput input = new GameCommandInput();
+			string[] tokens = inputString.Split(" ");
+			input.command = tokens[0].ToLower();
+			if(tokens.Length > 1)
+			{
+				int copyTokens = tokens.Length-1;
+				input.tokens = new string[copyTokens];
+				for(int i = 0;i<copyTokens;i++)
+				{
+					input.tokens[i] = tokens[i+1];
+				}
+			}
+			input.rawInput = inputString;
+			return input;
+		}
+		*/
 	}
 }

@@ -29,8 +29,13 @@ namespace inspiral
 				invoker.SendLine($"You cannot see '{tokenRaw}' anywhere.");
 				return true;
 			}
-			InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Components.Inventory);
-			inv.Drop(invoker.shell, invoker.shell.location, dropping);
+
+			EquipmentComponent equipment = (EquipmentComponent)invoker.shell.GetComponent(Components.Equipment);
+			if(equipment == null || equipment.ForceUnequip(invoker.shell, dropping))
+			{
+				InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Components.Inventory);
+				inv.Drop(invoker.shell, invoker.shell.location, dropping);
+			}
 			return true;
 		}
 	}
