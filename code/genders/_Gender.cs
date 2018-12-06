@@ -1,24 +1,29 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
-
+using Newtonsoft.Json;
 namespace inspiral
 {
 
 	internal class GenderObject
 	{
-		internal virtual string Term { get; set; } = null;
-		internal virtual string His  { get; set; } = null;
-		internal virtual string Him  { get; set; } = null;
-		internal virtual string He   { get; set; } = null;
-		internal virtual string Is   { get; set; } = null;
-		internal virtual string Self { get; set; } = null;
+		internal string Term = null;
+		internal string His  = null;
+		internal string Him  = null;
+		internal string He   = null;
+		internal string Is   = null;
+		internal string Self = null;
 	}
 
 	internal static partial class Gender
 	{
-		private static Dictionary<string, GenderObject> genders = new Dictionary<string, GenderObject>();
+		// These are hardcoded for now because I can't work out a method of making them function properly otherwise.
+		public const string Inanimate = "inanimate";
+		public const string Plural = "plural";
+		// End hardcoded.
+		public static Dictionary<string, GenderObject> genders = new Dictionary<string, GenderObject>();
 		public static List<string> Tokens = new List<string>();
 		internal static GenderObject GetByTerm(string term)
 		{
@@ -32,20 +37,30 @@ namespace inspiral
 		static Gender()
 		{
 			Debug.WriteLine($"Loading genders.");
-			foreach(var t in (from domainAssembly in AppDomain.CurrentDomain.GetAssemblies()
-				from assemblyType in domainAssembly.GetTypes()
-				where assemblyType.IsSubclassOf(typeof(GenderObject))
-				select assemblyType))
+			foreach (var f in (from file in Directory.EnumerateFiles(@"data\definitions\genders", "*.json", SearchOption.AllDirectories) select new { File = file }))
 			{
-				Debug.WriteLine($"Loading gender {t}.");
-				GenderObject gender = (GenderObject)Activator.CreateInstance(t);
-				genders.Add(gender.Term, gender);
-				foreach(string token in new List<string>() {gender.He, gender.Him, gender.His, gender.Is, gender.Self})
+				Debug.WriteLine($"Loading gender definition {f.File}.");
+				try
 				{
-					if(!Tokens.Contains(token))
+					Dictionary<string, string> genderStrings = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(f.File));
+					GenderObject  gender = new GenderObject();
+					gender.He =   genderStrings["He"];
+					gender.Him =  genderStrings["Him"];
+					gender.His =  genderStrings["His"];
+					gender.Is =   genderStrings["Is"];
+					gender.Term = genderStrings["Term"];
+					genders.Add(gender.Term, gender);
+					foreach(string token in new List<string>() {gender.He, gender.Him, gender.His, gender.Is, gender.Self})
 					{
-						Tokens.Add(token);
+						if(!Tokens.Contains(token))
+						{
+							Tokens.Add(token);
+						}
 					}
+				}
+				catch(Exception e)
+				{
+					Debug.WriteLine($"Exception when loading gender from file {f.File} - {e.Message}");
 				}
 			}
 			// 'it' is useless as it is ambiguous, just get rid of it.

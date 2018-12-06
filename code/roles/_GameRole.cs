@@ -39,6 +39,13 @@ namespace inspiral
 				{
 					AllCommands.Add(command.Command, command);
 				}
+				foreach(string alias in command.Aliases)
+				{
+					if(!AllCommands.ContainsKey(alias))
+					{
+						AllCommands.Add(alias, command);
+					}
+				}
 			}
 		}
 

@@ -193,9 +193,13 @@ namespace inspiral
 		}
 		internal GameObject CreateMob()
 		{
+			return CreateMob("mob");
+		}
+		internal GameObject CreateMob(string newName)
+		{
 			GameObject gameObj = (GameObject)Game.Objects.CreateNewInstance(false);
-			gameObj.name = "mob";
-			gameObj.gender = Gender.GetByTerm(Gender.Androgyne);
+			gameObj.name = newName;
+			gameObj.gender = Gender.GetByTerm(Gender.Plural);
 			gameObj.AddComponent(Components.Visible);
 			gameObj.SetString(Components.Visible, Text.FieldShortDesc, gameObj.name);
 			gameObj.SetString(Components.Visible, Text.FieldRoomDesc, $"{gameObj.name} is here.");

@@ -1,5 +1,9 @@
-using System.Collections.Generic;
+using System;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace inspiral
 {
@@ -15,12 +19,7 @@ namespace inspiral
 		internal override string Usage { get; set; } = "test";
 		internal override bool Invoke(GameClient invoker, string invocation)
 		{
-			string replaceWith = "FUCK";
-			string replaceThing = $"\\${"token"}_(his|her|their|eir)\\$";
-
-			invoker.SendLineWithPrompt($"esc: {replaceThing}");
-			invoker.SendLineWithPrompt($"1:{invocation}:{Regex.Replace(invocation, replaceThing, replaceWith, RegexOptions.IgnoreCase)}");
-
+			invoker.SendLineWithPrompt("No test code here boss.");
 			return true;
 		}
 	}

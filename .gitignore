@@ -247,5 +247,5 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 
-# Agatha stuff.
-[Dd]ata/*
+# Local stuff.
+[Dd]ata/*.sqlite

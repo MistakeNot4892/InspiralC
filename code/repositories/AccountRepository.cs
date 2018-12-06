@@ -87,8 +87,7 @@ namespace inspiral
 			acct.passwordHash = passwordHash;
 
 			// Create the shell the client will be piloting around, saving data to, etc.
-			GameObject gameObj = (GameObject)Game.Objects.CreateMob();
-			gameObj.name = Text.Capitalize(acct.userName);
+			GameObject gameObj = (GameObject)Game.Objects.CreateMob(Text.Capitalize(acct.userName));
 			acct.objectId = gameObj.id;
 			
 			// If the account DB is empty, give them admin roles.
