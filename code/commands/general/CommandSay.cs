@@ -5,7 +5,7 @@ namespace inspiral
 {
 	internal static partial class Command
 	{
-		internal static bool CmdSay(GameClient invoker, string invocation)
+		internal static void CmdSay(GameClient invoker, string invocation)
 		{
 
 			GameObject target = null;
@@ -21,7 +21,7 @@ namespace inspiral
 				if(target == null)
 				{
 					invoker.SendLineWithPrompt($"You cannot see '{targetName}' here.");
-					return true;
+					return;
 				}
 			}
 
@@ -51,7 +51,7 @@ namespace inspiral
 			if(invocation.Length <= 0)
 			{
 				invoker.shell.ShowNearby(invoker.shell, $"You open your mouth but say nothing.", $"{invoker.shell.GetString(Components.Visible, Text.FieldShortDesc)} opens {invoker.shell.gender.His} mouth but says nothing.");
-				return true;
+				return;
 			}
 			string prefix1p = $"You {speechVerb1p}";
 			string prefix3p = $"{invoker.shell.GetString(Components.Visible, Text.FieldShortDesc)} {speechVerb3p}";
@@ -77,7 +77,6 @@ namespace inspiral
 			{
 				invoker.shell.ShowNearby(invoker.shell, $"{prefix1p}, \"{invocation}\"", $"{prefix3p} \"{invocation}\"");
 			}
-			return true;
 		}
 	}
 }

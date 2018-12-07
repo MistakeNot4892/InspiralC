@@ -6,7 +6,7 @@ namespace inspiral
 {
 	internal static partial class Command
 	{
-		internal static bool CmdAddroom(GameClient invoker, string invocation)
+		internal static void CmdAddroom(GameClient invoker, string invocation)
 		{
 			if(invoker.shell == null || invoker.shell.location == null || !invoker.shell.location.HasComponent(Components.Room))
 			{
@@ -94,7 +94,6 @@ namespace inspiral
 					}
 				}
 			}
-			return true;
 		}
 	}
 }

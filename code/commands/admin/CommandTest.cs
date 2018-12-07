@@ -9,10 +9,9 @@ namespace inspiral
 {
 	internal static partial class Command
 	{
-		internal static bool CmdTest(GameClient invoker, string invocation)
+		internal static void CmdTest(GameClient invoker, string invocation)
 		{
 			invoker.SendLineWithPrompt(Bodyplans.GetPlan("humanoid").GetSummary());
-			return true;
 		}
 	}
 }

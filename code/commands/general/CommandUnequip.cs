@@ -4,18 +4,18 @@ namespace inspiral
 {
 	internal static partial class Command
 	{
-		internal static bool CmdUnequip(GameClient invoker, string invocation)
+		internal static void CmdUnequip(GameClient invoker, string invocation)
 		{
 			if(!invoker.shell.HasComponent(Components.Equipment))
 			{
 				invoker.SendLine("You cannot unequip objects.");
-				return true;
+				return;
 			}
 			string[] tokens = invocation.Split(" ");
 			if(tokens.Length <= 0 || tokens[0] == "")
 			{
 				invoker.SendLine("What do you wish to unequip?");
-				return true;
+				return;
 			}
 			string tokenRaw = tokens[0];
 			string token = tokenRaw.ToLower();
@@ -23,11 +23,10 @@ namespace inspiral
 			if(unequipping == null)
 			{
 				invoker.SendLine($"You cannot see '{tokenRaw}' anywhere.");
-				return true;
+				return;
 			}
 			EquipmentComponent equipment = (EquipmentComponent)invoker.shell.GetComponent(Components.Equipment);
 			equipment.Unequip(invoker.shell, unequipping);
-			return true;
 		}
 	}
 }

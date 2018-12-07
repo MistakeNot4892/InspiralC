@@ -5,7 +5,7 @@ namespace inspiral
 {
 	internal static partial class Command 
 	{
-		internal static bool CmdCreate(GameClient invoker, string invocation)
+		internal static void CmdCreate(GameClient invoker, string invocation)
 		{
 			string[] tokens = invocation.Split(" ");
 			if(tokens.Length <= 0)
@@ -32,7 +32,6 @@ namespace inspiral
 						break;
 				}
 			}
-			return true;
 		}
 	}
 }

@@ -4,18 +4,18 @@ namespace inspiral
 {
 	internal static partial class Command
 	{
-		internal static bool CmdDrop(GameClient invoker, string invocation)
+		internal static void CmdDrop(GameClient invoker, string invocation)
 		{
 			if(!invoker.shell.HasComponent(Components.Inventory))
 			{
 				invoker.SendLine("You cannot drop objects.");
-				return true;
+				return;
 			}
 			string[] tokens = invocation.Split(" ");
 			if(tokens.Length <= 0 || tokens[0] == "")
 			{
 				invoker.SendLine("What do you wish to drop?");
-				return true;
+				return;
 			}
 			string tokenRaw = tokens[0];
 			string token = tokenRaw.ToLower();
@@ -23,16 +23,14 @@ namespace inspiral
 			if(dropping == null)
 			{
 				invoker.SendLine($"You cannot see '{tokenRaw}' anywhere.");
-				return true;
+				return;
 			}
-
 			EquipmentComponent equipment = (EquipmentComponent)invoker.shell.GetComponent(Components.Equipment);
 			if(equipment == null || equipment.ForceUnequip(invoker.shell, dropping))
 			{
 				InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Components.Inventory);
 				inv.Drop(invoker.shell, invoker.shell.location, dropping);
 			}
-			return true;
 		}
 	}
 }

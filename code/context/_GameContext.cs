@@ -14,11 +14,7 @@ namespace inspiral
 			{
 				if(role.AllCommands.ContainsKey(command))
 				{
-					GameCommand cmd = role.AllCommands[command];
-					if(cmd.invokedMethod != null)
-					{
-						return (bool)cmd.invokedMethod.Invoke(null, new object[] { invoker, arguments });
-					}
+					role.AllCommands[command].invokedMethod.Invoke(null, new object[] { invoker, arguments });
 				}
 			}
 			return false;

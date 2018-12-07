@@ -4,12 +4,12 @@ namespace inspiral
 {
 	internal static partial class Command
 	{
-		internal static bool CmdInventory(GameClient invoker, string invocation)
+		internal static void CmdInventory(GameClient invoker, string invocation)
 		{
 			if(!invoker.shell.HasComponent(Components.Inventory))
 			{
 				invoker.SendLine("You cannot hold objects.");
-				return true;
+				return;
 			}
 			string inventorySummary = "";
 			List<GameObject> alreadyShown = new List<GameObject>();
@@ -54,7 +54,6 @@ namespace inspiral
 				inventorySummary += "\n- nothing.";
 			}
 			invoker.SendLineWithPrompt(inventorySummary);
-			return true;
 		}
 	}
 }

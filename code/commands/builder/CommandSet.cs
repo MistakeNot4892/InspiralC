@@ -4,19 +4,19 @@ namespace inspiral
 {
 	internal static partial class Command
 	{
-		internal static bool CmdSet(GameClient invoker, string invocation)
+		internal static void CmdSet(GameClient invoker, string invocation)
 		{
 			string[] tokens = invocation.Split(" ");
 			if(tokens.Length < 3)
 			{
 				invoker.SendLineWithPrompt("Usage: SET <target> <field> <value>");
-				return true;
+				return;
 			}
 			GameObject editing = invoker.shell.FindGameObjectNearby(tokens[0].ToLower());
 			if(editing == null)
 			{
 				invoker.SendLineWithPrompt("Cannot find object to modify.");
-				return true;
+				return;
 			}
 
 			// Do the actual edit.
@@ -83,7 +83,6 @@ namespace inspiral
 			{
 				invoker.SendLineWithPrompt($"Set field '{field}' of object #{editing.id} ({editing.GetString(Components.Visible, Text.FieldShortDesc)}) to '{newVal}'.\nFor reference, previous value was '{lastVal}'.");
 			}
-			return true;
 		}
 	}
 }

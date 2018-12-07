@@ -4,7 +4,7 @@ namespace inspiral
 {
 	internal static partial class Command
 	{
-		internal static bool CmdHelp(GameClient invoker, string invocation)
+		internal static void CmdHelp(GameClient invoker, string invocation)
 		{
 			string[] tokens = invocation.Split(" " );
 			if(invocation != null && invocation != "")
@@ -20,7 +20,6 @@ namespace inspiral
 				}
 				invoker.SendLineWithPrompt("\nEnd of command list.");
 			}
-			return true;
 		}
 	}
 }

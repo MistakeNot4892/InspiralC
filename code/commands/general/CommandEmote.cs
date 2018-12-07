@@ -6,7 +6,7 @@ namespace inspiral
 {
 	internal static partial class Command
 	{
-		internal static bool CmdEmote(GameClient invoker, string invocation)
+		internal static void CmdEmote(GameClient invoker, string invocation)
 		{
 			string emoteText = invoker.shell.GetString(Components.Visible, Text.FieldShortDesc);
 			if(invocation[0] == '(' && invocation.IndexOf(')') != -1)
@@ -34,13 +34,13 @@ namespace inspiral
 					if(mentioned == null)
 					{
 						invoker.SendLineWithPrompt($"You cannot see '{findingRaw}' here.");
-						return true;
+						return;
 					}
 					string pronounToken = m.Groups[2]?.Value.ToString().ToLower();
 					if(pronounToken != null && pronounToken != "" && !Gender.Tokens.Contains(pronounToken))
 					{
 						invoker.SendLineWithPrompt($"Unknown token '{pronounToken}'. Valid tokens for emotes are: {Text.EnglishList(Gender.Tokens)}.");
-						return true;
+						return;
 					}
 					if(!showingMessages.ContainsKey(mentioned))
 					{
@@ -66,11 +66,10 @@ namespace inspiral
 						}
 						showing.Key.ShowMessage(finalMessage);
 					}
-					return true;
+					return;
 				}
 			}
 			invoker.shell.ShowMessage($"You have emoted: {emoteText}");
-			return true;
 		}
 	}
 }

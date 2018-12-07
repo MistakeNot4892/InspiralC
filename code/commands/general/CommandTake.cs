@@ -4,18 +4,18 @@ namespace inspiral
 {
 	internal static partial class Command
 	{
-		internal static bool CmdTake(GameClient invoker, string invocation)
+		internal static void CmdTake(GameClient invoker, string invocation)
 		{
 			if(!invoker.shell.HasComponent(Components.Inventory))
 			{
 				invoker.SendLine("You cannot hold objects.");
-				return true;
+				return;
 			}
 			string[] tokens = invocation.Split(" ");
 			if(tokens.Length <= 0 || tokens[0] == "")
 			{
 				invoker.SendLine("What do you wish to take?");
-				return true;
+				return;
 			}
 			string tokenRaw = tokens[0];
 			string token = tokenRaw.ToLower();
@@ -23,16 +23,15 @@ namespace inspiral
 			if(collecting == null)
 			{
 				invoker.SendLine($"You cannot see '{tokenRaw}' anywhere.");
-				return true;
+				return;
 			}
 			if(collecting == invoker.shell)
 			{
 				invoker.SendLine($"Tragically, you cannot pick yourself up by your bootlaces.");
-				return true;
+				return;
 			}
 			InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Components.Inventory);
 			inv.Collect(invoker.shell, collecting);
-			return true;
 		}
 	}
 }

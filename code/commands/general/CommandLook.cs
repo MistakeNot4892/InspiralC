@@ -5,12 +5,12 @@ namespace inspiral
 {
 	internal static partial class Command
 	{
-		internal static bool CmdLook(GameClient invoker, string invocation)
+		internal static void CmdLook(GameClient invoker, string invocation)
 		{
 			if(invoker.shell.location == null)
 			{
 				invoker.SendLineWithPrompt("You cannot see anything here.");
-				return true;
+				return;
 			}
 			GameObject examining = null;
 			string[] tokens = invocation.Split(" ");
@@ -34,7 +34,6 @@ namespace inspiral
 			{
 				invoker.SendLineWithPrompt("You can see nothing here by that name.");
 			}
-			return true;
 		}
 	}
 }
