@@ -12,7 +12,11 @@
 		"help", 
 		"config",
 		"equip",
-		"unequip"
+		"unequip",
+		"describe",
+		"info",
+		"wield",
+		"unwield"
 	],
 	"description" : "Grants general world interaction and communication commands."
 }

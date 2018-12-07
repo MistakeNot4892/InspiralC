@@ -3,7 +3,8 @@
 	"description" : "Unequips an object.",
 	"aliases" : 
 	[
-		"unequip"
+		"unequip",
+		"remove"
 	],
 	"usage" : "unequip [object name or id]",
 	"method" : "CmdUnequip"

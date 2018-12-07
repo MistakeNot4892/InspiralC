@@ -79,5 +79,85 @@ namespace inspiral
 				}
 			}
 		}
+		internal void Probed(GameClient invoker)
+		{
+			string reply = $"{GetString(Components.Visible, Text.FieldShortDesc)} ({name}#{id})";
+			reply += "\nContents:";
+			if(contents.Count > 0)
+			{
+				foreach(string visibleThing in GetVisibleContents(invoker, true))
+				{
+					reply += $"\n- {visibleThing}.";
+				}
+			}
+			else
+			{
+				reply += "\n- nothing.";
+			}
+			invoker.SendLineWithPrompt(reply);
+		}
+		internal List<string> GetVisibleContents(GameClient viewer, bool quickView)
+		{
+			List<string> result = new List<string>();
+			if(HasComponent(Components.Mobile))
+			{
+				if(HasComponent(Components.Inventory))
+				{
+					InventoryComponent equip = (InventoryComponent)GetComponent(Components.Inventory);
+					foreach(KeyValuePair<string, GameObject> equ in equip.wielded)
+					{
+						if(quickView)
+						{
+							result.Add($"{equ.Value.GetString(Components.Visible, Text.FieldShortDesc)} ({equ.Value.name}#{equ.Value.id}) (wielded in {equ.Key})");
+						}
+						else
+						{
+							result.Add($"{equ.Value.GetString(Components.Visible, Text.FieldShortDesc)} in {gender.His} {equ.Key}");
+						}
+					}
+					foreach(KeyValuePair<string, GameObject> equ in equip.equipped)
+					{
+						if(quickView)
+						{
+							result.Add($"{equ.Value.GetString(Components.Visible, Text.FieldShortDesc)} ({equ.Value.name}#{equ.Value.id}) ({equ.Key})");
+						}
+						else
+						{
+							result.Add($"{equ.Value.GetString(Components.Visible, Text.FieldShortDesc)} on {gender.His} {equ.Key}");
+						}
+					}
+				}
+			}
+			else
+			{
+				foreach(GameObject gameObj in contents)
+				{
+					if(quickView)
+					{
+						result.Add($"{gameObj.GetString(Components.Visible, Text.FieldShortDesc)} ({gameObj.name}#{gameObj.id})");
+					}
+					else
+					{
+						if(gameObj != viewer.shell)
+						{
+							result.Add(gameObj.GetString(Components.Visible, Text.FieldRoomDesc));
+						}
+					}
+				}
+			}
+			return result;
+		}
+		internal void ExaminedBy(GameClient viewer, bool fromInside)
+		{
+			if(HasComponent(Components.Visible))
+			{
+				VisibleComponent comp = (VisibleComponent)GetComponent(Components.Visible);
+				comp.ExaminedBy(viewer, fromInside);
+			}
+			else
+			{
+				viewer.SendLineWithPrompt("There is nothing there.");
+			}
+		}
 	}
 }

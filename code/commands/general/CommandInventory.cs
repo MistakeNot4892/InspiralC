@@ -11,30 +11,44 @@ namespace inspiral
 				invoker.SendLine("You cannot hold objects.");
 				return;
 			}
+			InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Components.Inventory);
+
 			string inventorySummary = "";
 			List<GameObject> alreadyShown = new List<GameObject>();
-			List<string> invString = new List<string>();
-			if(invoker.shell.HasComponent(Components.Equipment))
+
+			inventorySummary += "\n\nYou are wielding:";
+			if(inv.equipped.Count > 0)
 			{
-				EquipmentComponent equip = (EquipmentComponent)invoker.shell.GetComponent(Components.Equipment);
-				inventorySummary += "You have equipped:";
-				if(equip.equipped.Count > 0)
+				foreach(KeyValuePair<string, GameObject> gameObj in inv.wielded)
 				{
-					foreach(KeyValuePair<string, GameObject> gameObj in equip.equipped)
+					inventorySummary += $"\n- {gameObj.Value.GetString(Components.Visible, Text.FieldShortDesc)} ({gameObj.Value.name}#{gameObj.Value.id}) - in your {gameObj.Key}.";
+					alreadyShown.Add(gameObj.Value);
+				}
+			}
+			else
+			{
+				inventorySummary += "\n- nothing.";
+			}
+
+			inventorySummary += "\n\nYou have equipped:";
+			if(inv.equipped.Count > 0)
+			{
+				foreach(KeyValuePair<string, GameObject> gameObj in inv.equipped)
+				{
+					if(!alreadyShown.Contains(gameObj.Value))
 					{
-						inventorySummary += $"\n- {gameObj.Value.GetString(Components.Visible, Text.FieldShortDesc)} ({gameObj.Value.name}#{gameObj.Value.id}) - {gameObj.Key}.";
+						inventorySummary += $"\n- {gameObj.Value.GetString(Components.Visible, Text.FieldShortDesc)} ({gameObj.Value.name}#{gameObj.Value.id}) - on your {gameObj.Key}.";
 						alreadyShown.Add(gameObj.Value);
 					}
 				}
-				else
-				{
-					inventorySummary += "\n- nothing.";
-				}
-				inventorySummary += "\n\n";
 			}
-			inventorySummary += "You are carrying:";
+			else
+			{
+				inventorySummary += "\n- nothing.";
+			}
+			
+			inventorySummary += "\n\nYou are carrying:";
 			List<string> invCarrying = new List<string>();
-			InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Components.Inventory);
 			if(inv.contents.Count > 0)
 			{
 				foreach(GameObject gameObj in inv.contents)

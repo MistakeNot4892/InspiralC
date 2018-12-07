@@ -3,8 +3,8 @@
 	"description" : "Equips an object.",
 	"aliases" : 
 	[
-		"equip", 
-		"wield"
+		"equip",
+		"wear"
 	],
 	"usage" : "equip [object name or id] <slot>",
 	"method" : "CmdEquip"

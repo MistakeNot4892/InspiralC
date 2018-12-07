@@ -83,8 +83,8 @@ namespace inspiral
 		internal List<Bodypart> allParts = new List<Bodypart>();
 		internal Dictionary<Bodypart, Bodypart> childToParent = new Dictionary<Bodypart, Bodypart>();
 		internal Dictionary<Bodypart, List<Bodypart>> parentToChildren = new Dictionary<Bodypart, List<Bodypart>>();
-		internal List<Bodypart> graspers = new List<Bodypart>();
-		internal List<Bodypart> stance = new List<Bodypart>();
+		internal List<string> graspers = new List<string>();
+		internal List<string> stance = new List<string>();
 		internal List<string> equipmentSlots = new List<string>();
 		internal Bodyplan(string _name)
 		{
@@ -94,13 +94,13 @@ namespace inspiral
 		{
 			foreach(Bodypart bp in allParts)
 			{
-				if(bp.canGrasp && !graspers.Contains(bp))
+				if(bp.canGrasp && !graspers.Contains(bp.name))
 				{
-					graspers.Add(bp);
+					graspers.Add(bp.name);
 				}
-				if(bp.canStand && !stance.Contains(bp))
+				if(bp.canStand && !stance.Contains(bp.name))
 				{
-					stance.Add(bp);
+					stance.Add(bp.name);
 				}
 				foreach(string slot in bp.equipmentSlots)
 				{
@@ -145,9 +145,10 @@ namespace inspiral
 			summary += "\n\nGrasp:";
 			if(graspers.Count > 0)
 			{
-				foreach(Bodypart grip in graspers)
+				foreach(string grip in graspers)
 				{
-					summary += $" [{grip.name}]";
+					Bodypart bp = Bodyplans.GetPart(grip);
+					summary += $" [{bp.name}]";
 				}
 			}
 			else
@@ -157,9 +158,10 @@ namespace inspiral
 			summary += "\n\nStance:";
 			if(stance.Count > 0)
 			{
-				foreach(Bodypart stand in stance)
+				foreach(string stand in stance)
 				{
-					summary += $" [{stand.name}]";
+					Bodypart bp = Bodyplans.GetPart(stand);
+					summary += $" [{bp.name}]";
 				}
 			}
 			else

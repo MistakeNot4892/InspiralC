@@ -50,7 +50,7 @@ namespace inspiral
 				}
 				catch(Exception e)
 				{
-					Debug.WriteLine($"SQL exception 1 ({repoName}): {e.ToString()} - entire query is [CREATE TABLE IF NOT EXISTS {dbTableName} ({dbTableSchema});]");
+					Debug.WriteLine($"SQL exception 1 ({repoName}): {e.ToString()} - entire query is [{dbTableName} ({dbTableSchema})]");
 				}
 			}
 			HandleSecondarySQLInitialization(dbConnection);
@@ -73,7 +73,7 @@ namespace inspiral
 				}
 				catch(Exception e)
 				{
-					Debug.WriteLine($"SQL exception 2 ({repoName}): {e.ToString()} - entire query is [SELECT * FROM {dbTableName};]");
+					Debug.WriteLine($"SQL exception 2 ({repoName}): {e.ToString()} - entire query is [{dbTableName}]");
 				}
 			}
 			Task.Run(() => DoPeriodicDatabaseUpdate() );

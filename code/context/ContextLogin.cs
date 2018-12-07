@@ -89,7 +89,7 @@ namespace inspiral
 						invoker.id = newUser;
 						loginState.Remove(invoker);
 						loginState.Add(invoker, "registering_entering_password");
-						invoker.SendLine("Enter a new password of at least 6 characters, including at least one number or symbol.\nRemember that Telnet is not secure; do not reuse an important personal password.");
+						invoker.SendLine("Enter a new password of at least 6 characters, including at least one number or symbol. Remember that Telnet is not secure; do not reuse an important personal password.");
 					}
 				}
 			}

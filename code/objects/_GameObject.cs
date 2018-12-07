@@ -43,6 +43,11 @@ namespace inspiral
 		}
 		internal GameObject FindGameObjectInContents(string token)
 		{
+			return FindGameObjectInContents(token, true);
+		}
+
+		internal GameObject FindGameObjectInContents(string token, bool silent)
+		{
 			string checkToken = token.ToLower();
 			foreach(GameObject gameObj in contents)
 			{

@@ -54,7 +54,7 @@ namespace inspiral
 						}
 						catch(Exception e)
 						{
-							Debug.WriteLine($"Component SQL exception ({builder.Key}): {e.ToString()} - entire query is [CREATE TABLE IF NOT EXISTS {builder.Value.TableSchema};]");
+							Debug.WriteLine($"Component SQL exception ({builder.Key}): {e.ToString()} - entire query is [{builder.Value.TableSchema}]");
 						}
 					}
 				}
@@ -99,7 +99,7 @@ namespace inspiral
 						}
 						catch(Exception e)
 						{
-							Debug.WriteLine($"SQL exception 4 ({repoName}): {e.ToString()} - entire query is [SELECT * FROM {Components.builders[comp.Key].LoadSchema} WHERE id = @p0;]");
+							Debug.WriteLine($"SQL exception 4 ({repoName}): {e.ToString()} - entire query is [{Components.builders[comp.Key].LoadSchema}]");
 						}
 					}
 				}
@@ -218,13 +218,16 @@ namespace inspiral
 			gameObj.gender = Gender.GetByTerm(Gender.Plural);
 
 			gameObj.AddComponent(Components.Visible);
-			gameObj.AddComponent(Components.Mobile);
 			gameObj.AddComponent(Components.Inventory);
-			gameObj.AddComponent(Components.Equipment);
+			gameObj.AddComponent(Components.Inventory);
+
+			gameObj.AddComponent(Components.Mobile);
+			MobileComponent mob = (MobileComponent)gameObj.GetComponent(Components.Mobile);
+			mob.SetBodyplan("humanoid");
 
 			gameObj.SetString(Components.Visible, Text.FieldShortDesc, gameObj.name);
-			gameObj.SetString(Components.Visible, Text.FieldRoomDesc, $"{gameObj.name} is here.");
-			gameObj.SetString(Components.Visible, Text.FieldExaminedDesc, $"They are completely boring.");
+			gameObj.SetString(Components.Visible, Text.FieldRoomDesc,    $"{gameObj.name} is here.");
+			gameObj.SetString(Components.Visible, Text.FieldExaminedDesc, "");
 			gameObj.SetString(Components.Mobile, Text.FieldEnterMessage, $"{gameObj.name} enters from the $DIR.");
 			gameObj.SetString(Components.Mobile, Text.FieldLeaveMessage, $"{gameObj.name} leaves to the $DIR.");
 			gameObj.SetString(Components.Mobile, Text.FieldDeathMessage, $"The corpse of {gameObj.name} lies here.");

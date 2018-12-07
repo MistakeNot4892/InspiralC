@@ -101,20 +101,49 @@ namespace inspiral
 		}
 		internal void ExaminedBy(GameClient viewer, bool fromInside)
 		{
-			string mainDesc = $"{Colours.Fg(Text.Capitalize(shortDescription),Colours.BoldWhite)}.\n{Colours.Fg(examinedDescription, Colours.BoldBlack)}";
-			if(parent != null && parent.contents.Count > 0)
+			string mainDesc = $"{Colours.Fg(Text.Capitalize(shortDescription),Colours.BoldWhite)}.";
+			if(parent.HasComponent(Components.Mobile))
 			{
-				List<string> roomAppearances = new List<string>();
-				foreach(GameObject obj in parent.contents)
+				string startingToken = (parent == viewer.shell) ? "You're" : "That's";
+				MobileComponent mob = (MobileComponent)parent.GetComponent(Components.Mobile);
+				mainDesc = $"{startingToken} {mainDesc}\n{Text.Capitalize(parent.gender.He)} {parent.gender.Is} a {mob.race}";
+				if(examinedDescription == null || examinedDescription.Length <= 0)
 				{
-					if(obj != viewer.shell && obj.HasComponent(Components.Visible)) //&& !obj.flags.Contains(Text.FlagInvisible))
+					mainDesc += ".";
+				}
+				else if(examinedDescription[0] == '.' || examinedDescription[0] == '!' || examinedDescription[0] == '?')
+				{
+					mainDesc += examinedDescription;
+				}
+				else
+				{
+					mainDesc += $" {examinedDescription}";
+				}
+				List<string> clothing = parent.GetVisibleContents(viewer, false);
+				if(clothing.Count > 0)
+				{
+					mainDesc += $"\n{Text.Capitalize(parent.gender.He)} {parent.gender.Is} wearing:";
+					foreach(string line in clothing)
 					{
-						roomAppearances.Add(obj.GetString(Components.Visible, Text.FieldRoomDesc));
+						mainDesc += $"\n{Text.Capitalize(line)}";
 					}
 				}
-				if(roomAppearances.Count > 0)
+				else
 				{
-					mainDesc = $"{mainDesc}\n{string.Join(" ", roomAppearances.ToArray())}";
+					mainDesc += $"\n{Text.Capitalize(parent.gender.He)} {parent.gender.Is} completely naked.";
+				}
+				mainDesc = Text.FormatProse(mainDesc);
+			}
+			else
+			{
+				mainDesc += $"\n{Colours.Fg(examinedDescription, Colours.BoldBlack)}";
+				if(parent.contents.Count > 0)
+				{
+					List<string> roomAppearances = parent.GetVisibleContents(viewer, false);
+					if(roomAppearances.Count > 0)
+					{
+						mainDesc = $"{mainDesc}\n{string.Join(" ", roomAppearances.ToArray())}";
+					}
 				}
 			}
 			if(parent.HasComponent(Components.Room))

@@ -1,0 +1,12 @@
+{
+	"command" : "info",
+	"description" : "Examines a nearby object or room.",
+	"aliases" : 
+	[
+		"i",
+		"p",
+		"probe"
+	],
+	"usage" : "info [object name or id]",
+	"method" : "CmdInfo"
+}

@@ -35,18 +35,7 @@ namespace inspiral
 				Game.Objects.QueueForUpdate(this);
 			}
 		}
-		internal void ExaminedBy(GameClient viewer, bool fromInside)
-		{
-			if(HasComponent(Components.Visible))
-			{
-				VisibleComponent comp = (VisibleComponent)GetComponent(Components.Visible);
-				comp.ExaminedBy(viewer, fromInside);
-			}
-			else
-			{
-				viewer.SendLineWithPrompt("There is nothing there.");
-			}
-		}
+
 		internal string GetStringSummary(GameClient invoker)
 		{
 			Dictionary<string, List<string>> summary = new Dictionary<string, List<string>>();
