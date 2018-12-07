@@ -3,17 +3,13 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	class CommandSay : GameCommand
+	internal static partial class Command
 	{
-		internal override string Description { get; set; } = "Vocally communicates with the people and things around you.";
-		internal override string Command { get; set; } = "say";
-		internal override List<string> Aliases { get; set; } = new List<string>() { "say", "ask" };
-		internal override string Usage { get; set; } = "say <(emote text)> [speech text] <emoticon>";
-		internal override bool Invoke(GameClient invoker, string invocation)
+		internal static bool CmdSay(GameClient invoker, string invocation)
 		{
 
 			GameObject target = null;
-			if(invocation.Substring(0,3) == "to " && invoker.shell.location != null)
+			if(invocation.Length >= 3 && invocation.Substring(0,3) == "to " && invoker.shell.location != null)
 			{
 				invocation = invocation.Substring(3);
 				string targetName = invocation.Substring(0, invocation.IndexOf(' '));

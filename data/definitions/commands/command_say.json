@@ -1,0 +1,11 @@
+{
+	"command" : "say",
+	"description" : "Vocally communicates with the people and things around you.",
+	"aliases" : 
+	[
+		"say",
+		"ask"
+	],
+	"usage" : "say <(emote text)> [speech text] <emoticon>",
+	"method" : "CmdSay"
+}

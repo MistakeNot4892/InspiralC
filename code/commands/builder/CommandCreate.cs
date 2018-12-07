@@ -3,13 +3,9 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	class CommandCreate : GameCommand
+	internal static partial class Command 
 	{
-		internal override string Description { get; set; } = "Creates a new database entry for an object or room.";
-		internal override string Command { get; set; } = "create";
-		internal override List<string> Aliases { get; set; } = new List<string>() { "create" };
-		internal override string Usage { get; set; } = "create [object or room]";
-		internal override bool Invoke(GameClient invoker, string invocation)
+		internal static bool CmdCreate(GameClient invoker, string invocation)
 		{
 			string[] tokens = invocation.Split(" ");
 			if(tokens.Length <= 0)

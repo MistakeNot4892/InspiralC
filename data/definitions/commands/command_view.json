@@ -1,0 +1,11 @@
+{
+	"command" : "view",
+	"description" : "Views the components and fields of an object.",
+	"aliases" : 
+	[
+		"view",
+		"vv"
+	],
+	"usage" : "view [object name or id]",
+	"method" : "CmdView"
+}

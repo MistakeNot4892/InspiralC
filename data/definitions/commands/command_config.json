@@ -1,0 +1,10 @@
+{
+	"command" : "config",
+	"description" : "Configures various options related to gameplay and presentation. WIP.",
+	"aliases" : 
+	[
+		"config"
+	],
+	"usage" : "config [option] <value>",
+	"method" : "CmdConfig"
+}

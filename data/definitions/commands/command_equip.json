@@ -1,0 +1,11 @@
+{
+	"command" : "equip",
+	"description" : "Equips an object.",
+	"aliases" : 
+	[
+		"equip", 
+		"wield"
+	],
+	"usage" : "equip [object name or id] <slot>",
+	"method" : "CmdEquip"
+}

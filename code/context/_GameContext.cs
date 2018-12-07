@@ -5,23 +5,20 @@ namespace inspiral
 {
 	class GameContext
 	{
-		internal Dictionary<string, GameCommand> commands = new Dictionary<string, GameCommand>();
 		internal virtual bool TakeInput(GameClient invoker, string command, string rawCommand, string arguments) { return false; }
 		internal virtual void OnContextSet(GameClient viewer) {}
 		internal virtual void OnContextUnset(GameClient viewer) {}
 		internal virtual bool InvokeCommand(GameClient invoker, string command, string arguments) 
 		{
-			if(commands.ContainsKey(command))
-			{
-				GameCommand contextCommand = commands[command];
-				return contextCommand.Invoke(invoker, arguments);
-			}
 			foreach(GameRole role in invoker.account.roles)
 			{
 				if(role.AllCommands.ContainsKey(command))
 				{
-					GameCommand gameCommand = role.AllCommands[command];
-					return gameCommand.Invoke(invoker, arguments);
+					GameCommand cmd = role.AllCommands[command];
+					if(cmd.invokedMethod != null)
+					{
+						return (bool)cmd.invokedMethod.Invoke(null, new object[] { invoker, arguments });
+					}
 				}
 			}
 			return false;
@@ -29,17 +26,6 @@ namespace inspiral
 		internal virtual string GetPrompt(GameClient viewer) 
 		{
 			return "";
-		}
-		internal void AddCommand(GameCommand command)
-		{
-			commands.Add(command.Command, command);
-			foreach(string alias in command.Aliases)
-			{
-				if(!commands.ContainsKey(alias))
-				{
-					commands.Add(alias, command);
-				}
-			}
 		}
 	}
 }

@@ -1,0 +1,12 @@
+{
+	"command" : "emote",
+	"description" : "Performs a complex narration or action.",
+	"aliases" : 
+	[
+		"emote", 
+		"em", 
+		"me"
+	],
+	"usage" : "emote <(preceeding text)> [following text]",
+	"method" : "CmdEmote"
+}

@@ -1,0 +1,11 @@
+{
+	"command" : "addroom",
+	"description" : "Adds a new exit to a room.",
+	"aliases" : 
+	[
+		"addroom",
+		"connect"
+	],
+	"usage" : "addroom [direction] [room id or 'new'] <one-way>",
+	"method" : "CmdAddroom"
+}

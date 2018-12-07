@@ -1,29 +1,62 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 namespace inspiral
 {
 
-	static class Commands
+	internal static partial class Command
 	{
 		private static Dictionary<string, GameCommand> commands = new Dictionary<string, GameCommand>();
-		static Commands()
+		static Command()
 		{
-			Debug.WriteLine($"Loading commands.");
-			foreach(var t in (from domainAssembly in AppDomain.CurrentDomain.GetAssemblies()
-				from assemblyType in domainAssembly.GetTypes()
-				where assemblyType.IsSubclassOf(typeof(GameCommand))
-				select assemblyType))
+			Debug.WriteLine($"Building command method lookup table.");
+			
+			Dictionary<string, MethodInfo> methods = new Dictionary<string, MethodInfo>();
+			MethodInfo[] methodInfos = typeof(Command).GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance);
+			for(int i = 0;i < methodInfos.Length;i++)
 			{
-				Debug.WriteLine($"Loading command {t}.");
-				GameCommand command = (GameCommand)Activator.CreateInstance(t);
-				commands.Add(command.Command, command);
+				if(methodInfos[i].Name.Substring(0, 3) == "Cmd")
+				{
+					Console.WriteLine($"Caching MethodInfo for {methodInfos[i].Name}.");
+					methods.Add(methodInfos[i].Name, methodInfos[i]);
+				}
+			}
+
+			Debug.WriteLine($"Building command dictionary.");
+			foreach (var f in (from file in Directory.EnumerateFiles(@"data\definitions\commands", "*.json", SearchOption.AllDirectories) select new { File = file }))
+			{
+				Debug.WriteLine($"Loading command definition {f.File}.");
+				try
+				{
+					JObject r = JObject.Parse(File.ReadAllText(f.File));
+					List<string> aliases = new List<string>();
+					foreach(JValue token in r["aliases"].Children<JValue>())
+					{
+						aliases.Add(token.ToString());
+					}
+					MethodInfo method = methods[(string)r["method"]];
+					GameCommand command = new GameCommand(
+						(string)r["command"],
+						aliases,
+						(string)r["usage"],
+						(string)r["description"],
+						method
+					);
+					commands.Add(command.command, command);
+				}
+				catch(Exception e)
+				{
+					Debug.WriteLine($"Exception when loading command from file {f.File} - {e.Message}");
+				}
 			}
 			Debug.WriteLine($"Done.");
 		}
-		internal static GameCommand GetCommand(string command)
+		internal static GameCommand Get(string command)
 		{
 			command = command.ToLower();
 			if(commands.ContainsKey(command))
@@ -33,47 +66,24 @@ namespace inspiral
 			return null;
 		}
 	}
-
-	/*
-	class GameCommandInput
+	internal class GameCommand
 	{
 		internal string command;
-		internal string[] tokens;
-		internal string rawInput;
-	}
-	*/
-	class GameCommand
-	{
-		internal virtual string Command { get; set; } = null;
-		internal virtual List<string> Aliases { get; set; } = null;
-		internal virtual string Usage { get; set; } = "No usage information supplied.";
-		internal virtual string Description { get; set; } = "No description supplied.";
-		internal virtual bool Invoke(GameClient invoker, string invocation) 
+		internal List<string> aliases;
+		internal string usage;
+		internal string description;
+		internal MethodInfo invokedMethod;
+		internal GameCommand(string _command, List<string> _aliases, string _usage, string _description, MethodInfo _method)
 		{
-			return false;
+			command = _command;
+			aliases = _aliases;
+			usage = _usage;
+			description = _description;
+			invokedMethod = _method;
 		}
 		internal string GetSummary()
 		{
-			return $"{Command} [{Text.EnglishList(Aliases)}]";//: {Usage}";
+			return $"{command} [{Text.EnglishList(aliases)}]";
 		}
-		/*
-		internal virtual GameCommandInput Parse(string inputString)
-		{
-			GameCommandInput input = new GameCommandInput();
-			string[] tokens = inputString.Split(" ");
-			input.command = tokens[0].ToLower();
-			if(tokens.Length > 1)
-			{
-				int copyTokens = tokens.Length-1;
-				input.tokens = new string[copyTokens];
-				for(int i = 0;i<copyTokens;i++)
-				{
-					input.tokens[i] = tokens[i+1];
-				}
-			}
-			input.rawInput = inputString;
-			return input;
-		}
-		*/
 	}
 }

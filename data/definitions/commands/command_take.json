@@ -1,0 +1,13 @@
+{
+	"command" : "take",
+	"description" : "Picks up an object.",
+	"aliases" : 
+	[
+		"take",
+		"get",
+		"g",
+		"pickup"
+	],
+	"usage" : "take [object name or id]",
+	"method" : "CmdTake"
+}

@@ -3,13 +3,9 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	class CommandLook : GameCommand
+	internal static partial class Command
 	{
-		internal override string Description { get; set; } = "Examines a creature, object or location.";
-		internal override string Command { get; set; } = "look";
-		internal override List<string> Aliases { get; set; } = new List<string>() { "look", "l", "ql" };
-		internal override string Usage { get; set; } = "look";
-		internal override bool Invoke(GameClient invoker, string invocation)
+		internal static bool CmdLook(GameClient invoker, string invocation)
 		{
 			if(invoker.shell.location == null)
 			{

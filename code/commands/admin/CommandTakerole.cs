@@ -2,13 +2,9 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	class CommandTakerole : GameCommand
+	internal static partial class Command
 	{
-		internal override string Description { get; set; } = "Removes a role from an account.";
-		internal override string Command { get; set; } = "takerole";
-		internal override List<string> Aliases { get; set; } = new List<string>() { "takerole" };
-		internal override string Usage { get; set; } = "takerole [account name or id] [role name or id]";
-		internal override bool Invoke(GameClient invoker, string invocation)
+		internal static bool CmdTakerole(GameClient invoker, string invocation)
 		{
 			string[] tokens = invocation.ToLower().Split(" ");
 			if(tokens.Length < 1)

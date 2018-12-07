@@ -4,13 +4,9 @@ using System.Diagnostics;
 
 namespace inspiral
 {
-	class CommandAddroom : GameCommand
+	internal static partial class Command
 	{
-		internal override string Description { get; set; } = "Adds a new exit to a room.";
-		internal override string Command { get; set; } = "addroom";
-		internal override List<string> Aliases { get; set; } = new List<string>() { "addroom", "connect" };
-		internal override string Usage { get; set; } = "addroom [direction] [room id or 'new'] <one-way>";
-		internal override bool Invoke(GameClient invoker, string invocation)
+		internal static bool CmdAddroom(GameClient invoker, string invocation)
 		{
 			if(invoker.shell == null || invoker.shell.location == null || !invoker.shell.location.HasComponent(Components.Room))
 			{

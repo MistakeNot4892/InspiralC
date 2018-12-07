@@ -1,0 +1,10 @@
+{
+	"command" : "test",
+	"description" : "Test command, please ignore.",
+	"aliases" : 
+	[
+		"test"
+	],
+	"usage" : "test",
+	"method" : "CmdTest"
+}

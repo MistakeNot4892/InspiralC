@@ -1,0 +1,10 @@
+{
+	"command" : "drop",
+	"description" : "Drops an object.",
+	"aliases" : 
+	[
+		"drop"
+	],
+	"usage" : "drop [object name or id]",
+	"method" : "CmdDrop"
+}

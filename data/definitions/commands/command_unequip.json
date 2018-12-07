@@ -1,0 +1,10 @@
+{
+	"command" : "unequip",
+	"description" : "Unequips an object.",
+	"aliases" : 
+	[
+		"unequip"
+	],
+	"usage" : "unequip [object name or id]",
+	"method" : "CmdUnequip"
+}

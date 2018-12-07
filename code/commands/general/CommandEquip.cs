@@ -2,13 +2,9 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	class CommandEquip : GameCommand
+	internal static partial class Command
 	{
-		internal override string Description { get; set; } = "Equips an object.";
-		internal override string Command { get; set; } = "equip";
-		internal override List<string> Aliases { get; set; } = new List<string>() { "equip", "wield" };
-		internal override string Usage { get; set; } = "wield [object name or id]";
-		internal override bool Invoke(GameClient invoker, string invocation)
+		internal static bool CmdEquip(GameClient invoker, string invocation)
 		{
 			if(!invoker.shell.HasComponent(Components.Equipment))
 			{

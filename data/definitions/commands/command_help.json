@@ -1,0 +1,11 @@
+{
+	"command" : "help",
+	"description" : "Shows details on commands. WIP.",
+	"aliases" : 
+	[
+		"help",
+		"?"
+	],
+	"usage" : "help <term>",
+	"method" : "CmdHelp"
+}

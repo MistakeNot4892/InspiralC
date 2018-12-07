@@ -2,13 +2,9 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	class CommandUnequip : GameCommand
+	internal static partial class Command
 	{
-		internal override string Description { get; set; } = "unequips an object.";
-		internal override string Command { get; set; } = "unequip";
-		internal override List<string> Aliases { get; set; } = new List<string>() { "unequip", "unwield", "remove" };
-		internal override string Usage { get; set; } = "unequip [object name or id]";
-		internal override bool Invoke(GameClient invoker, string invocation)
+		internal static bool CmdUnequip(GameClient invoker, string invocation)
 		{
 			if(!invoker.shell.HasComponent(Components.Equipment))
 			{

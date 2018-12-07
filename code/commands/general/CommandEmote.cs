@@ -4,13 +4,9 @@ using System.Text.RegularExpressions;
 
 namespace inspiral
 {
-	class CommandEmote : GameCommand
+	internal static partial class Command
 	{
-		internal override string Description { get; set; } = "Performs a complex narration or action.";
-		internal override string Command { get; set; } = "emote";
-		internal override List<string> Aliases { get; set; } = new List<string>() { "emote", "em", "me" };
-		internal override string Usage { get; set; } = "emote <(preceeding text)> [following text]";
-		internal override bool Invoke(GameClient invoker, string invocation)
+		internal static bool CmdEmote(GameClient invoker, string invocation)
 		{
 			string emoteText = invoker.shell.GetString(Components.Visible, Text.FieldShortDesc);
 			if(invocation[0] == '(' && invocation.IndexOf(')') != -1)

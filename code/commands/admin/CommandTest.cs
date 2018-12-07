@@ -7,13 +7,9 @@ using Newtonsoft.Json;
 
 namespace inspiral
 {
-	class CommandTest : GameCommand
+	internal static partial class Command
 	{
-		internal override string Description { get; set; } = "Test command, please ignore.";
-		internal override string Command { get; set; } = "test";
-		internal override List<string> Aliases { get; set; } = new List<string>() { "test" };
-		internal override string Usage { get; set; } = "test";
-		internal override bool Invoke(GameClient invoker, string invocation)
+		internal static bool CmdTest(GameClient invoker, string invocation)
 		{
 			invoker.SendLineWithPrompt(Bodyplans.GetPlan("humanoid").GetSummary());
 			return true;

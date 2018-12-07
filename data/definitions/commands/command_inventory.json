@@ -1,0 +1,13 @@
+{
+	"command" : "inventory",
+	"description" : "Shows your inventory.",
+	"aliases" : 
+	[
+		"inventory",
+		"inv",
+		"ii",
+		"i"
+	],
+	"usage" : "inventory",
+	"method" : "CmdInventory"
+}

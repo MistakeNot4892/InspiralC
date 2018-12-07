@@ -1,0 +1,10 @@
+{
+	"command" : "client",
+	"description" : "Shows your client details.",
+	"aliases" : 
+	[
+		"client"
+	],
+	"usage" : "client",
+	"method" : "CmdClient"
+}

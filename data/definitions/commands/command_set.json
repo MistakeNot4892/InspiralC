@@ -1,0 +1,11 @@
+{
+	"command" : "set",
+	"description" : "Modifies the editable fields of an object.",
+	"aliases" : 
+	[
+		"set",
+		"vs"
+	],
+	"usage" : "set [object name or id] [object field] [new value]",
+	"method" : "CmdSet"
+}

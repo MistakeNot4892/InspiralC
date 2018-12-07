@@ -2,13 +2,9 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	class CommandView : GameCommand
+	internal static partial class Command
 	{
-		internal override string Description { get; set; } = "Views the components and fields of an object.";
-		internal override string Command { get; set; } = "view";
-		internal override List<string> Aliases { get; set; } = new List<string>() { "view", "vv" };
-		internal override string Usage { get; set; } = "view [object name or id]";
-		internal override bool Invoke(GameClient invoker, string invocation)
+		internal static bool CmdView(GameClient invoker, string invocation)
 		{
 			string[] tokens = invocation.Split(" ");
 			if(tokens.Length <= 0 || tokens[0] == "")

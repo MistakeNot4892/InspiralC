@@ -26,7 +26,7 @@ namespace inspiral
 					List<GameCommand> roleCommands = new List<GameCommand>();
 					foreach(string cmd in r["commands"].Select(t => (string)t).ToList())
 					{
-						GameCommand _cmd = Commands.GetCommand(cmd);
+						GameCommand _cmd = Command.Get(cmd);
 						if(_cmd != null)
 						{
 							if(!roleCommands.Contains(_cmd))
@@ -73,11 +73,11 @@ namespace inspiral
 			UniqueCommands = _cmds;
 			foreach(GameCommand command in UniqueCommands)
 			{
-				if(!AllCommands.ContainsKey(command.Command))
+				if(!AllCommands.ContainsKey(command.command))
 				{
-					AllCommands.Add(command.Command, command);
+					AllCommands.Add(command.command, command);
 				}
-				foreach(string alias in command.Aliases)
+				foreach(string alias in command.aliases)
 				{
 					if(!AllCommands.ContainsKey(alias))
 					{
@@ -105,8 +105,8 @@ namespace inspiral
 			string result = $"{name}:";
 			foreach(GameCommand command in UniqueCommands)
 			{
-				result += $"\n   {command.Command} [{Text.EnglishList(command.Aliases)}]:\n";
-				result += $"\n     Usage: {command.Usage}\n     {command.Description}";
+				result += $"\n   {command.command} [{Text.EnglishList(command.aliases)}]:\n";
+				result += $"\n     Usage: {command.usage}\n     {command.description}";
 			}
 			return result;
 		}

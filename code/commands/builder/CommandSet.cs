@@ -2,13 +2,9 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	class CommandSet : GameCommand
+	internal static partial class Command
 	{
-		internal override string Description { get; set; } = "Modifies the editable fields of an object.";
-		internal override string Command { get; set; } = "set";
-		internal override List<string> Aliases { get; set; } = new List<string>() { "set", "vs" };
-		internal override string Usage { get; set; } = "set [object name or id] [object field] [new value]";
-		internal override bool Invoke(GameClient invoker, string invocation)
+		internal static bool CmdSet(GameClient invoker, string invocation)
 		{
 			string[] tokens = invocation.Split(" ");
 			if(tokens.Length < 3)
