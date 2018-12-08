@@ -104,18 +104,7 @@ namespace inspiral
 				if(HasComponent(Components.Inventory))
 				{
 					InventoryComponent equip = (InventoryComponent)GetComponent(Components.Inventory);
-					foreach(KeyValuePair<string, GameObject> equ in equip.wielded)
-					{
-						if(quickView)
-						{
-							result.Add($"{equ.Value.GetString(Components.Visible, Text.FieldShortDesc)} ({equ.Value.name}#{equ.Value.id}) (wielded in {equ.Key})");
-						}
-						else
-						{
-							result.Add($"{equ.Value.GetString(Components.Visible, Text.FieldShortDesc)} in {gender.His} {equ.Key}");
-						}
-					}
-					foreach(KeyValuePair<string, GameObject> equ in equip.equipped)
+					foreach(KeyValuePair<string, GameObject> equ in equip.carrying)
 					{
 						if(quickView)
 						{
@@ -123,7 +112,7 @@ namespace inspiral
 						}
 						else
 						{
-							result.Add($"{equ.Value.GetString(Components.Visible, Text.FieldShortDesc)} on {gender.His} {equ.Key}");
+							result.Add($"{equ.Value.GetString(Components.Visible, Text.FieldShortDesc)} in {gender.His} {equ.Key}");
 						}
 					}
 				}

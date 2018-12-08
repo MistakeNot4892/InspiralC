@@ -14,9 +14,7 @@
 		"equip",
 		"unequip",
 		"describe",
-		"info",
-		"wield",
-		"unwield"
+		"info"
 	],
 	"description" : "Grants general world interaction and communication commands."
 }
