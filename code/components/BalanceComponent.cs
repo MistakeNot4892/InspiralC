@@ -54,7 +54,9 @@ namespace inspiral
 			}
 			balTimer.Interval += (msKnock-1); // -1 because Interval resets to 1 (cannot be 0).
 			balTimer.Enabled = true;
-			parent.WriteLine($"You are knocked off {balance} for {Math.Truncate((float)balTimer.Interval / 1000.0f)} seconds!");
+			double secondsLeft = Math.Truncate(10 * balTimer.Interval) / 10000; // ms to s, truncating to 2 places
+			string secondsString = secondsLeft == 1 ? "second" : "seconds";
+			parent.WriteLine($"Your {balance} is lost for {secondsLeft} {secondsString}!");
 		}
 		private void ResetBalance(object sender, ElapsedEventArgs e, string balance)
 		{
@@ -62,14 +64,14 @@ namespace inspiral
 			offBalanceTimers[balance].Interval = 1;
 			parent.WriteLine($"You have recovered your {balance}.", true);
 		}
-		internal string GetPrompt()
+		internal override string GetPrompt()
 		{
-			string reply = "";
+			string p = "";
 			foreach(KeyValuePair<string, Timer> bal in offBalanceTimers)
 			{
-				reply += bal.Value.Enabled ? '-' : bal.Key[0];
+				p += bal.Value.Enabled ? '-' : bal.Key[0];
 			}
-			return reply;
+			return $"{Colours.Fg("[", Colours.Yellow)}{Colours.Fg(p, Colours.BoldWhite)}{Colours.Fg("]", Colours.Yellow)}";
 		}
 	}
 }

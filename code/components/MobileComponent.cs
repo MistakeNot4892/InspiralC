@@ -144,6 +144,10 @@ namespace inspiral
 			bodyplan = Bodyplans.GetPlan(bPlan);
 			UpdateBody();
 		}
+		internal override string GetPrompt()
+		{
+			return $"{Colours.Fg("Pain:",Colours.Yellow)}{Colours.Fg("0%",Colours.BoldYellow)} {Colours.Fg("Bleed:",Colours.Red)}{Colours.Fg("0%",Colours.BoldRed)}";
+		}
 	}
 	internal class BodypartData
 	{

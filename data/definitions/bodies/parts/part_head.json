@@ -2,6 +2,6 @@
 	"name" : "head",
 	"grasp" : false,
 	"vital" : true,
-	"slots" : [ "hat", "eyes", "neck", "mask" ],
+	"slots" : [ "head", "eyes", "neck", "face" ],
 	"stance" : false
 }

@@ -53,13 +53,27 @@ namespace inspiral
 			{
 				if($"{gameObj.id}" == checkToken || 
 					gameObj.name.ToLower() == checkToken || 
-					gameObj.aliases.Contains(checkToken)
+					gameObj.aliases.Contains(checkToken) || 
+					$"{gameObj.name}#{gameObj.id}" == checkToken
 					)
 				{
 					return gameObj;
 				}
 			}
-
+			foreach(GameObject gameObj in contents)
+			{
+				if(gameObj.name.ToLower().Contains(checkToken))
+				{
+					return gameObj;
+				}
+				foreach(string alias in gameObj.aliases)
+				{
+					if(alias.ToLower().Contains(checkToken) || $"{alias}#{gameObj.id}" == checkToken)
+					{
+						return gameObj;
+					}
+				}
+			}
 			if(HasComponent(Components.Room))
 			{
 				RoomComponent room = (RoomComponent)GetComponent(Components.Room);

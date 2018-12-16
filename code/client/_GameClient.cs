@@ -185,7 +185,6 @@ namespace inspiral
 		}
 		internal void SendPrompt()
 		{
-			Console.WriteLine("Sending prompt");
 			string p = context.GetPrompt(this).ToString();
 			if(p != null && p.Length > 0)
 			{
@@ -198,7 +197,6 @@ namespace inspiral
 		{
 			if(message != "")
 			{
-				Console.WriteLine($"Writing [{message}]");
 				WriteToStream(FormatOutgoingString($"{message}\n"));
 			}
 		}

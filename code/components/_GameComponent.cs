@@ -122,5 +122,10 @@ namespace inspiral
 		internal virtual long GetLong(string key) { return 0; }
 		internal virtual void InstantiateFromRecord(SQLiteDataReader reader) {}
 		internal virtual void AddCommandParameters(SQLiteCommand command) {}
+		internal virtual string GetPrompt()
+		{
+			return "";
+		}
+
 	}
 }

@@ -122,7 +122,7 @@ namespace inspiral
 				List<string> clothing = parent.GetVisibleContents(viewer, false);
 				if(clothing.Count > 0)
 				{
-					mainDesc += $"\n{Text.Capitalize(parent.gender.He)} {parent.gender.Is} wearing:";
+					mainDesc += $"\n{Text.Capitalize(parent.gender.He)} {parent.gender.Is} carrying:";
 					foreach(string line in clothing)
 					{
 						mainDesc += $"\n{Text.Capitalize(line)}";

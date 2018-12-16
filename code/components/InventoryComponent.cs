@@ -48,7 +48,7 @@ namespace inspiral
 			foreach(KeyValuePair<string, long> equippedId in JsonConvert.DeserializeObject<Dictionary<string, long>>(reader[Text.FieldEquippedSlots].ToString()))
 			{
 				GameObject obj = (GameObject)Game.Objects.Get(equippedId.Value);
-				if(obj != null)
+				if(obj != null && obj.location == parent)
 				{
 					carrying.Add(equippedId.Key.ToLower(), obj);
 				}

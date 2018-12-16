@@ -45,7 +45,6 @@ namespace inspiral
 			ClientComponent client = (ClientComponent)GetComponent(Components.Client);
 			if(client != null && client.client != null)
 			{
-				Console.WriteLine($"Sending [{message}], sendPrompt is {sendPrompt}");
 				client.client.WriteLine(message);
 				if(sendPrompt)
 				{
@@ -124,11 +123,25 @@ namespace inspiral
 					{
 						if(quickView)
 						{
-							result.Add($"{equ.Value.GetString(Components.Visible, Text.FieldShortDesc)} ({equ.Value.name}#{equ.Value.id}) ({equ.Key})");
+							if(equip.GetWieldableSlots().Contains(equ.Key))
+							{
+								result.Add($"{equ.Value.GetString(Components.Visible, Text.FieldShortDesc)} ({equ.Value.name}#{equ.Value.id}) ({equ.Key}, wielded)");
+							}
+							else
+							{
+								result.Add($"{equ.Value.GetString(Components.Visible, Text.FieldShortDesc)} ({equ.Value.name}#{equ.Value.id}) ({equ.Key}, worn)");
+							}
 						}
 						else
 						{
-							result.Add($"{equ.Value.GetString(Components.Visible, Text.FieldShortDesc)} in {gender.His} {equ.Key}");
+							if(equip.GetWieldableSlots().Contains(equ.Key))
+							{
+								result.Add($"{equ.Value.GetString(Components.Visible, Text.FieldShortDesc)} in {gender.His} {equ.Key}.");
+							}
+							else
+							{
+								result.Add($"{equ.Value.GetString(Components.Visible, Text.FieldShortDesc)} on {gender.His} {equ.Key}.");
+							}
 						}
 					}
 				}

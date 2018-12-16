@@ -60,20 +60,23 @@ namespace inspiral
 		}
 		internal override string GetPrompt(GameClient viewer) 
 		{
-			string balances = "";
-			if(viewer.shell.HasComponent(Components.Balance))
+			string p = "";
+			foreach(KeyValuePair<string, GameComponent> comp in viewer.shell.components)
 			{
-				BalanceComponent bal = (BalanceComponent)viewer.shell.GetComponent(Components.Balance);
-				balances = $"{Colours.Fg("[", Colours.Yellow)}{Colours.Fg(bal.GetPrompt(), Colours.BoldWhite)}{Colours.Fg("]", Colours.Yellow)} ";
+				string addP = comp.Value.GetPrompt();
+				if(addP != null && addP != "")
+				{
+					p += $" {addP}";
+				}
 			}
+			p = p.Trim();
 			string final = Colours.Fg("> ", Colours.Yellow);
-			string p = $"{Colours.Fg("Pain:",Colours.Yellow)}{Colours.Fg("0%",Colours.BoldYellow)} {Colours.Fg("Bleed:",Colours.Red)}{Colours.Fg("0%",Colours.BoldRed)} {balances}{final}";
-			if(p == viewer.lastPrompt)
+			if(p == null || p == "" || p == viewer.lastPrompt)
 			{
 				return final;
 			}
 			viewer.lastPrompt = p;
-			return p;
+			return $"{p}{final}";
 		}
 	}
 }

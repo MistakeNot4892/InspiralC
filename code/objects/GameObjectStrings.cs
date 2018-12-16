@@ -30,9 +30,13 @@ namespace inspiral
 		}
 		internal void SetString(string component, string field, string newField)
 		{
-			if((bool)(GetComponent(component)?.SetValue(field, newField)))
+			if(HasComponent(component))
 			{
-				Game.Objects.QueueForUpdate(this);
+				GameComponent comp = GetComponent(component);
+				if(comp.SetValue(field, newField))
+				{
+					Game.Objects.QueueForUpdate(this);
+				}
 			}
 		}
 
