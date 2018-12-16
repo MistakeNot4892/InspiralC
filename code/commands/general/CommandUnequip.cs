@@ -8,11 +8,18 @@ namespace inspiral
 		{
 			if(!invoker.shell.HasComponent(Components.Inventory))
 			{
-				invoker.SendLine("You cannot unequip objects.");
+				invoker.WriteLine("You cannot unequip objects.");
 				return;
 			}
-			InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Components.Inventory);
-			inv.TryToUnequip(invocation);
+			if(invoker.shell.CanUseBalance("poise"))
+			{
+				InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Components.Inventory);
+				if(inv.TryToUnequip(invocation))
+				{
+					invoker.shell.UseBalance("poise", 500);
+				}
+				invoker.SendPrompt();
+			}
 		}
 	}
 }

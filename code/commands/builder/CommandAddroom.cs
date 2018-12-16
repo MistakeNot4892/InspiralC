@@ -10,18 +10,18 @@ namespace inspiral
 		{
 			if(invoker.shell == null || invoker.shell.location == null || !invoker.shell.location.HasComponent(Components.Room))
 			{
-				invoker.SendLineWithPrompt("This command is only usable within a room.");
+				invoker.WriteLine("This command is only usable within a room.");
 			}
 			else
 			{
 				string[] tokens = invocation.Split(" ");
 				if(tokens.Length <= 0)
 				{
-					invoker.SendLineWithPrompt("Which exit do you wish to add a room to?");
+					invoker.WriteLine("Which exit do you wish to add a room to?");
 				}
 				else if(tokens.Length <= 1)
 				{
-					invoker.SendLineWithPrompt("Please specify a valid room ID to link to, or 'new' to use a new room.");
+					invoker.WriteLine("Please specify a valid room ID to link to, or 'new' to use a new room.");
 				}
 				else
 				{
@@ -33,7 +33,7 @@ namespace inspiral
 					RoomComponent room = (RoomComponent)invoker.shell.location.GetComponent(Components.Room);
 					if(room.exits.ContainsKey(exitToAdd))
 					{
-						invoker.SendLineWithPrompt($"There is already an exit to the {exitToAdd} in this room.");
+						invoker.WriteLine($"There is already an exit to the {exitToAdd} in this room.");
 					}
 					else
 					{
@@ -55,7 +55,7 @@ namespace inspiral
 						}
 						if(roomId == -1 || Game.Objects.Get(roomId) == null)
 						{
-							invoker.SendLineWithPrompt("Please specify a valid room ID to link to, or 'new' to use a new room.");
+							invoker.WriteLine("Please specify a valid room ID to link to, or 'new' to use a new room.");
 						}
 						else
 						{
@@ -65,7 +65,7 @@ namespace inspiral
 							{
 								room.exits.Add(exitToAdd, roomId);
 								saveEditedRoom = true;
-								invoker.SendLineWithPrompt($"You have connected {room.parent.id} to {roomId} via a one-way exit to the {exitToAdd}.");
+								invoker.WriteLine($"You have connected {room.parent.id} to {roomId} via a one-way exit to the {exitToAdd}.");
 							}
 							else
 							{
@@ -75,7 +75,7 @@ namespace inspiral
 								{
 									room.exits.Add(exitToAdd, roomId);
 									saveEditedRoom = true;
-									invoker.SendLineWithPrompt($"Target room already has an exit to the {otherExit}.\nYou have connected {room.parent.id} to {roomId} via a one-way exit to the {exitToAdd}.");
+									invoker.WriteLine($"Target room already has an exit to the {otherExit}.\nYou have connected {room.parent.id} to {roomId} via a one-way exit to the {exitToAdd}.");
 								}
 								else
 								{
@@ -83,7 +83,7 @@ namespace inspiral
 									saveEditedRoom = true;
 									otherRoom.exits.Add(otherExit, room.parent.id);
 									Game.Objects.QueueForUpdate(otherRoom.parent);
-									invoker.SendLineWithPrompt($"You have connected {room.parent.id} to {roomId} via a bidirectional exit to the {exitToAdd}.");
+									invoker.WriteLine($"You have connected {room.parent.id} to {roomId} via a bidirectional exit to the {exitToAdd}.");
 								}
 							}
 							if(saveEditedRoom)
@@ -94,6 +94,7 @@ namespace inspiral
 					}
 				}
 			}
+			invoker.SendPrompt();
 		}
 	}
 }

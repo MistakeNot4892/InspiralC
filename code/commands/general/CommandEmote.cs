@@ -33,13 +33,13 @@ namespace inspiral
 					}
 					if(mentioned == null)
 					{
-						invoker.SendLineWithPrompt($"You cannot see '{findingRaw}' here.");
+						invoker.SendLine($"You cannot see '{findingRaw}' here.");
 						return;
 					}
 					string pronounToken = m.Groups[2]?.Value.ToString().ToLower();
 					if(pronounToken != null && pronounToken != "" && !Gender.Tokens.Contains(pronounToken))
 					{
-						invoker.SendLineWithPrompt($"Unknown token '{pronounToken}'. Valid tokens for emotes are: {Text.EnglishList(Gender.Tokens)}.");
+						invoker.SendLine($"Unknown token '{pronounToken}'. Valid tokens for emotes are: {Text.EnglishList(Gender.Tokens)}.");
 						return;
 					}
 					if(!showingMessages.ContainsKey(mentioned))
@@ -64,12 +64,12 @@ namespace inspiral
 						{
 							finalMessage = $"You have emoted: {finalMessage}";
 						}
-						showing.Key.ShowMessage(finalMessage);
+						showing.Key.WriteLine(finalMessage, true);
 					}
 					return;
 				}
 			}
-			invoker.shell.ShowMessage($"You have emoted: {emoteText}");
+			invoker.shell.WriteLine($"You have emoted: {emoteText}", true);
 		}
 	}
 }

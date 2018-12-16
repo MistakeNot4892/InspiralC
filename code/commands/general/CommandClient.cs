@@ -6,7 +6,7 @@ namespace inspiral
 	{
 		internal static void CmdClient(GameClient invoker, string invocation)
 		{
-			invoker.SendLineWithPrompt(invoker.GetClientSummary());
+			invoker.SendLine(invoker.GetClientSummary());
 		}
 	}
 }

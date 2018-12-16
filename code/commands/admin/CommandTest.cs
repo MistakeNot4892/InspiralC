@@ -11,8 +11,8 @@ namespace inspiral
 	{
 		internal static void CmdTest(GameClient invoker, string invocation)
 		{
-			MobileComponent mob = (MobileComponent)invoker.shell.GetComponent(Components.Mobile);
-			invoker.SendLineWithPrompt(mob.bodyplan.GetSummary());
+			invoker.WriteLine("Testing poise knock.");
+			invoker.shell.TryUseBalance("poise", 5000, true);
 		}
 	}
 }

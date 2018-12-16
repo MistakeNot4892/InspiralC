@@ -144,7 +144,7 @@ namespace inspiral
 			List<string> componentKeys = new List<string>();
 			foreach(KeyValuePair<string, GameComponent> comp in gameObj.components)
 			{
-				if(Components.builders[comp.Key].UpdateSchema != null)
+				if(comp.Value.isPersistent)
 				{
 					componentKeys.Add(comp.Key);
 				}
@@ -219,9 +219,8 @@ namespace inspiral
 
 			gameObj.AddComponent(Components.Visible);
 			gameObj.AddComponent(Components.Inventory);
-			gameObj.AddComponent(Components.Inventory);
-
 			gameObj.AddComponent(Components.Mobile);
+			gameObj.AddComponent(Components.Balance);
 			MobileComponent mob = (MobileComponent)gameObj.GetComponent(Components.Mobile);
 			mob.SetBodyplan("humanoid");
 

@@ -9,20 +9,21 @@ namespace inspiral
 			string[] tokens = invocation.Split(" ");
 			if(tokens.Length <= 0 || tokens[0] == "")
 			{
-				invoker.SendLineWithPrompt("What do you wish to view?");
+				invoker.WriteLine("What do you wish to view?");
 			}
 			else
 			{
 				GameObject viewing = invoker.shell.FindGameObjectNearby(tokens[0].ToLower());
 				if(viewing == null)
 				{
-					invoker.SendLineWithPrompt($"Cannot find '{tokens[0].ToLower()}' here.");
+					invoker.WriteLine($"Cannot find '{tokens[0].ToLower()}' here.");
 				}
 				else
 				{
-					invoker.SendLineWithPrompt(viewing.GetStringSummary(invoker));
+					invoker.WriteLine(viewing.GetStringSummary(invoker));
 				}
 			}
+			invoker.SendPrompt();
 		}
 	}
 }

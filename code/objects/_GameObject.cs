@@ -83,5 +83,46 @@ namespace inspiral
 		{
 			return !HasComponent(Components.Room) && !HasComponent(Components.Mobile);
 		}
+
+		internal bool TryUseBalance(string balance, int msKnock)
+		{
+			return TryUseBalance(balance, msKnock, false);
+		}
+		internal bool CanUseBalance(string balance)
+		{
+			if(HasComponent(Components.Balance))
+			{
+				BalanceComponent bal = (BalanceComponent)GetComponent(Components.Balance);
+				return bal.OnBalance(balance);
+			}
+			return false;
+		}
+		internal bool TryUseBalance(string balance, int msKnock, bool ignoreOffbal)
+		{
+			if(HasComponent(Components.Balance))
+			{
+				if(ignoreOffbal || CanUseBalance(balance))
+				{
+					WriteLine($"Using {msKnock}ms of {balance}");
+					return UseBalance(balance, msKnock);
+				}
+				else
+				{
+					WriteLine($"You must recover your {balance} before you can act again.");
+				}
+			}
+			WriteLine($"You are not capable of performing actions that require {balance}.");
+			return false;
+		}
+		internal bool UseBalance(string balance, int msKnock)
+		{
+			if(HasComponent(Components.Balance))
+			{
+				BalanceComponent bal = (BalanceComponent)GetComponent(Components.Balance);
+				bal.KnockBalance(balance, msKnock);
+				return true;
+			}
+			return false;
+		}
 	}
 }

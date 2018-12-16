@@ -151,7 +151,8 @@ namespace inspiral
 				RoomComponent roomComp = (RoomComponent)parent.GetComponent(Components.Room);
 				mainDesc = $"{mainDesc}\n{Colours.Fg(roomComp.GetExitString(), Colours.BoldCyan)}";
 			}
-			viewer.SendLineWithPrompt(mainDesc);
+			viewer.WriteLine(mainDesc);
+			viewer.SendPrompt();
 		}
 		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
 		{

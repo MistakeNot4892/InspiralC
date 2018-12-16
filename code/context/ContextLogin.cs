@@ -71,25 +71,25 @@ namespace inspiral
 				string[] tokens = arguments.Split(" ");
 				if(tokens.Length < 1)
 				{
-					invoker.SendLine($"Please supply a desired username when registering.");
+					invoker.WriteLine($"Please supply a desired username when registering.");
 				}
 				else
 				{
 					string newUser = tokens[0].ToLower();
 					if(Game.Accounts.GetAccountByUser(newUser) != null)
 					{
-						invoker.SendLine($"An account already exists with that username.");
+						invoker.WriteLine($"An account already exists with that username.");
 					}
 					else if(!ValidateUsername(newUser))
 					{
-						invoker.SendLine($"Usernames must be 2 to 16 characters long and can only contain letters.");
+						invoker.WriteLine($"Usernames must be 2 to 16 characters long and can only contain letters.");
 					}
 					else
 					{
 						invoker.id = newUser;
 						loginState.Remove(invoker);
 						loginState.Add(invoker, "registering_entering_password");
-						invoker.SendLine("Enter a new password of at least 6 characters, including at least one number or symbol. Remember that Telnet is not secure; do not reuse an important personal password.");
+						invoker.WriteLine("Enter a new password of at least 6 characters, including at least one number or symbol. Remember that Telnet is not secure; do not reuse an important personal password.");
 					}
 				}
 			}
@@ -101,12 +101,12 @@ namespace inspiral
 						PlayerAccount acct = Game.Accounts.GetAccountByUser(command);
 						if(acct == null)
 						{
-							invoker.SendLine($"No account exists for '{command}'. Use {Colours.Fg("register [username]", Colours.BoldWhite)} to create one.");
+							invoker.WriteLine($"No account exists for '{command}'. Use {Colours.Fg("register [username]", Colours.BoldWhite)} to create one.");
 						}
 						else
 						{
 							invoker.account = acct;
-							invoker.SendLine("Enter your password.");
+							invoker.WriteLine("Enter your password.");
 							loginState.Remove(invoker);
 							loginState.Add(invoker, "entering_password");
 						}
@@ -115,12 +115,12 @@ namespace inspiral
 						bool correctPass = invoker.account.CheckPassword(rawCommand);
 						if(correctPass)
 						{
-							invoker.SendLine("Password correct.");
+							invoker.WriteLine("Password correct.");
 							HandleLogin(invoker);
 						}
 						else
 						{
-							invoker.SendLine("Incorrect password.");
+							invoker.WriteLine("Incorrect password.");
 							invoker.account = null;
 							loginState.Remove(invoker);
 							loginState.Add(invoker, "connected");
@@ -131,7 +131,7 @@ namespace inspiral
 
 						if(!ValidatePassword(rawCommand))
 						{
-							invoker.SendLine($"Passwords must be 6 to 30 characters long and must contain at least one symbol or number.");
+							invoker.WriteLine($"Passwords must be 6 to 30 characters long and must contain at least one symbol or number.");
 						}
 						else
 						{
@@ -139,19 +139,19 @@ namespace inspiral
 							passwordConfirmations.Add(invoker, rawCommand);
 							loginState.Remove(invoker);
 							loginState.Add(invoker, "registering_confirming_password");
-							invoker.SendLine("Please reenter your password to confirm.");
+							invoker.WriteLine("Please reenter your password to confirm.");
 						}
 						break;
 					case "registering_confirming_password":
 						if(passwordConfirmations.ContainsKey(invoker) && passwordConfirmations[invoker] == rawCommand)
 						{
 							invoker.account = Game.Accounts.CreateAccount(invoker.id, BCrypt.Net.BCrypt.HashPassword(passwordConfirmations[invoker], 10));
-							invoker.SendLine("Account created.");
+							invoker.WriteLine("Account created.");
 							HandleLogin(invoker);
 						}
 						else
 						{
-							invoker.SendLine("Passwords do not match.");
+							invoker.WriteLine("Passwords do not match.");
 							passwordConfirmations.Remove(invoker);
 							loginState.Remove(invoker);
 							loginState.Add(invoker, "connected");
@@ -160,6 +160,7 @@ namespace inspiral
 						break;
 				}
 			}
+			invoker.SendPrompt();
 			return true;
 		}
 	}

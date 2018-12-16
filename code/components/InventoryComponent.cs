@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System;
+using System.Linq;
 
 namespace inspiral
 {
@@ -69,7 +70,7 @@ namespace inspiral
 			input = input.ToLower().Trim();
 			if(input == "")
 			{
-				parent.ShowMessage($"What do you wish to {action}?");
+				parent.WriteLine($"What do you wish to {action}?");
 				return null;
 			}
 			GameObject returning = parent.FindGameObjectInContents(input);
@@ -82,7 +83,7 @@ namespace inspiral
 			}
 			if(returning == null)
 			{
-				parent.ShowMessage($"You cannot find '{inputRaw}' amongst your possessions.");
+				parent.WriteLine($"You cannot find '{inputRaw}' amongst your possessions.");
 			}
 			return returning;
 		}
@@ -91,15 +92,18 @@ namespace inspiral
 			GameObject tryingToDrop = GetObjectFromInput(input, "drop");
 			if(tryingToDrop != null)
 			{
-				return Drop(tryingToDrop);
+				return Drop(tryingToDrop, false);
 			}
 			return false;
 		}
-		internal bool Drop(GameObject dropping)
+		internal bool Drop(GameObject dropping, bool silent)
 		{
 			if(parent.location == null)
 			{
-				parent.ShowMessage("There is nowhere to drop that.");
+				if(!silent)
+				{
+					parent.WriteLine("There is nowhere to drop that.");
+				}
 				return false;
 			}
 			string removeMessage1p = "drop";
@@ -109,7 +113,10 @@ namespace inspiral
 			{
 				if(!CanUnequip(dropping))
 				{
-					parent.ShowMessage("You cannot drop that.");
+					if(!silent)
+					{
+						parent.WriteLine("You cannot drop that.");
+					}
 					return false;
 				}
 				removeMessage1p = "remove and drop";
@@ -127,10 +134,13 @@ namespace inspiral
 			if(removingSlot != null)
 			{
 				carrying.Remove(removingSlot);
-				parent.ShowNearby(parent, 
-					$"You {removeMessage1p} {dropping.GetString(Components.Visible, Text.FieldShortDesc)}.",
-					$"{Text.Capitalize(parent.GetString(Components.Visible, Text.FieldShortDesc))} {removeMessage3p} {dropping.GetString(Components.Visible, Text.FieldShortDesc)}."
-					);
+				if(!silent)
+				{
+					parent.ShowNearby(parent, 
+						$"You {removeMessage1p} {dropping.GetString(Components.Visible, Text.FieldShortDesc)}.",
+						$"{Text.Capitalize(parent.GetString(Components.Visible, Text.FieldShortDesc))} {removeMessage3p} {dropping.GetString(Components.Visible, Text.FieldShortDesc)}."
+						);
+				}
 				dropping.Move(parent.location);
 			}
 			return true;
@@ -226,7 +236,7 @@ namespace inspiral
 			Tuple<string, string> tokens = GetSlotAndTokenFromInput(input);
 			if(tokens.Item1 == "")
 			{
-				parent.ShowMessage("What do you wish to pick up?");
+				parent.WriteLine("What do you wish to pick up?");
 				return false;
 			}
 			GameObject equipping = parent.FindGameObjectNearby(tokens.Item1);
@@ -244,15 +254,17 @@ namespace inspiral
 				}
 				if(success)
 				{
+					Game.Objects.QueueForUpdate(parent);
 					parent.ShowNearby(parent, 
 						$"You pick up {equipping.GetString(Components.Visible, Text.FieldShortDesc)}.",
 						$"{Text.Capitalize(parent.GetString(Components.Visible, Text.FieldShortDesc))} picks up {equipping.GetString(Components.Visible, Text.FieldShortDesc)}."
 					);
+					return true;
 				}
 			}
 			else
 			{
-				parent.ShowMessage($"You cannot see '{tokens.Item1}' here.");
+				parent.WriteLine($"You cannot see '{tokens.Item1}' here.");
 			}
 			return false;
 		}
@@ -260,21 +272,33 @@ namespace inspiral
 		{
 			Tuple<string, string> tokens = GetSlotAndTokenFromInput(input);
 			string slot = tokens.Item2;
-			if(slot == null || slot == "default")
-			{
-				slot = GetEquippableSlots()[0];
-			}
-			if(!GetEquippableSlots().Contains(slot))
-			{
-				parent.ShowMessage($"You cannot equip anything to your {slot}.");
-				return false;
-			}
+
 			GameObject equipping = GetObjectFromInput(tokens.Item1, "equip");
 			if(equipping != null)
 			{
+				if(!equipping.HasComponent(Components.Wearable))
+				{
+					parent.WriteLine("You cannot wear that.");
+					return false;
+				}
+				WearableComponent worn = (WearableComponent)equipping.GetComponent(Components.Wearable);
+				if(slot == null || slot == "default")
+				{
+					slot = worn.wearableSlots.FirstOrDefault();
+				}
+				if(!worn.wearableSlots.Contains(slot))
+				{
+					parent.WriteLine($"You cannot wear that on your {slot}.");
+					return false;
+				}
+				if(!GetEquippableSlots().Contains(slot))
+				{
+					parent.WriteLine($"You cannot equip anything to your {slot}.");
+					return false;
+				}
 				if(IsEquipped(equipping))
 				{
-					parent.ShowMessage("You are already wearing that.");
+					parent.WriteLine("You are already wearing that.");
 					return false;
 				}
 				return Equip(equipping, slot, false);
@@ -303,7 +327,7 @@ namespace inspiral
 					return true;
 				}
 			}
-			parent.ShowMessage("Your hands are full.");
+			parent.WriteLine("Your hands are full.");
 			return false;
 		}
 		internal bool Equip(GameObject equipping, string slot, bool silent) 

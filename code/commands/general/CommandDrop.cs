@@ -11,8 +11,12 @@ namespace inspiral
 				invoker.SendLine("You cannot drop objects.");
 				return;
 			}
-			InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Components.Inventory);
-			inv.TryToDrop(invocation);
+			if(invoker.shell.CanUseBalance("poise"))
+			{
+				InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Components.Inventory);
+				inv.TryToDrop(invocation);
+			}
+			invoker.SendPrompt();
 		}
 	}
 }

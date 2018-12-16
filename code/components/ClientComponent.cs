@@ -24,6 +24,10 @@ namespace inspiral
 	class ClientComponent : GameComponent 
 	{
 		internal GameClient client;
+		internal ClientComponent()
+		{
+			isPersistent = false;
+		}
 		internal void Login(GameClient _client)
 		{
 			client = _client;

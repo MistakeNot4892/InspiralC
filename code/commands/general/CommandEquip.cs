@@ -8,11 +8,18 @@ namespace inspiral
 		{
 			if(!invoker.shell.HasComponent(Components.Inventory))
 			{
-				invoker.SendLine("You cannot equip objects.");
+				invoker.WriteLine("You cannot equip objects.");
 				return;
 			}
-			InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Components.Inventory);
-			inv.TryToEquip(invocation);
+			if(invoker.shell.CanUseBalance("poise"))
+			{
+				InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Components.Inventory);
+				if(inv.TryToEquip(invocation))
+				{
+					invoker.shell.UseBalance("poise", 500);
+				}
+			}
+			invoker.SendPrompt();
 		}
 	}
 }

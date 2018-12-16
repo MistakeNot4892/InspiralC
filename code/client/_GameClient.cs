@@ -22,6 +22,7 @@ namespace inspiral
 		internal TcpClient client;
 		internal NetworkStream stream;
 		internal GameContext context;
+		internal string lastPrompt = null;
 		internal PlayerAccount account = null;
 
 		internal List<string> gmcpFlags = new List<string>();
@@ -161,12 +162,13 @@ namespace inspiral
 			{
 				if(Text.exits.Contains(cmd))
 				{
-					SendLineWithPrompt($"There is no exit to the {cmd}.");
+					WriteLine($"There is no exit to the {cmd}.");
 				}
 				else
 				{
-					SendLineWithPrompt($"Unknown command '{rawCmd}'.");
+					WriteLine($"Unknown command '{rawCmd}'.");
 				}
+				SendPrompt();
 			}
 		}
 		private string FormatOutgoingString(string message)
@@ -175,42 +177,28 @@ namespace inspiral
 			message = message.Replace("\n","\r\n");
 			return message;
 		}
-		internal void WriteLineWithPrompt(string message)
-		{
-			if(message != "")
-			{
-				message = FormatOutgoingString(message);
-				message = $"{message}{context.GetPrompt(this).ToString()}";
-				byte[] bMessage = System.Text.Encoding.ASCII.GetBytes(message);
-				byte[] outgoing = new byte[bMessage.Length+2];
-				int i = 0;
-				while(i < bMessage.Length)
-				{
-					outgoing[i] = bMessage[i];
-					i++;
-				}
-				outgoing[i] = Telnet.IAC;
-				outgoing[i+1] = Telnet.GA;
-				WriteToStream(outgoing);
-			}
-		}
 
 		internal void SendLine(string message)
 		{
 			WriteLine(message);
-			SendAll();
+			SendPrompt();
 		}
-
-		internal void SendLineWithPrompt(string message)
+		internal void SendPrompt()
 		{
-			WriteLineWithPrompt(message);
-			SendAll();
+			Console.WriteLine("Sending prompt");
+			string p = context.GetPrompt(this).ToString();
+			if(p != null && p.Length > 0)
+			{
+				WriteToStream(p);
+			}
+			WriteToStream(new byte[] { Telnet.IAC, Telnet.GA });
+			Flush();
 		}
-
 		internal void WriteLine(string message)
 		{
 			if(message != "")
 			{
+				Console.WriteLine($"Writing [{message}]");
 				WriteToStream(FormatOutgoingString($"{message}\n"));
 			}
 		}
@@ -224,14 +212,14 @@ namespace inspiral
 			{
 				if(outputBufferIndex > Telnet.MaxBufferSize)
 				{
-					SendAll();
+					Flush();
 				}
 				outputBufferIndex++;
 				outputBuffer[outputBufferIndex] = message[i];
 			}
 		}
 
-		public void SendAll()
+		public void Flush()
 		{
 			stream.Write(outputBuffer, 0, outputBufferIndex+1);
 			outputBufferIndex = 0;
@@ -246,10 +234,9 @@ namespace inspiral
 			{
 				Telnet.SendGMCPPacket(this, $"Core.Goodbye \"{farewell}\"");
 			}
-			SendLine($"{farewell}");
+			WriteLine($"{farewell}");
 			Quit();
 		}
-
 		internal void Keepalive()
 		{
 			return; // todo when timeout is added

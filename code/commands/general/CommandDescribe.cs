@@ -9,12 +9,12 @@ namespace inspiral
 			invocation = invocation.Trim();
 			if(invocation.Length <= 0)
 			{
-				invoker.SendLineWithPrompt("Please supply a new description to use.");
+				invoker.SendLine("Please supply a new description to use.");
 				return;
 			}
 			string lastDesc = invoker.shell.GetString(Components.Visible, Text.FieldExaminedDesc);
 			invoker.shell.SetString(Components.Visible, Text.FieldExaminedDesc, invocation);
-			invoker.SendLineWithPrompt($"Your appearance has been updated.\nFor reference, your last appearance was:\n{lastDesc}");
+			invoker.SendLine($"Your appearance has been updated.\nFor reference, your last appearance was:\n{lastDesc}");
 		}
 	}
 }

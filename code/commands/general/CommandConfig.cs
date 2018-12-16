@@ -6,7 +6,7 @@ namespace inspiral
 	{
 		internal static void CmdConfig(GameClient invoker, string invocation)
 		{
-			invoker.SendLineWithPrompt("Config not implemented yet sorry.");
+			invoker.SendLine("Config not implemented yet sorry.");
 		}
 	}
 }

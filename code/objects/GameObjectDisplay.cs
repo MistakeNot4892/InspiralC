@@ -9,7 +9,7 @@ namespace inspiral
 		{
 			foreach(GameObject obj in contents)
 			{
-				obj.ShowMessage(message);
+				obj.WriteLine(message, true);
 			}
 		}
 		internal void ShowToContents(GameObject source, string message)
@@ -18,24 +18,39 @@ namespace inspiral
 		}
 		internal void ShowToContents(GameObject source, string message1p, string message3p)
 		{
+			ShowToContents(source, message1p, message3p, false);
+		}
+
+		internal void ShowToContents(GameObject source, string message1p, string message3p, bool sendPromptToSource)
+		{
 			if(source.HasComponent(Components.Client))
 			{
-				source.ShowMessage(message1p);
+				source.WriteLine(message1p, sendPromptToSource);
 			}
 			foreach(GameObject obj in contents)
 			{
 				if(obj != source && obj.HasComponent(Components.Client))
 				{
-					obj.ShowMessage(message3p);
+					obj.WriteLine(message3p, true);
 				}
 			}
 		}
-		internal virtual void ShowMessage(string message)
+
+		internal virtual void WriteLine(string message)
+		{
+			WriteLine(message, false);
+		}
+		internal virtual void WriteLine(string message, bool sendPrompt)
 		{
 			ClientComponent client = (ClientComponent)GetComponent(Components.Client);
-			if(client != null)
+			if(client != null && client.client != null)
 			{
-				client.client?.SendLineWithPrompt(message);
+				Console.WriteLine($"Sending [{message}], sendPrompt is {sendPrompt}");
+				client.client.WriteLine(message);
+				if(sendPrompt)
+				{
+					client.client.SendPrompt();
+				}
 			}
 		}
 
@@ -47,7 +62,8 @@ namespace inspiral
 				{
 					if(!exceptions.Contains(obj))
 					{
-						obj.ShowMessage(message);
+						obj.WriteLine(message, true);
+
 					}
 				}
 			}
@@ -55,7 +71,7 @@ namespace inspiral
 			{
 				if(!exceptions.Contains(source))
 				{
-					source.ShowMessage(message);
+					source.WriteLine(message, true);
 				}
 			}
 		}
@@ -75,7 +91,7 @@ namespace inspiral
 			{
 				if(source.HasComponent(Components.Client))
 				{
-					source.ShowMessage(message1p);
+					source.WriteLine(message1p);
 				}
 			}
 		}
@@ -94,7 +110,7 @@ namespace inspiral
 			{
 				reply += "\n- nothing.";
 			}
-			invoker.SendLineWithPrompt(reply);
+			invoker.SendLine(reply);
 		}
 		internal List<string> GetVisibleContents(GameClient viewer, bool quickView)
 		{
@@ -145,7 +161,7 @@ namespace inspiral
 			}
 			else
 			{
-				viewer.SendLineWithPrompt("There is nothing there.");
+				viewer.WriteLine("There is nothing there.");
 			}
 		}
 	}

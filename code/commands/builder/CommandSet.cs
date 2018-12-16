@@ -9,13 +9,13 @@ namespace inspiral
 			string[] tokens = invocation.Split(" ");
 			if(tokens.Length < 3)
 			{
-				invoker.SendLineWithPrompt("Usage: SET <target> <field> <value>");
+				invoker.SendLine("Usage: SET <target> <field> <value>");
 				return;
 			}
 			GameObject editing = invoker.shell.FindGameObjectNearby(tokens[0].ToLower());
 			if(editing == null)
 			{
-				invoker.SendLineWithPrompt("Cannot find object to modify.");
+				invoker.SendLine("Cannot find object to modify.");
 				return;
 			}
 
@@ -66,23 +66,24 @@ namespace inspiral
 
 			if(unknownValue)
 			{
-				invoker.SendLineWithPrompt($"Unknown field '{field}' of object #{editing.id} ({editing.GetString(Components.Visible, Text.FieldShortDesc)}. Check that the object has the component and field that you are trying to edit.");
+				invoker.WriteLine($"Unknown field '{field}' of object #{editing.id} ({editing.GetString(Components.Visible, Text.FieldShortDesc)}. Check that the object has the component and field that you are trying to edit.");
 			}
 			else if(invalidValue != null)
 			{
 				if(invalidValue != "")
 				{
-					invoker.SendLineWithPrompt($"Invalid value '{value}' for field '{field}' of object #{editing.id} ({editing.GetString(Components.Visible, Text.FieldShortDesc)}). {invalidValue}");
+					invoker.WriteLine($"Invalid value '{value}' for field '{field}' of object #{editing.id} ({editing.GetString(Components.Visible, Text.FieldShortDesc)}). {invalidValue}");
 				}
 				else
 				{
-					invoker.SendLineWithPrompt($"Invalid value '{value}' for field '{field}' of object #{editing.id} ({editing.GetString(Components.Visible, Text.FieldShortDesc)}).");
+					invoker.WriteLine($"Invalid value '{value}' for field '{field}' of object #{editing.id} ({editing.GetString(Components.Visible, Text.FieldShortDesc)}).");
 				}
 			}
 			else
 			{
-				invoker.SendLineWithPrompt($"Set field '{field}' of object #{editing.id} ({editing.GetString(Components.Visible, Text.FieldShortDesc)}) to '{newVal}'.\nFor reference, previous value was '{lastVal}'.");
+				invoker.WriteLine($"Set field '{field}' of object #{editing.id} ({editing.GetString(Components.Visible, Text.FieldShortDesc)}) to '{newVal}'.\nFor reference, previous value was '{lastVal}'.");
 			}
+			invoker.SendPrompt();
 		}
 	}
 }

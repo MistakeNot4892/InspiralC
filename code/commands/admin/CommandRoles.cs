@@ -9,14 +9,14 @@ namespace inspiral
 			string[] tokens = invocation.ToLower().Split(" ");
 			if(tokens.Length < 1)
 			{
-				invoker.SendLineWithPrompt("Who do you wish to view the roles of?");
+				invoker.SendLine("Who do you wish to view the roles of?");
 				return;
 			}
 
 			PlayerAccount acct = Game.Accounts.FindAccount(tokens[0]);
 			if(acct == null)
 			{
-				invoker.SendLineWithPrompt($"Cannot find account for '{tokens[0]}'.");
+				invoker.SendLine($"Cannot find account for '{tokens[0]}'.");
 				return;
 			}
 
@@ -27,8 +27,7 @@ namespace inspiral
 			{
 				roleDetails[header].Add(Text.FormatPopup(role.name, role.GetSummary(), invoker.config.wrapwidth + Text.NestedWrapwidthModifier));
 			}
-			invoker.SendLineWithPrompt(Text.FormatBlock(roleDetails, invoker.config.wrapwidth));
-			return;
+			invoker.SendLine(Text.FormatBlock(roleDetails, invoker.config.wrapwidth));
 		}
 	}
 }

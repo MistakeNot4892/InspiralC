@@ -1,0 +1,10 @@
+{
+	"command" : "prompt",
+	"description" : "Shows your full prompt.",
+	"aliases" : 
+	[
+		"prompt"
+	],
+	"usage" : "prompt",
+	"method" : "CmdPrompt"
+}

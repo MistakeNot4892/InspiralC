@@ -9,7 +9,7 @@ namespace inspiral
 			string[] tokens = invocation.Split(" " );
 			if(invocation != null && invocation != "")
 			{
-				invoker.SendLineWithPrompt($"If the help system existed, you'd be searching for '{invocation}'.");
+				invoker.WriteLine($"If the help system existed, you'd be searching for '{invocation}'.");
 			}
 			else
 			{
@@ -18,8 +18,9 @@ namespace inspiral
 				{
 					invoker.WriteLine(role.GetHelp());
 				}
-				invoker.SendLineWithPrompt("\nEnd of command list.");
+				invoker.WriteLine("\nEnd of command list.");
 			}
+			invoker.SendPrompt();
 		}
 	}
 }

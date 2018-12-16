@@ -20,7 +20,7 @@ namespace inspiral
 				}
 				if(target == null)
 				{
-					invoker.SendLineWithPrompt($"You cannot see '{targetName}' here.");
+					invoker.SendLine($"You cannot see '{targetName}' here.");
 					return;
 				}
 			}
@@ -51,6 +51,7 @@ namespace inspiral
 			if(invocation.Length <= 0)
 			{
 				invoker.shell.ShowNearby(invoker.shell, $"You open your mouth but say nothing.", $"{invoker.shell.GetString(Components.Visible, Text.FieldShortDesc)} opens {invoker.shell.gender.His} mouth but says nothing.");
+				invoker.SendPrompt();
 				return;
 			}
 			string prefix1p = $"You {speechVerb1p}";
@@ -70,13 +71,14 @@ namespace inspiral
 			{
 				string targetName = target.GetString(Components.Visible, Text.FieldShortDesc);
 				invoker.shell.ShowNearby(invoker.shell, $"{prefix3p} to {targetName}, \"{invocation}\"", new List<GameObject>() {invoker.shell, target});
-				invoker.shell.ShowMessage($"{prefix1p} to {targetName}, \"{invocation}\"");
-				target.ShowMessage($"{prefix3p} to you, \"{invocation}\"");
+				invoker.shell.WriteLine($"{prefix1p} to {targetName}, \"{invocation}\"");
+				target.WriteLine($"{prefix3p} to you, \"{invocation}\"");
 			}
 			else
 			{
 				invoker.shell.ShowNearby(invoker.shell, $"{prefix1p}, \"{invocation}\"", $"{prefix3p} \"{invocation}\"");
 			}
+			invoker.SendPrompt();
 		}
 	}
 }

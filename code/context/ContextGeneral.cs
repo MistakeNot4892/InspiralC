@@ -42,7 +42,7 @@ namespace inspiral
 						GameObject destination = (GameObject)Game.Objects.Get(room.exits[tmp]);
 						if(destination == null)
 						{
-							invoker.SendLine($"Strangely, there is nothing to the {tmp}. You stay where you are.");
+							invoker.WriteLine($"Strangely, there is nothing to the {tmp}. You stay where you are.");
 						}
 						else
 						{
@@ -60,7 +60,20 @@ namespace inspiral
 		}
 		internal override string GetPrompt(GameClient viewer) 
 		{
-			return $"{Colours.Fg("\r\n> ", Colours.Yellow)}";
+			string balances = "";
+			if(viewer.shell.HasComponent(Components.Balance))
+			{
+				BalanceComponent bal = (BalanceComponent)viewer.shell.GetComponent(Components.Balance);
+				balances = $"{Colours.Fg("[", Colours.Yellow)}{Colours.Fg(bal.GetPrompt(), Colours.BoldWhite)}{Colours.Fg("]", Colours.Yellow)} ";
+			}
+			string final = Colours.Fg("> ", Colours.Yellow);
+			string p = $"{Colours.Fg("Pain:",Colours.Yellow)}{Colours.Fg("0%",Colours.BoldYellow)} {Colours.Fg("Bleed:",Colours.Red)}{Colours.Fg("0%",Colours.BoldRed)} {balances}{final}";
+			if(p == viewer.lastPrompt)
+			{
+				return final;
+			}
+			viewer.lastPrompt = p;
+			return p;
 		}
 	}
 }
