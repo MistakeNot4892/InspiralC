@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Command
+	internal partial class CommandModule : GameModule
 	{
-		internal static void CmdRoles(GameClient invoker, string invocation)
+		internal void CmdRoles(GameClient invoker, string invocation)
 		{
 			string[] tokens = invocation.ToLower().Split(" ");
 			if(tokens.Length < 1)

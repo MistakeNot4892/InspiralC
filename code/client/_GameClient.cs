@@ -132,15 +132,15 @@ namespace inspiral
 		}
 		internal void Disconnect()
 		{
-			if(shell != null && shell.HasComponent(Components.Client))
+			if(shell != null && shell.HasComponent(Text.CompClient))
 			{
-				ClientComponent clientComp = (ClientComponent)shell.GetComponent(Components.Client);
+				ClientComponent clientComp = (ClientComponent)shell.GetComponent(Text.CompClient);
 				if(clientComp.client == this)
 				{
 					clientComp.Logout();
-					shell.ShowNearby(shell, $"{shell.GetString(Components.Visible, Text.FieldShortDesc)} falls asleep.");
-					shell.SetString(Components.Visible, Text.FieldRoomDesc, $"{shell.GetString(Components.Visible, Text.FieldShortDesc)} is sound asleep here.");
-					shell.RemoveComponent(Components.Client);
+					shell.ShowNearby(shell, $"{shell.GetString(Text.CompVisible, Text.FieldShortDesc)} falls asleep.");
+					shell.SetString(Text.CompVisible, Text.FieldRoomDesc, $"{shell.GetString(Text.CompVisible, Text.FieldShortDesc)} is sound asleep here.");
+					shell.RemoveComponent(Text.CompClient);
 				}
 			}
 			shell = null;

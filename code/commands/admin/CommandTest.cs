@@ -7,9 +7,9 @@ using Newtonsoft.Json;
 
 namespace inspiral
 {
-	internal static partial class Command
+	internal partial class CommandModule : GameModule
 	{
-		internal static void CmdTest(GameClient invoker, string invocation) {}
+		internal void CmdTest(GameClient invoker, string invocation) {}
 
 	}
 }

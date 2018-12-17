@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Command
+	internal partial class CommandModule : GameModule
 	{
-		internal static void CmdLook(GameClient invoker, string invocation)
+		internal void CmdLook(GameClient invoker, string invocation)
 		{
 			if(invoker.shell.location == null)
 			{

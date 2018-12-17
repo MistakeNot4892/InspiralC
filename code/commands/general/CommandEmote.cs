@@ -4,11 +4,11 @@ using System.Text.RegularExpressions;
 
 namespace inspiral
 {
-	internal static partial class Command
+	internal partial class CommandModule : GameModule
 	{
-		internal static void CmdEmote(GameClient invoker, string invocation)
+		internal void CmdEmote(GameClient invoker, string invocation)
 		{
-			string emoteText = invoker.shell.GetString(Components.Visible, Text.FieldShortDesc);
+			string emoteText = invoker.shell.GetString(Text.CompVisible, Text.FieldShortDesc);
 			if(invocation[0] == '(' && invocation.IndexOf(')') != -1)
 			{
 				int secondParen = invocation.IndexOf(')')-1;
@@ -37,9 +37,9 @@ namespace inspiral
 						return;
 					}
 					string pronounToken = m.Groups[2]?.Value.ToString().ToLower();
-					if(pronounToken != null && pronounToken != "" && !Gender.Tokens.Contains(pronounToken))
+					if(pronounToken != null && pronounToken != "" && !Modules.Gender.Tokens.Contains(pronounToken))
 					{
-						invoker.SendLine($"Unknown token '{pronounToken}'. Valid tokens for emotes are: {Text.EnglishList(Gender.Tokens)}.");
+						invoker.SendLine($"Unknown token '{pronounToken}'. Valid tokens for emotes are: {Text.EnglishList(Modules.Gender.Tokens)}.");
 						return;
 					}
 					if(!showingMessages.ContainsKey(mentioned))

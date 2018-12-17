@@ -9,20 +9,25 @@ using Newtonsoft.Json.Linq;
 namespace inspiral
 {
 
-	internal static partial class Command
+	internal static partial class Modules
 	{
-		private static Dictionary<string, GameCommand> commands = new Dictionary<string, GameCommand>();
-		static Command()
+		internal static CommandModule Commands;
+	}
+	internal partial class CommandModule : GameModule
+	{
+		private Dictionary<string, GameCommand> commands = new Dictionary<string, GameCommand>();
+		internal override void Initialize()
 		{
+			Modules.Commands = this;
 			Debug.WriteLine($"Building command method lookup table.");
 			
 			Dictionary<string, MethodInfo> methods = new Dictionary<string, MethodInfo>();
-			MethodInfo[] methodInfos = typeof(Command).GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance);
+			MethodInfo[] methodInfos = typeof(CommandModule).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance);
 			for(int i = 0;i < methodInfos.Length;i++)
 			{
 				if(methodInfos[i].Name.Substring(0, 3) == "Cmd")
 				{
-					Console.WriteLine($"Caching MethodInfo for {methodInfos[i].Name}.");
+					Console.WriteLine($"- Caching MethodInfo for {methodInfos[i].Name}.");
 					methods.Add(methodInfos[i].Name, methodInfos[i]);
 				}
 			}
@@ -30,7 +35,7 @@ namespace inspiral
 			Debug.WriteLine($"Building command dictionary.");
 			foreach (var f in (from file in Directory.EnumerateFiles(@"data\definitions\commands", "*.json", SearchOption.AllDirectories) select new { File = file }))
 			{
-				Debug.WriteLine($"Loading command definition {f.File}.");
+				Debug.WriteLine($"- Loading command definition {f.File}.");
 				try
 				{
 					JObject r = JObject.Parse(File.ReadAllText(f.File));
@@ -56,7 +61,7 @@ namespace inspiral
 			}
 			Debug.WriteLine($"Done.");
 		}
-		internal static GameCommand Get(string command)
+		internal GameCommand Get(string command)
 		{
 			command = command.ToLower();
 			if(commands.ContainsKey(command))

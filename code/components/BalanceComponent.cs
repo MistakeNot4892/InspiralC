@@ -5,13 +5,13 @@ using System.Timers;
 
 namespace inspiral
 {
-	internal static partial class Components
+	internal partial class Text
 	{
-		internal const string Balance = "balance";
+		internal const string CompBalance = "balance";
 	}
 	internal class BalanceBuilder : GameComponentBuilder
 	{
-		internal override string Name { get; set; } = Components.Balance;
+		internal override string Name { get; set; } = Text.CompBalance;
 		internal override GameComponent Build()
 		{
 			return new BalanceComponent();

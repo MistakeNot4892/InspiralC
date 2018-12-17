@@ -8,16 +8,20 @@ using Newtonsoft.Json.Linq;
 
 namespace inspiral
 {
-
-	internal static partial class Roles
+	internal static partial class Modules
 	{
-		private static Dictionary<string, GameRole> roles = new Dictionary<string, GameRole>();
-		static Roles()
+		internal static RolesModule Roles;
+	}
+	internal class RolesModule : GameModule
+	{
+		private Dictionary<string, GameRole> roles = new Dictionary<string, GameRole>();
+		internal override void PostInitialize()
 		{
+			Modules.Roles = this;
 			Debug.WriteLine("Loading role definitions.");
 			foreach (var f in (from file in Directory.EnumerateFiles(@"data\definitions\roles", "*.json", SearchOption.AllDirectories) select new { File = file }))
 			{
-				Debug.WriteLine($"Loading role definition {f.File}.");
+				Debug.WriteLine($"- Loading role definition {f.File}.");
 				try
 				{
 					JObject r = JObject.Parse(File.ReadAllText(f.File));
@@ -26,7 +30,7 @@ namespace inspiral
 					List<GameCommand> roleCommands = new List<GameCommand>();
 					foreach(string cmd in r["commands"].Select(t => (string)t).ToList())
 					{
-						GameCommand _cmd = Command.Get(cmd);
+						GameCommand _cmd = Modules.Commands.Get(cmd);
 						if(_cmd != null)
 						{
 							if(!roleCommands.Contains(_cmd))
@@ -49,7 +53,7 @@ namespace inspiral
 			}
 			Debug.WriteLine("Done.");
 		}
-		internal static GameRole GetRole(string key)
+		internal GameRole GetRole(string key)
 		{
 			key = key.ToLower();
 			if(roles.ContainsKey(key))

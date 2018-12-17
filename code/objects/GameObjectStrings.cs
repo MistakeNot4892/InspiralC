@@ -50,7 +50,7 @@ namespace inspiral
 			summary[fieldKey].Add($"gender:   {gender.Term}");
 			if(location != null)
 			{
-				summary[fieldKey].Add($"location (read-only): {location.GetString(Components.Visible, Text.FieldShortDesc)} (#{location.id})");
+				summary[fieldKey].Add($"location (read-only): {location.GetString(Text.CompVisible, Text.FieldShortDesc)} (#{location.id})");
 			}
 			else
 			{

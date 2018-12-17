@@ -7,18 +7,18 @@ using Newtonsoft.Json.Linq;
 
 namespace inspiral
 {
-	internal static partial class Components
+	internal partial class ComponentModule : GameModule
 	{
-		internal const string Wearable = "wearable";
-		internal static List<GameComponent> Wearables =>  GetComponents(Wearable);
+		internal List<GameComponent> Wearables =>  GetComponents(Text.CompWearable);
 	}
 	internal static partial class Text
 	{
+		internal const string CompWearable = "wearable";
 		internal const string FieldWearableSlots = "wearable_slots";
 	}
 	internal class WearableBuilder : GameComponentBuilder
 	{
-		internal override string Name { get; set; } = Components.Wearable;
+		internal override string Name { get; set; } = Text.CompWearable;
 		internal override List<string> editableFields { get; set; } = new List<string>() {Text.FieldWearableSlots};
 		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldWearableSlots};
 		internal override GameComponent Build()

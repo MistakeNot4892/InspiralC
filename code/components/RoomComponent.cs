@@ -8,21 +8,21 @@ using Newtonsoft.Json;
 namespace inspiral
 {
 
-	internal static partial class Components
+	internal partial class ComponentModule : GameModule
 	{
-		internal const string Room =      "room";
-		internal static List<GameComponent> Rooms =>    GetComponents(Room);
+		internal List<GameComponent> Rooms =>    GetComponents(Text.CompRoom);
 	}
 
 	internal static partial class Text
 	{
+		internal const string CompRoom =      "room";
 		internal const string FieldExits = "exits";
 	}
 
 	internal class RoomBuilder : GameComponentBuilder
 	{
 		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldExits};
-		internal override string Name         { get; set; } = Components.Room;
+		internal override string Name         { get; set; } = Text.CompRoom;
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_room WHERE id = @p0;";
 
 		internal override string TableSchema  { get; set; } = $@"components_room (

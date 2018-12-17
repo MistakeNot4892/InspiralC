@@ -33,7 +33,7 @@ namespace inspiral
 			);";
 			dbTableSchema = $@"id INTEGER PRIMARY KEY UNIQUE,
 				name TEXT DEFAULT '{Text.DefaultName}',
-				gender TEXT DEFAULT '{Gender.Inanimate}', 
+				gender TEXT DEFAULT '{Text.GenderInanimate}', 
 				aliases TEXT DEFAULT ' ',
 				components TEXT DEFAULT ' ',
 				flags INTEGER DEFAULT -1,
@@ -42,7 +42,7 @@ namespace inspiral
 		}
 		internal override void HandleSecondarySQLInitialization(SQLiteConnection dbConnection)
 		{
-			foreach(KeyValuePair<string, GameComponentBuilder> builder in Components.builders)
+			foreach(KeyValuePair<string, GameComponentBuilder> builder in Modules.Components.builders)
 			{
 				if(builder.Value.TableSchema != null)
 				{
@@ -65,7 +65,7 @@ namespace inspiral
 			GameObject gameObj = (GameObject)CreateRepositoryType((long)reader["id"]);
 			gameObj.name = reader["name"].ToString();
 			gameObj.flags = (long)reader["flags"];
-			gameObj.gender = Gender.GetByTerm(reader["gender"].ToString());
+			gameObj.gender = Modules.Gender.GetByTerm(reader["gender"].ToString());
 			gameObj.aliases = JsonConvert.DeserializeObject<List<string>>(reader["aliases"].ToString());
 
 			foreach(string comp in JsonConvert.DeserializeObject<List<string>>(reader["components"].ToString()))
@@ -84,9 +84,9 @@ namespace inspiral
 		{
 			foreach(KeyValuePair<string, GameComponent> comp in gameObj.components)
 			{
-				if(Components.builders[comp.Key].LoadSchema != null)
+				if(Modules.Components.builders[comp.Key].LoadSchema != null)
 				{
-					using( SQLiteCommand command = new SQLiteCommand(Components.builders[comp.Key].LoadSchema, dbConnection))
+					using( SQLiteCommand command = new SQLiteCommand(Modules.Components.builders[comp.Key].LoadSchema, dbConnection))
 					{
 						try
 						{
@@ -99,7 +99,7 @@ namespace inspiral
 						}
 						catch(Exception e)
 						{
-							Debug.WriteLine($"SQL exception 4 ({repoName}): {e.ToString()} - entire query is [{Components.builders[comp.Key].LoadSchema}]");
+							Debug.WriteLine($"SQL exception 4 ({repoName}): {e.ToString()} - entire query is [{Modules.Components.builders[comp.Key].LoadSchema}]");
 						}
 					}
 				}
@@ -116,9 +116,9 @@ namespace inspiral
 			GameObject gameObj = (GameObject)newInstance;
 			foreach(KeyValuePair<string, GameComponent> comp in gameObj.components)
 			{
-				if(Components.builders[comp.Key].InsertSchema != null)
+				if(Modules.Components.builders[comp.Key].InsertSchema != null)
 				{
-					using( SQLiteCommand command = new SQLiteCommand(Components.builders[comp.Key].InsertSchema, dbConnection))
+					using( SQLiteCommand command = new SQLiteCommand(Modules.Components.builders[comp.Key].InsertSchema, dbConnection))
 					{
 						try
 						{
@@ -127,7 +127,7 @@ namespace inspiral
 						}
 						catch(Exception e)
 						{
-							Debug.WriteLine($"SQL exception 5 ({repoName}): {e.ToString()} - entire query is [{Components.builders[comp.Key].InsertSchema}]");
+							Debug.WriteLine($"SQL exception 5 ({repoName}): {e.ToString()} - entire query is [{Modules.Components.builders[comp.Key].InsertSchema}]");
 						}
 					}
 				}
@@ -177,9 +177,9 @@ namespace inspiral
 			GameObject gameObj = (GameObject) objInstance;
 			foreach(KeyValuePair<string, GameComponent> comp in gameObj.components)
 			{
-				if(comp.Value.isPersistent && Components.builders[comp.Key].UpdateSchema != null)
+				if(comp.Value.isPersistent && Modules.Components.builders[comp.Key].UpdateSchema != null)
 				{
-					using(SQLiteCommand command = new SQLiteCommand(Components.builders[comp.Key].UpdateSchema, dbConnection))
+					using(SQLiteCommand command = new SQLiteCommand(Modules.Components.builders[comp.Key].UpdateSchema, dbConnection))
 					{
 						try
 						{
@@ -188,7 +188,7 @@ namespace inspiral
 						}
 						catch(Exception e)
 						{
-							Debug.WriteLine($"Component SQL exception 2 ({comp.Key}): {e.ToString()} - enter query is [{Components.builders[comp.Key].UpdateSchema}]");
+							Debug.WriteLine($"Component SQL exception 2 ({comp.Key}): {e.ToString()} - enter query is [{Modules.Components.builders[comp.Key].UpdateSchema}]");
 						}
 					}
 				}

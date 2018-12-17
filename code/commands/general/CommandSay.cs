@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Command
+	internal partial class CommandModule : GameModule
 	{
-		internal static void CmdSay(GameClient invoker, string invocation)
+		internal void CmdSay(GameClient invoker, string invocation)
 		{
 
 			GameObject target = null;
@@ -50,12 +50,12 @@ namespace inspiral
 
 			if(invocation.Length <= 0)
 			{
-				invoker.shell.ShowNearby(invoker.shell, $"You open your mouth but say nothing.", $"{invoker.shell.GetString(Components.Visible, Text.FieldShortDesc)} opens {invoker.shell.gender.His} mouth but says nothing.");
+				invoker.shell.ShowNearby(invoker.shell, $"You open your mouth but say nothing.", $"{invoker.shell.GetString(Text.CompVisible, Text.FieldShortDesc)} opens {invoker.shell.gender.His} mouth but says nothing.");
 				invoker.SendPrompt();
 				return;
 			}
 			string prefix1p = $"You {speechVerb1p}";
-			string prefix3p = $"{invoker.shell.GetString(Components.Visible, Text.FieldShortDesc)} {speechVerb3p}";
+			string prefix3p = $"{invoker.shell.GetString(Text.CompVisible, Text.FieldShortDesc)} {speechVerb3p}";
 
 			if(invocation[0] == '(' && invocation.IndexOf(')') != -1)
 			{
@@ -69,7 +69,7 @@ namespace inspiral
 			invocation = Text.FormatProse(invocation);
 			if(target != null)
 			{
-				string targetName = target.GetString(Components.Visible, Text.FieldShortDesc);
+				string targetName = target.GetString(Text.CompVisible, Text.FieldShortDesc);
 				invoker.shell.ShowNearby(invoker.shell, $"{prefix3p} to {targetName}, \"{invocation}\"", new List<GameObject>() {invoker.shell, target});
 				invoker.shell.WriteLine($"{prefix1p} to {targetName}, \"{invocation}\"");
 				target.WriteLine($"{prefix3p} to you, \"{invocation}\"");

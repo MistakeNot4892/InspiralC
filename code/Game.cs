@@ -14,14 +14,12 @@ namespace inspiral
 			Accounts =  new AccountRepository();
 			Objects =   new ObjectRepository();
 		}
-		internal static void Load()
-		{
-			System.IO.Directory.CreateDirectory("data");
-			Accounts.Load();
-			Objects.Load();
-		}
 		internal static void Initialize() 
 		{
+			Modules.Initialize();
+			Accounts.Load();
+			Objects.Load();
+
 			List<int> ports = new List<int>() {9090, 2323};
 			foreach(int port in ports)
 			{

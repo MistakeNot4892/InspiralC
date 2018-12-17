@@ -5,14 +5,14 @@ using Newtonsoft.Json.Linq;
 
 namespace inspiral
 {
-	internal static partial class Components
+	internal partial class ComponentModule : GameModule
 	{
-		internal const string Visible =   "visible";
-		internal static List<GameComponent> Visibles => GetComponents(Visible);
+		internal List<GameComponent> Visibles => GetComponents(Text.CompVisible);
 	}
 
 	internal static partial class Text
 	{
+		internal const string CompVisible =   "visible";
 		internal const string FieldShortDesc    = "short";
 		internal const string FieldRoomDesc     =  "room";
 		internal const string FieldExaminedDesc = "examined";
@@ -22,7 +22,7 @@ namespace inspiral
 	{
 		internal override List<string> editableFields { get; set; } = new List<string>() {Text.FieldShortDesc, Text.FieldRoomDesc, Text.FieldExaminedDesc};
 		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldShortDesc, Text.FieldRoomDesc, Text.FieldExaminedDesc};
-		internal override string Name         { get; set; } = Components.Visible;
+		internal override string Name         { get; set; } = Text.CompVisible;
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_visible WHERE id = @p0;";
 
 		internal override string TableSchema  { get; set; } = $@"components_visible (
@@ -103,12 +103,12 @@ namespace inspiral
 		internal void ExaminedBy(GameClient viewer, bool fromInside)
 		{
 			string mainDesc = $"{Colours.Fg(Text.Capitalize(shortDescription),Colours.BoldWhite)}.";
-			if(parent.HasComponent(Components.Mobile))
+			if(parent.HasComponent(Text.CompMobile))
 			{
 				string startingToken = (parent == viewer.shell) ? "You're" : "That's";
 				string theyAre = (parent == viewer.shell) ? "You're" : $"{Text.Capitalize(parent.gender.He)} {parent.gender.Is}";
 
-				MobileComponent mob = (MobileComponent)parent.GetComponent(Components.Mobile);
+				MobileComponent mob = (MobileComponent)parent.GetComponent(Text.CompMobile);
 				mainDesc = $"{startingToken} {mainDesc}\n{theyAre} a {mob.race}";
 				if(examinedDescription == null || examinedDescription.Length <= 0)
 				{
@@ -149,9 +149,9 @@ namespace inspiral
 					}
 				}
 			}
-			if(parent.HasComponent(Components.Room))
+			if(parent.HasComponent(Text.CompRoom))
 			{
-				RoomComponent roomComp = (RoomComponent)parent.GetComponent(Components.Room);
+				RoomComponent roomComp = (RoomComponent)parent.GetComponent(Text.CompRoom);
 				mainDesc = $"{mainDesc}\n{Colours.Fg(roomComp.GetExitString(), Colours.BoldCyan)}";
 			}
 			viewer.WriteLine(mainDesc);

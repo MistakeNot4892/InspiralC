@@ -3,18 +3,18 @@ using System.Data.SQLite;
 
 namespace inspiral
 {
-	internal static partial class Components
-	{
-		internal const string Client =    "client";
-		internal static List<GameComponent> Clients =>  GetComponents(Client);
-	}
 	internal static partial class Text
 	{
+		internal const string CompClient =    "client";
 		internal const string FieldClientId = "clientId";
+	}
+	internal partial class ComponentModule : GameModule
+	{
+		internal List<GameComponent> Clients => GetComponents(Text.CompClient);
 	}
 	internal class ClientBuilder : GameComponentBuilder
 	{
-		internal override string Name { get; set; } = Components.Client;
+		internal override string Name { get; set; } = Text.CompClient;
 		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldClientId};
 		internal override GameComponent Build()
 		{
@@ -34,7 +34,7 @@ namespace inspiral
 		}
 		internal void Logout()
 		{
-			client?.shell?.RemoveComponent(Components.Client);
+			client?.shell?.RemoveComponent(Text.CompClient);
 			client = null;
 		}
 		internal override string GetString(string field)

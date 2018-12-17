@@ -61,7 +61,7 @@ namespace inspiral
 			acct.objectId =    (long)reader["objectId"];
 			foreach(string role in JsonConvert.DeserializeObject<List<string>>(reader["roles"].ToString()))
 			{
-				GameRole foundRole = Roles.GetRole(role);
+				GameRole foundRole = Modules.Roles.GetRole(role);
 				if(foundRole != null && !acct.roles.Contains(foundRole))
 				{
 					acct.roles.Add(foundRole);
@@ -87,15 +87,15 @@ namespace inspiral
 			acct.passwordHash = passwordHash;
 
 			// Create the shell the client will be piloting around, saving data to, etc.
-			GameObject gameObj = Templates.Instantiate("mob");
+			GameObject gameObj = Modules.Templates.Instantiate("mob");
 			gameObj.name = Text.Capitalize(acct.userName);
-			gameObj.gender = Gender.GetByTerm(Gender.Plural);
+			gameObj.gender = Modules.Gender.GetByTerm(Text.GenderPlural);
 			gameObj.aliases = new List<string>() { gameObj.name.ToLower() };
-			VisibleComponent vis = (VisibleComponent)gameObj.GetComponent(Components.Visible); 
+			VisibleComponent vis = (VisibleComponent)gameObj.GetComponent(Text.CompVisible); 
 			vis.SetValue(Text.FieldShortDesc,    $"{gameObj.name}");
 			vis.SetValue(Text.FieldRoomDesc,     $"{gameObj.name} is here.");
 			vis.SetValue(Text.FieldExaminedDesc, "and are completely uninteresting.");
-			MobileComponent mob = (MobileComponent)gameObj.GetComponent(Components.Mobile);
+			MobileComponent mob = (MobileComponent)gameObj.GetComponent(Text.CompMobile);
 			mob.SetValue(Text.FieldEnterMessage, $"{gameObj.name} enters from the $DIR.");
 			mob.SetValue(Text.FieldLeaveMessage, $"{gameObj.name} leaves to the $DIR.");
 			mob.SetValue(Text.FieldDeathMessage, $"The corpse of {gameObj.name} lies here.");
@@ -107,8 +107,8 @@ namespace inspiral
 			if(accounts.Count <= 0)
 			{
 				Debug.WriteLine($"No accounts found, giving admin roles to {acct.userName}.");
-				acct.roles.Add(Roles.GetRole("builder"));
-				acct.roles.Add(Roles.GetRole("administrator"));
+				acct.roles.Add(Modules.Roles.GetRole("builder"));
+				acct.roles.Add(Modules.Roles.GetRole("administrator"));
 			}
 
 			// Finalize everything.
@@ -119,7 +119,7 @@ namespace inspiral
 		internal override Object CreateRepositoryType(long id) 
 		{
 			PlayerAccount acct = new PlayerAccount(id);
-			acct.roles.Add(Roles.GetRole("player"));
+			acct.roles.Add(Modules.Roles.GetRole("player"));
 			return acct;
 		}
 		internal override void AddCommandParameters(SQLiteCommand command, Object instance)

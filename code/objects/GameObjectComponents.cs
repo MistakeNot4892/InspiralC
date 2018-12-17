@@ -39,7 +39,7 @@ namespace inspiral
 			}
 			else
 			{
-				component = Components.MakeComponent(componentKey);
+				component = Modules.Components.MakeComponent(componentKey);
 				component.name = componentKey;
 				components.Add(componentKey, component);
 				component.Added(this);

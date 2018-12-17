@@ -2,18 +2,18 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Command
+	internal partial class CommandModule : GameModule
 	{
-		internal static void CmdUnequip(GameClient invoker, string invocation)
+		internal void CmdUnequip(GameClient invoker, string invocation)
 		{
-			if(!invoker.shell.HasComponent(Components.Inventory))
+			if(!invoker.shell.HasComponent(Text.CompInventory))
 			{
 				invoker.WriteLine("You cannot unequip objects.");
 				return;
 			}
 			if(invoker.shell.CanUseBalance("poise"))
 			{
-				InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Components.Inventory);
+				InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Text.CompInventory);
 				if(inv.TryToUnequip(invocation))
 				{
 					invoker.shell.UseBalance("poise", 500);

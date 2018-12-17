@@ -7,19 +7,19 @@ using System.Linq;
 
 namespace inspiral
 {
-	internal static partial class Components
+	internal partial class ComponentModule : GameModule
 	{
-		internal const string Inventory = "inventory";
-		internal static List<GameComponent> Inventories => GetComponents(Inventory);
+		internal List<GameComponent> Inventories => GetComponents(Text.CompInventory);
 	}
 
 	internal static partial class Text
 	{
+		internal const string CompInventory = "inventory";
 		internal const string FieldEquippedSlots = "equipped";
 	}
 	internal class InventoryBuilder : GameComponentBuilder
 	{
-		internal override string Name { get; set; } = Components.Inventory;
+		internal override string Name { get; set; } = Text.CompInventory;
 		internal override GameComponent Build()
 		{
 			return new InventoryComponent();
@@ -137,8 +137,8 @@ namespace inspiral
 				if(!silent)
 				{
 					parent.ShowNearby(parent, 
-						$"You {removeMessage1p} {dropping.GetString(Components.Visible, Text.FieldShortDesc)}.",
-						$"{Text.Capitalize(parent.GetString(Components.Visible, Text.FieldShortDesc))} {removeMessage3p} {dropping.GetString(Components.Visible, Text.FieldShortDesc)}."
+						$"You {removeMessage1p} {dropping.GetString(Text.CompVisible, Text.FieldShortDesc)}.",
+						$"{Text.Capitalize(parent.GetString(Text.CompVisible, Text.FieldShortDesc))} {removeMessage3p} {dropping.GetString(Text.CompVisible, Text.FieldShortDesc)}."
 						);
 				}
 				dropping.Move(parent.location);
@@ -147,9 +147,9 @@ namespace inspiral
 		}
 		internal List<string> GetWieldableSlots()
 		{
-			if(parent.HasComponent(Components.Mobile))
+			if(parent.HasComponent(Text.CompMobile))
 			{
-				MobileComponent mob = (MobileComponent)parent.GetComponent(Components.Mobile);
+				MobileComponent mob = (MobileComponent)parent.GetComponent(Text.CompMobile);
 				if(mob.bodyplan == null)
 				{
 					mob.SetBodyplan("humanoid");
@@ -160,9 +160,9 @@ namespace inspiral
 		}
 		internal List<string> GetEquippableSlots()
 		{
-			if(parent.HasComponent(Components.Mobile))
+			if(parent.HasComponent(Text.CompMobile))
 			{
-				MobileComponent mob = (MobileComponent)parent.GetComponent(Components.Mobile);
+				MobileComponent mob = (MobileComponent)parent.GetComponent(Text.CompMobile);
 				if(mob.bodyplan == null)
 				{
 					mob.SetBodyplan("humanoid");
@@ -256,8 +256,8 @@ namespace inspiral
 				{
 					Game.Objects.QueueForUpdate(parent);
 					parent.ShowNearby(parent, 
-						$"You pick up {equipping.GetString(Components.Visible, Text.FieldShortDesc)}.",
-						$"{Text.Capitalize(parent.GetString(Components.Visible, Text.FieldShortDesc))} picks up {equipping.GetString(Components.Visible, Text.FieldShortDesc)}."
+						$"You pick up {equipping.GetString(Text.CompVisible, Text.FieldShortDesc)}.",
+						$"{Text.Capitalize(parent.GetString(Text.CompVisible, Text.FieldShortDesc))} picks up {equipping.GetString(Text.CompVisible, Text.FieldShortDesc)}."
 					);
 					return true;
 				}
@@ -276,12 +276,12 @@ namespace inspiral
 			GameObject equipping = GetObjectFromInput(tokens.Item1, "equip");
 			if(equipping != null)
 			{
-				if(!equipping.HasComponent(Components.Wearable))
+				if(!equipping.HasComponent(Text.CompWearable))
 				{
 					parent.WriteLine("You cannot wear that.");
 					return false;
 				}
-				WearableComponent worn = (WearableComponent)equipping.GetComponent(Components.Wearable);
+				WearableComponent worn = (WearableComponent)equipping.GetComponent(Text.CompWearable);
 				if(slot == null || slot == "default")
 				{
 					slot = worn.wearableSlots.FirstOrDefault();
@@ -349,8 +349,8 @@ namespace inspiral
 				if(!silent)
 				{
 					parent.ShowNearby(parent, 
-						$"You equip {equipping.GetString(Components.Visible, Text.FieldShortDesc)} to your {slot}.",
-						$"{Text.Capitalize(parent.GetString(Components.Visible, Text.FieldShortDesc))} equips {equipping.GetString(Components.Visible, Text.FieldShortDesc)} to {parent.gender.His} {slot}."
+						$"You equip {equipping.GetString(Text.CompVisible, Text.FieldShortDesc)} to your {slot}.",
+						$"{Text.Capitalize(parent.GetString(Text.CompVisible, Text.FieldShortDesc))} equips {equipping.GetString(Text.CompVisible, Text.FieldShortDesc)} to {parent.gender.His} {slot}."
 					);
 				}
 				Game.Objects.QueueForUpdate(parent);
@@ -386,8 +386,8 @@ namespace inspiral
 						}
 					}
 					parent.ShowNearby(parent, 
-						$"You remove {unequipping.GetString(Components.Visible, Text.FieldShortDesc)} from your {removingSlot}.",
-						$"{Text.Capitalize(parent.GetString(Components.Visible, Text.FieldShortDesc))} removes {unequipping.GetString(Components.Visible, Text.FieldShortDesc)} from {parent.gender.His} {removingSlot}."
+						$"You remove {unequipping.GetString(Text.CompVisible, Text.FieldShortDesc)} from your {removingSlot}.",
+						$"{Text.Capitalize(parent.GetString(Text.CompVisible, Text.FieldShortDesc))} removes {unequipping.GetString(Text.CompVisible, Text.FieldShortDesc)} from {parent.gender.His} {removingSlot}."
 					);
 					Game.Objects.QueueForUpdate(parent);
 				}

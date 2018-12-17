@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Command
+	internal partial class CommandModule : GameModule
 	{
-		internal static void CmdInfo(GameClient invoker, string invocation)
+		internal void CmdInfo(GameClient invoker, string invocation)
 		{
 			if(invoker.shell.location == null)
 			{

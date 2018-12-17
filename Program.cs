@@ -7,11 +7,13 @@ namespace inspiral
 
 	class Program
 	{
+		private const string VERSION = "0.0.1b";
 		static void Main(string[] args)
 		{
-			Game.Load();
+			Console.WriteLine($"=== Inspiral, Coalescence, Ringdown engine v{VERSION} ===");
+			Console.WriteLine("Initializing server.");
 			Game.Initialize();
-			Console.WriteLine("Inspiral server launched. Hit enter at any time to terminate.");
+			Console.WriteLine("Initialization complete.\nServer ready.");
 			Console.Read();
 		}
 

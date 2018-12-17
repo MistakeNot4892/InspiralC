@@ -8,10 +8,15 @@ using Newtonsoft.Json.Linq;
 
 namespace inspiral
 {
+
+	internal static partial class Modules
+	{
+		internal static TemplateModule Templates;
+	}
 	internal class GameObjectTemplate
 	{
 		internal string templateName;
-		internal string objectGender = Gender.Inanimate;
+		internal string objectGender = Text.GenderInanimate;
 		internal List<string> aliases = new List<string>();
 		internal List<JToken> components = new List<JToken>();
 		internal GameObjectTemplate(string input)
@@ -38,7 +43,7 @@ namespace inspiral
 			}
 
 			// Save for use.
-			Templates.Register(this);
+			Modules.Templates.Register(this);
 		}
 		internal void CopyTo(GameObject copyingTo)
 		{
@@ -47,7 +52,7 @@ namespace inspiral
 				copyingTo.aliases.Add(s);
 			}
 			copyingTo.name = copyingTo.aliases.First();
-			copyingTo.gender = Gender.GetByTerm(objectGender);
+			copyingTo.gender = Modules.Gender.GetByTerm(objectGender);
 			foreach(JProperty s in components)
 			{
 				copyingTo.AddComponent(s);
@@ -55,15 +60,16 @@ namespace inspiral
 			Game.Objects.QueueForUpdate(copyingTo);
 		}
 	}
-	internal static class Templates
+	internal class TemplateModule : GameModule
 	{
-		private static Dictionary<string, GameObjectTemplate> templates = new Dictionary<string, GameObjectTemplate>();
-		static Templates()
+		private Dictionary<string, GameObjectTemplate> templates = new Dictionary<string, GameObjectTemplate>();
+		internal override void Initialize()
 		{
+			Modules.Templates = this;
 			Debug.WriteLine("Loading templates.");
 			foreach (var f in (from file in Directory.EnumerateFiles(@"data\definitions\templates", "*.json", SearchOption.AllDirectories) select new { File = file }))
 			{
-				Debug.WriteLine($"Loading template definition {f.File}.");
+				Debug.WriteLine($"- Loading template definition {f.File}.");
 				try
 				{
 					new GameObjectTemplate(File.ReadAllText(f.File));
@@ -75,7 +81,7 @@ namespace inspiral
 			}
 			Debug.WriteLine("Done.");
 		}
-		internal static GameObject Instantiate(string template)
+		internal GameObject Instantiate(string template)
 		{
 			GameObject creating = null;
 			GameObjectTemplate temp = Get(template);
@@ -87,11 +93,11 @@ namespace inspiral
 			}
 			return creating;
 		}
-		internal static void Register(GameObjectTemplate template)
+		internal void Register(GameObjectTemplate template)
 		{
 			templates.Add(template.templateName, template);
 		}
-		internal static GameObjectTemplate Get(string temp)
+		internal GameObjectTemplate Get(string temp)
 		{
 			if(templates.ContainsKey(temp))
 			{
@@ -99,7 +105,7 @@ namespace inspiral
 			}
 			return null;
 		}
-		internal static List<string> GetTemplateNames()
+		internal List<string> GetTemplateNames()
 		{
 			List<string> names = new List<string>();
 			foreach(KeyValuePair<string, GameObjectTemplate> temp in templates)

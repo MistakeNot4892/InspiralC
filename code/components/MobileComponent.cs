@@ -6,14 +6,14 @@ using System;
 
 namespace inspiral
 {
-	internal static partial class Components
+	internal partial class ComponentModule : GameModule
 	{
-		internal const string Mobile = "mobile";
-		internal static List<GameComponent> Mobiles =>  GetComponents(Mobile);
-		}
+		internal List<GameComponent> Mobiles =>  GetComponents(Text.CompMobile);
+	}
 
 	internal static partial class Text
 	{
+		internal const string CompMobile = "mobile";
 		internal const string FieldEnterMessage = "enter";
 		internal const string FieldLeaveMessage = "leave";
 		internal const string FieldDeathMessage = "death";
@@ -25,7 +25,7 @@ namespace inspiral
 	{
 		internal override List<string> editableFields { get; set; } = new List<string>() {Text.FieldEnterMessage, Text.FieldLeaveMessage, Text.FieldDeathMessage};
 		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldEnterMessage, Text.FieldLeaveMessage, Text.FieldDeathMessage, Text.FieldBodyplan};
-		internal override string Name         { get; set; } = Components.Mobile;
+		internal override string Name         { get; set; } = Text.CompMobile;
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_mobile WHERE id = @p0;";
 		internal override string TableSchema  { get; set; } = $@"components_mobile (
 				id INTEGER NOT NULL PRIMARY KEY UNIQUE, 
@@ -130,7 +130,7 @@ namespace inspiral
 			enterMessage = reader[Text.FieldEnterMessage].ToString();
 			leaveMessage = reader[Text.FieldLeaveMessage].ToString();
 			deathMessage = reader[Text.FieldDeathMessage].ToString();
-			bodyplan = Bodyplans.GetPlan(reader[Text.FieldBodyplan].ToString());
+			bodyplan = Modules.Bodies.GetPlan(reader[Text.FieldBodyplan].ToString());
 			UpdateBody();
 		}
 		internal override void AddCommandParameters(SQLiteCommand command) 
@@ -151,7 +151,7 @@ namespace inspiral
 		}
 		internal void SetBodyplan(string bPlan)
 		{
-			bodyplan = Bodyplans.GetPlan(bPlan);
+			bodyplan = Modules.Bodies.GetPlan(bPlan);
 			UpdateBody();
 		}
 		internal override string GetPrompt()

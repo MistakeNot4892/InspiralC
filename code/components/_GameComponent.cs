@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 /* Template for copypasting to new files:
 namespace inspiral
 {
-	internal static partial class Components
+	internal partial class ComponentModule : GameModule
 	{
 		internal const string Foo = "foo";
 	}
@@ -17,7 +17,7 @@ namespace inspiral
 	}
 	internal class FooBuilder : GameComponentBuilder
 	{
-		internal override string Name         { get; set; } = Components.Foo;
+		internal override string Name         { get; set; } = Text.CompFoo;
 		internal override string TableSchema  { get; set; } = "CREATE TABLE IF NOT EXISTS foo () VALUES ();";
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM foo WHERE id = @p0;"
 		internal override string UpdateSchema { get; set; } = "UPDATE foo;";
@@ -76,15 +76,15 @@ namespace inspiral
 		}
 
 		internal string GetStringSummary() {
-			if(Components.builders.ContainsKey(name) && 
-				Components.builders[name].viewableFields != null && 
-				Components.builders[name].viewableFields.Count > 0)
+			if(Modules.Components.builders.ContainsKey(name) && 
+				Modules.Components.builders[name].viewableFields != null && 
+				Modules.Components.builders[name].viewableFields.Count > 0)
 			{
 				string result = "";
-				foreach(string field in Components.builders[name].viewableFields)
+				foreach(string field in Modules.Components.builders[name].viewableFields)
 				{
-					if(Components.builders[name].editableFields != null && 
-						Components.builders[name].editableFields.Contains(field))
+					if(Modules.Components.builders[name].editableFields != null && 
+						Modules.Components.builders[name].editableFields.Contains(field))
 					{
 						result = $"{result}\n{field}: {GetString(field)}";
 					}
@@ -103,9 +103,9 @@ namespace inspiral
 
 		internal string SetValueOfEditableField(string field, string value) 
 		{
-			if(Components.builders.ContainsKey(name) && 
-				Components.builders[name].editableFields != null && 
-				Components.builders[name].editableFields.Count > 0)
+			if(Modules.Components.builders.ContainsKey(name) && 
+				Modules.Components.builders[name].editableFields != null && 
+				Modules.Components.builders[name].editableFields.Count > 0)
 			{
 				if(GetString(field) != value)
 				{

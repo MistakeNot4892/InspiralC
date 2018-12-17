@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Command
+	internal partial class CommandModule : GameModule
 	{
-		internal static void CmdQuit(GameClient invoker, string invocation)
+		internal void CmdQuit(GameClient invoker, string invocation)
 		{
 			invoker.SendLine("Goodbye!");
 			invoker.Quit();

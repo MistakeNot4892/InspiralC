@@ -10,16 +10,21 @@ using Newtonsoft.Json.Linq;
 
 namespace inspiral
 {
-	internal static class Bodyplans
+	internal static partial class Modules
 	{
-		internal static Dictionary<string, Bodyplan> plans = new Dictionary<string, Bodyplan>();
-		internal static Dictionary<string, Bodypart> parts = new Dictionary<string, Bodypart>();
-		static Bodyplans()
+		internal static BodyModule Bodies;
+	}
+	internal class BodyModule : GameModule
+	{
+		internal Dictionary<string, Bodyplan> plans = new Dictionary<string, Bodyplan>();
+		internal Dictionary<string, Bodypart> parts = new Dictionary<string, Bodypart>();
+		internal override void Initialize() 
 		{
-			Debug.WriteLine("Loading bodypart definitions.");
+			Modules.Bodies = this;
+			Debug.WriteLine("- Loading bodypart definitions.");
 			foreach (var f in (from file in Directory.EnumerateFiles(@"data\definitions\bodies\parts", "*.json", SearchOption.AllDirectories) select new { File = file }))
 			{
-				Debug.WriteLine($"Loading bodypart definition {f.File}.");
+				Debug.WriteLine($"- Loading bodypart definition {f.File}.");
 				try
 				{
 					JObject r = JObject.Parse(File.ReadAllText(f.File));
@@ -34,7 +39,7 @@ namespace inspiral
 			Debug.WriteLine("Done.\nLoading bodyplan definitions.");
 			foreach (var f in (from file in Directory.EnumerateFiles(@"data\definitions\bodies\plans", "*.json", SearchOption.AllDirectories) select new { File = file }))
 			{
-				Debug.WriteLine($"Loading bodyplan definition {f.File}.");
+				Debug.WriteLine($"- Loading bodyplan definition {f.File}.");
 				try
 				{
 					JObject r = JObject.Parse(File.ReadAllText(f.File));
@@ -64,18 +69,17 @@ namespace inspiral
 			}
 			Debug.WriteLine("Done.");
 		}
-		internal static Bodyplan GetPlan(string name)
+		internal Bodyplan GetPlan(string name)
 		{
 			name = name.ToLower();
 			return plans.ContainsKey(name) ? plans[name] : null;
 		}
-		internal static Bodypart GetPart(string name)
+		internal Bodypart GetPart(string name)
 		{
 			name = name.ToLower();
 			return parts.ContainsKey(name) ? parts[name] : null;
 		}
 	}
-
 	internal class Bodyplan
 	{
 		internal string name;
@@ -147,7 +151,7 @@ namespace inspiral
 			{
 				foreach(string grip in graspers)
 				{
-					Bodypart bp = Bodyplans.GetPart(grip);
+					Bodypart bp = Modules.Bodies.GetPart(grip);
 					summary += $" [{bp.name}]";
 				}
 			}
@@ -160,7 +164,7 @@ namespace inspiral
 			{
 				foreach(string stand in stance)
 				{
-					Bodypart bp = Bodyplans.GetPart(stand);
+					Bodypart bp = Modules.Bodies.GetPart(stand);
 					summary += $" [{bp.name}]";
 				}
 			}
@@ -171,7 +175,6 @@ namespace inspiral
 			return summary;
 		}
 	}
-
 	internal class Bodypart
 	{
 		internal string name;

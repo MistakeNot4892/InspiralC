@@ -17,7 +17,7 @@ namespace inspiral
 		{
 			contents = new List<GameObject>();
 			components = new Dictionary<string, GameComponent>();
-			gender = Gender.GetByTerm(Gender.Inanimate);
+			gender = Modules.Gender.GetByTerm(Text.GenderInanimate);
 		}
 		internal GameObject FindGameObjectNearby(string token)
 		{
@@ -74,9 +74,9 @@ namespace inspiral
 					}
 				}
 			}
-			if(HasComponent(Components.Room))
+			if(HasComponent(Text.CompRoom))
 			{
-				RoomComponent room = (RoomComponent)GetComponent(Components.Room);
+				RoomComponent room = (RoomComponent)GetComponent(Text.CompRoom);
 				string lookingFor = checkToken;
 				if(Text.shortExits.ContainsKey(lookingFor))
 				{
@@ -95,7 +95,7 @@ namespace inspiral
 		}
 		internal bool Collectable(GameObject collecting)
 		{
-			return !HasComponent(Components.Room) && !HasComponent(Components.Mobile);
+			return !HasComponent(Text.CompRoom) && !HasComponent(Text.CompMobile);
 		}
 
 		internal bool TryUseBalance(string balance, int msKnock)
@@ -104,16 +104,16 @@ namespace inspiral
 		}
 		internal bool CanUseBalance(string balance)
 		{
-			if(HasComponent(Components.Balance))
+			if(HasComponent(Text.CompBalance))
 			{
-				BalanceComponent bal = (BalanceComponent)GetComponent(Components.Balance);
+				BalanceComponent bal = (BalanceComponent)GetComponent(Text.CompBalance);
 				return bal.OnBalance(balance);
 			}
 			return false;
 		}
 		internal bool TryUseBalance(string balance, int msKnock, bool ignoreOffbal)
 		{
-			if(HasComponent(Components.Balance))
+			if(HasComponent(Text.CompBalance))
 			{
 				if(ignoreOffbal || CanUseBalance(balance))
 				{
@@ -130,9 +130,9 @@ namespace inspiral
 		}
 		internal bool UseBalance(string balance, int msKnock)
 		{
-			if(HasComponent(Components.Balance))
+			if(HasComponent(Text.CompBalance))
 			{
-				BalanceComponent bal = (BalanceComponent)GetComponent(Components.Balance);
+				BalanceComponent bal = (BalanceComponent)GetComponent(Text.CompBalance);
 				bal.KnockBalance(balance, msKnock);
 				return true;
 			}

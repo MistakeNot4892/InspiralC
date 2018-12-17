@@ -313,7 +313,7 @@ namespace inspiral
 					return message;
 				}
 
-				replacementValue = thirdPerson ? $"{other.GetString(Components.Visible, Text.FieldShortDesc)}'s" : "your";
+				replacementValue = thirdPerson ? $"{other.GetString(Text.CompVisible, Text.FieldShortDesc)}'s" : "your";
 				message = Regex.Replace(
 					message,
 					$"\\${token}'s\\$",
@@ -325,7 +325,7 @@ namespace inspiral
 					return message;
 				}
 
-				replacementValue = thirdPerson ? $"{other.GetString(Components.Visible, Text.FieldShortDesc)}" : "you";
+				replacementValue = thirdPerson ? $"{other.GetString(Text.CompVisible, Text.FieldShortDesc)}" : "you";
 				message = Regex.Replace(
 					message,
 					$"\\${token}\\$",

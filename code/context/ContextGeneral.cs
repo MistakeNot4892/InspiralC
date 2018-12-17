@@ -11,12 +11,12 @@ namespace inspiral
 			viewer.WriteLine($"Welcome, {viewer.shell.name}.");
 			if(viewer.shell.location == null)
 			{
-				if(Components.Rooms.Count <= 0)
+				if(Modules.Components.Rooms.Count <= 0)
 				{
 					Debug.WriteLine("First run: cannot find a room, creating a new one.");
-					Templates.Instantiate("room");
+					Modules.Templates.Instantiate("room");
 				}
-				GameObject room = (GameObject)Components.Rooms[0].parent;
+				GameObject room = (GameObject)Modules.Components.Rooms[0].parent;
 				viewer.shell.Move(room);
 			}
 			else
@@ -26,9 +26,9 @@ namespace inspiral
 		}
 		internal override bool TakeInput(GameClient invoker, string command, string rawCommand, string arguments)
 		{
-			if(invoker.shell != null && invoker.shell.location != null && invoker.shell.location.HasComponent(Components.Room) && invoker.shell.HasComponent(Components.Mobile))
+			if(invoker.shell != null && invoker.shell.location != null && invoker.shell.location.HasComponent(Text.CompRoom) && invoker.shell.HasComponent(Text.CompMobile))
 			{
-				MobileComponent mob = (MobileComponent)invoker.shell.GetComponent(Components.Mobile);
+				MobileComponent mob = (MobileComponent)invoker.shell.GetComponent(Text.CompMobile);
 				if(mob.CanMove())
 				{
 					string tmp = command;
@@ -36,7 +36,7 @@ namespace inspiral
 					{
 						tmp = Text.shortExits[tmp];
 					}
-					RoomComponent room = (RoomComponent)invoker.shell.location.GetComponent(Components.Room);
+					RoomComponent room = (RoomComponent)invoker.shell.location.GetComponent(Text.CompRoom);
 					if(room.exits.ContainsKey(tmp))
 					{
 						GameObject destination = (GameObject)Game.Objects.Get(room.exits[tmp]);

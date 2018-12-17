@@ -50,17 +50,17 @@ namespace inspiral
 		private void HandleLogin(GameClient invoker)
 		{
 			GameObject wakingShell = (GameObject)Game.Objects.Get(invoker.account.objectId);
-			wakingShell.ShowNearby(wakingShell, $"{wakingShell.GetString(Components.Visible, Text.FieldShortDesc)} wakes up.");
-			wakingShell.SetString(Components.Visible, Text.FieldRoomDesc, $"{wakingShell.GetString(Components.Visible, Text.FieldShortDesc)} is here.");
+			wakingShell.ShowNearby(wakingShell, $"{wakingShell.GetString(Text.CompVisible, Text.FieldShortDesc)} wakes up.");
+			wakingShell.SetString(Text.CompVisible, Text.FieldRoomDesc, $"{wakingShell.GetString(Text.CompVisible, Text.FieldShortDesc)} is here.");
 
 			invoker.shell = wakingShell;
-			if(invoker.shell.HasComponent(Components.Client))
+			if(invoker.shell.HasComponent(Text.CompClient))
 			{
-				ClientComponent oldClient = (ClientComponent)invoker.shell.GetComponent(Components.Client);
+				ClientComponent oldClient = (ClientComponent)invoker.shell.GetComponent(Text.CompClient);
 				oldClient.client?.Farewell("Another connection has been made with this account, so you are being logged out. Goodbye!");
 			}
-			invoker.shell.AddComponent(Components.Client);
-			ClientComponent clientComp = (ClientComponent)invoker.shell.GetComponent(Components.Client);
+			invoker.shell.AddComponent(Text.CompClient);
+			ClientComponent clientComp = (ClientComponent)invoker.shell.GetComponent(Text.CompClient);
 			clientComp.Login(invoker);
 			invoker.SetContext(Contexts.General);
 		}

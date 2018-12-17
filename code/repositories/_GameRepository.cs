@@ -32,7 +32,7 @@ namespace inspiral
 		}
 
 		internal virtual void Load() {
-			Debug.WriteLine($"Loading {repoName}.");
+			Debug.WriteLine($"Loading {repoName} from database.");
 			dbPath = $"data/{dbTableName}.sqlite";
 			if(!File.Exists(dbPath))
 			{

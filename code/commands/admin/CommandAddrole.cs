@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Command
+	internal partial class CommandModule : GameModule
 	{
-		internal static void CmdAddrole(GameClient invoker, string invocation)
+		internal void CmdAddrole(GameClient invoker, string invocation)
 		{
 			string[] tokens = invocation.ToLower().Split(" ");
 			if(tokens.Length < 1)
@@ -25,7 +25,7 @@ namespace inspiral
 				return;
 			}
 
-			GameRole role = Roles.GetRole(tokens[1].ToLower());
+			GameRole role = Modules.Roles.GetRole(tokens[1].ToLower());
 			if(role == null)
 			{
 				invoker.WriteLine($"Cannot find role for '{tokens[1]}'.");

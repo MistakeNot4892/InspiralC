@@ -4,8 +4,19 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+
 namespace inspiral
 {
+
+	internal static partial class Text
+	{
+		internal const string GenderInanimate = "inanimate";
+		internal const string GenderPlural = "plural";
+	}
+	internal static partial class Modules
+	{
+		internal static GenderModule Gender = null;
+	}
 
 	internal class GenderObject
 	{
@@ -16,30 +27,18 @@ namespace inspiral
 		internal string Is   = null;
 		internal string Self = null;
 	}
-
-	internal static partial class Gender
+	internal class GenderModule : GameModule
 	{
-		// These are hardcoded for now because I can't work out a method of making them function properly otherwise.
-		public const string Inanimate = "inanimate";
-		public const string Plural = "plural";
-		// End hardcoded.
-		public static Dictionary<string, GenderObject> genders = new Dictionary<string, GenderObject>();
-		public static List<string> Tokens = new List<string>();
-		internal static GenderObject GetByTerm(string term)
+		public Dictionary<string, GenderObject> genders = new Dictionary<string, GenderObject>();
+		public List<string> Tokens = new List<string>();
+
+		internal override void Initialize() 
 		{
-			term = term.ToLower();
-			if(genders.ContainsKey(term))
-			{
-				return genders[term];
-			}
-			return null;
-		}
-		static Gender()
-		{
-			Debug.WriteLine($"Loading genders.");
+			Modules.Gender = this;
+			Debug.WriteLine($"- Loading gender definitions.");
 			foreach (var f in (from file in Directory.EnumerateFiles(@"data\definitions\genders", "*.json", SearchOption.AllDirectories) select new { File = file }))
 			{
-				Debug.WriteLine($"Loading gender definition {f.File}.");
+				Debug.WriteLine($"- Loading gender definition {f.File}.");
 				try
 				{
 					Dictionary<string, string> genderStrings = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(f.File));
@@ -69,6 +68,15 @@ namespace inspiral
 				Tokens.Remove("it");
 			}
 			Debug.WriteLine($"Done.");
+		}
+		internal GenderObject GetByTerm(string term)
+		{
+			term = term.ToLower();
+			if(genders.ContainsKey(term))
+			{
+				return genders[term];
+			}
+			return null;
 		}
 	}
 }

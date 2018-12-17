@@ -4,11 +4,11 @@ using System.Diagnostics;
 
 namespace inspiral
 {
-	internal static partial class Command
+	internal partial class CommandModule : GameModule
 	{
-		internal static void CmdAddroom(GameClient invoker, string invocation)
+		internal void CmdAddroom(GameClient invoker, string invocation)
 		{
-			if(invoker.shell == null || invoker.shell.location == null || !invoker.shell.location.HasComponent(Components.Room))
+			if(invoker.shell == null || invoker.shell.location == null || !invoker.shell.location.HasComponent(Text.CompRoom))
 			{
 				invoker.WriteLine("This command is only usable within a room.");
 			}
@@ -30,7 +30,7 @@ namespace inspiral
 					{
 						exitToAdd = Text.shortExits[exitToAdd];
 					}
-					RoomComponent room = (RoomComponent)invoker.shell.location.GetComponent(Components.Room);
+					RoomComponent room = (RoomComponent)invoker.shell.location.GetComponent(Text.CompRoom);
 					if(room.exits.ContainsKey(exitToAdd))
 					{
 						invoker.WriteLine($"There is already an exit to the {exitToAdd} in this room.");
@@ -40,7 +40,7 @@ namespace inspiral
 						long roomId = -1;
 						if(tokens[1].ToLower() == "new")
 						{
-							roomId = Templates.Instantiate("room").id;
+							roomId = Modules.Templates.Instantiate("room").id;
 						}
 						else
 						{
@@ -61,7 +61,7 @@ namespace inspiral
 						{
 							bool saveEditedRoom = true;
 							GameObject linkingRoom = (GameObject)Game.Objects.Get(roomId);
-							if((tokens.Length >= 3 && tokens[2].ToLower() == "one-way") || !linkingRoom.HasComponent(Components.Room) || !Text.reversedExits.ContainsKey(exitToAdd))
+							if((tokens.Length >= 3 && tokens[2].ToLower() == "one-way") || !linkingRoom.HasComponent(Text.CompRoom) || !Text.reversedExits.ContainsKey(exitToAdd))
 							{
 								room.exits.Add(exitToAdd, roomId);
 								saveEditedRoom = true;
@@ -70,7 +70,7 @@ namespace inspiral
 							else
 							{
 								string otherExit = Text.reversedExits[exitToAdd];
-								RoomComponent otherRoom = (RoomComponent)linkingRoom.GetComponent(Components.Room);
+								RoomComponent otherRoom = (RoomComponent)linkingRoom.GetComponent(Text.CompRoom);
 								if(otherRoom.exits.ContainsKey(otherExit))
 								{
 									room.exits.Add(exitToAdd, roomId);
