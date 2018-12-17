@@ -40,7 +40,7 @@ namespace inspiral
 						long roomId = -1;
 						if(tokens[1].ToLower() == "new")
 						{
-							roomId = Game.Objects.CreateNewEmptyRoom();
+							roomId = Templates.Instantiate("room").id;
 						}
 						else
 						{

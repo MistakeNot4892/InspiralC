@@ -1,0 +1,22 @@
+{
+	"templateid" : "mob",
+	"aliases" : 
+	[
+		"mob"
+	],
+	"components" : 
+	{
+		"visible" : 
+		{
+			"shortdesc" :    "a generic creature",
+			"examineddesc" : "and is a very generic creature, instantiated from a template.",
+			"roomdesc" :     "A generic creature is here, being generic."
+		},
+		"mobile" : 
+		{
+			"mobtype" :      "humanoid"
+		},
+		"inventory" : [],
+		"balance" : []
+	}
+}

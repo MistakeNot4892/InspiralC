@@ -1,6 +1,7 @@
 using System;
 using System.Data.SQLite;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 /* Template for copypasting to new files:
 namespace inspiral
@@ -57,7 +58,7 @@ namespace inspiral
 		internal virtual void Added(GameObject addedTo)
 		{
 			parent = addedTo;
-			if(Components.builders[name].UpdateSchema != null)
+			if(isPersistent)
 			{
 				Game.Objects.QueueForUpdate(parent);
 			}
@@ -68,7 +69,7 @@ namespace inspiral
 			{
 				parent = null;
 			}
-			if(Components.builders[name].UpdateSchema != null)
+			if(isPersistent)
 			{
 				Game.Objects.QueueForUpdate(takenFrom);
 			}
@@ -126,6 +127,6 @@ namespace inspiral
 		{
 			return "";
 		}
-
+		internal virtual void ConfigureFromJson(JToken compData) {}
 	}
 }

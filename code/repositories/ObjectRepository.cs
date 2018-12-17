@@ -105,7 +105,6 @@ namespace inspiral
 				}
 			}
 		}
-
 		internal override Object CreateRepositoryType(long id) 
 		{
 			GameObject gameObj = new GameObject();
@@ -153,17 +152,6 @@ namespace inspiral
 			command.Parameters.AddWithValue("@p5", gameObj.flags);
 			command.Parameters.AddWithValue("@p6", gameObj.location?.id ?? 0);
 		}
-		internal long CreateNewEmptyRoom()
-		{
-			GameObject tmpRoom = (GameObject)Game.Objects.CreateNewInstance(false);
-			tmpRoom.AddComponent(Components.Room);
-			tmpRoom.AddComponent(Components.Visible);
-			tmpRoom.name = "room";
-			tmpRoom.SetString(Components.Visible, Text.FieldShortDesc, Text.DefaultRoomShort);
-			tmpRoom.SetString(Components.Visible, Text.FieldExaminedDesc, Text.DefaultRoomLong);
-			Game.Objects.AddDatabaseEntry(tmpRoom);
-			return tmpRoom.id;
-		}
 		internal override void PostInitialize() 
 		{
 			foreach(KeyValuePair<long, long> loc in postInitLocations)
@@ -183,56 +171,28 @@ namespace inspiral
 				LoadComponentData((GameObject)obj.Value);
 			}
 		}
+
 		public override void HandleAdditionalObjectSave(Object objInstance, SQLiteConnection dbConnection) 
 		{
 			GameObject gameObj = (GameObject) objInstance;
 			foreach(KeyValuePair<string, GameComponent> comp in gameObj.components)
 			{
-				if(Components.builders[comp.Key].UpdateSchema == null)
+				if(comp.Value.isPersistent && Components.builders[comp.Key].UpdateSchema != null)
 				{
-					continue;
-				}
-				using(SQLiteCommand command = new SQLiteCommand(Components.builders[comp.Key].UpdateSchema, dbConnection))
-				{
-					try
+					using(SQLiteCommand command = new SQLiteCommand(Components.builders[comp.Key].UpdateSchema, dbConnection))
 					{
-						comp.Value.AddCommandParameters(command);
-						command.ExecuteNonQuery();
-					}
-					catch(Exception e)
-					{
-						Debug.WriteLine($"Component SQL exception 2 ({comp.Key}): {e.ToString()} - enter query is [{Components.builders[comp.Key].UpdateSchema}]");
+						try
+						{
+							comp.Value.AddCommandParameters(command);
+							command.ExecuteNonQuery();
+						}
+						catch(Exception e)
+						{
+							Debug.WriteLine($"Component SQL exception 2 ({comp.Key}): {e.ToString()} - enter query is [{Components.builders[comp.Key].UpdateSchema}]");
+						}
 					}
 				}
 			}
-		}
-		internal GameObject CreateMob()
-		{
-			return CreateMob("mob");
-		}
-		internal GameObject CreateMob(string newName)
-		{
-			GameObject gameObj = (GameObject)Game.Objects.CreateNewInstance(false);
-
-			gameObj.name = newName;
-			gameObj.gender = Gender.GetByTerm(Gender.Plural);
-
-			gameObj.AddComponent(Components.Visible);
-			gameObj.AddComponent(Components.Inventory);
-			gameObj.AddComponent(Components.Mobile);
-			gameObj.AddComponent(Components.Balance);
-			MobileComponent mob = (MobileComponent)gameObj.GetComponent(Components.Mobile);
-			mob.SetBodyplan("humanoid");
-
-			gameObj.SetString(Components.Visible, Text.FieldShortDesc, gameObj.name);
-			gameObj.SetString(Components.Visible, Text.FieldRoomDesc,    $"{gameObj.name} is here.");
-			gameObj.SetString(Components.Visible, Text.FieldExaminedDesc, "");
-			gameObj.SetString(Components.Mobile, Text.FieldEnterMessage, $"{gameObj.name} enters from the $DIR.");
-			gameObj.SetString(Components.Mobile, Text.FieldLeaveMessage, $"{gameObj.name} leaves to the $DIR.");
-			gameObj.SetString(Components.Mobile, Text.FieldDeathMessage, $"The corpse of {gameObj.name} lies here.");
-
-			Game.Objects.AddDatabaseEntry(gameObj);
-			return gameObj;
 		}
 	}
 }	

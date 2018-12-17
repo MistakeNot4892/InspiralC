@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using Newtonsoft.Json.Linq;
 
 namespace inspiral
 {
@@ -105,8 +106,10 @@ namespace inspiral
 			if(parent.HasComponent(Components.Mobile))
 			{
 				string startingToken = (parent == viewer.shell) ? "You're" : "That's";
+				string theyAre = (parent == viewer.shell) ? "You're" : $"{Text.Capitalize(parent.gender.He)} {parent.gender.Is}";
+
 				MobileComponent mob = (MobileComponent)parent.GetComponent(Components.Mobile);
-				mainDesc = $"{startingToken} {mainDesc}\n{Text.Capitalize(parent.gender.He)} {parent.gender.Is} a {mob.race}";
+				mainDesc = $"{startingToken} {mainDesc}\n{theyAre} a {mob.race}";
 				if(examinedDescription == null || examinedDescription.Length <= 0)
 				{
 					mainDesc += ".";
@@ -122,7 +125,7 @@ namespace inspiral
 				List<string> clothing = parent.GetVisibleContents(viewer, false);
 				if(clothing.Count > 0)
 				{
-					mainDesc += $"\n{Text.Capitalize(parent.gender.He)} {parent.gender.Is} carrying:";
+					mainDesc += $"\n{theyAre} carrying:";
 					foreach(string line in clothing)
 					{
 						mainDesc += $"\n{Text.Capitalize(line)}";
@@ -130,7 +133,7 @@ namespace inspiral
 				}
 				else
 				{
-					mainDesc += $"\n{Text.Capitalize(parent.gender.He)} {parent.gender.Is} completely naked.";
+					mainDesc += $"\n{theyAre} completely naked.";
 				}
 				mainDesc = Text.FormatProse(mainDesc);
 			}
@@ -165,7 +168,13 @@ namespace inspiral
 			command.Parameters.AddWithValue("@p0", parent.id);
 			command.Parameters.AddWithValue("@p1", shortDescription);
 			command.Parameters.AddWithValue("@p2", roomDescription);
-			command.Parameters.AddWithValue("@p3", examinedDescription);
+			command.Parameters.AddWithValue("@p3", examinedDescription);	
+		}
+		internal override void ConfigureFromJson(JToken compData)
+		{
+			SetValue(Text.FieldShortDesc,    (string)compData["shortdesc"]);
+			SetValue(Text.FieldRoomDesc,     (string)compData["roomdesc"]);
+			SetValue(Text.FieldExaminedDesc, (string)compData["examineddesc"]);
 		}
 	}
 }

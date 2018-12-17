@@ -87,7 +87,20 @@ namespace inspiral
 			acct.passwordHash = passwordHash;
 
 			// Create the shell the client will be piloting around, saving data to, etc.
-			GameObject gameObj = (GameObject)Game.Objects.CreateMob(Text.Capitalize(acct.userName));
+			GameObject gameObj = Templates.Instantiate("mob");
+			gameObj.name = Text.Capitalize(acct.userName);
+			gameObj.gender = Gender.GetByTerm(Gender.Plural);
+			gameObj.aliases = new List<string>() { gameObj.name.ToLower() };
+			VisibleComponent vis = (VisibleComponent)gameObj.GetComponent(Components.Visible); 
+			vis.SetValue(Text.FieldShortDesc,    $"{gameObj.name}");
+			vis.SetValue(Text.FieldRoomDesc,     $"{gameObj.name} is here.");
+			vis.SetValue(Text.FieldExaminedDesc, "and are completely uninteresting.");
+			MobileComponent mob = (MobileComponent)gameObj.GetComponent(Components.Mobile);
+			mob.SetValue(Text.FieldEnterMessage, $"{gameObj.name} enters from the $DIR.");
+			mob.SetValue(Text.FieldLeaveMessage, $"{gameObj.name} leaves to the $DIR.");
+			mob.SetValue(Text.FieldDeathMessage, $"The corpse of {gameObj.name} lies here.");
+			Game.Objects.QueueForUpdate(gameObj);
+
 			acct.objectId = gameObj.id;
 			
 			// If the account DB is empty, give them admin roles.

@@ -118,6 +118,7 @@ namespace inspiral
 			{
 				if(HasComponent(Components.Inventory))
 				{
+					string their = (this == viewer.shell) ? "your" : gender.His;
 					InventoryComponent equip = (InventoryComponent)GetComponent(Components.Inventory);
 					foreach(KeyValuePair<string, GameObject> equ in equip.carrying)
 					{
@@ -136,11 +137,11 @@ namespace inspiral
 						{
 							if(equip.GetWieldableSlots().Contains(equ.Key))
 							{
-								result.Add($"{equ.Value.GetString(Components.Visible, Text.FieldShortDesc)} in {gender.His} {equ.Key}.");
+								result.Add($"{equ.Value.GetString(Components.Visible, Text.FieldShortDesc)} in {their} {equ.Key}.");
 							}
 							else
 							{
-								result.Add($"{equ.Value.GetString(Components.Visible, Text.FieldShortDesc)} on {gender.His} {equ.Key}.");
+								result.Add($"{equ.Value.GetString(Components.Visible, Text.FieldShortDesc)} on {their} {equ.Key}.");
 							}
 						}
 					}

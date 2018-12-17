@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace inspiral
 {
@@ -49,6 +52,13 @@ namespace inspiral
 		{
 			command.Parameters.AddWithValue("@p0", parent.id);
 			command.Parameters.AddWithValue("@p1", JsonConvert.SerializeObject(wearableSlots));
+		}
+		internal override void ConfigureFromJson(JToken compData)
+		{
+			foreach(string s in compData["worn"].Select(t => (string)t).ToList())
+			{
+				wearableSlots.Add(s);
+			}
 		}
 	}
 }

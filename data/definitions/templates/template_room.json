@@ -1,0 +1,17 @@
+{
+	"templateid" : "room",
+	"aliases" : 
+	[
+		"room"
+	],
+	"components" : 
+	{
+		"room" : [],
+		"visible" : 
+		{
+			"shortdesc" :    "an empty room",
+			"examineddesc" : "There is nothing here except silence.",
+			"roomdesc" :     "If you can see this, please tell a dev (roomDesc placeholder for room template)."
+		}
+	}
+}

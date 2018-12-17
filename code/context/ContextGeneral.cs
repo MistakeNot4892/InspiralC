@@ -14,7 +14,7 @@ namespace inspiral
 				if(Components.Rooms.Count <= 0)
 				{
 					Debug.WriteLine("First run: cannot find a room, creating a new one.");
-					Game.Objects.CreateNewEmptyRoom();
+					Templates.Instantiate("room");
 				}
 				GameObject room = (GameObject)Components.Rooms[0].parent;
 				viewer.shell.Move(room);

@@ -1,5 +1,8 @@
 using System.Data.SQLite;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using System.Diagnostics;
+using System;
 
 namespace inspiral
 {
@@ -114,6 +117,13 @@ namespace inspiral
 		internal bool CanMove()
 		{
 			return true;
+		}
+		internal override void ConfigureFromJson(JToken compData)
+		{
+			SetBodyplan((string)compData["mobtype"]);
+			SetValue(Text.FieldEnterMessage, $"{parent.name} enters from the $DIR.");
+			SetValue(Text.FieldLeaveMessage, $"{parent.name} leaves to the $DIR.");
+			SetValue(Text.FieldDeathMessage, $"The corpse of {parent.name} lies here.");
 		}
 		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
 		{

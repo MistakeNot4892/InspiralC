@@ -1,0 +1,24 @@
+{
+	"templateid" : "gasmask",
+	"aliases" : 
+	[
+		"gasmask",
+		"mask"
+	],
+	"components" : 
+	{
+		"visible" : 
+		{
+			"shortdesc" :    "a gasmask",
+			"examineddesc" : "This is a gasmask.",
+			"roomdesc" :     "A gasmask has been left here."
+		},
+		"wearable" : 
+		{ 
+			"worn" : 
+			[ 
+				"face" 
+			] 
+		}
+	}
+}

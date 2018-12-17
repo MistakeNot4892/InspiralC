@@ -40,7 +40,7 @@ namespace inspiral
 			}
 		}
 
-		internal string GetStringSummary(GameClient invoker)
+		internal string GetStringSummary(int wrapWidth)
 		{
 			Dictionary<string, List<string>> summary = new Dictionary<string, List<string>>();
 
@@ -58,9 +58,13 @@ namespace inspiral
 			}
 			foreach(KeyValuePair<string, GameComponent> comp in components)
 			{
-				summary[fieldKey].Add($"\n{Text.FormatPopup(comp.Value.name, comp.Value.GetStringSummary(), invoker.config.wrapwidth+Text.NestedWrapwidthModifier)}");
+				summary[fieldKey].Add($"\n{Text.FormatPopup(comp.Value.name, comp.Value.GetStringSummary(), wrapWidth+Text.NestedWrapwidthModifier)}");
 			}
-			return Text.FormatBlock(summary, invoker.config.wrapwidth);
+			return Text.FormatBlock(summary, wrapWidth);
+		}
+		internal string GetStringSummary(GameClient invoker)
+		{
+			return GetStringSummary(invoker.config.wrapwidth);
 		}
 	}
 }

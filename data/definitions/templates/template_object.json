@@ -1,0 +1,16 @@
+{
+	"templateid" : "object",
+	"aliases" : 
+	[
+		"object"
+	],
+	"components" : 
+	{
+		"visible" : 
+		{
+			"shortdesc" :    "a generic object",
+			"examineddesc" : "This is a very generic object, instantiated from a template.",
+			"roomdesc" :     "A generic object is here, being generic."
+		}
+	}
+}

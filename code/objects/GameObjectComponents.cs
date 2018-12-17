@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using Newtonsoft.Json.Linq;
 
 namespace inspiral
 {
@@ -13,15 +15,36 @@ namespace inspiral
 			}
 			return null;
 		}
-		internal void AddComponent(string componentKey) 
+		internal GameComponent AddComponent(JProperty componentData)
 		{
-			if(!HasComponent(componentKey))
+			GameComponent comp = null;
+			try
 			{
-				GameComponent component = Components.MakeComponent(componentKey);
+				comp = AddComponent(componentData.Name);
+				comp.ConfigureFromJson(componentData.Value);
+			}
+			catch(Exception e)
+			{
+				Debug.WriteLine($"Exception when configuring component from JSON - {e.Message}");
+			}
+			return comp;
+		} 
+
+		internal GameComponent AddComponent(string componentKey) 
+		{
+			GameComponent component = null;
+			if(HasComponent(componentKey))
+			{
+				component = GetComponent(componentKey);
+			}
+			else
+			{
+				component = Components.MakeComponent(componentKey);
 				component.name = componentKey;
 				components.Add(componentKey, component);
 				component.Added(this);
 			}
+			return component;
 		}
 		internal void RemoveComponent(string componentKey)
 		{

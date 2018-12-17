@@ -8,7 +8,7 @@ namespace inspiral
 		{
 			if(!invoker.shell.HasComponent(Components.Inventory))
 			{
-				invoker.WriteLine("You cannot hold objects.");
+				invoker.SendLine("You cannot hold objects.");
 				return;
 			}
 			InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Components.Inventory);
