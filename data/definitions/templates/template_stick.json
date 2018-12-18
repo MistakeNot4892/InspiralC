@@ -1,0 +1,22 @@
+{
+	"templateid" : "stick",
+	"aliases" : 
+	[
+		"stick"
+	],
+	"components" : 
+	{
+		"visible" : 
+		{
+			"shortdesc" :    "a stick",
+			"examineddesc" : "This is a stick. It's brown and sticky.",
+			"roomdesc" :     "A stick has been left here."
+		},
+		"physics" :
+		{
+			"length" : 5,
+			"width" :  5,
+			"height" : 6
+		}
+	}
+}

@@ -105,11 +105,28 @@ namespace inspiral
 			string mainDesc = $"{Colours.Fg(Text.Capitalize(shortDescription),Colours.BoldWhite)}.";
 			if(parent.HasComponent(Text.CompMobile))
 			{
-				string startingToken = (parent == viewer.shell) ? "You're" : "That's";
-				string theyAre = (parent == viewer.shell) ? "You're" : $"{Text.Capitalize(parent.gender.He)} {parent.gender.Is}";
+				string startingToken;
+				string theyAre;
+				string their;
+				if(parent == viewer.shell)
+				{
+					startingToken = "You're";
+					theyAre = "You're";
+					their = "Your";
+				}
+				else
+				{
+					startingToken = "That's";
+					theyAre = $"{Text.Capitalize(parent.gender.He)} {parent.gender.Is}";
+					their = Text.Capitalize(parent.gender.His);
+				}
 
 				MobileComponent mob = (MobileComponent)parent.GetComponent(Text.CompMobile);
 				mainDesc = $"{startingToken} {mainDesc}\n{theyAre} a {mob.race}";
+				if(viewer.shell == parent)
+				{
+					mainDesc += $". When people look at you, they see:\n{Text.Capitalize(parent.gender.He)} {parent.gender.Is} a {mob.race}";
+				}
 				if(examinedDescription == null || examinedDescription.Length <= 0)
 				{
 					mainDesc += ".";
@@ -122,6 +139,7 @@ namespace inspiral
 				{
 					mainDesc += $" {examinedDescription}";
 				}
+
 				List<string> clothing = parent.GetVisibleContents(viewer, false);
 				if(clothing.Count > 0)
 				{
@@ -135,7 +153,18 @@ namespace inspiral
 				{
 					mainDesc += $"\n{theyAre} completely naked.";
 				}
-				mainDesc = Text.FormatProse(mainDesc);
+				
+				foreach(KeyValuePair<string, BodypartData> bp in mob.bodyData)
+				{
+					if(bp.Value.isAmputated)
+					{
+						mainDesc += $"\n{their} {bp.Key} is missing!";
+					}
+					else if(bp.Value.isBroken)
+					{
+						mainDesc += $"\n{their} {bp.Key} is broken!";
+					}
+				}
 			}
 			else
 			{
@@ -149,11 +178,19 @@ namespace inspiral
 					}
 				}
 			}
+
 			if(parent.HasComponent(Text.CompRoom))
 			{
 				RoomComponent roomComp = (RoomComponent)parent.GetComponent(Text.CompRoom);
 				mainDesc = $"{mainDesc}\n{Colours.Fg(roomComp.GetExitString(), Colours.BoldCyan)}";
 			}
+
+			if(parent.HasComponent(Text.CompPhysics))
+			{
+				PhysicsComponent phys = (PhysicsComponent)parent.GetComponent(Text.CompPhysics);
+				mainDesc = $"{mainDesc}\n{phys.GetExaminedSummary(viewer.shell)}";
+			}
+
 			viewer.WriteLine(mainDesc);
 			viewer.SendPrompt();
 		}
@@ -172,9 +209,9 @@ namespace inspiral
 		}
 		internal override void ConfigureFromJson(JToken compData)
 		{
-			SetValue(Text.FieldShortDesc,    (string)compData["shortdesc"]);
-			SetValue(Text.FieldRoomDesc,     (string)compData["roomdesc"]);
-			SetValue(Text.FieldExaminedDesc, (string)compData["examineddesc"]);
+			shortDescription =    (string)compData["shortdesc"];
+			roomDescription =     (string)compData["roomdesc"];
+			examinedDescription = (string)compData["examineddesc"];
 		}
 	}
 }

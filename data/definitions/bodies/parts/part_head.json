@@ -1,7 +1,11 @@
 {
 	"name" : "head",
-	"grasp" : false,
 	"vital" : true,
 	"slots" : [ "head", "eyes", "neck", "face" ],
-	"stance" : false
+	"contactSurface" :
+	{
+		"height" :  5,
+		"width" :   8,
+		"length" :  20
+	}
 }

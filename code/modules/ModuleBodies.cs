@@ -28,7 +28,28 @@ namespace inspiral
 				try
 				{
 					JObject r = JObject.Parse(File.ReadAllText(f.File));
-					Bodypart bp = new Bodypart((string)r["name"], (string)r["root"], (bool)r["grasp"], (bool)r["stance"], (bool)r["vital"], JsonConvert.DeserializeObject<List<string>>(r["slots"].ToString()));
+					Bodypart bp = new Bodypart(
+						(string)r["name"], 
+						(string)r["root"], 
+						 JsonConvert.DeserializeObject<List<string>>(r["slots"].ToString())
+					);
+					if(!JsonExtensions.IsNullOrEmpty(r["grasp"]))
+					{
+						bp.canGrasp = (bool)r["grasp"];
+					}
+					if(!JsonExtensions.IsNullOrEmpty(r["stance"]))
+					{
+						bp.canStand = (bool)r["stance"];
+					}
+					if(!JsonExtensions.IsNullOrEmpty(r["vital"]))
+					{
+						bp.isVital = (bool)r["vital"];
+					}
+					if(!JsonExtensions.IsNullOrEmpty(r["contactSurface"]))
+					{
+						bp.isNaturalWeapon = true;
+						bp.contactData = JsonConvert.DeserializeObject<Dictionary<string, int>>(r["contactSurface"].ToString());
+					}
 					parts.Add(bp.name, bp);
 				}
 				catch(Exception e)
@@ -87,6 +108,7 @@ namespace inspiral
 		internal List<Bodypart> allParts = new List<Bodypart>();
 		internal Dictionary<Bodypart, Bodypart> childToParent = new Dictionary<Bodypart, Bodypart>();
 		internal Dictionary<Bodypart, List<Bodypart>> parentToChildren = new Dictionary<Bodypart, List<Bodypart>>();
+		internal List<string> strikers = new List<string>();
 		internal List<string> graspers = new List<string>();
 		internal List<string> stance = new List<string>();
 		internal List<string> equipmentSlots = new List<string>();
@@ -105,6 +127,10 @@ namespace inspiral
 				if(bp.canStand && !stance.Contains(bp.name))
 				{
 					stance.Add(bp.name);
+				}
+				if(bp.isNaturalWeapon && !strikers.Contains(bp.name))
+				{
+					strikers.Add(bp.name);
 				}
 				foreach(string slot in bp.equipmentSlots)
 				{
@@ -146,6 +172,19 @@ namespace inspiral
 			{
 				summary += " none.";
 			}
+			summary += "\n\nStrike:";
+			if(graspers.Count > 0)
+			{
+				foreach(string strike in strikers)
+				{
+					Bodypart bp = Modules.Bodies.GetPart(strike);
+					summary += $" [{bp.name}]";
+				}
+			}
+			else
+			{
+				summary += " none.";
+			}
 			summary += "\n\nGrasp:";
 			if(graspers.Count > 0)
 			{
@@ -182,14 +221,13 @@ namespace inspiral
 		internal bool canGrasp = false;
 		internal bool canStand = false;
 		internal bool isVital = false;
+		internal bool isNaturalWeapon = false;
+		internal Dictionary<string, int> contactData;
 		internal List<string> equipmentSlots = new List<string>();
-		internal Bodypart(string _name, string _parent, bool _grasp, bool _stance, bool _vital, List<string> _slots)
+		internal Bodypart(string _name, string _parent, List<string> _slots)
 		{
 			name = _name;
 			parent = _parent;
-			canGrasp = _grasp;
-			canStand = _stance;
-			isVital = _vital;
 			equipmentSlots = _slots;
 		}
 	}

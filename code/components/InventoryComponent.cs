@@ -216,7 +216,20 @@ namespace inspiral
 			}
 			return new Tuple<string, string>(objKey, objSlot);
 		}
-
+		internal bool IsWielded(GameObject equipping)
+		{
+			foreach(string slot in GetWieldableSlots())
+			{
+				if(carrying.ContainsKey(slot))
+				{
+					if(carrying[slot] == equipping)
+					{
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 		internal bool IsEquipped(GameObject equipping)
 		{
 			foreach(string slot in GetEquippableSlots())

@@ -22,7 +22,7 @@ namespace inspiral
 		}
 		internal virtual string GetPrompt(GameClient viewer) 
 		{
-			return "";
+			return null;
 		}
 	}
 }

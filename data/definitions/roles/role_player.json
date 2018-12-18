@@ -15,7 +15,8 @@
 		"unequip",
 		"describe",
 		"info",
-		"prompt"
+		"prompt",
+		"strike"
 	],
 	"description" : "Grants general world interaction and communication commands."
 }

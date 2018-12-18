@@ -1,7 +1,11 @@
 {
 	"name" : "left foot",
-	"vital" : false,
-	"grasp" : false,
 	"slots" : [ "feet" ],
-	"stance" : true
+	"stance" : true,
+	"contactSurface" :
+	{
+		"height" :  5,
+		"width" :   8,
+		"length" :  20
+	}
 }

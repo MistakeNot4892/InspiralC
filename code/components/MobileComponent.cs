@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using System;
+using System.Linq;
 
 namespace inspiral
 {
@@ -121,9 +122,9 @@ namespace inspiral
 		internal override void ConfigureFromJson(JToken compData)
 		{
 			SetBodyplan((string)compData["mobtype"]);
-			SetValue(Text.FieldEnterMessage, $"{parent.name} enters from the $DIR.");
-			SetValue(Text.FieldLeaveMessage, $"{parent.name} leaves to the $DIR.");
-			SetValue(Text.FieldDeathMessage, $"The corpse of {parent.name} lies here.");
+			enterMessage = $"{parent.name} enters from the $DIR.";
+			leaveMessage = $"{parent.name} leaves to the $DIR.";
+			deathMessage = $"The corpse of {parent.name} lies here.";
 		}
 		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
 		{
@@ -158,18 +159,23 @@ namespace inspiral
 		{
 			return $"{Colours.Fg("Pain:",Colours.Yellow)}{Colours.Fg("0%",Colours.BoldYellow)} {Colours.Fg("Bleed:",Colours.Red)}{Colours.Fg("0%",Colours.BoldRed)}";
 		}
+		internal string GetWeightedRandomBodypart()
+		{
+			return bodyData.ElementAt(Game.rand.Next(0, bodyData.Count)).Key;
+		}
+
 	}
 	internal class BodypartData
 	{
-		int painAmount = 0;
-		bool isAmputated = false;
-		bool isBroken = false;
-		List<Wound> wounds = new List<Wound>();
+		internal int painAmount = 0;
+		internal bool isAmputated = false;
+		internal bool isBroken = false;
+		internal List<Wound> wounds = new List<Wound>();
 	}
 	internal class Wound
 	{
-		int severity = 0;
-		int bleedAmount = 0;
-		bool isOpen = false;
+		internal int severity = 0;
+		internal int bleedAmount = 0;
+		internal bool isOpen = false;
 	}
 }

@@ -1,0 +1,13 @@
+{
+	"command" : "strike",
+	"description" : "Attacks another entity.",
+	"aliases" : 
+	[
+		"strike",
+		"attack",
+		"bash",
+		"st"
+	],
+	"usage" : "strike [target] <in bodypart> <with bodypart or object>",
+	"method" : "CmdStrike"
+}

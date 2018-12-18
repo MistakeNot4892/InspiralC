@@ -1,7 +1,11 @@
 {
 	"name" : "left hand",
-	"vital" : false,
 	"grasp" : true,
 	"slots" : [ "gloves", "left ring" ],
-	"stance" : false
+	"contactSurface" :
+	{
+		"height" :  5,
+		"width" :   8,
+		"length" :  20
+	}
 }

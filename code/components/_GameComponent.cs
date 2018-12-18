@@ -107,12 +107,9 @@ namespace inspiral
 				Modules.Components.builders[name].editableFields != null && 
 				Modules.Components.builders[name].editableFields.Count > 0)
 			{
-				if(GetString(field) != value)
-				{
-					SetValue(field, value);
-					Game.Objects.QueueForUpdate(parent);
-				}
-				return null;
+				SetValue(field, value);
+				Game.Objects.QueueForUpdate(parent);
+				return null;	
 			}
 			return "Invalid field.";
 		}

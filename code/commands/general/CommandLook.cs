@@ -12,19 +12,28 @@ namespace inspiral
 				invoker.SendLine("You cannot see anything here.");
 				return;
 			}
+			string examineKey = null;
 			GameObject examining = null;
 			string[] tokens = invocation.Split(" ");
 			if(tokens.Length >= 2 && tokens[0] == "at")
 			{
-				examining = invoker.shell.FindGameObjectNearby(tokens[1].ToLower());
+				examineKey = tokens[1].ToLower();
 			}
 			else if(tokens.Length >= 1 && tokens[0] != "")
 			{
-				examining = invoker.shell.FindGameObjectNearby(tokens[0].ToLower());
+				examineKey = tokens[0].ToLower();
 			}
 			else 
 			{
 				examining = invoker.shell.FindGameObjectNearby("here");
+			}
+			if(examineKey != null)
+			{
+				examining = invoker.shell.FindGameObjectNearby(examineKey);
+				if(examining == null)
+				{
+					examining = invoker.shell.FindGameObjectInContents(examineKey);
+				}
 			}
 			if(examining != null)
 			{

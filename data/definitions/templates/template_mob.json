@@ -17,6 +17,13 @@
 			"mobtype" :      "humanoid"
 		},
 		"inventory" : [],
-		"balance" : []
+		"balance" : [],
+		"physics" :
+		{
+			"length" :  15,
+			"width" :   35,
+			"height" :  160,
+			"density" : 0.7
+		}
 	}
 }

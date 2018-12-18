@@ -185,7 +185,7 @@ namespace inspiral
 		}
 		internal void SendPrompt()
 		{
-			string p = context.GetPrompt(this).ToString();
+			string p = context.GetPrompt(this);
 			if(p != null && p.Length > 0)
 			{
 				WriteToStream(p);

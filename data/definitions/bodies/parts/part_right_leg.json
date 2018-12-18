@@ -1,7 +1,5 @@
 {
 	"name" : "right leg",
-	"vital" : false,
-	"grasp" : false,
 	"slots" : [ "legs" ],
 	"stance" : true
 }

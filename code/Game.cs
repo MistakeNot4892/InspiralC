@@ -6,6 +6,7 @@ namespace inspiral
 {
 	internal static class Game
 	{
+		internal static Random rand = new Random();
 		internal static bool InitComplete = false;
 		internal static AccountRepository Accounts;
 		internal static ObjectRepository Objects;

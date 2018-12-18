@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 
 namespace inspiral
@@ -15,6 +16,10 @@ namespace inspiral
 	}
 	internal partial class CommandModule : GameModule
 	{
+		private Regex matchCmdWithIn = new Regex(@"([a-zA-Z0-9]+) with (.+) in (.+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		private Regex matchCmdInWith = new Regex(@"([a-zA-Z0-9]+) in (.+) with (.+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		private Regex matchCmdWith =   new Regex(@"([a-zA-Z0-9]+) with (.+)",         RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		private Regex matchCmdIn =     new Regex(@"([a-zA-Z0-9]+) in (.+)",           RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		private Dictionary<string, GameCommand> commands = new Dictionary<string, GameCommand>();
 		internal override void Initialize()
 		{
@@ -69,6 +74,63 @@ namespace inspiral
 				return commands[command];
 			}
 			return null;
+		}
+		internal Tuple<string, string, string> FindTokensFromInput(string invocation)
+		{
+			Match match = matchCmdInWith.Match(invocation);
+			if(match.Success)
+			{
+				return new Tuple<string, string, string>(
+					StripTokenPrefixes(match.Groups[1].Value), 
+					StripTokenPrefixes(match.Groups[2].Value), 
+					StripTokenPrefixes(match.Groups[3].Value)
+				);
+			}
+			match = matchCmdWithIn.Match(invocation);
+			if(match.Success)
+			{
+				return new Tuple<string, string, string>(
+					StripTokenPrefixes(match.Groups[1].Value), 
+					StripTokenPrefixes(match.Groups[3].Value), 
+					StripTokenPrefixes(match.Groups[2].Value)
+				);
+			}
+			match = matchCmdIn.Match(invocation);
+			if(match.Success)
+			{
+				return new Tuple<string, string, string>(
+					StripTokenPrefixes(match.Groups[1].Value), 
+					StripTokenPrefixes(match.Groups[2].Value), 
+					null
+				);
+			}
+			match = matchCmdWith.Match(invocation);
+			if(match.Success)
+			{
+				return new Tuple<string, string, string>(
+					StripTokenPrefixes(match.Groups[1].Value), 
+					null, 
+					StripTokenPrefixes(match.Groups[2].Value)
+				);
+			}
+			return new Tuple<string, string, string>(
+				StripTokenPrefixes(invocation), 
+				null, 
+				null
+			);
+		}
+		private string StripTokenPrefixes(string token)
+		{
+			token = token.Trim().ToLower();
+			if(token.Length >= 4 && token.Substring(0, 4) == "the ")
+			{
+				token = token.Substring(4);
+			}
+			if(token.Length >= 2 && token.Substring(0, 2) == "a ")
+			{
+				token = token.Substring(2);
+			}
+			return token; 
 		}
 	}
 	internal class GameCommand
