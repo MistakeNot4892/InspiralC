@@ -6,31 +6,30 @@ namespace inspiral
 {
 	internal partial class CommandModule : GameModule
 	{
-		internal void CmdAddroom(GameClient invoker, string invocation)
+		internal void CmdAddroom(GameObject invoker, CommandData cmd)
 		{
-			if(invoker.shell == null || invoker.shell.location == null || !invoker.shell.location.HasComponent(Text.CompRoom))
+			if(invoker.location == null || !invoker.location.HasComponent(Text.CompRoom))
 			{
 				invoker.WriteLine("This command is only usable within a room.");
 			}
 			else
 			{
-				string[] tokens = invocation.Split(" ");
-				if(tokens.Length <= 0)
+				if(cmd.objTarget == null)
 				{
 					invoker.WriteLine("Which exit do you wish to add a room to?");
 				}
-				else if(tokens.Length <= 1)
+				else if(cmd.strArgs.Length < 1)
 				{
 					invoker.WriteLine("Please specify a valid room ID to link to, or 'new' to use a new room.");
 				}
 				else
 				{
-					string exitToAdd = tokens[0].ToLower();
+					string exitToAdd = cmd.objTarget;
 					if(Text.shortExits.ContainsKey(exitToAdd))
 					{
 						exitToAdd = Text.shortExits[exitToAdd];
 					}
-					RoomComponent room = (RoomComponent)invoker.shell.location.GetComponent(Text.CompRoom);
+					RoomComponent room = (RoomComponent)invoker.location.GetComponent(Text.CompRoom);
 					if(room.exits.ContainsKey(exitToAdd))
 					{
 						invoker.WriteLine($"There is already an exit to the {exitToAdd} in this room.");
@@ -38,7 +37,7 @@ namespace inspiral
 					else
 					{
 						long roomId = -1;
-						if(tokens[1].ToLower() == "new")
+						if(cmd.strArgs[0].ToLower() == "new")
 						{
 							roomId = Modules.Templates.Instantiate("room").id;
 						}
@@ -46,7 +45,7 @@ namespace inspiral
 						{
 							try
 							{
-								roomId = Int32.Parse(tokens[1].ToLower());
+								roomId = Int32.Parse(cmd.strArgs[0].ToLower());
 							}
 							catch(Exception e)
 							{
@@ -61,7 +60,7 @@ namespace inspiral
 						{
 							bool saveEditedRoom = true;
 							GameObject linkingRoom = (GameObject)Game.Objects.Get(roomId);
-							if((tokens.Length >= 3 && tokens[2].ToLower() == "one-way") || !linkingRoom.HasComponent(Text.CompRoom) || !Text.reversedExits.ContainsKey(exitToAdd))
+							if((cmd.strArgs.Length >= 2 && cmd.strArgs[1].ToLower() == "one-way") || !linkingRoom.HasComponent(Text.CompRoom) || !Text.reversedExits.ContainsKey(exitToAdd))
 							{
 								room.exits.Add(exitToAdd, roomId);
 								saveEditedRoom = true;

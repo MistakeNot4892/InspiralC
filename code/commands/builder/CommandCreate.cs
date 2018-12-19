@@ -5,16 +5,14 @@ namespace inspiral
 {
 	internal partial class CommandModule : GameModule 
 	{
-		internal void CmdCreate(GameClient invoker, string invocation)
+		internal void CmdCreate(GameObject invoker, CommandData cmd)
 		{
-			string[] tokens = invocation.Split(" ");
-			if(tokens.Length > 0)
+			if(cmd.objTarget != null)
 			{
-				string token = tokens[0].ToLower();
-				GameObject hat = Modules.Templates.Instantiate(token);
+				GameObject hat = Modules.Templates.Instantiate(cmd.objTarget);
 				if(hat != null)
 				{
-					hat.Move(invoker.shell.location);
+					hat.Move(invoker.location);
 					invoker.WriteLine($"Created {hat.GetString(Text.CompVisible, Text.FieldShortDesc)} ({hat.name}#{hat.id}).");
 					invoker.SendPrompt();
 					return;

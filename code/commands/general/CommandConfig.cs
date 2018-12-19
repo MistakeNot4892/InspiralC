@@ -4,7 +4,7 @@ namespace inspiral
 {
 	internal partial class CommandModule : GameModule
 	{
-		internal void CmdConfig(GameClient invoker, string invocation)
+		internal void CmdConfig(GameObject invoker, CommandData cmd)
 		{
 			invoker.SendLine("Config not implemented yet sorry.");
 		}

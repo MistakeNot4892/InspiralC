@@ -4,31 +4,30 @@ namespace inspiral
 {
 	internal partial class CommandModule : GameModule
 	{
-		internal void CmdAddrole(GameClient invoker, string invocation)
+		internal void CmdAddrole(GameObject invoker, CommandData cmd)
 		{
-			string[] tokens = invocation.ToLower().Split(" ");
-			if(tokens.Length < 1)
+			if(cmd.objTarget == null)
 			{
-				invoker.SendLine("Who do you wish to view the roles of?");
+				invoker.WriteLine("Who do you wish to view the roles of?", true);
 				return;
 			}
-			else if(tokens.Length < 2)
+			else if(cmd.strArgs.Length < 1)
 			{
-				invoker.SendLine("Which role do you wish to add?");
+				invoker.WriteLine("Which role do you wish to add?", true);
 				return;
 			}
 
-			PlayerAccount acct = Game.Accounts.FindAccount(tokens[0].ToLower());
+			PlayerAccount acct = Game.Accounts.FindAccount(cmd.objTarget);
 			if(acct == null)
 			{
-				invoker.SendLine($"Cannot find account for '{tokens[0]}'.");
+				invoker.WriteLine($"Cannot find account for '{cmd.objTarget}'.", true);
 				return;
 			}
 
-			GameRole role = Modules.Roles.GetRole(tokens[1].ToLower());
+			GameRole role = Modules.Roles.GetRole(cmd.strArgs[0].ToLower());
 			if(role == null)
 			{
-				invoker.WriteLine($"Cannot find role for '{tokens[1]}'.");
+				invoker.WriteLine($"Cannot find role for '{cmd.strArgs[0]}'.");
 			}
 			else if(acct.roles.Contains(role))
 			{

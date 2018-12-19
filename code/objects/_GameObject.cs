@@ -138,5 +138,43 @@ namespace inspiral
 			}
 			return false;
 		}
+		internal void SendPrompt()
+		{
+			if(HasComponent(Text.CompClient))
+			{
+				ClientComponent client = (ClientComponent)GetComponent(Text.CompClient);
+				client.client.SendPrompt();
+			}
+		}
+		internal void Quit()
+		{
+			if(HasComponent(Text.CompClient))
+			{
+				ClientComponent client = (ClientComponent)GetComponent(Text.CompClient);
+				client.client.Quit();
+			}
+		}
+		internal void SendPrompt(bool forceClear)
+		{
+			if(HasComponent(Text.CompClient))
+			{
+				ClientComponent client = (ClientComponent)GetComponent(Text.CompClient);
+				if(forceClear)
+				{
+					client.client.lastPrompt = null;
+				}
+				client.client.SendPrompt();
+			}
+		}
+
+		internal PlayerAccount GetAccount()
+		{
+			if(HasComponent(Text.CompClient))
+			{
+				ClientComponent client = (ClientComponent)GetComponent(Text.CompClient);
+				return client.client.account;
+			}
+			return null;
+		}
 	}
 }

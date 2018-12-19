@@ -14,7 +14,8 @@ namespace inspiral
 			{
 				if(role.AllCommands.ContainsKey(command))
 				{
-					role.AllCommands[command].invokedMethod.Invoke(Modules.Commands, new object[] { invoker, arguments });
+					CommandModule.CommandData cmd = new CommandModule.CommandData(command, arguments);
+					role.AllCommands[command].invokedMethod.Invoke(Modules.Commands, new object[] { invoker.shell, cmd });
 					return true;
 				}
 			}

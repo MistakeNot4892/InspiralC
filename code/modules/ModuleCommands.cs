@@ -75,62 +75,101 @@ namespace inspiral
 			}
 			return null;
 		}
-		internal Tuple<string, string, string> FindTokensFromInput(string invocation)
+
+		internal class CommandData
 		{
-			Match match = matchCmdInWith.Match(invocation);
-			if(match.Success)
+			internal string strCmd =    null;
+			internal string[] strArgs = null;
+			internal string objTarget = null;
+			internal string objWith =   null;
+			internal string objIn =     null;
+			internal string objAt =     null;
+			internal string objTo =     null;
+			internal string rawInput =  null;
+			private void SaveSubstringAsField(string field, string substring)
 			{
-				return new Tuple<string, string, string>(
-					StripTokenPrefixes(match.Groups[1].Value), 
-					StripTokenPrefixes(match.Groups[2].Value), 
-					StripTokenPrefixes(match.Groups[3].Value)
-				);
+				switch(field)
+				{
+					case "args":
+						strArgs = substring.Split(" ");
+						break;
+					case "at":
+						objAt = substring;
+						break;
+					case "with":
+						objWith = substring;
+						break;
+					case "in":
+						objIn = substring;
+						break;
+					case "to":
+						objTo = substring;
+						break;
+				}
 			}
-			match = matchCmdWithIn.Match(invocation);
-			if(match.Success)
+			internal string GetSummary()
 			{
-				return new Tuple<string, string, string>(
-					StripTokenPrefixes(match.Groups[1].Value), 
-					StripTokenPrefixes(match.Groups[3].Value), 
-					StripTokenPrefixes(match.Groups[2].Value)
-				);
+				string safeStrCmd =    strCmd ==    null ? "null" :                strCmd;
+				string safeObjTarget = objTarget == null ? "null" :                objTarget;
+				string[] safeStrArgs = strArgs ==   null ? new string[] {"null"} : strArgs;
+				string safeObjWith =   objWith ==   null ? "null" :                objWith;
+				string safeObjIn =     objIn ==     null ? "null" :                objIn;
+				string safeObjAt =     objAt ==     null ? "null" :                objAt;
+				string safeObjTo =     objTo ==     null ? "null" :                objTo;
+
+				return $"cmd [{safeStrCmd}] target [{safeObjTarget}] args [{string.Join(", ", safeStrArgs)}] with [{safeObjWith}] in [{safeObjIn}] at [{safeObjAt}] to [{safeObjTo}] raw [{rawInput}]";
 			}
-			match = matchCmdIn.Match(invocation);
-			if(match.Success)
+			internal CommandData(string command, string input)
 			{
-				return new Tuple<string, string, string>(
-					StripTokenPrefixes(match.Groups[1].Value), 
-					StripTokenPrefixes(match.Groups[2].Value), 
-					null
-				);
+				strCmd = command;
+				rawInput = input;
+				string[] tokens = input.ToLower().Split(" ");
+				List<string> validTokens = new List<string>();
+				for(int i = 0;i<tokens.Length;i++)
+				{
+					string t = tokens[i].Trim();
+					if(t != "")
+					{
+						validTokens.Add(t);
+					}
+				}
+				if(validTokens.Count > 0)
+				{
+					string lastSubstring = "";
+					string lastField = "args";
+					foreach(string s in validTokens)
+					{
+						switch(s)
+						{
+							case "a":
+							case "the":
+								break;
+							case "in":
+							case "with":
+							case "at":
+							case "to":
+								if(lastField != null && lastSubstring != "")
+								{
+									SaveSubstringAsField(lastField, lastSubstring.Trim());
+								}
+								lastField = s;
+								lastSubstring = "";
+								break;
+							default:
+								lastSubstring += $" {s}";
+								break;
+						}
+					}
+					if(lastField != null && lastSubstring != "")
+					{
+						SaveSubstringAsField(lastField, lastSubstring.Trim());
+					}
+					if(strArgs != null && strArgs.Length > 0)
+					{
+						objTarget = strArgs[0];
+					}
+				}
 			}
-			match = matchCmdWith.Match(invocation);
-			if(match.Success)
-			{
-				return new Tuple<string, string, string>(
-					StripTokenPrefixes(match.Groups[1].Value), 
-					null, 
-					StripTokenPrefixes(match.Groups[2].Value)
-				);
-			}
-			return new Tuple<string, string, string>(
-				StripTokenPrefixes(invocation), 
-				null, 
-				null
-			);
-		}
-		private string StripTokenPrefixes(string token)
-		{
-			token = token.Trim().ToLower();
-			if(token.Length >= 4 && token.Substring(0, 4) == "the ")
-			{
-				token = token.Substring(4);
-			}
-			if(token.Length >= 2 && token.Substring(0, 2) == "a ")
-			{
-				token = token.Substring(2);
-			}
-			return token; 
 		}
 	}
 	internal class GameCommand

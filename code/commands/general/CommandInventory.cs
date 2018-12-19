@@ -4,14 +4,14 @@ namespace inspiral
 {
 	internal partial class CommandModule : GameModule
 	{
-		internal void CmdInventory(GameClient invoker, string invocation)
+		internal void CmdInventory(GameObject invoker, CommandData cmd)
 		{
-			if(!invoker.shell.HasComponent(Text.CompInventory))
+			if(!invoker.HasComponent(Text.CompInventory))
 			{
 				invoker.SendLine("You cannot hold objects.");
 				return;
 			}
-			InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Text.CompInventory);
+			InventoryComponent inv = (InventoryComponent)invoker.GetComponent(Text.CompInventory);
 
 			string inventorySummary = "You are carrying:";
 			if(inv.carrying.Count > 0)

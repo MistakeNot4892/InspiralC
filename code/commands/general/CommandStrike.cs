@@ -8,28 +8,26 @@ namespace inspiral
 	internal partial class CommandModule : GameModule
 	{
 
-		internal void CmdStrike(GameClient invoker, string invocation)
+		internal void CmdStrike(GameObject invoker, CommandData cmd)
 		{
 
-			Tuple<string, string, string> tokens = FindTokensFromInput(invocation);
-
 			GameObject targetObj = null;
-			if(tokens.Item1 != null && tokens.Item1 != "")
+			if(cmd.objTarget != null && cmd.objTarget != "")
 			{
-				targetObj = invoker.shell.FindGameObjectNearby(tokens.Item1);
+				targetObj = invoker.FindGameObjectNearby(cmd.objTarget);
 			}
 			if(targetObj == null)
 			{
-				invoker.shell.WriteLine($"You cannot find '{tokens.Item1}' nearby.");
+				invoker.WriteLine($"You cannot find '{cmd.objTarget}' nearby.");
 				invoker.SendPrompt();
 				return;
 			}
 
 			string strikeWith = null;
-			string usingItem = tokens.Item3;
-			if(invoker.shell.HasComponent(Text.CompInventory))
+			string usingItem = cmd.objWith;
+			if(invoker.HasComponent(Text.CompInventory))
 			{
-				InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Text.CompInventory);
+				InventoryComponent inv = (InventoryComponent)invoker.GetComponent(Text.CompInventory);
 				if(usingItem == null || usingItem == "")
 				{
 					foreach(string slot in inv.GetWieldableSlots())
@@ -49,16 +47,16 @@ namespace inspiral
 					}
 					else
 					{
-						invoker.shell.WriteLine($"You are not holding anything in your {usingItem}!");
+						invoker.WriteLine($"You are not holding anything in your {usingItem}!");
 						invoker.SendPrompt();
 						return;
 					}
 				}
 			}
 
-			if(strikeWith == null && invoker.shell.HasComponent(Text.CompMobile))
+			if(strikeWith == null && invoker.HasComponent(Text.CompMobile))
 			{
-				MobileComponent mob = (MobileComponent)invoker.shell.GetComponent(Text.CompMobile);
+				MobileComponent mob = (MobileComponent)invoker.GetComponent(Text.CompMobile);
 				if((usingItem == null || usingItem == "") && mob.bodyplan.strikers.Count > 0)
 				{
 					usingItem = mob.bodyplan.strikers[Game.rand.Next(0, mob.bodyplan.strikers.Count)];
@@ -71,10 +69,10 @@ namespace inspiral
 
 			if(strikeWith == null)
 			{
-				GameObject prop = invoker.shell.FindGameObjectInContents(usingItem);
-				if(prop != null && invoker.shell.HasComponent(Text.CompInventory))
+				GameObject prop = invoker.FindGameObjectInContents(usingItem);
+				if(prop != null && invoker.HasComponent(Text.CompInventory))
 				{
-					InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Text.CompInventory);
+					InventoryComponent inv = (InventoryComponent)invoker.GetComponent(Text.CompInventory);
 					if(inv.IsWielded(prop))
 					{
 						strikeWith = $"{prop.GetString(Text.CompVisible, Text.FieldShortDesc)}";
@@ -84,7 +82,7 @@ namespace inspiral
 
 			if(strikeWith == null)
 			{
-				invoker.shell.WriteLine($"You are not holding '{usingItem}'.");
+				invoker.WriteLine($"You are not holding '{usingItem}'.");
 				invoker.SendPrompt();
 				return;
 			}
@@ -93,7 +91,7 @@ namespace inspiral
 			if(targetObj.HasComponent(Text.CompMobile))
 			{
 				MobileComponent mob = (MobileComponent)targetObj.GetComponent(Text.CompMobile);
-				string checkBp = tokens.Item2;
+				string checkBp = cmd.objIn;
 				if(checkBp == null || checkBp == "")
 				{
 					checkBp = mob.GetWeightedRandomBodypart();
@@ -104,13 +102,13 @@ namespace inspiral
 				}
 				if(bpString == "")
 				{
-					invoker.shell.WriteLine($"{Text.Capitalize(targetObj.GetString(Text.CompVisible, Text.FieldShortDesc))} is missing that bodypart!");
+					invoker.WriteLine($"{Text.Capitalize(targetObj.GetString(Text.CompVisible, Text.FieldShortDesc))} is missing that bodypart!");
 					invoker.SendPrompt();
 					return;
 				}
 			}
 
-			invoker.shell.WriteLine($"You strike {targetObj.GetString(Text.CompVisible, Text.FieldShortDesc)}{bpString} with {strikeWith}!");
+			invoker.WriteLine($"You strike {targetObj.GetString(Text.CompVisible, Text.FieldShortDesc)}{bpString} with {strikeWith}!");
 			invoker.SendPrompt();
 		}
 	}

@@ -54,7 +54,7 @@ namespace inspiral
 			ClientComponent clientComp = (ClientComponent)entering.GetComponent(Text.CompClient);
 			if(clientComp != null && clientComp.client != null)
 			{
-				ExaminedBy(clientComp.client, true);
+				ExaminedBy(clientComp.parent, true);
 			}
 			return true;
 		}

@@ -4,22 +4,21 @@ namespace inspiral
 {
 	internal partial class CommandModule : GameModule
 	{
-		internal void CmdInfo(GameClient invoker, string invocation)
+		internal void CmdInfo(GameObject invoker, CommandData cmd)
 		{
-			if(invoker.shell.location == null)
+			if(invoker.location == null)
 			{
 				invoker.SendLine("You cannot see anything here.");
 				return;
 			}
 			GameObject examining = null;
-			string[] tokens = invocation.Split(" ");
-			if(tokens.Length >= 1 && tokens[0] != "")
+			if(cmd.objTarget != null)
 			{
-				examining = invoker.shell.FindGameObjectNearby(tokens[0].ToLower());
+				examining = invoker.FindGameObjectNearby(cmd.objTarget);
 			}
 			else 
 			{
-				examining = invoker.shell.FindGameObjectNearby("here");
+				examining = invoker.FindGameObjectNearby("here");
 			}
 			if(examining != null)
 			{

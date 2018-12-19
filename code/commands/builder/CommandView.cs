@@ -1,26 +1,41 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace inspiral
 {
 	internal partial class CommandModule : GameModule
 	{
-		internal void CmdView(GameClient invoker, string invocation)
+		internal void CmdView(GameObject invoker, CommandData cmd)
 		{
-			string[] tokens = invocation.Split(" ");
-			if(tokens.Length <= 0 || tokens[0] == "")
+			if(cmd.objTarget == null)
 			{
 				invoker.WriteLine("What do you wish to view?");
 			}
 			else
 			{
-				GameObject viewing = invoker.shell.FindGameObjectNearby(tokens[0].ToLower());
+				GameObject viewing = invoker.FindGameObjectNearby(cmd.objTarget);
 				if(viewing == null)
 				{
-					invoker.WriteLine($"Cannot find '{tokens[0].ToLower()}' here.");
+					try
+					{
+						viewing = (GameObject)Game.Objects.Get((long)Convert.ToInt64(cmd.objTarget));
+					}
+					catch(Exception e) 
+					{
+						Debug.WriteLine("Tried to look up a non-long var in the global db.");
+					}
+					invoker.WriteLine($"Cannot find '{cmd.objTarget}'.");
 				}
 				else
 				{
-					invoker.WriteLine(viewing.GetStringSummary(invoker));
+					int wrap = 80;
+					if(invoker.HasComponent(Text.CompClient))
+					{
+						ClientComponent client = (ClientComponent)invoker.GetComponent(Text.CompClient);
+						wrap = client.client.config.wrapwidth;
+					}
+					invoker.WriteLine(viewing.GetStringSummary(wrap));
 				}
 			}
 			invoker.SendPrompt();

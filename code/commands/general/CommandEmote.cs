@@ -6,19 +6,19 @@ namespace inspiral
 {
 	internal partial class CommandModule : GameModule
 	{
-		internal void CmdEmote(GameClient invoker, string invocation)
+		internal void CmdEmote(GameObject invoker, CommandData cmd)
 		{
-			string emoteText = invoker.shell.GetString(Text.CompVisible, Text.FieldShortDesc);
-			if(invocation[0] == '(' && invocation.IndexOf(')') != -1)
+			string emoteText = invoker.GetString(Text.CompVisible, Text.FieldShortDesc);
+			if(cmd.rawInput[0] == '(' && cmd.rawInput.IndexOf(')') != -1)
 			{
-				int secondParen = invocation.IndexOf(')')-1;
-				emoteText = Text.FormatProse($"{invocation.Substring(1, secondParen)} {emoteText} {invocation.Substring(secondParen + emoteText.Length - 5)}");
+				int secondParen = cmd.rawInput.IndexOf(')')-1;
+				emoteText = Text.FormatProse($"{cmd.rawInput.Substring(1, secondParen)} {emoteText} {cmd.rawInput.Substring(secondParen + emoteText.Length-1)}");
 			}
 			else
 			{
-				emoteText = Text.FormatProse($"{emoteText} {invocation}");
+				emoteText = Text.FormatProse($"{emoteText} {cmd.rawInput}");
 			}
-			if(invoker.shell.location != null)
+			if(invoker.location != null)
 			{
 				Dictionary<GameObject, string> showingMessages = new Dictionary<GameObject, string>();
 
@@ -29,7 +29,7 @@ namespace inspiral
 					string finding = findingRaw.ToLower();
 					if(finding != null)
 					{
-						mentioned = invoker.shell.FindGameObjectNearby(finding);
+						mentioned = invoker.FindGameObjectNearby(finding);
 					}
 					if(mentioned == null)
 					{
@@ -47,9 +47,9 @@ namespace inspiral
 						showingMessages.Add(mentioned, finding);
 					}
 				}
-				if(!showingMessages.ContainsKey(invoker.shell))
+				if(!showingMessages.ContainsKey(invoker))
 				{
-					showingMessages.Add(invoker.shell, "me");
+					showingMessages.Add(invoker, "me");
 				}
 				if(showingMessages.Count >= 1)
 				{
@@ -60,7 +60,7 @@ namespace inspiral
 						{
 							finalMessage = Text.ReplacePronouns(subject.Value, subject.Key, finalMessage, (subject.Key != showing.Key));
 						}
-						if(invoker.shell == showing.Key)
+						if(invoker == showing.Key)
 						{
 							finalMessage = $"You have emoted: {finalMessage}";
 						}
@@ -69,7 +69,7 @@ namespace inspiral
 					return;
 				}
 			}
-			invoker.shell.WriteLine($"You have emoted: {emoteText}", true);
+			invoker.WriteLine($"You have emoted: {emoteText}", true);
 		}
 	}
 }

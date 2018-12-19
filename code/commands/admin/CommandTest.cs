@@ -9,15 +9,9 @@ namespace inspiral
 {
 	internal partial class CommandModule : GameModule
 	{
-		internal void CmdTest(GameClient invoker, string invocation) 
+		internal void CmdTest(GameObject invoker, CommandData cmd) 
 		{
-			if(invoker.shell.HasComponent(Text.CompMobile))
-			{
-				MobileComponent mob = (MobileComponent)invoker.shell.GetComponent(Text.CompMobile);
-				invoker.shell.WriteLine(mob.bodyplan.GetSummary());
-				invoker.SendPrompt();
-			}
+			invoker.SendLine(cmd.GetSummary());
 		}
-
 	}
 }

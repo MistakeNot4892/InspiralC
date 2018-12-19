@@ -4,10 +4,9 @@ namespace inspiral
 {
 	internal partial class CommandModule : GameModule
 	{
-		internal void CmdPrompt(GameClient invoker, string invocation)
+		internal void CmdPrompt(GameObject invoker, CommandData cmd)
 		{
-			invoker.lastPrompt = null;
-			invoker.SendPrompt();
+			invoker.SendPrompt(true);
 		}
 	}
 }

@@ -4,17 +4,17 @@ namespace inspiral
 {
 	internal partial class CommandModule : GameModule
 	{
-		internal void CmdDrop(GameClient invoker, string invocation)
+		internal void CmdDrop(GameObject invoker, CommandData cmd)
 		{
-			if(!invoker.shell.HasComponent(Text.CompInventory))
+			if(!invoker.HasComponent(Text.CompInventory))
 			{
 				invoker.SendLine("You cannot drop objects.");
 				return;
 			}
-			if(invoker.shell.CanUseBalance("poise"))
+			if(invoker.CanUseBalance("poise"))
 			{
-				InventoryComponent inv = (InventoryComponent)invoker.shell.GetComponent(Text.CompInventory);
-				inv.TryToDrop(invocation);
+				InventoryComponent inv = (InventoryComponent)invoker.GetComponent(Text.CompInventory);
+				inv.TryToDrop(cmd.rawInput);
 			}
 			invoker.SendPrompt();
 		}

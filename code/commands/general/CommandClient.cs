@@ -4,9 +4,14 @@ namespace inspiral
 {
 	internal partial class CommandModule : GameModule
 	{
-		internal void CmdClient(GameClient invoker, string invocation)
+		internal void CmdClient(GameObject invoker, CommandData cmd)
 		{
-			invoker.SendLine(invoker.GetClientSummary());
+			if(invoker.HasComponent(Text.CompClient))
+			{
+				ClientComponent client = (ClientComponent)invoker.GetComponent(Text.CompClient);
+				invoker.WriteLine(client.client.GetClientSummary());
+			}
+			invoker.SendPrompt();
 		}
 	}
 }

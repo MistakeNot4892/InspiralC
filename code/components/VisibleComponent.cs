@@ -100,7 +100,7 @@ namespace inspiral
 					return null;
 			}
 		}
-		internal void ExaminedBy(GameClient viewer, bool fromInside)
+		internal void ExaminedBy(GameObject viewer, bool fromInside)
 		{
 			string mainDesc = $"{Colours.Fg(Text.Capitalize(shortDescription),Colours.BoldWhite)}.";
 			if(parent.HasComponent(Text.CompMobile))
@@ -108,7 +108,7 @@ namespace inspiral
 				string startingToken;
 				string theyAre;
 				string their;
-				if(parent == viewer.shell)
+				if(parent == viewer)
 				{
 					startingToken = "You're";
 					theyAre = "You're";
@@ -123,7 +123,7 @@ namespace inspiral
 
 				MobileComponent mob = (MobileComponent)parent.GetComponent(Text.CompMobile);
 				mainDesc = $"{startingToken} {mainDesc}\n{theyAre} a {mob.race}";
-				if(viewer.shell == parent)
+				if(viewer == parent)
 				{
 					mainDesc += $". When people look at you, they see:\n{Text.Capitalize(parent.gender.He)} {parent.gender.Is} a {mob.race}";
 				}
@@ -188,7 +188,7 @@ namespace inspiral
 			if(parent.HasComponent(Text.CompPhysics))
 			{
 				PhysicsComponent phys = (PhysicsComponent)parent.GetComponent(Text.CompPhysics);
-				mainDesc = $"{mainDesc}\n{phys.GetExaminedSummary(viewer.shell)}";
+				mainDesc = $"{mainDesc}\n{phys.GetExaminedSummary(viewer)}";
 			}
 
 			viewer.WriteLine(mainDesc);

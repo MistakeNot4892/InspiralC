@@ -5,18 +5,18 @@ namespace inspiral
 {
 	internal partial class CommandModule : GameModule
 	{
-		internal void CmdSay(GameClient invoker, string invocation)
+		internal void CmdSay(GameObject invoker, CommandData cmd)
 		{
-
 			GameObject target = null;
-			if(invocation.Length >= 3 && invocation.Substring(0,3) == "to " && invoker.shell.location != null)
+			string invocation = cmd.rawInput;
+			if(invocation.Length >= 3 && invocation.Substring(0,3) == "to " && invoker.location != null)
 			{
 				invocation = invocation.Substring(3);
 				string targetName = invocation.Substring(0, invocation.IndexOf(' '));
 				if(invocation.Length >= targetName.Length+1)
 				{
 					invocation = invocation.Substring(targetName.Length+1);
-					target = invoker.shell.FindGameObjectNearby(targetName);
+					target = invoker.FindGameObjectNearby(targetName);
 				}
 				if(target == null)
 				{
@@ -50,12 +50,12 @@ namespace inspiral
 
 			if(invocation.Length <= 0)
 			{
-				invoker.shell.ShowNearby(invoker.shell, $"You open your mouth but say nothing.", $"{invoker.shell.GetString(Text.CompVisible, Text.FieldShortDesc)} opens {invoker.shell.gender.His} mouth but says nothing.");
+				invoker.ShowNearby(invoker, $"You open your mouth but say nothing.", $"{invoker.GetString(Text.CompVisible, Text.FieldShortDesc)} opens {invoker.gender.His} mouth but says nothing.");
 				invoker.SendPrompt();
 				return;
 			}
 			string prefix1p = $"You {speechVerb1p}";
-			string prefix3p = $"{invoker.shell.GetString(Text.CompVisible, Text.FieldShortDesc)} {speechVerb3p}";
+			string prefix3p = $"{invoker.GetString(Text.CompVisible, Text.FieldShortDesc)} {speechVerb3p}";
 
 			if(invocation[0] == '(' && invocation.IndexOf(')') != -1)
 			{
@@ -70,13 +70,13 @@ namespace inspiral
 			if(target != null)
 			{
 				string targetName = target.GetString(Text.CompVisible, Text.FieldShortDesc);
-				invoker.shell.ShowNearby(invoker.shell, $"{prefix3p} to {targetName}, \"{invocation}\"", new List<GameObject>() {invoker.shell, target});
-				invoker.shell.WriteLine($"{prefix1p} to {targetName}, \"{invocation}\"");
+				invoker.ShowNearby(invoker, $"{prefix3p} to {targetName}, \"{invocation}\"", new List<GameObject>() {invoker, target});
+				invoker.WriteLine($"{prefix1p} to {targetName}, \"{invocation}\"");
 				target.WriteLine($"{prefix3p} to you, \"{invocation}\"");
 			}
 			else
 			{
-				invoker.shell.ShowNearby(invoker.shell, $"{prefix1p}, \"{invocation}\"", $"{prefix3p} \"{invocation}\"");
+				invoker.ShowNearby(invoker, $"{prefix1p}, \"{invocation}\"", $"{prefix3p} \"{invocation}\"");
 			}
 			invoker.SendPrompt();
 		}

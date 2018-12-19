@@ -48,7 +48,7 @@ namespace inspiral
 				client.client.WriteLine(message);
 				if(sendPrompt)
 				{
-					client.client.SendPrompt();
+					SendPrompt();
 				}
 			}
 		}
@@ -94,7 +94,7 @@ namespace inspiral
 				}
 			}
 		}
-		internal void Probed(GameClient invoker)
+		internal void Probed(GameObject invoker)
 		{
 			string reply = $"{GetString(Text.CompVisible, Text.FieldShortDesc)} ({name}#{id})";
 			reply += "\nContents:";
@@ -111,14 +111,19 @@ namespace inspiral
 			}
 			invoker.SendLine(reply);
 		}
-		internal List<string> GetVisibleContents(GameClient viewer, bool quickView)
+
+		internal void SendLine(string input)
+		{
+			WriteLine(input, true);
+		}
+		internal List<string> GetVisibleContents(GameObject viewer, bool quickView)
 		{
 			List<string> result = new List<string>();
 			if(HasComponent(Text.CompMobile))
 			{
 				if(HasComponent(Text.CompInventory))
 				{
-					string their = (this == viewer.shell) ? "your" : gender.His;
+					string their = (this == viewer) ? "your" : gender.His;
 					InventoryComponent equip = (InventoryComponent)GetComponent(Text.CompInventory);
 					foreach(KeyValuePair<string, GameObject> equ in equip.carrying)
 					{
@@ -157,7 +162,7 @@ namespace inspiral
 					}
 					else
 					{
-						if(gameObj != viewer.shell)
+						if(gameObj != viewer)
 						{
 							result.Add(gameObj.GetString(Text.CompVisible, Text.FieldRoomDesc));
 						}
@@ -166,7 +171,7 @@ namespace inspiral
 			}
 			return result;
 		}
-		internal void ExaminedBy(GameClient viewer, bool fromInside)
+		internal void ExaminedBy(GameObject viewer, bool fromInside)
 		{
 			if(HasComponent(Text.CompVisible))
 			{

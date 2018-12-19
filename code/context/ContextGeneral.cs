@@ -21,7 +21,7 @@ namespace inspiral
 			}
 			else
 			{
-				viewer.shell.location.ExaminedBy(viewer, true);
+				viewer.shell.location.ExaminedBy(viewer.shell, true);
 			}
 		}
 		internal override bool TakeInput(GameClient invoker, string command, string rawCommand, string arguments)

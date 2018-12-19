@@ -4,15 +4,14 @@ namespace inspiral
 {
 	internal partial class CommandModule : GameModule
 	{
-		internal void CmdSet(GameClient invoker, string invocation)
+		internal void CmdSet(GameObject invoker, CommandData cmd)
 		{
-			string[] tokens = invocation.Split(" ");
-			if(tokens.Length < 3)
+			if(cmd.objTarget == null || cmd.strArgs.Length < 3)
 			{
 				invoker.SendLine("Usage: SET <target> <field> <value>");
 				return;
 			}
-			GameObject editing = invoker.shell.FindGameObjectNearby(tokens[0].ToLower());
+			GameObject editing = invoker.FindGameObjectNearby(cmd.objTarget);
 			if(editing == null)
 			{
 				invoker.SendLine("Cannot find object to modify.");
@@ -20,8 +19,14 @@ namespace inspiral
 			}
 
 			// Do the actual edit.
-			string value = invocation.Substring(tokens[0].Length + tokens[1].Length + 2);
-			string field = tokens[1].ToLower();
+			string field = cmd.strArgs[1].ToLower();
+			string value = "";
+			for(int i = 2;i<cmd.strArgs.Length;i++)
+			{
+				value += $" {cmd.strArgs[i]}";
+			}
+			value = value.Trim();
+
 			string lastVal = "";
 			string newVal = value;
 			string invalidValue = null;
@@ -66,22 +71,22 @@ namespace inspiral
 
 			if(unknownValue)
 			{
-				invoker.WriteLine($"Unknown field '{field}' of object #{editing.id} ({editing.GetString(Text.CompVisible, Text.FieldShortDesc)}. Check that the object has the component and field that you are trying to edit.");
+				invoker.WriteLine($"Unknown field '{field}' of object {editing.name}#{editing.id} ({editing.GetString(Text.CompVisible, Text.FieldShortDesc)}). Check that the object has the component and field that you are trying to edit.");
 			}
 			else if(invalidValue != null)
 			{
 				if(invalidValue != "")
 				{
-					invoker.WriteLine($"Invalid value '{value}' for field '{field}' of object #{editing.id} ({editing.GetString(Text.CompVisible, Text.FieldShortDesc)}). {invalidValue}");
+					invoker.WriteLine($"Invalid value '{value}' for field '{field}' of object {editing.name}#{editing.id} ({editing.GetString(Text.CompVisible, Text.FieldShortDesc)}). {invalidValue}");
 				}
 				else
 				{
-					invoker.WriteLine($"Invalid value '{value}' for field '{field}' of object #{editing.id} ({editing.GetString(Text.CompVisible, Text.FieldShortDesc)}).");
+					invoker.WriteLine($"Invalid value '{value}' for field '{field}' of object {editing.name}#{editing.id} ({editing.GetString(Text.CompVisible, Text.FieldShortDesc)}).");
 				}
 			}
 			else
 			{
-				invoker.WriteLine($"Set field '{field}' of object #{editing.id} ({editing.GetString(Text.CompVisible, Text.FieldShortDesc)}) to '{newVal}'.\nFor reference, previous value was '{lastVal}'.");
+				invoker.WriteLine($"Set field '{field}' of object {editing.name}#{editing.id} ({editing.GetString(Text.CompVisible, Text.FieldShortDesc)}) to '{newVal}'.\nFor reference, previous value was '{lastVal}'.");
 			}
 			invoker.SendPrompt();
 		}

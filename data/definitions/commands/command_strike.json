@@ -6,7 +6,7 @@
 		"strike",
 		"attack",
 		"bash",
-		"st"
+		"hit"
 	],
 	"usage" : "strike [target] <in bodypart> <with bodypart or object>",
 	"method" : "CmdStrike"
