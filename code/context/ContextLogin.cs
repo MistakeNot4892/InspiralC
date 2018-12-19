@@ -50,8 +50,8 @@ namespace inspiral
 		private void HandleLogin(GameClient invoker)
 		{
 			GameObject wakingShell = (GameObject)Game.Objects.Get(invoker.account.objectId);
-			wakingShell.ShowNearby(wakingShell, $"{wakingShell.GetString(Text.CompVisible, Text.FieldShortDesc)} wakes up.");
-			wakingShell.SetString(Text.CompVisible, Text.FieldRoomDesc, $"{wakingShell.GetString(Text.CompVisible, Text.FieldShortDesc)} is here.");
+			wakingShell.ShowNearby(wakingShell, $"{wakingShell.GetShort()} wakes up.");
+			wakingShell.SetString(Text.CompVisible, Text.FieldRoomDesc, $"{wakingShell.GetShort()} is here.");
 
 			invoker.shell = wakingShell;
 			if(invoker.shell.HasComponent(Text.CompClient))

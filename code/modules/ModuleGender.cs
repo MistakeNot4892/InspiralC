@@ -48,6 +48,7 @@ namespace inspiral
 					gender.His =  genderStrings["His"];
 					gender.Is =   genderStrings["Is"];
 					gender.Term = genderStrings["Term"];
+					gender.Self = genderStrings["Self"];
 					genders.Add(gender.Term, gender);
 					foreach(string token in new List<string>() {gender.He, gender.Him, gender.His, gender.Is, gender.Self})
 					{

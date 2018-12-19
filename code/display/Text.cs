@@ -251,6 +251,7 @@ namespace inspiral
 		}
 		internal static string ReplacePronouns(string token, GameObject other, string message, bool thirdPerson = false)
 		{
+			Console.WriteLine(message);
 			if(message.ToLower().Contains($"${token}"))
 			{
 				string replacementValue = thirdPerson ? other.gender.He : "you";
@@ -313,7 +314,7 @@ namespace inspiral
 					return message;
 				}
 
-				replacementValue = thirdPerson ? $"{other.GetString(Text.CompVisible, Text.FieldShortDesc)}'s" : "your";
+				replacementValue = thirdPerson ? $"{other.GetShort()}'s" : "your";
 				message = Regex.Replace(
 					message,
 					$"\\${token}'s\\$",
@@ -325,7 +326,7 @@ namespace inspiral
 					return message;
 				}
 
-				replacementValue = thirdPerson ? $"{other.GetString(Text.CompVisible, Text.FieldShortDesc)}" : "you";
+				replacementValue = thirdPerson ? $"{other.GetShort()}" : "you";
 				message = Regex.Replace(
 					message,
 					$"\\${token}\\$",

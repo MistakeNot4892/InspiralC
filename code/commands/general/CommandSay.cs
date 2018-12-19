@@ -50,12 +50,12 @@ namespace inspiral
 
 			if(invocation.Length <= 0)
 			{
-				invoker.ShowNearby(invoker, $"You open your mouth but say nothing.", $"{invoker.GetString(Text.CompVisible, Text.FieldShortDesc)} opens {invoker.gender.His} mouth but says nothing.");
+				invoker.ShowNearby(invoker, $"You open your mouth but say nothing.", $"{invoker.GetShort()} opens {invoker.gender.His} mouth but says nothing.");
 				invoker.SendPrompt();
 				return;
 			}
 			string prefix1p = $"You {speechVerb1p}";
-			string prefix3p = $"{invoker.GetString(Text.CompVisible, Text.FieldShortDesc)} {speechVerb3p}";
+			string prefix3p = $"{invoker.GetShort()} {speechVerb3p}";
 
 			if(invocation[0] == '(' && invocation.IndexOf(')') != -1)
 			{
@@ -69,16 +69,20 @@ namespace inspiral
 			invocation = Text.FormatProse(invocation);
 			if(target != null)
 			{
-				string targetName = target.GetString(Text.CompVisible, Text.FieldShortDesc);
-				invoker.ShowNearby(invoker, $"{prefix3p} to {targetName}, \"{invocation}\"", new List<GameObject>() {invoker, target});
-				invoker.WriteLine($"{prefix1p} to {targetName}, \"{invocation}\"");
-				target.WriteLine($"{prefix3p} to you, \"{invocation}\"");
+				string targetName = target.GetShort();
+				invoker.ShowNearby(
+					invoker, 
+					target,
+					$"{prefix1p} to {targetName}, \"{invocation}\"",
+					$"{prefix3p} to you, \"{invocation}\"",
+					$"{prefix3p} to {targetName}, \"{invocation}\"" 
+				);
 			}
 			else
 			{
 				invoker.ShowNearby(invoker, $"{prefix1p}, \"{invocation}\"", $"{prefix3p} \"{invocation}\"");
+				invoker.SendPrompt();
 			}
-			invoker.SendPrompt();
 		}
 	}
 }

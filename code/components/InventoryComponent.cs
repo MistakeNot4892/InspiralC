@@ -137,8 +137,8 @@ namespace inspiral
 				if(!silent)
 				{
 					parent.ShowNearby(parent, 
-						$"You {removeMessage1p} {dropping.GetString(Text.CompVisible, Text.FieldShortDesc)}.",
-						$"{Text.Capitalize(parent.GetString(Text.CompVisible, Text.FieldShortDesc))} {removeMessage3p} {dropping.GetString(Text.CompVisible, Text.FieldShortDesc)}."
+						$"You {removeMessage1p} {dropping.GetShort()}.",
+						$"{Text.Capitalize(parent.GetShort())} {removeMessage3p} {dropping.GetShort()}."
 						);
 				}
 				dropping.Move(parent.location);
@@ -269,8 +269,8 @@ namespace inspiral
 				{
 					Game.Objects.QueueForUpdate(parent);
 					parent.ShowNearby(parent, 
-						$"You pick up {equipping.GetString(Text.CompVisible, Text.FieldShortDesc)}.",
-						$"{Text.Capitalize(parent.GetString(Text.CompVisible, Text.FieldShortDesc))} picks up {equipping.GetString(Text.CompVisible, Text.FieldShortDesc)}."
+						$"You pick up {equipping.GetShort()}.",
+						$"{Text.Capitalize(parent.GetShort())} picks up {equipping.GetShort()}."
 					);
 					return true;
 				}
@@ -309,6 +309,11 @@ namespace inspiral
 					parent.WriteLine($"You cannot equip anything to your {slot}.");
 					return false;
 				}
+				if(carrying.ContainsKey(slot))
+				{
+					parent.WriteLine($"You are already wearing something on your {slot}.");
+					return false;
+				}
 				if(IsEquipped(equipping))
 				{
 					parent.WriteLine("You are already wearing that.");
@@ -318,11 +323,17 @@ namespace inspiral
 			}
 			return false;
 		}
+		// TODO make it prioritize actually equipped items before held items.
 		internal bool TryToUnequip(string input)
 		{
 			GameObject unequipping = GetObjectFromInput(input, "remove");
 			if(unequipping != null)
 			{
+				if(!IsEquipped(unequipping))
+				{
+					parent.WriteLine($"You are not currently wearing that.");
+					return false;
+				}
 				return Unequip(unequipping);
 			}
 			return false;
@@ -362,8 +373,8 @@ namespace inspiral
 				if(!silent)
 				{
 					parent.ShowNearby(parent, 
-						$"You equip {equipping.GetString(Text.CompVisible, Text.FieldShortDesc)} to your {slot}.",
-						$"{Text.Capitalize(parent.GetString(Text.CompVisible, Text.FieldShortDesc))} equips {equipping.GetString(Text.CompVisible, Text.FieldShortDesc)} to {parent.gender.His} {slot}."
+						$"You equip {equipping.GetShort()} to your {slot}.",
+						$"{Text.Capitalize(parent.GetShort())} equips {equipping.GetShort()} to {parent.gender.His} {slot}."
 					);
 				}
 				Game.Objects.QueueForUpdate(parent);
@@ -399,8 +410,8 @@ namespace inspiral
 						}
 					}
 					parent.ShowNearby(parent, 
-						$"You remove {unequipping.GetString(Text.CompVisible, Text.FieldShortDesc)} from your {removingSlot}.",
-						$"{Text.Capitalize(parent.GetString(Text.CompVisible, Text.FieldShortDesc))} removes {unequipping.GetString(Text.CompVisible, Text.FieldShortDesc)} from {parent.gender.His} {removingSlot}."
+						$"You remove {unequipping.GetShort()} from your {removingSlot}.",
+						$"{Text.Capitalize(parent.GetShort())} removes {unequipping.GetShort()} from {parent.gender.His} {removingSlot}."
 					);
 					Game.Objects.QueueForUpdate(parent);
 				}

@@ -13,7 +13,7 @@ namespace inspiral
 				if(hat != null)
 				{
 					hat.Move(invoker.location);
-					invoker.WriteLine($"Created {hat.GetString(Text.CompVisible, Text.FieldShortDesc)} ({hat.name}#{hat.id}).");
+					invoker.WriteLine($"Created {hat.GetShort()} ({hat.name}#{hat.id}).");
 					invoker.SendPrompt();
 					return;
 				}

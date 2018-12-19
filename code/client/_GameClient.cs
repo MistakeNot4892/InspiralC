@@ -138,8 +138,8 @@ namespace inspiral
 				if(clientComp.client == this)
 				{
 					clientComp.Logout();
-					shell.ShowNearby(shell, $"{shell.GetString(Text.CompVisible, Text.FieldShortDesc)} falls asleep.");
-					shell.SetString(Text.CompVisible, Text.FieldRoomDesc, $"{shell.GetString(Text.CompVisible, Text.FieldShortDesc)} is sound asleep here.");
+					shell.ShowNearby(shell, $"{shell.GetShort()} falls asleep.");
+					shell.SetString(Text.CompVisible, Text.FieldRoomDesc, $"{shell.GetShort()} is sound asleep here.");
 					shell.RemoveComponent(Text.CompClient);
 				}
 			}

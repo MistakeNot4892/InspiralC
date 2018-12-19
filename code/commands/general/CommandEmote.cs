@@ -8,7 +8,7 @@ namespace inspiral
 	{
 		internal void CmdEmote(GameObject invoker, CommandData cmd)
 		{
-			string emoteText = invoker.GetString(Text.CompVisible, Text.FieldShortDesc);
+			string emoteText = invoker.GetShort();
 			if(cmd.rawInput[0] == '(' && cmd.rawInput.IndexOf(')') != -1)
 			{
 				int secondParen = cmd.rawInput.IndexOf(')')-1;

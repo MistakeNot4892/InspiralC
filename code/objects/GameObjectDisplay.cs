@@ -53,6 +53,14 @@ namespace inspiral
 			}
 		}
 
+		internal virtual void ShowNearby(GameObject source, GameObject other,
+			string message1p, string message2p, string message3p)
+		{
+			source.SendLine(message1p);
+			other.SendLine(message2p);
+			ShowNearby(source, message3p, new List<GameObject>() { source, other });
+		}
+
 		internal virtual void ShowNearby(GameObject source, string message, List<GameObject> exceptions)
 		{
 			if(source.location != null)
@@ -96,7 +104,7 @@ namespace inspiral
 		}
 		internal void Probed(GameObject invoker)
 		{
-			string reply = $"{GetString(Text.CompVisible, Text.FieldShortDesc)} ({name}#{id})";
+			string reply = $"{GetShort()} ({name}#{id})";
 			reply += "\nContents:";
 			if(contents.Count > 0)
 			{
@@ -131,22 +139,22 @@ namespace inspiral
 						{
 							if(equip.GetWieldableSlots().Contains(equ.Key))
 							{
-								result.Add($"{equ.Value.GetString(Text.CompVisible, Text.FieldShortDesc)} ({equ.Value.name}#{equ.Value.id}) ({equ.Key}, wielded)");
+								result.Add($"{equ.Value.GetShort()} ({equ.Value.name}#{equ.Value.id}) ({equ.Key}, wielded)");
 							}
 							else
 							{
-								result.Add($"{equ.Value.GetString(Text.CompVisible, Text.FieldShortDesc)} ({equ.Value.name}#{equ.Value.id}) ({equ.Key}, worn)");
+								result.Add($"{equ.Value.GetShort()} ({equ.Value.name}#{equ.Value.id}) ({equ.Key}, worn)");
 							}
 						}
 						else
 						{
 							if(equip.GetWieldableSlots().Contains(equ.Key))
 							{
-								result.Add($"{equ.Value.GetString(Text.CompVisible, Text.FieldShortDesc)} in {their} {equ.Key}.");
+								result.Add($"{equ.Value.GetShort()} in {their} {equ.Key}.");
 							}
 							else
 							{
-								result.Add($"{equ.Value.GetString(Text.CompVisible, Text.FieldShortDesc)} on {their} {equ.Key}.");
+								result.Add($"{equ.Value.GetShort()} on {their} {equ.Key}.");
 							}
 						}
 					}
@@ -158,7 +166,7 @@ namespace inspiral
 				{
 					if(quickView)
 					{
-						result.Add($"{gameObj.GetString(Text.CompVisible, Text.FieldShortDesc)} ({gameObj.name}#{gameObj.id})");
+						result.Add($"{gameObj.GetShort()} ({gameObj.name}#{gameObj.id})");
 					}
 					else
 					{
@@ -182,6 +190,10 @@ namespace inspiral
 			{
 				viewer.WriteLine("There is nothing there.");
 			}
+		}
+		internal string GetShort()
+		{
+			return GetString(Text.CompVisible, Text.FieldShortDesc);
 		}
 	}
 }

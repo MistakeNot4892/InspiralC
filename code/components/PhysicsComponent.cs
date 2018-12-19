@@ -79,10 +79,22 @@ namespace inspiral
 		}
 		internal override void ConfigureFromJson(JToken compData)
 		{
-			length =  (long)compData[Text.FieldLength];
-			width =   (long)compData[Text.FieldWidth];
-			height =  (long)compData[Text.FieldHeight];
-			density = (double)compData[Text.FieldDensity];
+			if(!JsonExtensions.IsNullOrEmpty(compData[Text.FieldLength]))
+			{
+				length =  (long)compData[Text.FieldLength];
+			}
+			if(!JsonExtensions.IsNullOrEmpty(compData[Text.FieldWidth]))
+			{
+				width =   (long)compData[Text.FieldWidth];
+			}
+			if(!JsonExtensions.IsNullOrEmpty(compData[Text.FieldHeight]))
+			{
+				height =  (long)compData[Text.FieldHeight];
+			}
+			if(!JsonExtensions.IsNullOrEmpty(compData[Text.FieldDensity]))
+			{
+				density = (double)compData[Text.FieldDensity];
+			}
 			UpdateValues();
 		}
 		internal override void AddCommandParameters(SQLiteCommand command) 

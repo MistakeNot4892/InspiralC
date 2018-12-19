@@ -23,6 +23,7 @@ namespace inspiral
 				return;
 			}
 
+			bool naturalWeapon = false;
 			string strikeWith = null;
 			string usingItem = cmd.objWith;
 			if(invoker.HasComponent(Text.CompInventory))
@@ -63,7 +64,8 @@ namespace inspiral
 				}
 				if(mob.bodyplan.strikers.Contains(usingItem))
 				{
-					strikeWith = $"your {usingItem}";
+					strikeWith = $"{usingItem}";
+					naturalWeapon = true;
 				}
 			}
 
@@ -75,7 +77,7 @@ namespace inspiral
 					InventoryComponent inv = (InventoryComponent)invoker.GetComponent(Text.CompInventory);
 					if(inv.IsWielded(prop))
 					{
-						strikeWith = $"{prop.GetString(Text.CompVisible, Text.FieldShortDesc)}";
+						strikeWith = $"{prop.GetShort()}";
 					}
 				}
 			}
@@ -102,14 +104,28 @@ namespace inspiral
 				}
 				if(bpString == "")
 				{
-					invoker.WriteLine($"{Text.Capitalize(targetObj.GetString(Text.CompVisible, Text.FieldShortDesc))} is missing that bodypart!");
+					invoker.WriteLine($"{Text.Capitalize(targetObj.GetShort())} is missing that bodypart!");
 					invoker.SendPrompt();
 					return;
 				}
 			}
 
-			invoker.WriteLine($"You strike {targetObj.GetString(Text.CompVisible, Text.FieldShortDesc)}{bpString} with {strikeWith}!");
-			invoker.SendPrompt();
+			if(naturalWeapon)
+			{
+				invoker.ShowNearby(invoker, targetObj,
+					$"You strike {targetObj.GetShort()}{bpString} with your {strikeWith}!",
+					$"{Text.Capitalize(invoker.GetShort())} strikes you{bpString} with {invoker.gender.His} {strikeWith}!",
+					$"{Text.Capitalize(invoker.GetShort())} strikes {targetObj.GetShort()}{bpString} with {invoker.gender.His} {strikeWith}!"
+					);
+			}
+			else
+			{
+				invoker.ShowNearby(invoker, targetObj,
+					$"You strike {targetObj.GetShort()}{bpString} with {strikeWith}!",
+					$"{Text.Capitalize(invoker.GetShort())} strikes you{bpString} with {strikeWith}!",
+					$"{Text.Capitalize(invoker.GetShort())} strikes {targetObj.GetShort()}{bpString} with {strikeWith}!"
+					);
+			}
 		}
 	}
 }
