@@ -2,10 +2,12 @@
 	"name" : "right hand",
 	"grasp" : true,
 	"slots" : [ "gloves", "right ring" ],
-	"contactSurface" :
+	"attackstrings" : [ "punches", "slugs" ],
+	"physics" :
 	{
 		"height" :  5,
 		"width" :   8,
-		"length" :  20
+		"length" :  20,
+		"strikearea" : 15
 	}
 }

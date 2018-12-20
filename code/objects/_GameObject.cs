@@ -176,5 +176,25 @@ namespace inspiral
 			}
 			return null;
 		}
+		internal string HandleImpact(GameObject wielder, GameObject impacting, double force)
+		{
+			if(impacting.HasComponent(Text.CompPhysics))
+			{
+				PhysicsComponent phys = (PhysicsComponent)impacting.GetComponent(Text.CompPhysics);
+				double strikePenetration = phys.GetImpactPenetration(force, 1.0);
+				if(strikePenetration > 0)
+				{
+					if(phys.edged)
+					{
+						return $"leaving a {strikePenetration}cm deep, bleeding wound";
+					}
+					else
+					{
+						return $"leaving a {strikePenetration}cm deep bruise";
+					}
+				}
+			}
+			return "to no effect";
+		}
 	}
 }

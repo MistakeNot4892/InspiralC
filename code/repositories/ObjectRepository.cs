@@ -170,6 +170,14 @@ namespace inspiral
 			{
 				LoadComponentData((GameObject)obj.Value);
 			}
+			foreach(KeyValuePair<long, Object> obj in contents)
+			{
+				GameObject gameObj = (GameObject)obj.Value;
+				foreach(KeyValuePair<string, GameComponent> comp in gameObj.components)
+				{
+					comp.Value.FinalizeObjectLoad();
+				}
+			}
 		}
 
 		public override void HandleAdditionalObjectSave(Object objInstance, SQLiteConnection dbConnection) 

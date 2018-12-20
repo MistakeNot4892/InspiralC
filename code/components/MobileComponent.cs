@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using System;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace inspiral
 {
@@ -20,12 +21,13 @@ namespace inspiral
 		internal const string FieldDeathMessage = "death";
 		internal const string FieldBodyplan =     "bodyplan";
 		internal const string FieldRace =         "race";
+		internal const string FieldBodypartList = "bodyparts";
 	}
 
 	internal class MobileBuilder : GameComponentBuilder
 	{
 		internal override List<string> editableFields { get; set; } = new List<string>() {Text.FieldEnterMessage, Text.FieldLeaveMessage, Text.FieldDeathMessage};
-		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldEnterMessage, Text.FieldLeaveMessage, Text.FieldDeathMessage, Text.FieldBodyplan};
+		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldEnterMessage, Text.FieldLeaveMessage, Text.FieldDeathMessage};
 		internal override string Name         { get; set; } = Text.CompMobile;
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_mobile WHERE id = @p0;";
 		internal override string TableSchema  { get; set; } = $@"components_mobile (
@@ -33,20 +35,20 @@ namespace inspiral
 				{Text.FieldEnterMessage} TEXT DEFAULT '', 
 				{Text.FieldLeaveMessage} TEXT DEFAULT '', 
 				{Text.FieldDeathMessage} TEXT DEFAULT '',
-				{Text.FieldBodyplan} TEXT DEFAULT 'humanoid'
+				{Text.FieldBodypartList} TEXT DEFAULT ''
 				)";
 		internal override string UpdateSchema   { get; set; } = $@"UPDATE components_mobile SET 
 				{Text.FieldEnterMessage} = @p1, 
 				{Text.FieldLeaveMessage} = @p2, 
-				{Text.FieldDeathMessage} = @p3, 
-				{Text.FieldBodyplan} = @p4
+				{Text.FieldDeathMessage} = @p3,
+				{Text.FieldBodypartList} = @p4
 				WHERE id = @p0";
 		internal override string InsertSchema { get; set; } = $@"INSERT INTO components_mobile (
 				id,
 				{Text.FieldEnterMessage},
 				{Text.FieldLeaveMessage},
 				{Text.FieldDeathMessage},
-				{Text.FieldBodyplan}
+				{Text.FieldBodypartList}
 				) VALUES (
 				@p0, 
 				@p1, 
@@ -66,8 +68,12 @@ namespace inspiral
 		internal string leaveMessage = "A generic object leaves to the $DIR.";
 		internal string deathMessage = "A generic object lies here, dead.";
 		internal string race =         "human";
-		internal Bodyplan bodyplan;
-		internal Dictionary<string, BodypartData> bodyData = new Dictionary<string, BodypartData>();
+		internal List<string> strikers = new List<string>();
+		internal List<string> graspers = new List<string>();
+		internal List<string> stance = new List<string>();
+		internal List<string> equipmentSlots = new List<string>();
+
+		internal Dictionary<string, GameObject> limbs = new Dictionary<string, GameObject>();
 		internal override bool SetValue(string field, string newValue)
 		{
 			bool success = false;
@@ -107,8 +113,6 @@ namespace inspiral
 					return leaveMessage;
 				case Text.FieldDeathMessage:
 					return deathMessage;
-				case Text.FieldBodyplan:
-					return bodyplan.name;
 				case Text.FieldRace:
 					return race;
 				default:
@@ -121,18 +125,103 @@ namespace inspiral
 		}
 		internal override void ConfigureFromJson(JToken compData)
 		{
-			SetBodyplan((string)compData["mobtype"]);
 			enterMessage = $"{parent.name} enters from the $DIR.";
 			leaveMessage = $"{parent.name} leaves to the $DIR.";
 			deathMessage = $"The corpse of {parent.name} lies here.";
+
+			Bodyplan bp = null;
+			if(!JsonExtensions.IsNullOrEmpty(compData["mobtype"]))
+			{
+				bp = Modules.Bodies.GetPlan((string)compData["mobtype"]);
+			}
+			if(bp == null)
+			{
+				bp = Modules.Bodies.GetPlan("humanoid");
+			}
+
+			foreach(Bodypart b in bp.allParts)
+			{
+				GameObject newLimb = (GameObject)Game.Objects.CreateNewInstance(false);
+				newLimb.name = "limb";
+				newLimb.aliases.Add("bodypart");
+
+				VisibleComponent vis =   (VisibleComponent)newLimb.AddComponent(Text.CompVisible);
+				vis.SetValue(Text.FieldShortDesc, b.name);
+				vis.SetValue(Text.FieldRoomDesc, $"A severed {b.name} has been left here.");
+				vis.SetValue(Text.FieldExaminedDesc, $"It is a severed {b.name} that has been lopped off its owner.");
+
+				PhysicsComponent phys =  (PhysicsComponent)newLimb.AddComponent(Text.CompPhysics);
+				phys.width =      b.width;
+				phys.length =     b.length;
+				phys.height =     b.height;
+				phys.strikeArea = b.strikeArea;
+				phys.edged =      b.isEdged;
+				phys.UpdateValues();
+
+				BodypartComponent body = (BodypartComponent)newLimb.AddComponent(Text.CompBodypart);
+				body.canGrasp = b.canGrasp;
+				body.canStand = b.canStand;
+				body.isNaturalWeapon = b.isNaturalWeapon;
+				
+				foreach(string s in b.equipmentSlots)
+				{
+					if(!body.equipmentSlots.Contains(s))
+					{
+						body.equipmentSlots.Add(s);
+					}
+				}
+				Game.Objects.AddDatabaseEntry(newLimb);
+				limbs.Add(b.name, newLimb);
+			}
+			UpdateLists();
 		}
 		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
 		{
 			enterMessage = reader[Text.FieldEnterMessage].ToString();
 			leaveMessage = reader[Text.FieldLeaveMessage].ToString();
 			deathMessage = reader[Text.FieldDeathMessage].ToString();
-			bodyplan = Modules.Bodies.GetPlan(reader[Text.FieldBodyplan].ToString());
-			UpdateBody();
+			foreach(KeyValuePair<string, long> limb in JsonConvert.DeserializeObject<Dictionary<string, long>>((string)reader[Text.FieldBodypartList]))
+			{
+				limbs.Add(limb.Key, (limb.Value != 0 ? (GameObject)Game.Objects.Get(limb.Value) : null));
+			}
+		}
+
+		internal override void FinalizeObjectLoad()
+		{
+			UpdateLists();
+		}
+		internal void UpdateLists()
+		{
+			graspers.Clear();
+			strikers.Clear();
+			stance.Clear();
+			equipmentSlots.Clear();
+			foreach(KeyValuePair<string, GameObject> limb in limbs)
+			{
+				if(limb.Value != null)
+				{
+					BodypartComponent bp = (BodypartComponent)limb.Value.GetComponent(Text.CompBodypart);
+					if(bp.canGrasp && !graspers.Contains(limb.Key))
+					{
+						graspers.Add(limb.Key);
+					}
+					if(bp.canStand && !stance.Contains(limb.Key))
+					{
+						stance.Add(limb.Key);
+					}
+					if(bp.isNaturalWeapon && !strikers.Contains(limb.Key))
+					{
+						strikers.Add(limb.Key);
+					}
+					foreach(string slot in bp.equipmentSlots)
+					{
+						if(!equipmentSlots.Contains(slot))
+						{
+							equipmentSlots.Add(slot);
+						}
+					}
+				}
+			}
 		}
 		internal override void AddCommandParameters(SQLiteCommand command) 
 		{
@@ -140,20 +229,12 @@ namespace inspiral
 			command.Parameters.AddWithValue("@p1", enterMessage);
 			command.Parameters.AddWithValue("@p2", leaveMessage);
 			command.Parameters.AddWithValue("@p3", deathMessage);
-			command.Parameters.AddWithValue("@p4", bodyplan.name);
-		}
-		internal void UpdateBody()
-		{
-			bodyData.Clear();
-			foreach(Bodypart bp in bodyplan.allParts)
+			Dictionary<string, long> limbKeys = new Dictionary<string, long>();
+			foreach(KeyValuePair<string, GameObject> limb in limbs)
 			{
-				bodyData.Add(bp.name, new BodypartData());
+				limbKeys.Add(limb.Key, limb.Value != null ? limb.Value.id : 0);
 			}
-		}
-		internal void SetBodyplan(string bPlan)
-		{
-			bodyplan = Modules.Bodies.GetPlan(bPlan);
-			UpdateBody();
+			command.Parameters.AddWithValue("@p4", JsonConvert.SerializeObject(limbKeys));
 		}
 		internal override string GetPrompt()
 		{
@@ -161,9 +242,8 @@ namespace inspiral
 		}
 		internal string GetWeightedRandomBodypart()
 		{
-			return bodyData.ElementAt(Game.rand.Next(0, bodyData.Count)).Key;
+			return limbs.ElementAt(Game.rand.Next(0, limbs.Count)).Key;
 		}
-
 	}
 	internal class BodypartData
 	{

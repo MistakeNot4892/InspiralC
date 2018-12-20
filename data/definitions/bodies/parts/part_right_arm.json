@@ -1,4 +1,10 @@
 {
 	"name" : "right arm",
-	"slots" : [ "arms" ]
+	"slots" : [ "arms" ],
+	"physics" :
+	{
+		"length" : 8,
+		"width" :  8,
+		"height" : 50
+	}
 }

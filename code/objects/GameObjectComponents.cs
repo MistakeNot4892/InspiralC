@@ -25,7 +25,8 @@ namespace inspiral
 			}
 			catch(Exception e)
 			{
-				Debug.WriteLine($"Exception when configuring component from JSON - {e.Message}");
+				string compname = comp == null ? "null" : comp.name;
+				Debug.WriteLine($"Exception when configuring component {compname} from JSON ({componentData.ToString()}) - {e.Message}");
 			}
 			return comp;
 		} 

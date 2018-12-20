@@ -23,9 +23,10 @@ namespace inspiral
 				return;
 			}
 
-			bool naturalWeapon = false;
-			string strikeWith = null;
 			string usingItem = cmd.objWith;
+			GameObject strikeWith = null;
+			GameObject strikeAgainst = null;
+
 			if(invoker.HasComponent(Text.CompInventory))
 			{
 				InventoryComponent inv = (InventoryComponent)invoker.GetComponent(Text.CompInventory);
@@ -58,14 +59,13 @@ namespace inspiral
 			if(strikeWith == null && invoker.HasComponent(Text.CompMobile))
 			{
 				MobileComponent mob = (MobileComponent)invoker.GetComponent(Text.CompMobile);
-				if((usingItem == null || usingItem == "") && mob.bodyplan.strikers.Count > 0)
+				if((usingItem == null || usingItem == "") && mob.strikers.Count > 0)
 				{
-					usingItem = mob.bodyplan.strikers[Game.rand.Next(0, mob.bodyplan.strikers.Count)];
+					usingItem = mob.strikers[Game.rand.Next(0, mob.strikers.Count)];
 				}
-				if(mob.bodyplan.strikers.Contains(usingItem))
+				if(mob.strikers.Contains(usingItem))
 				{
-					strikeWith = $"{usingItem}";
-					naturalWeapon = true;
+					strikeWith = mob.limbs[usingItem];
 				}
 			}
 
@@ -77,7 +77,12 @@ namespace inspiral
 					InventoryComponent inv = (InventoryComponent)invoker.GetComponent(Text.CompInventory);
 					if(inv.IsWielded(prop))
 					{
-						strikeWith = $"{prop.GetShort()}";
+						if(!prop.HasComponent(Text.CompPhysics))
+						{
+							invoker.SendLine($"You cannot use {prop.GetShort()} as a weapon.");
+							return;
+						}
+						strikeWith = prop;
 					}
 				}
 			}
@@ -89,7 +94,6 @@ namespace inspiral
 				return;
 			}
 
-			string bpString = "";
 			if(targetObj.HasComponent(Text.CompMobile))
 			{
 				MobileComponent mob = (MobileComponent)targetObj.GetComponent(Text.CompMobile);
@@ -98,11 +102,11 @@ namespace inspiral
 				{
 					checkBp = mob.GetWeightedRandomBodypart();
 				}
-				if(mob.bodyData.ContainsKey(checkBp))
+				if(mob.limbs.ContainsKey(checkBp) && mob.limbs[checkBp] != null)
 				{
-					bpString = $" in the {checkBp}";
+					strikeAgainst = mob.limbs[checkBp];
 				}
-				if(bpString == "")
+				else
 				{
 					invoker.WriteLine($"{Text.Capitalize(targetObj.GetShort())} is missing that bodypart!");
 					invoker.SendPrompt();
@@ -110,22 +114,31 @@ namespace inspiral
 				}
 			}
 
-			if(naturalWeapon)
+			string strikeString = $"{strikeWith.GetShort()}, {strikeAgainst.HandleImpact(invoker, strikeWith, 3.0)}";
+			string firstPersonStrikeWith = strikeString;
+			if(firstPersonStrikeWith.Substring(0,2) == "a ")
 			{
-				invoker.ShowNearby(invoker, targetObj,
-					$"You strike {targetObj.GetShort()}{bpString} with your {strikeWith}!",
-					$"{Text.Capitalize(invoker.GetShort())} strikes you{bpString} with {invoker.gender.His} {strikeWith}!",
-					$"{Text.Capitalize(invoker.GetShort())} strikes {targetObj.GetShort()}{bpString} with {invoker.gender.His} {strikeWith}!"
-					);
+				firstPersonStrikeWith = firstPersonStrikeWith.Substring(2);
 			}
-			else
+			else if(firstPersonStrikeWith.Substring(0,3) == "an ")
 			{
-				invoker.ShowNearby(invoker, targetObj,
-					$"You strike {targetObj.GetShort()}{bpString} with {strikeWith}!",
-					$"{Text.Capitalize(invoker.GetShort())} strikes you{bpString} with {strikeWith}!",
-					$"{Text.Capitalize(invoker.GetShort())} strikes {targetObj.GetShort()}{bpString} with {strikeWith}!"
-					);
+				firstPersonStrikeWith = firstPersonStrikeWith.Substring(3);
 			}
+			if(strikeWith.HasComponent(Text.CompBodypart))
+			{
+				BodypartComponent body = (BodypartComponent)strikeWith.GetComponent(Text.CompBodypart);
+				if(body.isNaturalWeapon)
+				{
+					strikeString = $"{invoker.gender.His} {strikeString}";
+				}
+			}
+
+			string bpString = $" in the {strikeAgainst.GetShort()}";
+			invoker.ShowNearby(invoker, targetObj,
+				$"You strike {targetObj.GetShort()}{bpString} with your {firstPersonStrikeWith}!",
+				$"{Text.Capitalize(invoker.GetShort())} strikes you{bpString} with {strikeString}!",
+				$"{Text.Capitalize(invoker.GetShort())} strikes {targetObj.GetShort()}{bpString} with {strikeString}!"
+				);
 		}
 	}
 }

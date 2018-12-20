@@ -2,10 +2,11 @@
 	"name" : "head",
 	"vital" : true,
 	"slots" : [ "head", "eyes", "neck", "face" ],
-	"contactSurface" :
+	"physics" :
 	{
-		"height" :  5,
-		"width" :   8,
-		"length" :  20
+		"length" : 15,
+		"width" :  15,
+		"height" : 15,
+		"strikearea" : 20
 	}
 }

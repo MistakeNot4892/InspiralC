@@ -2,10 +2,12 @@
 	"name" : "left foot",
 	"slots" : [ "feet" ],
 	"stance" : true,
-	"contactSurface" :
+	"attackstrings" : [ "kicks" ],
+	"physics" :
 	{
 		"height" :  5,
 		"width" :   8,
-		"length" :  20
+		"length" :  20,
+		"strikearea" : 15
 	}
 }

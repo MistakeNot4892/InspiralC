@@ -150,11 +150,7 @@ namespace inspiral
 			if(parent.HasComponent(Text.CompMobile))
 			{
 				MobileComponent mob = (MobileComponent)parent.GetComponent(Text.CompMobile);
-				if(mob.bodyplan == null)
-				{
-					mob.SetBodyplan("humanoid");
-				}
-				return mob.bodyplan.graspers;
+				return mob.graspers;
 			}
 			return new List<string>() { "hands" };
 		}
@@ -163,11 +159,7 @@ namespace inspiral
 			if(parent.HasComponent(Text.CompMobile))
 			{
 				MobileComponent mob = (MobileComponent)parent.GetComponent(Text.CompMobile);
-				if(mob.bodyplan == null)
-				{
-					mob.SetBodyplan("humanoid");
-				}
-				return mob.bodyplan.equipmentSlots;
+				return mob.equipmentSlots;
 			}
 			return new List<string>() { "body" };
 		}

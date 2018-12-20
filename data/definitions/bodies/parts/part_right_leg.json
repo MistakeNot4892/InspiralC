@@ -1,5 +1,11 @@
 {
 	"name" : "right leg",
 	"slots" : [ "legs" ],
-	"stance" : true
+	"stance" : true,
+	"physics" :
+	{
+		"length" : 8,
+		"width" :  8,
+		"height" : 50
+	}
 }

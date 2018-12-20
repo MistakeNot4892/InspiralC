@@ -154,15 +154,15 @@ namespace inspiral
 					mainDesc += $"\n{theyAre} completely naked.";
 				}
 				
-				foreach(KeyValuePair<string, BodypartData> bp in mob.bodyData)
+				foreach(KeyValuePair<string, GameObject> bp in mob.limbs)
 				{
-					if(bp.Value.isAmputated)
+					if(bp.Value == null)
 					{
 						mainDesc += $"\n{their} {bp.Key} is missing!";
 					}
-					else if(bp.Value.isBroken)
+					else
 					{
-						mainDesc += $"\n{their} {bp.Key} is broken!";
+						mainDesc += $"\n{their} {bp.Key} is healthy.";
 					}
 				}
 			}

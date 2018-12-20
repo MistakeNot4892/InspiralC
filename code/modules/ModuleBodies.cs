@@ -45,10 +45,14 @@ namespace inspiral
 					{
 						bp.isVital = (bool)r["vital"];
 					}
-					if(!JsonExtensions.IsNullOrEmpty(r["contactSurface"]))
+					if(!JsonExtensions.IsNullOrEmpty(r["attackstrings"]))
 					{
 						bp.isNaturalWeapon = true;
-						bp.contactData = JsonConvert.DeserializeObject<Dictionary<string, int>>(r["contactSurface"].ToString());
+						//bp.attackStrings = JsonConvert.DeserializeObject<List<Tuple<string, string>>>(r["attackstrings"].ToString());
+					}
+					if(!JsonExtensions.IsNullOrEmpty(r["physics"]))
+					{
+						bp.contactData = JsonConvert.DeserializeObject<Dictionary<string, int>>(r["physics"].ToString());
 					}
 					parts.Add(bp.name, bp);
 				}
@@ -80,7 +84,6 @@ namespace inspiral
 							bPlan.parentToChildren[parent].Add(child);
 						}
 					}
-					bPlan.FinalizePlan();
 					plans.Add(bPlan.name, bPlan);
 				}
 				catch(Exception e)
@@ -108,110 +111,9 @@ namespace inspiral
 		internal List<Bodypart> allParts = new List<Bodypart>();
 		internal Dictionary<Bodypart, Bodypart> childToParent = new Dictionary<Bodypart, Bodypart>();
 		internal Dictionary<Bodypart, List<Bodypart>> parentToChildren = new Dictionary<Bodypart, List<Bodypart>>();
-		internal List<string> strikers = new List<string>();
-		internal List<string> graspers = new List<string>();
-		internal List<string> stance = new List<string>();
-		internal List<string> equipmentSlots = new List<string>();
 		internal Bodyplan(string _name)
 		{
 			name = _name;
-		}
-		internal void FinalizePlan()
-		{
-			foreach(Bodypart bp in allParts)
-			{
-				if(bp.canGrasp && !graspers.Contains(bp.name))
-				{
-					graspers.Add(bp.name);
-				}
-				if(bp.canStand && !stance.Contains(bp.name))
-				{
-					stance.Add(bp.name);
-				}
-				if(bp.isNaturalWeapon && !strikers.Contains(bp.name))
-				{
-					strikers.Add(bp.name);
-				}
-				foreach(string slot in bp.equipmentSlots)
-				{
-					if(!equipmentSlots.Contains(slot))
-					{
-						equipmentSlots.Add(slot);
-					}
-				}
-			}
-		}
-		internal string GetSummary()
-		{
-			string summary = $"Bodyplan '{name}':";
-
-			summary += "\n\nParts:";
-			foreach(Bodypart bp in allParts)
-			{
-				summary += $"\n{bp.name} ";
-				if(childToParent.ContainsKey(bp))
-				{
-					summary += $"- parent [{childToParent[bp].name}]";
-				}
-				if(parentToChildren.ContainsKey(bp))
-				{
-					summary += "- children [";
-					foreach(Bodypart child in parentToChildren[bp])
-					{
-						summary += $" [{child.name}] ";
-					}
-					summary += "]";
-				}
-			}
-			summary += "\n\nEquip slots:";
-			if(equipmentSlots.Count > 0)
-			{
-				summary += $" {Text.EnglishList(equipmentSlots)}.";
-			}
-			else
-			{
-				summary += " none.";
-			}
-			summary += "\n\nStrike:";
-			if(graspers.Count > 0)
-			{
-				foreach(string strike in strikers)
-				{
-					Bodypart bp = Modules.Bodies.GetPart(strike);
-					summary += $" [{bp.name}]";
-				}
-			}
-			else
-			{
-				summary += " none.";
-			}
-			summary += "\n\nGrasp:";
-			if(graspers.Count > 0)
-			{
-				foreach(string grip in graspers)
-				{
-					Bodypart bp = Modules.Bodies.GetPart(grip);
-					summary += $" [{bp.name}]";
-				}
-			}
-			else
-			{
-				summary += " none.";
-			}
-			summary += "\n\nStance:";
-			if(stance.Count > 0)
-			{
-				foreach(string stand in stance)
-				{
-					Bodypart bp = Modules.Bodies.GetPart(stand);
-					summary += $" [{bp.name}]";
-				}
-			}
-			else
-			{
-				summary += " none.";
-			}
-			return summary;
 		}
 	}
 	internal class Bodypart
@@ -222,8 +124,15 @@ namespace inspiral
 		internal bool canStand = false;
 		internal bool isVital = false;
 		internal bool isNaturalWeapon = false;
+		internal bool isEdged = false;
+		internal long length = 10;
+		internal long width = 10;
+		internal long height = 10;
+		internal double strikeArea = 10;
 		internal Dictionary<string, int> contactData;
 		internal List<string> equipmentSlots = new List<string>();
+		internal List<Tuple<string, string>> attackStrings = new List<Tuple<string, string>>();
+
 		internal Bodypart(string _name, string _parent, List<string> _slots)
 		{
 			name = _name;

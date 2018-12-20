@@ -20,11 +20,13 @@ namespace inspiral
 		internal const string FieldWidth =   "width";
 		internal const string FieldHeight =  "height";
 		internal const string FieldDensity = "density";
+		internal const string FieldStrikeArea = "strikearea";
+		internal const string FieldEdged = "edged";
 	}
 	internal class PhysicsBuilder : GameComponentBuilder
 	{
-		internal override List<string> editableFields { get; set; } = new List<string>() {Text.FieldLength, Text.FieldWidth, Text.FieldHeight, Text.FieldDensity};
-		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldLength, Text.FieldWidth, Text.FieldHeight, Text.FieldDensity};
+		internal override List<string> editableFields { get; set; } = new List<string>() {Text.FieldLength, Text.FieldWidth, Text.FieldHeight, Text.FieldDensity, Text.FieldStrikeArea, Text.FieldEdged};
+		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldLength, Text.FieldWidth, Text.FieldHeight, Text.FieldDensity, Text.FieldStrikeArea, Text.FieldEdged};
 
 		internal override string Name { get; set; } = Text.CompPhysics;
 		internal override GameComponent Build()
@@ -34,29 +36,37 @@ namespace inspiral
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_physics WHERE id = @p0;";
 		internal override string TableSchema  { get; set; } = $@"components_physics (
 				id INTEGER NOT NULL PRIMARY KEY UNIQUE, 
-				{Text.FieldLength}  INTEGER DEFAULT 1,
-				{Text.FieldWidth}   INTEGER DEFAULT 1,
-				{Text.FieldHeight}  INTEGER DEFAULT 1,
-				{Text.FieldDensity} DOUBLE DEFAULT 1.0
+				{Text.FieldLength}     INTEGER DEFAULT 1,
+				{Text.FieldWidth}      INTEGER DEFAULT 1,
+				{Text.FieldHeight}     INTEGER DEFAULT 1,
+				{Text.FieldDensity}    DOUBLE DEFAULT 1.0,
+				{Text.FieldStrikeArea} DOUBLE DEFAULT 1.0,
+				{Text.FieldEdged}      INTEGER DEFAULT 0
 				)";
 		internal override string UpdateSchema   { get; set; } = $@"UPDATE components_physics SET 
-				{Text.FieldLength} =  @p1, 
-				{Text.FieldWidth} =   @p2, 
-				{Text.FieldHeight} =  @p3, 
-				{Text.FieldDensity} = @p4 
+				{Text.FieldLength} =     @p1, 
+				{Text.FieldWidth} =      @p2, 
+				{Text.FieldHeight} =     @p3, 
+				{Text.FieldDensity} =    @p4,
+				{Text.FieldStrikeArea} = @p5,
+				{Text.FieldEdged} =      @p6
 				WHERE id = @p0";
 		internal override string InsertSchema { get; set; } = $@"INSERT INTO components_physics (
 				id,
 				{Text.FieldLength},
 				{Text.FieldWidth},
 				{Text.FieldHeight},
-				{Text.FieldDensity}
+				{Text.FieldDensity},
+				{Text.FieldStrikeArea},
+				{Text.FieldEdged}
 				) VALUES (
 				@p0, 
 				@p1,
 				@p2,
 				@p3,
-				@p4
+				@p4,
+				@p5,
+				@p6
 				);";
 	}
 	class PhysicsComponent : GameComponent
@@ -69,12 +79,16 @@ namespace inspiral
 		internal double mass = 1.0;        // kg
 		internal double surfaceArea = 1.0; // cm^2
 		internal double contactArea = 1.0; // cm^2
+		internal double strikeArea = -1.0; // cm^2
+		internal bool edged = false;
 		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
 		{
-			length =  (long)reader[Text.FieldLength];
-			width =   (long)reader[Text.FieldWidth];
-			height =  (long)reader[Text.FieldHeight];
-			density = (double)reader[Text.FieldDensity];
+			length =     (long)reader[Text.FieldLength];
+			width =      (long)reader[Text.FieldWidth];
+			height =     (long)reader[Text.FieldHeight];
+			density =    (double)reader[Text.FieldDensity];
+			strikeArea = (double)reader[Text.FieldStrikeArea];
+			edged =      ((long)reader[Text.FieldEdged] == 1);
 			UpdateValues();
 		}
 		internal override void ConfigureFromJson(JToken compData)
@@ -95,6 +109,14 @@ namespace inspiral
 			{
 				density = (double)compData[Text.FieldDensity];
 			}
+			if(!JsonExtensions.IsNullOrEmpty(compData[Text.FieldStrikeArea]))
+			{
+				density = (double)compData[Text.FieldStrikeArea];
+			}
+			if(!JsonExtensions.IsNullOrEmpty(compData[Text.FieldEdged]))
+			{
+				edged = (bool)compData[Text.FieldEdged];
+			}
 			UpdateValues();
 		}
 		internal override void AddCommandParameters(SQLiteCommand command) 
@@ -104,15 +126,20 @@ namespace inspiral
 			command.Parameters.AddWithValue("@p2", width);
 			command.Parameters.AddWithValue("@p3", height);
 			command.Parameters.AddWithValue("@p4", density);
+			command.Parameters.AddWithValue("@p5", strikeArea);
+			command.Parameters.AddWithValue("@p6", edged);
 		}
-		private void UpdateValues()
+		internal void UpdateValues()
 		{
 			volume = length * width * height;
 			mass = (volume * density)/1000;
 			surfaceArea = 2*((width*length)+(height*length)+(height*width));
 			contactArea = (width * height);
+			if(strikeArea < 0)
+			{
+				strikeArea = contactArea;
+			}
 		}
-
 		internal override bool SetValue(string key, string newValue)
 		{
 			try
@@ -207,6 +234,10 @@ namespace inspiral
 					return GetLong(field).ToString();
 				case Text.FieldDensity:
 					return $"{density}";
+				case Text.FieldStrikeArea:
+					return $"{density}";
+				case Text.FieldEdged:
+					return $"{density}";
 			}
 			return null;
 		}
@@ -289,6 +320,11 @@ namespace inspiral
 			}
 			result = $"{You} {are} around {FormatCentimetersForDisplay(height)} tall, {FormatCentimetersForDisplay(width)} broad and {FormatCentimetersForDisplay(length)} deep.\n{You} {weigh} around {FormatKilogramsForDisplay(mass)}.";
 			return result;
+		}
+
+		internal double GetImpactPenetration(double velocity, double tensileResistance)
+		{
+			return (0.5 * mass * (velocity * velocity))/(tensileResistance * (strikeArea * 0.01));
 		}
 	}
 }

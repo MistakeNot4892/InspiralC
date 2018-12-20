@@ -1,0 +1,24 @@
+{
+	"templateid" : "axe",
+	"aliases" : 
+	[
+		"axe"
+	],
+	"components" : 
+	{
+		"visible" : 
+		{
+			"shortdesc" :    "an axe",
+			"examineddesc" : "This is a sharp axe.",
+			"roomdesc" :     "An axe has been left here."
+		},
+		"physics" :
+		{
+			"length" : 3,
+			"width" :  3,
+			"height" : 35,
+			"strikearea" : 5,
+			"edged" : true
+		}
+	}
+}

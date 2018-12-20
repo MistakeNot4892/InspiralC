@@ -55,6 +55,9 @@ namespace inspiral
 		internal string name;
 		internal GameObject parent;
 		internal bool isPersistent = true;
+
+		internal virtual void FinalizeObjectLoad() {}
+
 		internal virtual void Added(GameObject addedTo)
 		{
 			parent = addedTo;
