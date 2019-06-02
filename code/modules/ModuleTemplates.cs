@@ -67,7 +67,7 @@ namespace inspiral
 		{
 			Modules.Templates = this;
 			Debug.WriteLine("Loading templates.");
-			foreach (var f in (from file in Directory.EnumerateFiles(@"data\definitions\templates", "*.json", SearchOption.AllDirectories) select new { File = file }))
+			foreach (var f in (from file in Directory.EnumerateFiles(@"data/definitions/templates", "*.json", SearchOption.AllDirectories) select new { File = file }))
 			{
 				Debug.WriteLine($"- Loading template definition {f.File}.");
 				try

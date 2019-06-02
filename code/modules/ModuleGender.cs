@@ -36,7 +36,7 @@ namespace inspiral
 		{
 			Modules.Gender = this;
 			Debug.WriteLine($"- Loading gender definitions.");
-			foreach (var f in (from file in Directory.EnumerateFiles(@"data\definitions\genders", "*.json", SearchOption.AllDirectories) select new { File = file }))
+			foreach (var f in (from file in Directory.EnumerateFiles(@"data/definitions/genders", "*.json", SearchOption.AllDirectories) select new { File = file }))
 			{
 				Debug.WriteLine($"- Loading gender definition {f.File}.");
 				try

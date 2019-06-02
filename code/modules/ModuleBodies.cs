@@ -22,7 +22,7 @@ namespace inspiral
 		{
 			Modules.Bodies = this;
 			Debug.WriteLine("- Loading bodypart definitions.");
-			foreach (var f in (from file in Directory.EnumerateFiles(@"data\definitions\bodies\parts", "*.json", SearchOption.AllDirectories) select new { File = file }))
+			foreach (var f in (from file in Directory.EnumerateFiles(@"data/definitions/bodies/parts", "*.json", SearchOption.AllDirectories) select new { File = file }))
 			{
 				Debug.WriteLine($"- Loading bodypart definition {f.File}.");
 				try
@@ -62,7 +62,7 @@ namespace inspiral
 				}
 			}
 			Debug.WriteLine("Done.\nLoading bodyplan definitions.");
-			foreach (var f in (from file in Directory.EnumerateFiles(@"data\definitions\bodies\plans", "*.json", SearchOption.AllDirectories) select new { File = file }))
+			foreach (var f in (from file in Directory.EnumerateFiles(@"data/definitions/bodies/plans", "*.json", SearchOption.AllDirectories) select new { File = file }))
 			{
 				Debug.WriteLine($"- Loading bodyplan definition {f.File}.");
 				try
@@ -93,8 +93,7 @@ namespace inspiral
 			}
 			Debug.WriteLine("Done.");
 		}
-		internal Bodyplan GetPlan(string name)
-		{
+		internal Bodyplan GetPlan(string name)		{
 			name = name.ToLower();
 			return plans.ContainsKey(name) ? plans[name] : null;
 		}
@@ -107,7 +106,6 @@ namespace inspiral
 	internal class Bodyplan
 	{
 		internal string name;
-		internal Bodypart root;
 		internal List<Bodypart> allParts = new List<Bodypart>();
 		internal Dictionary<Bodypart, Bodypart> childToParent = new Dictionary<Bodypart, Bodypart>();
 		internal Dictionary<Bodypart, List<Bodypart>> parentToChildren = new Dictionary<Bodypart, List<Bodypart>>();

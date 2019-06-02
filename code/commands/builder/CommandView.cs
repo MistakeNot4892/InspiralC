@@ -23,7 +23,7 @@ namespace inspiral
 					}
 					catch(Exception e) 
 					{
-						Debug.WriteLine("Tried to look up a non-long var in the global db.");
+						Debug.WriteLine($"Tried to look up a non-long var in the global db ({e.Message})");
 					}
 					invoker.WriteLine($"Cannot find '{cmd.objTarget}'.");
 				}

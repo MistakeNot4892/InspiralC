@@ -19,7 +19,7 @@ namespace inspiral
 		{
 			Modules.Roles = this;
 			Debug.WriteLine("Loading role definitions.");
-			foreach (var f in (from file in Directory.EnumerateFiles(@"data\definitions\roles", "*.json", SearchOption.AllDirectories) select new { File = file }))
+			foreach (var f in (from file in Directory.EnumerateFiles(@"data/definitions/roles", "*.json", SearchOption.AllDirectories) select new { File = file }))
 			{
 				Debug.WriteLine($"- Loading role definition {f.File}.");
 				try

@@ -38,7 +38,7 @@ namespace inspiral
 			}
 
 			Debug.WriteLine($"Building command dictionary.");
-			foreach (var f in (from file in Directory.EnumerateFiles(@"data\definitions\commands", "*.json", SearchOption.AllDirectories) select new { File = file }))
+			foreach (var f in (from file in Directory.EnumerateFiles(@"data/definitions/commands", "*.json", SearchOption.AllDirectories) select new { File = file }))
 			{
 				Debug.WriteLine($"- Loading command definition {f.File}.");
 				try
@@ -85,6 +85,7 @@ namespace inspiral
 			internal string objIn =     null;
 			internal string objAt =     null;
 			internal string objTo =     null;
+			internal string objFrom =   null;
 			internal string rawInput =  null;
 			private void SaveSubstringAsField(string field, string substring)
 			{
@@ -105,6 +106,9 @@ namespace inspiral
 					case "to":
 						objTo = substring;
 						break;
+					case "from":
+						objFrom = substring;
+						break;
 				}
 			}
 			internal string GetSummary()
@@ -116,8 +120,9 @@ namespace inspiral
 				string safeObjIn =     objIn ==     null ? "null" :                objIn;
 				string safeObjAt =     objAt ==     null ? "null" :                objAt;
 				string safeObjTo =     objTo ==     null ? "null" :                objTo;
+				string safeObjFrom =   objFrom ==   null ? "null" :                objFrom;
 
-				return $"cmd [{safeStrCmd}] target [{safeObjTarget}] args [{string.Join(", ", safeStrArgs)}] with [{safeObjWith}] in [{safeObjIn}] at [{safeObjAt}] to [{safeObjTo}] raw [{rawInput}]";
+				return $"cmd [{safeStrCmd}] target [{safeObjTarget}] args [{string.Join(", ", safeStrArgs)}] with [{safeObjWith}] in [{safeObjIn}] at [{safeObjAt}] to [{safeObjTo}] from [{safeObjFrom}] raw [{rawInput}]";
 			}
 			internal CommandData(string command, string input)
 			{
@@ -148,6 +153,7 @@ namespace inspiral
 							case "with":
 							case "at":
 							case "to":
+							case "from":
 								if(lastField != null && lastSubstring != "")
 								{
 									SaveSubstringAsField(lastField, lastSubstring.Trim());

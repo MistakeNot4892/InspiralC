@@ -4,7 +4,7 @@ This is a WIP, it will be added to as I remember/find time.
 
 ## Adding commands
 
-Define the strings relating to your command in a `command_foo.json` file and place it in `data\definitions\commands`. An example of the required definition is:
+Define the strings relating to your command in a `command_foo.json` file and place it in `data/definitions/commands`. An example of the required definition is:
 ````
 {
 	"command" : "foo",
