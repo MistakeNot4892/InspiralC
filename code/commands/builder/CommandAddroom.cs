@@ -37,7 +37,8 @@ namespace inspiral
 					else
 					{
 						long roomId = -1;
-						if(cmd.strArgs[0].ToLower() == "new")
+						Console.WriteLine(cmd.strArgs[1]);
+						if(cmd.strArgs[1].ToLower() == "new")
 						{
 							roomId = Modules.Templates.Instantiate("room").id;
 						}
