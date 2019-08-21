@@ -1,8 +1,9 @@
 {
-  "He" :   "ey",
-  "Him" :  "em",
-  "His" :  "eir",
-  "Is" :   "is",
-  "Self" : "self",
-  "Term" : "neuter"
+  "They" :   "ey",
+  "Them" :   "em",
+  "Their" :  "eir",
+  "Theirs" : "eirs",
+  "Is" :     "is",
+  "Self" :   "self",
+  "Term" :   "neuter"
 }

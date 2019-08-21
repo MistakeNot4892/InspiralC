@@ -117,15 +117,15 @@ namespace inspiral
 				else
 				{
 					startingToken = "That's";
-					theyAre = $"{Text.Capitalize(parent.gender.He)} {parent.gender.Is}";
-					their = Text.Capitalize(parent.gender.His);
+					theyAre = $"{Text.Capitalize(parent.gender.They)} {parent.gender.Is}";
+					their = Text.Capitalize(parent.gender.Their);
 				}
 
 				MobileComponent mob = (MobileComponent)parent.GetComponent(Text.CompMobile);
 				mainDesc = $"{startingToken} {mainDesc}\n{theyAre} a {mob.race}";
 				if(viewer == parent)
 				{
-					mainDesc += $". When people look at you, they see:\n{Text.Capitalize(parent.gender.He)} {parent.gender.Is} a {mob.race}";
+					mainDesc += $". When people look at you, they see:\n{Text.Capitalize(parent.gender.They)} {parent.gender.Is} a {mob.race}";
 				}
 				if(examinedDescription == null || examinedDescription.Length <= 0)
 				{

@@ -129,7 +129,7 @@ namespace inspiral
 				BodypartComponent body = (BodypartComponent)strikeWith.GetComponent(Text.CompBodypart);
 				if(body.isNaturalWeapon)
 				{
-					strikeString = $"{invoker.gender.His} {strikeString}";
+					strikeString = $"{invoker.gender.Their} {strikeString}";
 				}
 			}
 

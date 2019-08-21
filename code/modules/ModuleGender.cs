@@ -20,12 +20,13 @@ namespace inspiral
 
 	internal class GenderObject
 	{
-		internal string Term = null;
-		internal string His  = null;
-		internal string Him  = null;
-		internal string He   = null;
-		internal string Is   = null;
-		internal string Self = null;
+        internal string They   = null;
+        internal string Them   = null;
+        internal string Their  = null;
+        internal string Theirs = null;
+		internal string Is     = null;
+        internal string Self   = null;
+        internal string Term   = null;
 	}
 	internal class GenderModule : GameModule
 	{
@@ -42,15 +43,18 @@ namespace inspiral
 				try
 				{
 					Dictionary<string, string> genderStrings = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(f.File));
-					GenderObject  gender = new GenderObject();
-					gender.He =   genderStrings["He"];
-					gender.Him =  genderStrings["Him"];
-					gender.His =  genderStrings["His"];
-					gender.Is =   genderStrings["Is"];
-					gender.Term = genderStrings["Term"];
-					gender.Self = genderStrings["Self"];
-					genders.Add(gender.Term, gender);
-					foreach(string token in new List<string>() {gender.He, gender.Him, gender.His, gender.Is, gender.Self})
+                    var gender = new GenderObject
+                    {
+                        They =   genderStrings["They"],
+                        Them =   genderStrings["Them"],
+                        Their =  genderStrings["Their"],
+                        Theirs = genderStrings["Theirs"],
+                        Is =     genderStrings["Is"],
+                        Self =   genderStrings["Self"],
+                        Term =   genderStrings["Term"]
+                    };
+                    genders.Add(gender.Term, gender);
+					foreach(string token in new List<string>() {gender.They, gender.Them, gender.Their, gender.Theirs, gender.Is, gender.Self})
 					{
 						if(!Tokens.Contains(token))
 						{

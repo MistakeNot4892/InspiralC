@@ -50,7 +50,7 @@ namespace inspiral
 
 			if(invocation.Length <= 0)
 			{
-				invoker.ShowNearby(invoker, $"You open your mouth but say nothing.", $"{invoker.GetShort()} opens {invoker.gender.His} mouth but says nothing.");
+				invoker.ShowNearby(invoker, $"You open your mouth but say nothing.", $"{invoker.GetShort()} opens {invoker.gender.Their} mouth but says nothing.");
 				invoker.SendPrompt();
 				return;
 			}
