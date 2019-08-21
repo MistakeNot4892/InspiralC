@@ -131,7 +131,7 @@ namespace inspiral
 			{
 				if(HasComponent(Text.CompInventory))
 				{
-					string their = (this == viewer) ? "your" : gender.His;
+					string their = (this == viewer) ? "your" : gender.Their;
 					InventoryComponent equip = (InventoryComponent)GetComponent(Text.CompInventory);
 					foreach(KeyValuePair<string, GameObject> equ in equip.carrying)
 					{

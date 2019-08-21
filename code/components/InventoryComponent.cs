@@ -366,7 +366,7 @@ namespace inspiral
 				{
 					parent.ShowNearby(parent, 
 						$"You equip {equipping.GetShort()} to your {slot}.",
-						$"{Text.Capitalize(parent.GetShort())} equips {equipping.GetShort()} to {parent.gender.His} {slot}."
+						$"{Text.Capitalize(parent.GetShort())} equips {equipping.GetShort()} to {parent.gender.Their} {slot}."
 					);
 				}
 				Game.Objects.QueueForUpdate(parent);
@@ -403,7 +403,7 @@ namespace inspiral
 					}
 					parent.ShowNearby(parent, 
 						$"You remove {unequipping.GetShort()} from your {removingSlot}.",
-						$"{Text.Capitalize(parent.GetShort())} removes {unequipping.GetShort()} from {parent.gender.His} {removingSlot}."
+						$"{Text.Capitalize(parent.GetShort())} removes {unequipping.GetShort()} from {parent.gender.Their} {removingSlot}."
 					);
 					Game.Objects.QueueForUpdate(parent);
 				}

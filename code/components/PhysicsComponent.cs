@@ -307,7 +307,7 @@ namespace inspiral
 			}
 			else
 			{
-				You = Text.Capitalize(parent.gender.He);
+				You = Text.Capitalize(parent.gender.They);
 				are = parent.gender.Is;
 				if(are == "is")
 				{

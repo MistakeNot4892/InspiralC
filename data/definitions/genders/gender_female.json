@@ -1,8 +1,9 @@
 {
-  "He" :   "she",
-  "Him" :  "her",
-  "His" :  "her",
-  "Is" :   "is",
-  "Self" : "self",
-  "Term" : "female"
+  "They" :   "she",
+  "Them" :   "her",
+  "Their" :  "her",
+  "Theirs" : "hers",
+  "Is" :     "is",
+  "Self" :   "self",
+  "Term" :   "female"
 }

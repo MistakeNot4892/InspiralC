@@ -1,8 +1,9 @@
 {
-  "He" :   "they",
-  "Him" :  "them",
-  "His" :  "their",
-  "Is" :   "are",
-  "Self" : "selves",
-  "Term" : "plural"
+  "They" :   "they",
+  "Them" :   "them",
+  "Their" :  "their",
+  "Theirs" : "theirs",
+  "Is" :     "are",
+  "Self" :   "selves",
+  "Term" :   "plural"
 }
