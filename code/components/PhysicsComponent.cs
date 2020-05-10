@@ -1,9 +1,7 @@
 using System.Data.SQLite;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using System.Diagnostics;
 using System;
-using System.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace inspiral

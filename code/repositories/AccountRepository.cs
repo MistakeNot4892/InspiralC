@@ -2,7 +2,6 @@ using System;
 using System.Data.SQLite;
 using System.Collections.Generic;
 using System.Diagnostics;
-using BCrypt.Net;
 using Newtonsoft.Json;
 
 namespace inspiral

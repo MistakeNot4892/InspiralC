@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace inspiral
 {
 	internal partial class GameObject
