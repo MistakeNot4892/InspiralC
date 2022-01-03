@@ -24,12 +24,12 @@ namespace inspiral
 		internal override string Name         { get; set; } = Text.CompVisible;
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_visible WHERE id = @p0;";
 
-		internal override string TableSchema  { get; set; } = $@"components_visible (
+		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_visible (
 			id INTEGER NOT NULL PRIMARY KEY UNIQUE,
 			{Text.FieldShortDesc} TEXT DEFAULT '',
 			{Text.FieldRoomDesc} TEXT DEFAULT '',
 			{Text.FieldExaminedDesc} TEXT DEFAULT ''
-			)";
+			);";
 		internal override string UpdateSchema { get; set; } = $@"UPDATE components_visible SET 
 			{Text.FieldShortDesc} = @p1, 
 			{Text.FieldRoomDesc} = @p2, 

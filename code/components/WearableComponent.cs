@@ -25,10 +25,10 @@ namespace inspiral
 			return new WearableComponent();
 		}
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_wearable WHERE id = @p0;";
-		internal override string TableSchema  { get; set; } = $@"components_wearable (
+		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_wearable (
 			id INTEGER NOT NULL PRIMARY KEY UNIQUE,
 			{Text.FieldWearableSlots} TEXT DEFAULT ''
-			)";
+			);";
 		internal override string UpdateSchema { get; set; } = $@"UPDATE components_wearable SET 
 			{Text.FieldWearableSlots} = @p1 
 			WHERE id = @p0;";

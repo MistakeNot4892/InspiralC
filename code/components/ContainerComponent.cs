@@ -24,17 +24,17 @@ namespace inspiral
 			return new ContainerComponent();
 		}
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_container WHERE id = @p0;";
-		internal override string TableSchema  { get; set; } = $@"components_container (
+		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_container (
 				id INTEGER NOT NULL PRIMARY KEY UNIQUE, 
 				{Text.FieldIsOpen} INTEGER DEFAULT 1, 
 				{Text.FieldHasLid} INTEGER DEFAULT 0,
 				{Text.FieldMaxCapacity} INTEGER DEFAULT 10
-				)";
+				);";
 		internal override string UpdateSchema   { get; set; } = $@"UPDATE components_container SET 
 				{Text.FieldIsOpen} = @p1, 
 				{Text.FieldHasLid} = @p2,
 				{Text.FieldMaxCapacity} = @p3
-				WHERE id = @p0";
+				WHERE id = @p0;";
 		internal override string InsertSchema { get; set; } = $@"INSERT INTO components_container (
 				id,
 				{Text.FieldIsOpen},

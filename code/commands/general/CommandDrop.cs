@@ -9,7 +9,7 @@ namespace inspiral
 				invoker.SendLine("You cannot drop objects.");
 				return;
 			}
-			if(invoker.CanUseBalance("poise"))
+			if(invoker.TryUseBalance("poise"))
 			{
 				InventoryComponent inv = (InventoryComponent)invoker.GetComponent(Text.CompInventory);
 				inv.TryToDrop(cmd.rawInput);

@@ -96,11 +96,6 @@ namespace inspiral
 		{
 			return !HasComponent(Text.CompRoom) && !HasComponent(Text.CompMobile);
 		}
-
-		internal bool TryUseBalance(string balance, int msKnock)
-		{
-			return TryUseBalance(balance, msKnock, false);
-		}
 		internal bool CanUseBalance(string balance)
 		{
 			if(HasComponent(Text.CompBalance))
@@ -110,12 +105,25 @@ namespace inspiral
 			}
 			return false;
 		}
+
+		internal bool TryUseBalance(string balance, int msKnock)
+		{
+			return TryUseBalance(balance, msKnock, false);
+		}
+		internal bool TryUseBalance(string balance)
+		{
+			return TryUseBalance(balance, 0, false);
+		}
 		internal bool TryUseBalance(string balance, int msKnock, bool ignoreOffbal)
 		{
 			if(HasComponent(Text.CompBalance))
 			{
 				if(ignoreOffbal || CanUseBalance(balance))
 				{
+					if(msKnock <= 0)
+					{
+						return true;
+					}
 					WriteLine($"Using {msKnock}ms of {balance}");
 					return UseBalance(balance, msKnock);
 				}

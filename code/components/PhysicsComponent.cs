@@ -32,7 +32,7 @@ namespace inspiral
 			return new PhysicsComponent();
 		}
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_physics WHERE id = @p0;";
-		internal override string TableSchema  { get; set; } = $@"components_physics (
+		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_physics (
 				id INTEGER NOT NULL PRIMARY KEY UNIQUE, 
 				{Text.FieldLength}     INTEGER DEFAULT 1,
 				{Text.FieldWidth}      INTEGER DEFAULT 1,
@@ -40,7 +40,7 @@ namespace inspiral
 				{Text.FieldDensity}    DOUBLE DEFAULT 1.0,
 				{Text.FieldStrikeArea} DOUBLE DEFAULT 1.0,
 				{Text.FieldEdged}      INTEGER DEFAULT 0
-				)";
+				);";
 		internal override string UpdateSchema   { get; set; } = $@"UPDATE components_physics SET 
 				{Text.FieldLength} =     @p1, 
 				{Text.FieldWidth} =      @p2, 
@@ -48,7 +48,7 @@ namespace inspiral
 				{Text.FieldDensity} =    @p4,
 				{Text.FieldStrikeArea} = @p5,
 				{Text.FieldEdged} =      @p6
-				WHERE id = @p0";
+				WHERE id = @p0;";
 		internal override string InsertSchema { get; set; } = $@"INSERT INTO components_physics (
 				id,
 				{Text.FieldLength},

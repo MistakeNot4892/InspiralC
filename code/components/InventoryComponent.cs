@@ -24,13 +24,13 @@ namespace inspiral
 			return new InventoryComponent();
 		}
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_inventory WHERE id = @p0;";
-		internal override string TableSchema  { get; set; } = $@"components_inventory (
+		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_inventory (
 				id INTEGER NOT NULL PRIMARY KEY UNIQUE, 
 				{Text.FieldEquippedSlots} TEXT DEFAULT ''
-				)";
+				);";
 		internal override string UpdateSchema   { get; set; } = $@"UPDATE components_inventory SET 
 				{Text.FieldEquippedSlots} = @p1 
-				WHERE id = @p0";
+				WHERE id = @p0;";
 		internal override string InsertSchema { get; set; } = $@"INSERT INTO components_inventory (
 				id,
 				{Text.FieldEquippedSlots}
@@ -259,10 +259,14 @@ namespace inspiral
 				if(success)
 				{
 					Game.Objects.QueueForUpdate(parent);
-					parent.ShowNearby(parent, 
-						$"You pick up {equipping.GetShort()}.",
-						$"{Text.Capitalize(parent.GetShort())} picks up {equipping.GetShort()}."
-					);
+					string collectionMessage1p = $"You pick up {equipping.GetShort()}";
+					string collectionMessage3p = $"{Text.Capitalize(parent.GetShort())} picks up {equipping.GetShort()}";
+					if(slot != null && slot != "default")
+					{
+						collectionMessage1p = $"{collectionMessage1p} with your {slot}";
+						collectionMessage3p = $"{collectionMessage1p} with {parent.gender.Their} {slot}";
+					}
+					parent.ShowNearby(parent, $"{collectionMessage1p}.", $"{collectionMessage3p}.");
 					return true;
 				}
 			}

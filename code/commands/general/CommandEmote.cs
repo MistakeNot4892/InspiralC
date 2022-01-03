@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace inspiral
@@ -11,7 +12,14 @@ namespace inspiral
 			if(cmd.rawInput[0] == '(' && cmd.rawInput.IndexOf(')') != -1)
 			{
 				int secondParen = cmd.rawInput.IndexOf(')')-1;
-				emoteText = Text.FormatProse($"{cmd.rawInput.Substring(1, secondParen)} {emoteText} {cmd.rawInput.Substring(secondParen + emoteText.Length-1)}");
+				string rst = cmd.rawInput;
+				if(rst.Length <= secondParen+3)
+				{
+					invoker.SendLine("Please specify emote text after the preface.");
+					return;
+				}
+				string end = rst.Substring(secondParen + 3);
+				emoteText = Text.FormatProse($"{rst.Substring(1, secondParen)} {emoteText} {end}");
 			}
 			else
 			{

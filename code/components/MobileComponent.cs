@@ -28,19 +28,19 @@ namespace inspiral
 		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldEnterMessage, Text.FieldLeaveMessage, Text.FieldDeathMessage};
 		internal override string Name         { get; set; } = Text.CompMobile;
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_mobile WHERE id = @p0;";
-		internal override string TableSchema  { get; set; } = $@"components_mobile (
+		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_mobile (
 				id INTEGER NOT NULL PRIMARY KEY UNIQUE, 
 				{Text.FieldEnterMessage} TEXT DEFAULT '', 
 				{Text.FieldLeaveMessage} TEXT DEFAULT '', 
 				{Text.FieldDeathMessage} TEXT DEFAULT '',
 				{Text.FieldBodypartList} TEXT DEFAULT ''
-				)";
+				);";
 		internal override string UpdateSchema   { get; set; } = $@"UPDATE components_mobile SET 
 				{Text.FieldEnterMessage} = @p1, 
 				{Text.FieldLeaveMessage} = @p2, 
 				{Text.FieldDeathMessage} = @p3,
 				{Text.FieldBodypartList} = @p4
-				WHERE id = @p0";
+				WHERE id = @p0;";
 		internal override string InsertSchema { get; set; } = $@"INSERT INTO components_mobile (
 				id,
 				{Text.FieldEnterMessage},

@@ -23,10 +23,10 @@ namespace inspiral
 		internal override string Name         { get; set; } = Text.CompRoom;
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_room WHERE id = @p0;";
 
-		internal override string TableSchema  { get; set; } = $@"components_room (
+		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_room (
 				id INTEGER NOT NULL PRIMARY KEY UNIQUE, 
 				{Text.FieldExits} TEXT DEFAULT ''
-				)";
+				);";
 		internal override string UpdateSchema { get; set; } = $@"UPDATE components_room SET 
 				{Text.FieldExits} = @p1 
 				WHERE id = @p0;";

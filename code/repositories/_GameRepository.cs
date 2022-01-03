@@ -93,10 +93,8 @@ namespace inspiral
 						saveCount = updateQueue.Count;
 					}
 					for(int i = 0;i<saveCount;i++)
-					{
-						Object saving = updateQueue[0];
-						updateQueue.Remove(saving);
-						SaveObject(saving);
+					{					
+						SaveObject(updateQueue[0]);
 					}
 				}
 				Thread.Sleep(5000);
@@ -149,6 +147,10 @@ namespace inspiral
 		}
 		public void SaveObject(Object objInstance)
 		{
+			if(updateQueue.Contains(objInstance))
+			{
+				updateQueue.Remove(objInstance);
+			}
 			using(SQLiteCommand command = new SQLiteCommand(dbUpdateQuery, dbConnection))
 			{
 				try

@@ -17,19 +17,19 @@ namespace inspiral
 	{
 		internal override string Name { get; set; } = Text.CompBodypart;
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_bodyparts WHERE id = @p0;";
-		internal override string TableSchema  { get; set; } = $@"components_bodyparts (
+		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_bodyparts (
 				id INTEGER NOT NULL PRIMARY KEY UNIQUE, 
 				{Text.FieldCanGrasp}       INTEGER DEFAULT 0,
 				{Text.FieldCanStand}       INTEGER DEFAULT 0,
 				{Text.FieldNaturalWeapon}  INTEGER DEFAULT 0,
 				{Text.FieldEquipmentSlots} TEXT DEFAULT ''
-				)";
+				);";
 		internal override string UpdateSchema   { get; set; } = $@"UPDATE components_bodyparts SET 
 				{Text.FieldCanGrasp} =       @p1,
 				{Text.FieldCanStand} =       @p2,
 				{Text.FieldNaturalWeapon} =  @p3,
 				{Text.FieldEquipmentSlots} = @p4
-				WHERE id = @p0";
+				WHERE id = @p0;";
 		internal override string InsertSchema { get; set; } = $@"INSERT INTO components_bodyparts (
 				id,
 				{Text.FieldCanGrasp},

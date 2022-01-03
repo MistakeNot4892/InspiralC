@@ -9,7 +9,7 @@ namespace inspiral
 				invoker.WriteLine("You cannot equip objects.");
 				return;
 			}
-			if(invoker.CanUseBalance("poise"))
+			if(invoker.TryUseBalance("poise"))
 			{
 				InventoryComponent inv = (InventoryComponent)invoker.GetComponent(Text.CompInventory);
 				if(inv.TryToEquip(cmd.rawInput))

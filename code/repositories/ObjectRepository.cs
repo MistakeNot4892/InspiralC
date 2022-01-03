@@ -46,7 +46,7 @@ namespace inspiral
 			{
 				if(builder.Value.TableSchema != null)
 				{
-					using( SQLiteCommand command = new SQLiteCommand($"CREATE TABLE IF NOT EXISTS {builder.Value.TableSchema};", dbConnection) )
+					using( SQLiteCommand command = new SQLiteCommand(builder.Value.TableSchema, dbConnection) )
 					{
 						try
 						{

@@ -9,7 +9,7 @@ namespace inspiral
 				invoker.WriteLine("You cannot unequip objects.");
 				return;
 			}
-			if(invoker.CanUseBalance("poise"))
+			if(invoker.TryUseBalance("poise"))
 			{
 				InventoryComponent inv = (InventoryComponent)invoker.GetComponent(Text.CompInventory);
 				if(inv.TryToUnequip(cmd.rawInput))

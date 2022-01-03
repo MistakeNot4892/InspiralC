@@ -39,11 +39,11 @@ namespace inspiral
 
 	internal class GameComponentBuilder
 	{
-		internal virtual string Name              { get; set; } = null;
-		internal virtual string TableSchema       { get; set; } = null;
-		internal virtual string UpdateSchema      { get; set; } = null;
-		internal virtual string InsertSchema      { get; set; } = null;
-		internal virtual string LoadSchema        { get; set; } = null;
+		internal virtual string Name                 { get; set; } = null;
+		internal virtual string TableSchema          { get; set; } = null;
+		internal virtual string UpdateSchema         { get; set; } = null;
+		internal virtual string InsertSchema         { get; set; } = null;
+		internal virtual string LoadSchema           { get; set; } = null;
 		internal virtual List<string> editableFields { get; set; } = null;
 		internal virtual List<string> viewableFields { get; set; } = null;
 		internal virtual GameComponent Build() { return null; }

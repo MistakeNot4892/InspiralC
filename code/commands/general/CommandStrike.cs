@@ -36,25 +36,16 @@ namespace inspiral
 						}
 					}
 				}
-				else if(inv.GetWieldableSlots().Contains(usingItem))
+				else if(inv.GetWieldableSlots().Contains(usingItem) && inv.carrying.ContainsKey(usingItem))
 				{
-					if(inv.carrying.ContainsKey(usingItem))
-					{
-						usingItem = inv.carrying[usingItem].id.ToString();
-					}
-					else
-					{
-						invoker.WriteLine($"You are not holding anything in your {usingItem}!");
-						invoker.SendPrompt();
-						return;
-					}
+					usingItem = inv.carrying[usingItem].id.ToString();
 				}
 			}
 
-			if(strikeWith == null && invoker.HasComponent(Text.CompMobile))
+			if(invoker.HasComponent(Text.CompMobile))
 			{
 				MobileComponent mob = (MobileComponent)invoker.GetComponent(Text.CompMobile);
-				if((usingItem == null || usingItem == "") && mob.strikers.Count > 0)
+				if(strikeWith == null && (usingItem == null || usingItem == "") && mob.strikers.Count > 0)
 				{
 					usingItem = mob.strikers[Game.rand.Next(0, mob.strikers.Count)];
 				}
