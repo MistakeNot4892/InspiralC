@@ -133,16 +133,16 @@ namespace inspiral
 						else
 						{
 							passwordConfirmations.Remove(invoker);
-							passwordConfirmations.Add(invoker, rawCommand);
+							passwordConfirmations.Add(invoker, BCrypt.Net.BCrypt.HashPassword(rawCommand));
 							loginState.Remove(invoker);
 							loginState.Add(invoker, "registering_confirming_password");
 							invoker.WriteLine("Please reenter your password to confirm.");
 						}
 						break;
 					case "registering_confirming_password":
-						if(passwordConfirmations.ContainsKey(invoker) && passwordConfirmations[invoker] == rawCommand)
+						if(passwordConfirmations.ContainsKey(invoker) && BCrypt.Net.BCrypt.Verify(rawCommand, passwordConfirmations[invoker]))
 						{
-							invoker.account = Game.Accounts.CreateAccount(invoker.id, BCrypt.Net.BCrypt.HashPassword(passwordConfirmations[invoker], 10));
+							invoker.account = Game.Accounts.CreateAccount(invoker.id, passwordConfirmations[invoker]);
 							invoker.WriteLine("Account created.");
 							HandleLogin(invoker);
 						}
