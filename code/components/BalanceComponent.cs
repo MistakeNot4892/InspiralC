@@ -35,7 +35,6 @@ namespace inspiral
 
 		internal BalanceComponent()
 		{
-			isPersistent = false;
 			AddBalanceTimer("poise");
 			AddBalanceTimer("concentration");
 		}
