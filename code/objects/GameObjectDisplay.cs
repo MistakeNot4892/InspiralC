@@ -22,13 +22,13 @@ namespace inspiral
 
 		internal void ShowToContents(GameObject source, string message1p, string message3p, bool sendPromptToSource)
 		{
-			if(source.HasComponent(Text.CompClient))
+			if(source.HasComponent<ClientComponent>())
 			{
 				source.WriteLine(message1p, sendPromptToSource);
 			}
 			foreach(GameObject obj in contents)
 			{
-				if(obj != source && obj.HasComponent(Text.CompClient))
+				if(obj != source && obj.HasComponent<ClientComponent>())
 				{
 					obj.WriteLine(message3p, true);
 				}
@@ -41,7 +41,7 @@ namespace inspiral
 		}
 		internal virtual void WriteLine(string message, bool sendPrompt)
 		{
-			ClientComponent client = (ClientComponent)GetComponent(Text.CompClient);
+			ClientComponent client = (ClientComponent)GetComponent<ClientComponent>();
 			if(client != null && client.client != null)
 			{
 				client.client.WriteLine(message);
@@ -95,7 +95,7 @@ namespace inspiral
 			}
 			else
 			{
-				if(source.HasComponent(Text.CompClient))
+				if(source.HasComponent<ClientComponent>())
 				{
 					source.WriteLine(message1p);
 				}
@@ -126,12 +126,12 @@ namespace inspiral
 		internal List<string> GetVisibleContents(GameObject viewer, bool quickView)
 		{
 			List<string> result = new List<string>();
-			if(HasComponent(Text.CompMobile))
+			if(HasComponent<MobileComponent>())
 			{
-				if(HasComponent(Text.CompInventory))
+				if(HasComponent<InventoryComponent>())
 				{
 					string their = (this == viewer) ? "your" : gender.Their;
-					InventoryComponent equip = (InventoryComponent)GetComponent(Text.CompInventory);
+					InventoryComponent equip = (InventoryComponent)GetComponent<InventoryComponent>();
 					foreach(KeyValuePair<string, GameObject> equ in equip.carrying)
 					{
 						if(quickView)
@@ -171,7 +171,7 @@ namespace inspiral
 					{
 						if(gameObj != viewer)
 						{
-							result.Add(gameObj.GetString(Text.CompVisible, Text.FieldRoomDesc));
+							result.Add(gameObj.GetString<VisibleComponent>(Text.FieldRoomDesc));
 						}
 					}
 				}
@@ -180,9 +180,9 @@ namespace inspiral
 		}
 		internal void ExaminedBy(GameObject viewer, bool fromInside)
 		{
-			if(HasComponent(Text.CompVisible))
+			if(HasComponent<VisibleComponent>())
 			{
-				VisibleComponent comp = (VisibleComponent)GetComponent(Text.CompVisible);
+				VisibleComponent comp = (VisibleComponent)GetComponent<VisibleComponent>();
 				comp.ExaminedBy(viewer, fromInside);
 			}
 			else
@@ -192,7 +192,7 @@ namespace inspiral
 		}
 		internal string GetShort()
 		{
-			return GetString(Text.CompVisible, Text.FieldShortDesc);
+			return GetString<VisibleComponent>(Text.FieldShortDesc);
 		}
 	}
 }

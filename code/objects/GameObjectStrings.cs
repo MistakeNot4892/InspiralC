@@ -4,34 +4,36 @@ namespace inspiral
 {
 	internal partial class GameObject
 	{
-		internal string GetString(string component, string field)
+		internal string GetString<T>(string field)
 		{
-			if(components.ContainsKey(component))
+			System.Type compType = typeof(T);
+			if(components.ContainsKey(compType))
 			{
-				return components[component].GetString(field);
+				return components[compType].GetString(field);
 			}
 			return null;
 		}
-		internal long GetLong(string component, string field)
+		internal long GetLong<T>(string field)
 		{
-			if(components.ContainsKey(component))
+			System.Type compType = typeof(T);
+			if(components.ContainsKey(compType))
 			{
-				return components[component].GetLong(field);
+				return components[compType].GetLong(field);
 			}
 			return -1;
 		}
-		internal void SetLong(string component, string field, long newField)
+		internal void SetLong<T>(string field, long newField)
 		{
-			if((bool)(GetComponent(component)?.SetValue(field, newField)))
+			if((bool)(GetComponent<T>()?.SetValue(field, newField)))
 			{
 				Game.Objects.QueueForUpdate(this);
 			}
 		}
-		internal void SetString(string component, string field, string newField)
+		internal void SetString<T>(string field, string newField)
 		{
-			if(HasComponent(component))
+			if(HasComponent<T>())
 			{
-				GameComponent comp = GetComponent(component);
+				GameComponent comp = GetComponent<T>();
 				if(comp.SetValue(field, newField))
 				{
 					Game.Objects.QueueForUpdate(this);
@@ -55,9 +57,9 @@ namespace inspiral
 			{
 				summary[fieldKey].Add($"location (read-only): null");
 			}
-			foreach(KeyValuePair<string, GameComponent> comp in components)
+			foreach(KeyValuePair<System.Type, GameComponent> comp in components)
 			{
-				summary[fieldKey].Add($"\n{Text.FormatPopup(comp.Value.name, comp.Value.GetStringSummary(), wrapWidth+Text.NestedWrapwidthModifier)}");
+				summary[fieldKey].Add($"\n{Text.FormatPopup(comp.Value.GetType().ToString(), comp.Value.GetStringSummary(), wrapWidth+Text.NestedWrapwidthModifier)}");
 			}
 			return Text.FormatBlock(summary, wrapWidth);
 		}

@@ -6,8 +6,8 @@
 	],
 	"components" : 
 	{
-		"room" : [],
-		"visible" : 
+		"inspiral.RoomComponent" : [],
+		"inspiral.VisibleComponent" : 
 		{
 			"shortdesc" :    "an empty room",
 			"examineddesc" : "There is nothing here except silence.",

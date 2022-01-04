@@ -48,7 +48,7 @@ namespace inspiral
 				return false;
 			}
 			contents.Add(entering);
-			ClientComponent clientComp = (ClientComponent)entering.GetComponent(Text.CompClient);
+			ClientComponent clientComp = (ClientComponent)entering.GetComponent<ClientComponent>();
 			if(clientComp != null && clientComp.client != null)
 			{
 				ExaminedBy(clientComp.parent, true);

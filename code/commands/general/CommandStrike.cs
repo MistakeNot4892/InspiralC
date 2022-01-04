@@ -22,9 +22,9 @@ namespace inspiral
 			GameObject strikeWith = null;
 			GameObject strikeAgainst = null;
 
-			if(invoker.HasComponent(Text.CompInventory))
+			if(invoker.HasComponent<InventoryComponent>())
 			{
-				InventoryComponent inv = (InventoryComponent)invoker.GetComponent(Text.CompInventory);
+				InventoryComponent inv = (InventoryComponent)invoker.GetComponent<InventoryComponent>();
 				if(usingItem == null || usingItem == "")
 				{
 					foreach(string slot in inv.GetWieldableSlots())
@@ -42,9 +42,9 @@ namespace inspiral
 				}
 			}
 
-			if(invoker.HasComponent(Text.CompMobile))
+			if(invoker.HasComponent<MobileComponent>())
 			{
-				MobileComponent mob = (MobileComponent)invoker.GetComponent(Text.CompMobile);
+				MobileComponent mob = (MobileComponent)invoker.GetComponent<MobileComponent>();
 				if(strikeWith == null && (usingItem == null || usingItem == "") && mob.strikers.Count > 0)
 				{
 					usingItem = mob.strikers[Game.rand.Next(0, mob.strikers.Count)];
@@ -58,12 +58,12 @@ namespace inspiral
 			if(strikeWith == null)
 			{
 				GameObject prop = invoker.FindGameObjectInContents(usingItem);
-				if(prop != null && invoker.HasComponent(Text.CompInventory))
+				if(prop != null && invoker.HasComponent<InventoryComponent>())
 				{
-					InventoryComponent inv = (InventoryComponent)invoker.GetComponent(Text.CompInventory);
+					InventoryComponent inv = (InventoryComponent)invoker.GetComponent<InventoryComponent>();
 					if(inv.IsWielded(prop))
 					{
-						if(!prop.HasComponent(Text.CompPhysics))
+						if(!prop.HasComponent<PhysicsComponent>())
 						{
 							invoker.SendLine($"You cannot use {prop.GetShort()} as a weapon.");
 							return;
@@ -80,9 +80,9 @@ namespace inspiral
 				return;
 			}
 
-			if(targetObj.HasComponent(Text.CompMobile))
+			if(targetObj.HasComponent<MobileComponent>())
 			{
-				MobileComponent mob = (MobileComponent)targetObj.GetComponent(Text.CompMobile);
+				MobileComponent mob = (MobileComponent)targetObj.GetComponent<MobileComponent>();
 				string checkBp = cmd.objIn;
 				if(checkBp == null || checkBp == "")
 				{
@@ -110,9 +110,9 @@ namespace inspiral
 			{
 				firstPersonStrikeWith = firstPersonStrikeWith.Substring(3);
 			}
-			if(strikeWith.HasComponent(Text.CompBodypart))
+			if(strikeWith.HasComponent<BodypartComponent>())
 			{
-				BodypartComponent body = (BodypartComponent)strikeWith.GetComponent(Text.CompBodypart);
+				BodypartComponent body = (BodypartComponent)strikeWith.GetComponent<BodypartComponent>();
 				if(body.isNaturalWeapon)
 				{
 					strikeString = $"{invoker.gender.Their} {strikeString}";

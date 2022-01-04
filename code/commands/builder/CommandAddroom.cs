@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 
 namespace inspiral
@@ -7,7 +6,7 @@ namespace inspiral
 	{
 		internal void CmdAddroom(GameObject invoker, CommandData cmd)
 		{
-			if(invoker.location == null || !invoker.location.HasComponent(Text.CompRoom))
+			if(invoker.location == null || !invoker.location.HasComponent<RoomComponent>())
 			{
 				invoker.WriteLine("This command is only usable within a room.");
 			}
@@ -28,7 +27,7 @@ namespace inspiral
 					{
 						exitToAdd = Text.shortExits[exitToAdd];
 					}
-					RoomComponent room = (RoomComponent)invoker.location.GetComponent(Text.CompRoom);
+					RoomComponent room = (RoomComponent)invoker.location.GetComponent<RoomComponent>();
 					if(room.exits.ContainsKey(exitToAdd))
 					{
 						invoker.WriteLine($"There is already an exit to the {exitToAdd} in this room.");
@@ -36,7 +35,7 @@ namespace inspiral
 					else
 					{
 						long roomId = -1;
-						Console.WriteLine(cmd.strArgs[1]);
+						System.Console.WriteLine(cmd.strArgs[1]);
 						if(cmd.strArgs[1].ToLower() == "new")
 						{
 							roomId = Modules.Templates.Instantiate("room").id;
@@ -45,9 +44,9 @@ namespace inspiral
 						{
 							try
 							{
-								roomId = Int32.Parse(cmd.strArgs[0].ToLower());
+								roomId = System.Int32.Parse(cmd.strArgs[0].ToLower());
 							}
-							catch(Exception e)
+							catch(System.Exception e)
 							{
 								Debug.WriteLine($"Room ID exception: {e.ToString()}.");
 							}
@@ -60,7 +59,7 @@ namespace inspiral
 						{
 							bool saveEditedRoom = true;
 							GameObject linkingRoom = (GameObject)Game.Objects.Get(roomId);
-							if((cmd.strArgs.Length >= 2 && cmd.strArgs[1].ToLower() == "one-way") || !linkingRoom.HasComponent(Text.CompRoom) || !Text.reversedExits.ContainsKey(exitToAdd))
+							if((cmd.strArgs.Length >= 2 && cmd.strArgs[1].ToLower() == "one-way") || !linkingRoom.HasComponent<RoomComponent>() || !Text.reversedExits.ContainsKey(exitToAdd))
 							{
 								room.exits.Add(exitToAdd, roomId);
 								saveEditedRoom = true;
@@ -69,7 +68,7 @@ namespace inspiral
 							else
 							{
 								string otherExit = Text.reversedExits[exitToAdd];
-								RoomComponent otherRoom = (RoomComponent)linkingRoom.GetComponent(Text.CompRoom);
+								RoomComponent otherRoom = (RoomComponent)linkingRoom.GetComponent<RoomComponent>();
 								if(otherRoom.exits.ContainsKey(otherExit))
 								{
 									room.exits.Add(exitToAdd, roomId);

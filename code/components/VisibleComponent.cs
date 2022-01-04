@@ -6,12 +6,11 @@ namespace inspiral
 {
 	internal partial class ComponentModule : GameModule
 	{
-		internal List<GameComponent> Visibles => GetComponents(Text.CompVisible);
+		internal List<GameComponent> Visibles => GetComponents<VisibleComponent>();
 	}
 
 	internal static partial class Text
 	{
-		internal const string CompVisible =   "visible";
 		internal const string FieldShortDesc    = "short";
 		internal const string FieldRoomDesc     =  "room";
 		internal const string FieldExaminedDesc = "examined";
@@ -19,9 +18,12 @@ namespace inspiral
 
 	internal class VisibleBuilder : GameComponentBuilder
 	{
+		internal override void Initialize()
+		{
+			ComponentType = typeof(VisibleComponent);
+		}
 		internal override List<string> editableFields { get; set; } = new List<string>() {Text.FieldShortDesc, Text.FieldRoomDesc, Text.FieldExaminedDesc};
 		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldShortDesc, Text.FieldRoomDesc, Text.FieldExaminedDesc};
-		internal override string Name         { get; set; } = Text.CompVisible;
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_visible WHERE id = @p0;";
 
 		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_visible (
@@ -46,10 +48,6 @@ namespace inspiral
 			@p2, 
 			@p3 
 			);";
-		internal override GameComponent Build()
-		{
-			return new VisibleComponent();
-		}
 	}
 	internal class VisibleComponent : GameComponent
 	{
@@ -102,7 +100,7 @@ namespace inspiral
 		internal void ExaminedBy(GameObject viewer, bool fromInside)
 		{
 			string mainDesc = $"{Colours.Fg(Text.Capitalize(shortDescription),Colours.BoldWhite)}.";
-			if(parent.HasComponent(Text.CompMobile))
+			if(parent.HasComponent<MobileComponent>())
 			{
 				string startingToken;
 				string theyAre;
@@ -120,7 +118,7 @@ namespace inspiral
 					their = Text.Capitalize(parent.gender.Their);
 				}
 
-				MobileComponent mob = (MobileComponent)parent.GetComponent(Text.CompMobile);
+				MobileComponent mob = (MobileComponent)parent.GetComponent<MobileComponent>();
 				mainDesc = $"{startingToken} {mainDesc}\n{theyAre} a {mob.race}";
 				if(viewer == parent)
 				{
@@ -178,15 +176,15 @@ namespace inspiral
 				}
 			}
 
-			if(parent.HasComponent(Text.CompRoom))
+			if(parent.HasComponent<RoomComponent>())
 			{
-				RoomComponent roomComp = (RoomComponent)parent.GetComponent(Text.CompRoom);
+				RoomComponent roomComp = (RoomComponent)parent.GetComponent<RoomComponent>();
 				mainDesc = $"{mainDesc}\n{Colours.Fg(roomComp.GetExitString(), Colours.BoldCyan)}";
 			}
 
-			if(parent.HasComponent(Text.CompPhysics))
+			if(parent.HasComponent<PhysicsComponent>())
 			{
-				PhysicsComponent phys = (PhysicsComponent)parent.GetComponent(Text.CompPhysics);
+				PhysicsComponent phys = (PhysicsComponent)parent.GetComponent<PhysicsComponent>();
 				mainDesc = $"{mainDesc}\n{phys.GetExaminedSummary(viewer)}";
 			}
 

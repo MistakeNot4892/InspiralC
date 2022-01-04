@@ -1,17 +1,15 @@
-using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Timers;
 
 namespace inspiral
 {
-	internal partial class Text
-	{
-		internal const string CompBalance = "balance";
-	}
 	internal class BalanceBuilder : GameComponentBuilder
 	{
-		internal override string Name { get; set; } = Text.CompBalance;
+		internal override void Initialize()
+		{
+			ComponentType = typeof(BalanceComponent);
+		}
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_balance WHERE id = @p0;";
 		internal override string TableSchema  { get; set; } = "CREATE TABLE IF NOT EXISTS components_balance ( id INTEGER NOT NULL PRIMARY KEY UNIQUE, placeholder STRING NOT NULL )";
 		internal override string InsertSchema { get; set; } = @"INSERT INTO components_balance (
@@ -24,16 +22,12 @@ namespace inspiral
 		internal override string UpdateSchema   { get; set; } = $@"UPDATE components_balance SET 
 			placeholder = @p1 
 			WHERE id = @p0;";
-		internal override GameComponent Build()
-		{
-			return new BalanceComponent();
-		}
 	}
 	class BalanceComponent : GameComponent 
 	{
 		private Dictionary<string, Timer> offBalanceTimers = new Dictionary<string, Timer>();
 
-		internal BalanceComponent()
+		internal override void Initialize()
 		{
 			AddBalanceTimer("poise");
 			AddBalanceTimer("concentration");
@@ -71,7 +65,7 @@ namespace inspiral
 			}
 			balTimer.Interval += (msKnock-1); // -1 because Interval resets to 1 (cannot be 0).
 			balTimer.Enabled = true;
-			double secondsLeft = Math.Truncate(10 * balTimer.Interval) / 10000; // ms to s, truncating to 2 places
+			double secondsLeft = System.Math.Truncate(10 * balTimer.Interval) / 10000; // ms to s, truncating to 2 places
 			string secondsString = secondsLeft == 1 ? "second" : "seconds";
 			parent.WriteLine($"Your {balance} is lost for {secondsLeft} {secondsString}!");
 		}

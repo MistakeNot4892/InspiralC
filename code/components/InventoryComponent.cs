@@ -1,27 +1,24 @@
 using System.Data.SQLite;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using System;
 using System.Linq;
 
 namespace inspiral
 {
 	internal partial class ComponentModule : GameModule
 	{
-		internal List<GameComponent> Inventories => GetComponents(Text.CompInventory);
+		internal List<GameComponent> Inventories => GetComponents<InventoryComponent>();
 	}
 
 	internal static partial class Text
 	{
-		internal const string CompInventory = "inventory";
 		internal const string FieldEquippedSlots = "equipped";
 	}
 	internal class InventoryBuilder : GameComponentBuilder
 	{
-		internal override string Name { get; set; } = Text.CompInventory;
-		internal override GameComponent Build()
+		internal override void Initialize()
 		{
-			return new InventoryComponent();
+			ComponentType = typeof(InventoryComponent);
 		}
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_inventory WHERE id = @p0;";
 		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_inventory (
@@ -146,23 +143,23 @@ namespace inspiral
 		}
 		internal List<string> GetWieldableSlots()
 		{
-			if(parent.HasComponent(Text.CompMobile))
+			if(parent.HasComponent<MobileComponent>())
 			{
-				MobileComponent mob = (MobileComponent)parent.GetComponent(Text.CompMobile);
+				MobileComponent mob = (MobileComponent)parent.GetComponent<MobileComponent>();
 				return mob.graspers;
 			}
 			return new List<string>() { "hands" };
 		}
 		internal List<string> GetEquippableSlots()
 		{
-			if(parent.HasComponent(Text.CompMobile))
+			if(parent.HasComponent<MobileComponent>())
 			{
-				MobileComponent mob = (MobileComponent)parent.GetComponent(Text.CompMobile);
+				MobileComponent mob = (MobileComponent)parent.GetComponent<MobileComponent>();
 				return mob.equipmentSlots;
 			}
 			return new List<string>() { "body" };
 		}
-		internal Tuple<string, string> GetSlotAndTokenFromInput(string input)
+		internal System.Tuple<string, string> GetSlotAndTokenFromInput(string input)
 		{
 			string objKey = input.ToLower().Trim();
 			string objSlot = "default";
@@ -205,7 +202,7 @@ namespace inspiral
 				}
 
 			}
-			return new Tuple<string, string>(objKey, objSlot);
+			return new System.Tuple<string, string>(objKey, objSlot);
 		}
 		internal bool IsWielded(GameObject equipping)
 		{
@@ -237,7 +234,7 @@ namespace inspiral
 		}
 		internal bool TryToCollect(string input)
 		{
-			Tuple<string, string> tokens = GetSlotAndTokenFromInput(input);
+			System.Tuple<string, string> tokens = GetSlotAndTokenFromInput(input);
 			if(tokens.Item1 == "")
 			{
 				parent.WriteLine("What do you wish to pick up?");
@@ -278,18 +275,18 @@ namespace inspiral
 		}
 		internal bool TryToEquip(string input) 
 		{
-			Tuple<string, string> tokens = GetSlotAndTokenFromInput(input);
+			System.Tuple<string, string> tokens = GetSlotAndTokenFromInput(input);
 			string slot = tokens.Item2;
 
 			GameObject equipping = GetObjectFromInput(tokens.Item1, "equip");
 			if(equipping != null)
 			{
-				if(!equipping.HasComponent(Text.CompWearable))
+				if(!equipping.HasComponent<WearableComponent>())
 				{
 					parent.WriteLine("You cannot wear that.");
 					return false;
 				}
-				WearableComponent worn = (WearableComponent)equipping.GetComponent(Text.CompWearable);
+				WearableComponent worn = (WearableComponent)equipping.GetComponent<WearableComponent>();
 				if(slot == null || slot == "default")
 				{
 					slot = worn.wearableSlots.FirstOrDefault();

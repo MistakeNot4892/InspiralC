@@ -20,7 +20,6 @@ namespace inspiral
 }
 */
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -39,13 +38,13 @@ namespace inspiral
 		internal static void Initialize()
 		{
 			Debug.WriteLine($"Initializing modules.");
-			foreach(var t in (from domainAssembly in AppDomain.CurrentDomain.GetAssemblies()
+			foreach(var t in (from domainAssembly in System.AppDomain.CurrentDomain.GetAssemblies()
 				from assemblyType in domainAssembly.GetTypes()
 				where assemblyType.IsSubclassOf(typeof(GameModule))
 				select assemblyType))
 			{
 				Debug.WriteLine($"Initializing module {t}.");
-				GameModule module = (GameModule)Activator.CreateInstance(t);
+				GameModule module = (GameModule)System.Activator.CreateInstance(t);
 				module.Initialize();
 				modules.Add(module);
 			}

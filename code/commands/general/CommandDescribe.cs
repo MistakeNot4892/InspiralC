@@ -9,8 +9,8 @@ namespace inspiral
 				invoker.SendLine("Please supply a new description to use.");
 				return;
 			}
-			string lastDesc = invoker.GetString(Text.CompVisible, Text.FieldExaminedDesc);
-			invoker.SetString(Text.CompVisible, Text.FieldExaminedDesc, cmd.rawInput);
+			string lastDesc = invoker.GetString<VisibleComponent>(Text.FieldExaminedDesc);
+			invoker.SetString<VisibleComponent>(Text.FieldExaminedDesc, cmd.rawInput);
 			invoker.SendLine($"Your appearance has been updated.\nFor reference, your last appearance was:\n{lastDesc}");
 		}
 	}

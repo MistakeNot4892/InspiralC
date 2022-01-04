@@ -55,7 +55,7 @@ namespace inspiral
 
 				default:
 					unknownValue = true;
-					foreach(KeyValuePair<string, GameComponent> comp in editing.components)
+					foreach(KeyValuePair<System.Type, GameComponent> comp in editing.components)
 					{
 						if(Modules.Components.builders[comp.Key].editableFields != null && 
 							Modules.Components.builders[comp.Key].editableFields.Contains(field))

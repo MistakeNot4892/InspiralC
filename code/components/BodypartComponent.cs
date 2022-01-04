@@ -7,7 +7,6 @@ namespace inspiral
 {
 	internal partial class Text
 	{
-		internal const string CompBodypart = "bodypart";
 		internal const string FieldCanGrasp = "cangrasp";
 		internal const string FieldCanStand = "canstand";
 		internal const string FieldNaturalWeapon = "isnaturalweapon";
@@ -15,7 +14,6 @@ namespace inspiral
 	}
 	internal class BodypartBuilder : GameComponentBuilder
 	{
-		internal override string Name { get; set; } = Text.CompBodypart;
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_bodyparts WHERE id = @p0;";
 		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_bodyparts (
 				id INTEGER NOT NULL PRIMARY KEY UNIQUE, 
@@ -43,9 +41,9 @@ namespace inspiral
 				@p3,
 				@p4
 				);";
-		internal override GameComponent Build()
+		internal override void Initialize()
 		{
-			return new BodypartComponent();
+			ComponentType = typeof(BodypartComponent);
 		}
 	}
 	internal class BodypartComponent : GameComponent

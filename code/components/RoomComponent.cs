@@ -8,19 +8,21 @@ namespace inspiral
 
 	internal partial class ComponentModule : GameModule
 	{
-		internal List<GameComponent> Rooms =>    GetComponents(Text.CompRoom);
+		internal List<GameComponent> Rooms => GetComponents<RoomComponent>();
 	}
 
 	internal static partial class Text
 	{
-		internal const string CompRoom =      "room";
 		internal const string FieldExits = "exits";
 	}
 
 	internal class RoomBuilder : GameComponentBuilder
 	{
+		internal override void Initialize()
+		{
+			ComponentType = typeof(RoomComponent);
+		}
 		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldExits};
-		internal override string Name         { get; set; } = Text.CompRoom;
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_room WHERE id = @p0;";
 
 		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_room (
@@ -37,17 +39,13 @@ namespace inspiral
 				@p0,
 				@p1
 				);";
-		internal override GameComponent Build()
-		{
-			return new RoomComponent();
-		}
 	}
 
 	internal class RoomComponent : GameComponent
 	{
 		internal Dictionary<string, long> exits;
 
-		internal RoomComponent()
+		internal override void Initialize()
 		{
 			exits = new Dictionary<string, long>();
 		}

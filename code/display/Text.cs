@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -152,23 +151,23 @@ namespace inspiral
 		{
 			string useHeader = Wrap(header, wrapwidth - 14).Split('\n')[0];
 			int padNeeded = wrapwidth - (StripColours(useHeader).Length + 7);
-			string result = $"{Colours.Fg($"[{new String('=', padNeeded/2)}\\", Colours.Cyan)} {Colours.Fg(useHeader, Colours.BoldCyan)} {Colours.Fg($"/{new String('=', padNeeded-(padNeeded/2))}]",Colours.Cyan)}";
-			string emptyLine = $" {sideBar}{new String(' ', wrapwidth-7)}{sideBar}";
+			string result = $"{Colours.Fg($"[{new System.String('=', padNeeded/2)}\\", Colours.Cyan)} {Colours.Fg(useHeader, Colours.BoldCyan)} {Colours.Fg($"/{new System.String('=', padNeeded-(padNeeded/2))}]",Colours.Cyan)}";
+			string emptyLine = $" {sideBar}{new System.String(' ', wrapwidth-7)}{sideBar}";
 			result += $"\n{emptyLine}";
 			string[] useContents = Wrap(boxContents, wrapwidth - 10).Split('\n');
 			for(int i = 0;i < useContents.Length;i++)
 			{
 				string useLine = useContents[i];
-				result += $"\n {sideBar}  {Colours.Fg(useLine, Colours.BoldWhite)}{new String(' ', wrapwidth - StripColours(useLine).Length - 9)}{sideBar}";
+				result += $"\n {sideBar}  {Colours.Fg(useLine, Colours.BoldWhite)}{new System.String(' ', wrapwidth - StripColours(useLine).Length - 9)}{sideBar}";
 			}
 			result += $"\n{emptyLine}";
-			result += $"\n{Colours.Fg($"[{new String('=', wrapwidth-3)}]", Colours.Cyan)}";
+			result += $"\n{Colours.Fg($"[{new System.String('=', wrapwidth-3)}]", Colours.Cyan)}";
 			return result;
 		}
 		internal static string FormatBlock(Dictionary<string, List<string>> formatLines, int wrapwidth)
 		{
-			string divider = Colours.Fg($"[{new String('=', wrapwidth-3)}]", Colours.Cyan);
-			string emptyLine = $" {sideBar}{new String(' ', wrapwidth-7)}{sideBar}";
+			string divider = Colours.Fg($"[{new System.String('=', wrapwidth-3)}]", Colours.Cyan);
+			string emptyLine = $" {sideBar}{new System.String(' ', wrapwidth-7)}{sideBar}";
 			string result = "";
 			foreach(KeyValuePair<string, List<string>> subSection in formatLines)
 			{
@@ -180,7 +179,7 @@ namespace inspiral
 					int padNeeded = wrapwidth - (StripColours(headerLine).Length+7);
 					int padLeft = padNeeded/2;
 					int padRight = padNeeded-padLeft;
-					result += $"\n {sideBar}{new String(' ', padLeft)}{Colours.Fg(headerLine, Colours.BoldCyan)}{new String(' ', padRight)}{sideBar}";
+					result += $"\n {sideBar}{new System.String(' ', padLeft)}{Colours.Fg(headerLine, Colours.BoldCyan)}{new System.String(' ', padRight)}{sideBar}";
 				}
 				result += $"\n{divider}";
 				result += $"\n{emptyLine}";
@@ -190,7 +189,7 @@ namespace inspiral
 					for(int i = 0;i<subLines.Length;i++)
 					{
 						string subLine = subLines[i];
-						result += $"\n {sideBar}   {Colours.Fg(subLine, Colours.BoldWhite)}{new String(' ', wrapwidth - StripColours(subLine).Length - 10)}{sideBar}";
+						result += $"\n {sideBar}   {Colours.Fg(subLine, Colours.BoldWhite)}{new System.String(' ', wrapwidth - StripColours(subLine).Length - 10)}{sideBar}";
 					}
 				}
 				result += $"\n{emptyLine}";
@@ -251,7 +250,7 @@ namespace inspiral
 		}
 		internal static string ReplacePronouns(string token, GameObject other, string message, bool thirdPerson = false)
 		{
-			Console.WriteLine(message);
+			System.Console.WriteLine(message);
 			if(message.ToLower().Contains($"${token}"))
 			{
 				string replacementValue = thirdPerson ? other.gender.They : "you";

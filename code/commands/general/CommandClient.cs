@@ -4,9 +4,9 @@ namespace inspiral
 	{
 		internal void CmdClient(GameObject invoker, CommandData cmd)
 		{
-			if(invoker.HasComponent(Text.CompClient))
+			if(invoker.HasComponent<ClientComponent>())
 			{
-				ClientComponent client = (ClientComponent)invoker.GetComponent(Text.CompClient);
+				ClientComponent client = (ClientComponent)invoker.GetComponent<ClientComponent>();
 				invoker.WriteLine(client.client.GetClientSummary());
 			}
 			invoker.SendPrompt();

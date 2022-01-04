@@ -4,26 +4,24 @@ namespace inspiral
 {
 	internal static partial class Text
 	{
-		internal const string CompClient =    "client";
 		internal const string FieldClientId = "clientId";
 	}
 	internal partial class ComponentModule : GameModule
 	{
-		internal List<GameComponent> Clients => GetComponents(Text.CompClient);
+		internal List<GameComponent> Clients => GetComponents<ClientComponent>();
 	}
 	internal class ClientBuilder : GameComponentBuilder
 	{
-		internal override string Name { get; set; } = Text.CompClient;
 		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldClientId};
-		internal override GameComponent Build()
+		internal override void Initialize()
 		{
-			return new ClientComponent();
+			ComponentType = typeof(ClientComponent);
 		}
 	}
 	class ClientComponent : GameComponent 
 	{
 		internal GameClient client;
-		internal ClientComponent()
+		internal override void Initialize()
 		{
 			isPersistent = false;
 		}
@@ -33,8 +31,14 @@ namespace inspiral
 		}
 		internal void Logout()
 		{
-			client?.shell?.RemoveComponent(Text.CompClient);
-			client = null;
+			if(client != null)
+			{
+				if(client.shell != null)
+				{
+					client.shell.RemoveComponent<ClientComponent>();
+				}
+				client = null;
+			}
 		}
 		internal override string GetString(string field)
 		{

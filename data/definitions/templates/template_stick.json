@@ -6,13 +6,13 @@
 	],
 	"components" : 
 	{
-		"visible" : 
+		"inspiral.VisibleComponent" : 
 		{
 			"shortdesc" :    "a stick",
 			"examineddesc" : "This is a stick. It's brown and sticky.",
 			"roomdesc" :     "A stick has been left here."
 		},
-		"physics" :
+		"inspiral.PhysicsComponent" :
 		{
 			"length" : 5,
 			"width" :  5,

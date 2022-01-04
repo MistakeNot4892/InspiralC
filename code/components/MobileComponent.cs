@@ -8,12 +8,11 @@ namespace inspiral
 {
 	internal partial class ComponentModule : GameModule
 	{
-		internal List<GameComponent> Mobiles =>  GetComponents(Text.CompMobile);
+		internal List<GameComponent> Mobiles =>  GetComponents<MobileComponent>();
 	}
 
 	internal static partial class Text
 	{
-		internal const string CompMobile = "mobile";
 		internal const string FieldEnterMessage = "enter";
 		internal const string FieldLeaveMessage = "leave";
 		internal const string FieldDeathMessage = "death";
@@ -24,9 +23,12 @@ namespace inspiral
 
 	internal class MobileBuilder : GameComponentBuilder
 	{
+		internal override void Initialize()
+		{
+			ComponentType = typeof(MobileComponent);
+		}
 		internal override List<string> editableFields { get; set; } = new List<string>() {Text.FieldEnterMessage, Text.FieldLeaveMessage, Text.FieldDeathMessage};
 		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldEnterMessage, Text.FieldLeaveMessage, Text.FieldDeathMessage};
-		internal override string Name         { get; set; } = Text.CompMobile;
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_mobile WHERE id = @p0;";
 		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_mobile (
 				id INTEGER NOT NULL PRIMARY KEY UNIQUE, 
@@ -54,10 +56,6 @@ namespace inspiral
 				@p3, 
 				@p4
 				);";
-		internal override GameComponent Build()
-		{
-			return new MobileComponent();
-		}
 	}
 
 	internal class MobileComponent : GameComponent
@@ -143,12 +141,12 @@ namespace inspiral
 				newLimb.name = "limb";
 				newLimb.aliases.Add("bodypart");
 
-				VisibleComponent vis =   (VisibleComponent)newLimb.AddComponent(Text.CompVisible);
+				VisibleComponent vis = (VisibleComponent)newLimb.AddComponent<VisibleComponent>();
 				vis.SetValue(Text.FieldShortDesc, b.name);
 				vis.SetValue(Text.FieldRoomDesc, $"A severed {b.name} has been left here.");
 				vis.SetValue(Text.FieldExaminedDesc, $"It is a severed {b.name} that has been lopped off its owner.");
 
-				PhysicsComponent phys =  (PhysicsComponent)newLimb.AddComponent(Text.CompPhysics);
+				PhysicsComponent phys = (PhysicsComponent)newLimb.AddComponent<PhysicsComponent>();
 				phys.width =      b.width;
 				phys.length =     b.length;
 				phys.height =     b.height;
@@ -156,7 +154,7 @@ namespace inspiral
 				phys.edged =      b.isEdged;
 				phys.UpdateValues();
 
-				BodypartComponent body = (BodypartComponent)newLimb.AddComponent(Text.CompBodypart);
+				BodypartComponent body = (BodypartComponent)newLimb.AddComponent<BodypartComponent>();
 				body.canGrasp = b.canGrasp;
 				body.canStand = b.canStand;
 				body.isNaturalWeapon = b.isNaturalWeapon;
@@ -198,7 +196,7 @@ namespace inspiral
 			{
 				if(limb.Value != null)
 				{
-					BodypartComponent bp = (BodypartComponent)limb.Value.GetComponent(Text.CompBodypart);
+					BodypartComponent bp = (BodypartComponent)limb.Value.GetComponent<BodypartComponent>();
 					if(bp.canGrasp && !graspers.Contains(limb.Key))
 					{
 						graspers.Add(limb.Key);

@@ -1,4 +1,3 @@
-using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -119,27 +118,30 @@ namespace inspiral
 					}
 				}
 			}
-			catch (Exception e)
+			catch (System.Exception e)
 			{
 				Debug.WriteLine($"{id}: disconnected ({e.Message}).");
 			}
-			Disconnect();
-			if(client != null)
+			finally
 			{
-				client.Close();
+				Disconnect();
+				if(client != null)
+				{
+					client.Close();
+				}
 			}
 		}
 		internal void Disconnect()
 		{
-			if(shell != null && shell.HasComponent(Text.CompClient))
+			if(shell != null && shell.HasComponent<ClientComponent>())
 			{
-				ClientComponent clientComp = (ClientComponent)shell.GetComponent(Text.CompClient);
+				ClientComponent clientComp = (ClientComponent)shell.GetComponent<ClientComponent>();
 				if(clientComp.client == this)
 				{
 					clientComp.Logout();
 					shell.ShowNearby(shell, $"{shell.GetShort()} falls asleep.");
-					shell.SetString(Text.CompVisible, Text.FieldRoomDesc, $"{shell.GetShort()} is sound asleep here.");
-					shell.RemoveComponent(Text.CompClient);
+					shell.SetString<VisibleComponent>(Text.FieldRoomDesc, $"{shell.GetShort()} is sound asleep here.");
+					shell.RemoveComponent<ClientComponent>();
 				}
 			}
 			shell = null;

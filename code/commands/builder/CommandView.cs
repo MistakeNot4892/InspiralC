@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 
 namespace inspiral
@@ -18,9 +17,9 @@ namespace inspiral
 				{
 					try
 					{
-						viewing = (GameObject)Game.Objects.Get((long)Convert.ToInt64(cmd.objTarget));
+						viewing = (GameObject)Game.Objects.Get((long)System.Convert.ToInt64(cmd.objTarget));
 					}
-					catch(Exception e) 
+					catch(System.Exception e) 
 					{
 						Debug.WriteLine($"Tried to look up a non-long var in the global db ({e.Message})");
 					}
@@ -29,9 +28,9 @@ namespace inspiral
 				else
 				{
 					int wrap = 80;
-					if(invoker.HasComponent(Text.CompClient))
+					if(invoker.HasComponent<ClientComponent>())
 					{
-						ClientComponent client = (ClientComponent)invoker.GetComponent(Text.CompClient);
+						ClientComponent client = (ClientComponent)invoker.GetComponent<ClientComponent>();
 						wrap = client.client.config.wrapwidth;
 					}
 					invoker.WriteLine(viewing.GetStringSummary(wrap));

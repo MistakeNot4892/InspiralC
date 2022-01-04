@@ -16,14 +16,13 @@ namespace inspiral
 	}
 	internal class FooBuilder : GameComponentBuilder
 	{
-		internal override string Name         { get; set; } = Text.CompFoo;
 		internal override string TableSchema  { get; set; } = "CREATE TABLE IF NOT EXISTS foo () VALUES ();";
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM foo WHERE id = @p0;"
 		internal override string UpdateSchema { get; set; } = "UPDATE foo;";
 		internal override string InsertSchema { get; set; } = "INSERT INTO foo VALUES () WHERE (id == @p0);";
-		internal override GameComponent Build()
+		internal FooBuilder()
 		{
-			return new FooComponent();
+			ComponentType = typeof(FooComponent);
 		}
 	}
 	internal class FooComponent : GameComponent
@@ -39,19 +38,21 @@ namespace inspiral
 
 	internal class GameComponentBuilder
 	{
-		internal virtual string Name                 { get; set; } = null;
+		internal GameComponentBuilder()              { Initialize(); }
+		internal virtual void Initialize()           {}
+		internal virtual System.Type ComponentType   { get; set; } = null;
 		internal virtual string TableSchema          { get; set; } = null;
 		internal virtual string UpdateSchema         { get; set; } = null;
 		internal virtual string InsertSchema         { get; set; } = null;
 		internal virtual string LoadSchema           { get; set; } = null;
 		internal virtual List<string> editableFields { get; set; } = null;
 		internal virtual List<string> viewableFields { get; set; } = null;
-		internal virtual GameComponent Build() { return null; }
 	}
 
 	internal class GameComponent
 	{
-		internal string name;
+		internal GameComponent() { Initialize(); }
+		internal virtual void Initialize() {}
 		internal GameObject parent;
 		internal bool isPersistent = true;
 
@@ -77,16 +78,18 @@ namespace inspiral
 			}
 		}
 
-		internal string GetStringSummary() {
-			if(Modules.Components.builders.ContainsKey(name) && 
-				Modules.Components.builders[name].viewableFields != null && 
-				Modules.Components.builders[name].viewableFields.Count > 0)
+		internal string GetStringSummary() 
+		{
+			System.Type myType = this.GetType();
+			if(Modules.Components.builders.ContainsKey(myType) && 
+				Modules.Components.builders[myType].viewableFields != null && 
+				Modules.Components.builders[myType].viewableFields.Count > 0)
 			{
 				string result = "";
-				foreach(string field in Modules.Components.builders[name].viewableFields)
+				foreach(string field in Modules.Components.builders[myType].viewableFields)
 				{
-					if(Modules.Components.builders[name].editableFields != null && 
-						Modules.Components.builders[name].editableFields.Contains(field))
+					if(Modules.Components.builders[myType].editableFields != null && 
+						Modules.Components.builders[myType].editableFields.Contains(field))
 					{
 						result = $"{result}\n{field}: {GetString(field)}";
 					}
@@ -105,9 +108,10 @@ namespace inspiral
 
 		internal string SetValueOfEditableField(string field, string value) 
 		{
-			if(Modules.Components.builders.ContainsKey(name) && 
-				Modules.Components.builders[name].editableFields != null && 
-				Modules.Components.builders[name].editableFields.Count > 0)
+			System.Type myType = this.GetType();
+			if(Modules.Components.builders.ContainsKey(myType) && 
+				Modules.Components.builders[myType].editableFields != null && 
+				Modules.Components.builders[myType].editableFields.Count > 0)
 			{
 				SetValue(field, value);
 				Game.Objects.QueueForUpdate(parent);

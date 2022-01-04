@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -45,7 +44,7 @@ namespace inspiral
 					GameRole role = new GameRole(roleName, roleDescription, roleCommands);
 					roles.Add(role.name.ToLower(), role);
 				}
-				catch(Exception e)
+				catch(System.Exception e)
 				{
 					Debug.WriteLine($"Exception when loading role from file {f.File} - {e.Message}");
 				}

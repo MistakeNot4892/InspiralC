@@ -1,4 +1,3 @@
-using System;
 using System.Data.SQLite;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -90,11 +89,13 @@ namespace inspiral
 			gameObj.name = Text.Capitalize(acct.userName);
 			gameObj.gender = Modules.Gender.GetByTerm(Text.GenderPlural);
 			gameObj.aliases = new List<string>() { gameObj.name.ToLower() };
-			VisibleComponent vis = (VisibleComponent)gameObj.GetComponent(Text.CompVisible); 
+
+			VisibleComponent vis = (VisibleComponent)gameObj.GetComponent<VisibleComponent>(); 
 			vis.SetValue(Text.FieldShortDesc,    $"{gameObj.name}");
 			vis.SetValue(Text.FieldRoomDesc,     $"{gameObj.name} is here.");
 			vis.SetValue(Text.FieldExaminedDesc, "and are completely uninteresting.");
-			MobileComponent mob = (MobileComponent)gameObj.GetComponent(Text.CompMobile);
+
+			MobileComponent mob = (MobileComponent)gameObj.GetComponent<MobileComponent>();
 			mob.SetValue(Text.FieldEnterMessage, $"{gameObj.name} enters from the $DIR.");
 			mob.SetValue(Text.FieldLeaveMessage, $"{gameObj.name} leaves to the $DIR.");
 			mob.SetValue(Text.FieldDeathMessage, $"The corpse of {gameObj.name} lies here.");
@@ -115,13 +116,13 @@ namespace inspiral
 			AddDatabaseEntry(acct);
 			return acct;
 		}
-		internal override Object CreateRepositoryType(long id) 
+		internal override System.Object CreateRepositoryType(long id) 
 		{
 			PlayerAccount acct = new PlayerAccount(id);
 			acct.roles.Add(Modules.Roles.GetRole("player"));
 			return acct;
 		}
-		internal override void AddCommandParameters(SQLiteCommand command, Object instance)
+		internal override void AddCommandParameters(SQLiteCommand command, System.Object instance)
 		{
 			PlayerAccount acct = (PlayerAccount)instance;
 			command.Parameters.AddWithValue("@p0", acct.id);

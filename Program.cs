@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace inspiral
+﻿namespace inspiral
 {
 
 	class Program
@@ -10,17 +6,17 @@ namespace inspiral
 		private const string VERSION = "0.0.1b";
 		static void Main(string[] args)
 		{
-			Console.WriteLine($"=== Inspiral, Coalescence, Ringdown engine v{VERSION} ===");
-			Console.WriteLine("Initializing server.");
+			System.Console.WriteLine($"=== Inspiral, Coalescence, Ringdown engine v{VERSION} ===");
+			System.Console.WriteLine("Initializing server.");
 			Game.Initialize();
-			Console.WriteLine("Initialization complete.\nServer ready.");
-			Console.Read();
+			System.Console.WriteLine("Initialization complete.\nServer ready.");
+			System.Console.Read();
 		}
 
-		static void OnProcessExit(object sender, EventArgs e)
+		static void OnProcessExit(object sender, System.EventArgs e)
 		{
 			Game.Exit();
-			Console.WriteLine ("Terminating.");
+			System.Console.WriteLine ("Terminating.");
 		}
 	}
 }

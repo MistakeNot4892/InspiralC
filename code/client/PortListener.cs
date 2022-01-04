@@ -1,4 +1,3 @@
-using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -21,14 +20,14 @@ namespace inspiral
 			IPAddress ipAddress = IPAddress.Parse("0.0.0.0");
 			try
 			{
-				Console.WriteLine($"{id}: Connecting to address {ipAddress.ToString()} on port {port}");
+				System.Console.WriteLine($"{id}: Connecting to address {ipAddress.ToString()} on port {port}");
 				server = new TcpListener(ipAddress, port);
 				server.Start();
 				while (true)
 				{
-					Console.WriteLine("{0}: waiting for a connection...", id);
+					System.Console.WriteLine("{0}: waiting for a connection...", id);
 					TcpClient client = server.AcceptTcpClient();
-					Console.WriteLine("{0}: new connection from {1}", id, ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString());
+					System.Console.WriteLine("{0}: new connection from {1}", id, ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString());
 					GameClient joiner = Clients.Create(client, $"{id}-{Clients.CountClients()+1}");
 					Task.Run(() => joiner.Begin());
 				}

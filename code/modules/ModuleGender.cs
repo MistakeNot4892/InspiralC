@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -62,7 +61,7 @@ namespace inspiral
 						}
 					}
 				}
-				catch(Exception e)
+				catch(System.Exception e)
 				{
 					Debug.WriteLine($"Exception when loading gender from file {f.File} - {e.Message}");
 				}

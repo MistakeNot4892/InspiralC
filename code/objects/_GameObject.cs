@@ -11,11 +11,11 @@ namespace inspiral
 		internal GameObject location;
 		internal List<GameObject> contents;
 		internal long flags = 0;
-		internal Dictionary<string, GameComponent> components;
+		internal Dictionary<System.Type, GameComponent> components;
 		internal GameObject()
 		{
 			contents = new List<GameObject>();
-			components = new Dictionary<string, GameComponent>();
+			components = new Dictionary<System.Type, GameComponent>();
 			gender = Modules.Gender.GetByTerm(Text.GenderInanimate);
 		}
 		internal GameObject FindGameObjectNearby(string token)
@@ -73,9 +73,9 @@ namespace inspiral
 					}
 				}
 			}
-			if(HasComponent(Text.CompRoom))
+			if(HasComponent<RoomComponent>())
 			{
-				RoomComponent room = (RoomComponent)GetComponent(Text.CompRoom);
+				RoomComponent room = (RoomComponent)GetComponent<RoomComponent>();
 				string lookingFor = checkToken;
 				if(Text.shortExits.ContainsKey(lookingFor))
 				{
@@ -94,13 +94,13 @@ namespace inspiral
 		}
 		internal bool Collectable(GameObject collecting)
 		{
-			return !HasComponent(Text.CompRoom) && !HasComponent(Text.CompMobile);
+			return !HasComponent<RoomComponent>() && !HasComponent<MobileComponent>();
 		}
 		internal bool CanUseBalance(string balance)
 		{
-			if(HasComponent(Text.CompBalance))
+			if(HasComponent<BalanceComponent>())
 			{
-				BalanceComponent bal = (BalanceComponent)GetComponent(Text.CompBalance);
+				BalanceComponent bal = (BalanceComponent)GetComponent<BalanceComponent>();
 				return bal.OnBalance(balance);
 			}
 			return false;
@@ -116,7 +116,7 @@ namespace inspiral
 		}
 		internal bool TryUseBalance(string balance, int msKnock, bool ignoreOffbal)
 		{
-			if(HasComponent(Text.CompBalance))
+			if(HasComponent<BalanceComponent>())
 			{
 				if(ignoreOffbal || CanUseBalance(balance))
 				{
@@ -137,9 +137,9 @@ namespace inspiral
 		}
 		internal bool UseBalance(string balance, int msKnock)
 		{
-			if(HasComponent(Text.CompBalance))
+			if(HasComponent<BalanceComponent>())
 			{
-				BalanceComponent bal = (BalanceComponent)GetComponent(Text.CompBalance);
+				BalanceComponent bal = (BalanceComponent)GetComponent<BalanceComponent>();
 				bal.KnockBalance(balance, msKnock);
 				return true;
 			}
@@ -147,25 +147,25 @@ namespace inspiral
 		}
 		internal void SendPrompt()
 		{
-			if(HasComponent(Text.CompClient))
+			if(HasComponent<ClientComponent>())
 			{
-				ClientComponent client = (ClientComponent)GetComponent(Text.CompClient);
+				ClientComponent client = (ClientComponent)GetComponent<ClientComponent>();
 				client.client.SendPrompt();
 			}
 		}
 		internal void Quit()
 		{
-			if(HasComponent(Text.CompClient))
+			if(HasComponent<ClientComponent>())
 			{
-				ClientComponent client = (ClientComponent)GetComponent(Text.CompClient);
+				ClientComponent client = (ClientComponent)GetComponent<ClientComponent>();
 				client.client.Quit();
 			}
 		}
 		internal void SendPrompt(bool forceClear)
 		{
-			if(HasComponent(Text.CompClient))
+			if(HasComponent<ClientComponent>())
 			{
-				ClientComponent client = (ClientComponent)GetComponent(Text.CompClient);
+				ClientComponent client = (ClientComponent)GetComponent<ClientComponent>();
 				if(forceClear)
 				{
 					client.client.lastPrompt = null;
@@ -176,18 +176,18 @@ namespace inspiral
 
 		internal PlayerAccount GetAccount()
 		{
-			if(HasComponent(Text.CompClient))
+			if(HasComponent<ClientComponent>())
 			{
-				ClientComponent client = (ClientComponent)GetComponent(Text.CompClient);
+				ClientComponent client = (ClientComponent)GetComponent<ClientComponent>();
 				return client.client.account;
 			}
 			return null;
 		}
 		internal string HandleImpact(GameObject wielder, GameObject impacting, double force)
 		{
-			if(impacting.HasComponent(Text.CompPhysics))
+			if(impacting.HasComponent<PhysicsComponent>())
 			{
-				PhysicsComponent phys = (PhysicsComponent)impacting.GetComponent(Text.CompPhysics);
+				PhysicsComponent phys = (PhysicsComponent)impacting.GetComponent<PhysicsComponent>();
 				double strikePenetration = phys.GetImpactPenetration(force, 1.0);
 				if(strikePenetration > 0)
 				{

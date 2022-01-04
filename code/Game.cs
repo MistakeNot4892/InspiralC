@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,7 +5,7 @@ namespace inspiral
 {
 	internal static class Game
 	{
-		internal static Random rand = new Random();
+		internal static System.Random rand = new System.Random();
 		internal static bool InitComplete = false;
 		internal static AccountRepository Accounts;
 		internal static ObjectRepository Objects;

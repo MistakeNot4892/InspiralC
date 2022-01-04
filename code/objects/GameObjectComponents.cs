@@ -1,63 +1,68 @@
-using System;
-using System.Diagnostics;
 using Newtonsoft.Json.Linq;
 
 namespace inspiral
 {
 	internal partial class GameObject
 	{
-		internal GameComponent GetComponent(string componentKey) 
+		internal GameComponent GetComponent<T>() 
 		{
-			if(HasComponent(componentKey))
+			return GetComponent(typeof(T));
+		}
+		internal GameComponent GetComponent(System.Type compType) 
+		{
+			if(HasComponent(compType))
 			{
-				return components[componentKey];
+				return components[compType];
 			}
 			return null;
 		}
-		internal GameComponent AddComponent(JProperty componentData)
+
+		internal GameComponent AddComponent(System.Type compType)
 		{
-			GameComponent comp = null;
-			try
+			GameComponent comp = GetComponent(compType);
+			if(comp == null)
 			{
-				comp = AddComponent(componentData.Name);
-				comp.ConfigureFromJson(componentData.Value);
-			}
-			catch(Exception e)
-			{
-				string compname = comp == null ? "null" : comp.name;
-				Debug.WriteLine($"Exception when configuring component {compname} from JSON ({componentData.ToString()}) - {e.Message}");
+				comp = Modules.Components.MakeComponent(compType);
+				components.Add(compType, comp);
+				comp.Added(this);
 			}
 			return comp;
-		} 
-
-		internal GameComponent AddComponent(string componentKey) 
-		{
-			GameComponent component = null;
-			if(HasComponent(componentKey))
-			{
-				component = GetComponent(componentKey);
-			}
-			else
-			{
-				component = Modules.Components.MakeComponent(componentKey);
-				component.name = componentKey;
-				components.Add(componentKey, component);
-				component.Added(this);
-			}
-			return component;
 		}
-		internal void RemoveComponent(string componentKey)
+		internal GameComponent AddComponent(System.Type compType, JProperty componentData)
 		{
-			if(HasComponent(componentKey))
+			GameComponent comp = AddComponent(compType);
+			if(comp != null && componentData != null)
 			{
-				GameComponent component = components[componentKey];
-				components.Remove(componentKey);
+				comp.ConfigureFromJson(componentData.Value);
+			}
+			return comp;
+		}
+
+		internal GameComponent AddComponent<T>()
+		{
+			return AddComponent(typeof(T));
+		}
+		internal GameComponent AddComponent<T>(JProperty componentData)
+		{
+			return AddComponent(typeof(T), componentData);
+		}
+
+		internal void RemoveComponent<T>()
+		{
+			if(HasComponent<T>())
+			{
+				GameComponent component = components[typeof(T)];
+				components.Remove(typeof(T));
 				component.Removed(this);
 			}
 		}
-		internal bool HasComponent(string componentKey)
+		internal bool HasComponent(System.Type compType)
 		{
-			return components.ContainsKey(componentKey);
+			return components.ContainsKey(compType);
+		}
+		internal bool HasComponent<T>()
+		{
+			return HasComponent(typeof(T));
 		}
 	}
 }

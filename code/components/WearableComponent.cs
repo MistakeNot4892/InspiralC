@@ -8,22 +8,20 @@ namespace inspiral
 {
 	internal partial class ComponentModule : GameModule
 	{
-		internal List<GameComponent> Wearables =>  GetComponents(Text.CompWearable);
+		internal List<GameComponent> Wearables => GetComponents<WearableComponent>();
 	}
 	internal static partial class Text
 	{
-		internal const string CompWearable = "wearable";
 		internal const string FieldWearableSlots = "wearable_slots";
 	}
 	internal class WearableBuilder : GameComponentBuilder
 	{
-		internal override string Name { get; set; } = Text.CompWearable;
+		internal override void Initialize()
+		{
+			ComponentType = typeof(WearableComponent);
+		}
 		internal override List<string> editableFields { get; set; } = new List<string>() {Text.FieldWearableSlots};
 		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldWearableSlots};
-		internal override GameComponent Build()
-		{
-			return new WearableComponent();
-		}
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_wearable WHERE id = @p0;";
 		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_wearable (
 			id INTEGER NOT NULL PRIMARY KEY UNIQUE,

@@ -6,12 +6,12 @@ namespace inspiral
 	{
 		internal void CmdInventory(GameObject invoker, CommandData cmd)
 		{
-			if(!invoker.HasComponent(Text.CompInventory))
+			if(!invoker.HasComponent<InventoryComponent>())
 			{
 				invoker.SendLine("You cannot hold objects.");
 				return;
 			}
-			InventoryComponent inv = (InventoryComponent)invoker.GetComponent(Text.CompInventory);
+			InventoryComponent inv = (InventoryComponent)invoker.GetComponent<InventoryComponent>();
 
 			string inventorySummary = "You are carrying:";
 			if(inv.carrying.Count > 0)

@@ -6,13 +6,13 @@
 	],
 	"components" : 
 	{
-		"visible" : 
+		"inspiral.VisibleComponent" : 
 		{
 			"shortdesc" :    "an axe",
 			"examineddesc" : "This is a sharp axe.",
 			"roomdesc" :     "An axe has been left here."
 		},
-		"physics" :
+		"inspiral.PhysicsComponent" :
 		{
 			"length" : 3,
 			"width" :  3,

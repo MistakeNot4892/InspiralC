@@ -42,7 +42,8 @@ namespace inspiral
 
 			dbConnection = new SQLiteConnection($"Data Source={dbPath};Version={dbVersion};");
 			dbConnection.Open();
-			using(SQLiteCommand command = new SQLiteCommand($"CREATE TABLE IF NOT EXISTS {dbTableName} ({dbTableSchema});", dbConnection))
+			string createQuery = $"CREATE TABLE IF NOT EXISTS {dbTableName} ({dbTableSchema});";
+			using(SQLiteCommand command = new SQLiteCommand(createQuery, dbConnection))
 			{
 				try
 				{
@@ -50,7 +51,7 @@ namespace inspiral
 				}
 				catch(Exception e)
 				{
-					Debug.WriteLine($"SQL exception 1 ({repoName}): {e.ToString()} - entire query is [{dbTableName} ({dbTableSchema})]");
+					Debug.WriteLine($"SQL exception 1 ({repoName}): {e.ToString()} - entire query is [{createQuery}]");
 				}
 			}
 			HandleSecondarySQLInitialization(dbConnection);
@@ -61,7 +62,8 @@ namespace inspiral
 			Debug.WriteLine($"Initializing {repoName}.");
 			SQLiteConnection dbConnection = new SQLiteConnection($"Data Source={dbPath};Version={dbVersion};");
 			dbConnection.Open();
-			using( SQLiteCommand command = new SQLiteCommand($"SELECT * FROM {dbTableName};", dbConnection))
+			string selectQuery = $"SELECT * FROM {dbTableName};";
+			using( SQLiteCommand command = new SQLiteCommand(selectQuery, dbConnection))
 			{
 				try
 				{
@@ -73,7 +75,7 @@ namespace inspiral
 				}
 				catch(Exception e)
 				{
-					Debug.WriteLine($"SQL exception 2 ({repoName}): {e.ToString()} - entire query is [{dbTableName}]");
+					Debug.WriteLine($"SQL exception 2 ({repoName}): {e.ToString()} - entire query is [{selectQuery}]");
 				}
 			}
 			Task.Run(() => DoPeriodicDatabaseUpdate() );

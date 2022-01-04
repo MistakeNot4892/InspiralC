@@ -48,16 +48,15 @@ namespace inspiral
 		{
 			GameObject wakingShell = (GameObject)Game.Objects.Get(invoker.account.objectId);
 			wakingShell.ShowNearby(wakingShell, $"{wakingShell.GetShort()} wakes up.");
-			wakingShell.SetString(Text.CompVisible, Text.FieldRoomDesc, $"{wakingShell.GetShort()} is here.");
+			wakingShell.SetString<VisibleComponent>(Text.FieldRoomDesc, $"{wakingShell.GetShort()} is here.");
 
 			invoker.shell = wakingShell;
-			if(invoker.shell.HasComponent(Text.CompClient))
+			if(invoker.shell.HasComponent<ClientComponent>())
 			{
-				ClientComponent oldClient = (ClientComponent)invoker.shell.GetComponent(Text.CompClient);
+				ClientComponent oldClient = (ClientComponent)invoker.shell.GetComponent<ClientComponent>();
 				oldClient.client?.Farewell("Another connection has been made with this account, so you are being logged out. Goodbye!");
 			}
-			invoker.shell.AddComponent(Text.CompClient);
-			ClientComponent clientComp = (ClientComponent)invoker.shell.GetComponent(Text.CompClient);
+			ClientComponent clientComp = (ClientComponent)invoker.shell.AddComponent<ClientComponent>();
 			clientComp.Login(invoker);
 			invoker.SetContext(Contexts.General);
 		}

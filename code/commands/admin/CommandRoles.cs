@@ -24,9 +24,9 @@ namespace inspiral
 			roleDetails.Add(header, new List<string>());
 
 			int wrap = 80;
-			if(invoker.HasComponent(Text.CompClient))
+			if(invoker.HasComponent<ClientComponent>())
 			{
-				ClientComponent client = (ClientComponent)invoker.GetComponent(Text.CompClient);
+				ClientComponent client = (ClientComponent)invoker.GetComponent<ClientComponent>();
 				wrap = client.client.config.wrapwidth;
 			}
 

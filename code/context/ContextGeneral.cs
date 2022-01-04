@@ -25,9 +25,9 @@ namespace inspiral
 		}
 		internal override bool TakeInput(GameClient invoker, string command, string rawCommand, string arguments)
 		{
-			if(invoker.shell != null && invoker.shell.location != null && invoker.shell.location.HasComponent(Text.CompRoom) && invoker.shell.HasComponent(Text.CompMobile))
+			if(invoker.shell != null && invoker.shell.location != null && invoker.shell.location.HasComponent<RoomComponent>() && invoker.shell.HasComponent<MobileComponent>())
 			{
-				MobileComponent mob = (MobileComponent)invoker.shell.GetComponent(Text.CompMobile);
+				MobileComponent mob = (MobileComponent)invoker.shell.GetComponent<MobileComponent>();
 				if(mob.CanMove())
 				{
 					string tmp = command;
@@ -35,7 +35,7 @@ namespace inspiral
 					{
 						tmp = Text.shortExits[tmp];
 					}
-					RoomComponent room = (RoomComponent)invoker.shell.location.GetComponent(Text.CompRoom);
+					RoomComponent room = (RoomComponent)invoker.shell.location.GetComponent<RoomComponent>();
 					if(room.exits.ContainsKey(tmp))
 					{
 						GameObject destination = (GameObject)Game.Objects.Get(room.exits[tmp]);
@@ -60,7 +60,7 @@ namespace inspiral
 		internal override string GetPrompt(GameClient viewer) 
 		{
 			string p = "";
-			foreach(KeyValuePair<string, GameComponent> comp in viewer.shell.components)
+			foreach(KeyValuePair<System.Type, GameComponent> comp in viewer.shell.components)
 			{
 				string addP = comp.Value.GetPrompt();
 				if(addP != null && addP != "")

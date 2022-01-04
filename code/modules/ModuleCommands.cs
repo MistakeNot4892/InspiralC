@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -32,7 +31,7 @@ namespace inspiral
 			{
 				if(methodInfos[i].Name.Substring(0, 3) == "Cmd")
 				{
-					Console.WriteLine($"- Caching MethodInfo for {methodInfos[i].Name}.");
+					System.Console.WriteLine($"- Caching MethodInfo for {methodInfos[i].Name}.");
 					methods.Add(methodInfos[i].Name, methodInfos[i]);
 				}
 			}
@@ -59,7 +58,7 @@ namespace inspiral
 					);
 					commands.Add(command.command, command);
 				}
-				catch(Exception e)
+				catch(System.Exception e)
 				{
 					Debug.WriteLine($"Exception when loading command from file {f.File} - {e.Message}");
 				}

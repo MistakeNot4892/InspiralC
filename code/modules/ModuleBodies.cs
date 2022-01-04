@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -54,7 +53,7 @@ namespace inspiral
 					}
 					parts.Add(bp.name, bp);
 				}
-				catch(Exception e)
+				catch(System.Exception e)
 				{
 					Debug.WriteLine($"Exception when loading bodypart from file {f.File} - {e.Message}");
 				}
@@ -84,7 +83,7 @@ namespace inspiral
 					}
 					plans.Add(bPlan.name, bPlan);
 				}
-				catch(Exception e)
+				catch(System.Exception e)
 				{
 					Debug.WriteLine($"Exception when loading bodyplan from file {f.File} - {e.Message}");
 				}
@@ -127,7 +126,7 @@ namespace inspiral
 		internal double strikeArea = 10;
 		internal Dictionary<string, int> contactData;
 		internal List<string> equipmentSlots = new List<string>();
-		internal List<Tuple<string, string>> attackStrings = new List<Tuple<string, string>>();
+		internal List<System.Tuple<string, string>> attackStrings = new List<System.Tuple<string, string>>();
 
 		internal Bodypart(string _name, string _parent, List<string> _slots)
 		{

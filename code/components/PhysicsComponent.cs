@@ -1,19 +1,17 @@
 using System.Data.SQLite;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System;
 using Newtonsoft.Json.Linq;
 
 namespace inspiral
 {
 	internal partial class ComponentModule : GameModule
 	{
-		internal List<GameComponent> Physics => GetComponents(Text.CompPhysics);
+		internal List<GameComponent> Physics => GetComponents<PhysicsComponent>();
 	}
 
 	internal static partial class Text
 	{
-		internal const string CompPhysics =  "physics";
 		internal const string FieldLength =  "length";
 		internal const string FieldWidth =   "width";
 		internal const string FieldHeight =  "height";
@@ -23,14 +21,13 @@ namespace inspiral
 	}
 	internal class PhysicsBuilder : GameComponentBuilder
 	{
+		internal override void Initialize()
+		{
+			ComponentType = typeof(PhysicsComponent);
+		}
 		internal override List<string> editableFields { get; set; } = new List<string>() {Text.FieldLength, Text.FieldWidth, Text.FieldHeight, Text.FieldDensity, Text.FieldStrikeArea, Text.FieldEdged};
 		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldLength, Text.FieldWidth, Text.FieldHeight, Text.FieldDensity, Text.FieldStrikeArea, Text.FieldEdged};
 
-		internal override string Name { get; set; } = Text.CompPhysics;
-		internal override GameComponent Build()
-		{
-			return new PhysicsComponent();
-		}
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_physics WHERE id = @p0;";
 		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_physics (
 				id INTEGER NOT NULL PRIMARY KEY UNIQUE, 
@@ -144,14 +141,14 @@ namespace inspiral
 			{
 				if(key == Text.FieldDensity)
 				{
-					return SetDensity(Convert.ToDouble(newValue));
+					return SetDensity(System.Convert.ToDouble(newValue));
 				}
 				else
 				{
-					return SetValue(key, (long)Convert.ToInt64(newValue));
+					return SetValue(key, (long)System.Convert.ToInt64(newValue));
 				}
 			}
-			catch(Exception e)
+			catch(System.Exception e)
 			{
 				Debug.WriteLine($"Conversion exception in physics SetValue(): {e.Message}");
 				return false; 
@@ -169,7 +166,7 @@ namespace inspiral
 		}
 		internal override bool SetValue(string field, long newValue)
 		{
-			newValue = Math.Clamp(newValue, 1, 100000000);
+			newValue = System.Math.Clamp(newValue, 1, 100000000);
 			bool success = false;
 			switch(field)
 			{

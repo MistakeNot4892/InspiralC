@@ -1,4 +1,3 @@
-using System;
 using System.Data.SQLite;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -42,7 +41,7 @@ namespace inspiral
 		}
 		internal override void HandleSecondarySQLInitialization(SQLiteConnection dbConnection)
 		{
-			foreach(KeyValuePair<string, GameComponentBuilder> builder in Modules.Components.builders)
+			foreach(KeyValuePair<System.Type, GameComponentBuilder> builder in Modules.Components.builders)
 			{
 				if(builder.Value.TableSchema != null)
 				{
@@ -52,7 +51,7 @@ namespace inspiral
 						{
 							command.ExecuteNonQuery();
 						}
-						catch(Exception e)
+						catch(System.Exception e)
 						{
 							Debug.WriteLine($"Component SQL exception ({builder.Key}): {e.ToString()} - entire query is [{builder.Value.TableSchema}]");
 						}
@@ -70,7 +69,7 @@ namespace inspiral
 
 			foreach(string comp in JsonConvert.DeserializeObject<List<string>>(reader["components"].ToString()))
 			{
-				gameObj.AddComponent(comp);
+				gameObj.AddComponent(System.Type.GetType(comp));
 			}
 			if(Game.InitComplete)
 			{
@@ -82,7 +81,7 @@ namespace inspiral
 
 		internal void LoadComponentData(GameObject gameObj)
 		{
-			foreach(KeyValuePair<string, GameComponent> comp in gameObj.components)
+			foreach(KeyValuePair<System.Type, GameComponent> comp in gameObj.components)
 			{
 				if(Modules.Components.builders[comp.Key].LoadSchema != null)
 				{
@@ -97,7 +96,7 @@ namespace inspiral
 								comp.Value.InstantiateFromRecord(reader);
 							}
 						}
-						catch(Exception e)
+						catch(System.Exception e)
 						{
 							Debug.WriteLine($"SQL exception 4 ({repoName}): {e.ToString()} - entire query is [{Modules.Components.builders[comp.Key].LoadSchema}]");
 						}
@@ -105,16 +104,16 @@ namespace inspiral
 				}
 			}
 		}
-		internal override Object CreateRepositoryType(long id) 
+		internal override System.Object CreateRepositoryType(long id) 
 		{
 			GameObject gameObj = new GameObject();
 			gameObj.id = id;
 			return gameObj;
 		}
-		public override void HandleAdditionalSQLInsertion(Object newInstance, SQLiteConnection dbConnection) 
+		public override void HandleAdditionalSQLInsertion(System.Object newInstance, SQLiteConnection dbConnection) 
 		{
 			GameObject gameObj = (GameObject)newInstance;
-			foreach(KeyValuePair<string, GameComponent> comp in gameObj.components)
+			foreach(KeyValuePair<System.Type, GameComponent> comp in gameObj.components)
 			{
 				if(Modules.Components.builders[comp.Key].InsertSchema != null)
 				{
@@ -125,7 +124,7 @@ namespace inspiral
 							comp.Value.AddCommandParameters(command);
 							command.ExecuteNonQuery();
 						}
-						catch(Exception e)
+						catch(System.Exception e)
 						{
 							Debug.WriteLine($"SQL exception 5 ({repoName}): {e.ToString()} - entire query is [{Modules.Components.builders[comp.Key].InsertSchema}]");
 						}
@@ -133,7 +132,7 @@ namespace inspiral
 				}
 			}
 		}
-		internal override void AddCommandParameters(SQLiteCommand command, Object instance) 
+		internal override void AddCommandParameters(SQLiteCommand command, System.Object instance) 
 		{
 			GameObject gameObj = (GameObject)instance;
 			command.Parameters.AddWithValue("@p0", gameObj.id);
@@ -141,11 +140,11 @@ namespace inspiral
 			command.Parameters.AddWithValue("@p2", gameObj.gender.Term);
 			command.Parameters.AddWithValue("@p3", JsonConvert.SerializeObject(gameObj.aliases));
 			List<string> componentKeys = new List<string>();
-			foreach(KeyValuePair<string, GameComponent> comp in gameObj.components)
+			foreach(KeyValuePair<System.Type, GameComponent> comp in gameObj.components)
 			{
 				if(comp.Value.isPersistent)
 				{
-					componentKeys.Add(comp.Key);
+					componentKeys.Add(comp.Key.ToString());
 				}
 			}
 			command.Parameters.AddWithValue("@p4", JsonConvert.SerializeObject(componentKeys));
@@ -166,24 +165,24 @@ namespace inspiral
 					}
 				}
 			}
-			foreach(KeyValuePair<long, Object> obj in contents)
+			foreach(KeyValuePair<long, System.Object> obj in contents)
 			{
 				LoadComponentData((GameObject)obj.Value);
 			}
-			foreach(KeyValuePair<long, Object> obj in contents)
+			foreach(KeyValuePair<long, System.Object> obj in contents)
 			{
 				GameObject gameObj = (GameObject)obj.Value;
-				foreach(KeyValuePair<string, GameComponent> comp in gameObj.components)
+				foreach(KeyValuePair<System.Type, GameComponent> comp in gameObj.components)
 				{
 					comp.Value.FinalizeObjectLoad();
 				}
 			}
 		}
 
-		public override void HandleAdditionalObjectSave(Object objInstance, SQLiteConnection dbConnection) 
+		public override void HandleAdditionalObjectSave(System.Object objInstance, SQLiteConnection dbConnection) 
 		{
 			GameObject gameObj = (GameObject) objInstance;
-			foreach(KeyValuePair<string, GameComponent> comp in gameObj.components)
+			foreach(KeyValuePair<System.Type, GameComponent> comp in gameObj.components)
 			{
 				if(comp.Value.isPersistent && Modules.Components.builders[comp.Key].UpdateSchema != null)
 				{
@@ -194,7 +193,7 @@ namespace inspiral
 							comp.Value.AddCommandParameters(command);
 							command.ExecuteNonQuery();
 						}
-						catch(Exception e)
+						catch(System.Exception e)
 						{
 							Debug.WriteLine($"Component SQL exception 2 ({comp.Key}): {e.ToString()} - enter query is [{Modules.Components.builders[comp.Key].UpdateSchema}]");
 						}

@@ -5,12 +5,11 @@ namespace inspiral
 {
 	internal partial class ComponentModule : GameModule
 	{
-		internal List<GameComponent> Containers => GetComponents(Text.CompContainer);
+		internal List<GameComponent> Containers => GetComponents<ContainerComponent>();
 	}
 
 	internal static partial class Text
 	{
-		internal const string CompContainer = "container";
 		internal const string FieldIsOpen = "isopen";
 		internal const string FieldHasLid = "haslid";
 		internal const string FieldMaxCapacity = "maxcapacity";
@@ -18,10 +17,9 @@ namespace inspiral
 	}
 	internal class ContainerBuilder : GameComponentBuilder
 	{
-		internal override string Name { get; set; } = Text.CompContainer;
-		internal override GameComponent Build()
+		internal override void Initialize()
 		{
-			return new ContainerComponent();
+			ComponentType = typeof(ContainerComponent);
 		}
 		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_container WHERE id = @p0;";
 		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_container (

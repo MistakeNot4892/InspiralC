@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -54,7 +53,7 @@ namespace inspiral
 			copyingTo.gender = Modules.Gender.GetByTerm(objectGender);
 			foreach(JProperty s in components)
 			{
-				copyingTo.AddComponent(s);
+				copyingTo.AddComponent(System.Type.GetType(s.Name), s);
 			}
 			Game.Objects.QueueForUpdate(copyingTo);
 		}
@@ -73,7 +72,7 @@ namespace inspiral
 				{
 					new GameObjectTemplate(File.ReadAllText(f.File));
 				}
-				catch(Exception e)
+				catch(System.Exception e)
 				{
 					Debug.WriteLine($"Exception when loading template from file {f.File} - {e.Message}");
 				}
