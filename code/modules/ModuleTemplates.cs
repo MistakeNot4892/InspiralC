@@ -39,8 +39,6 @@ namespace inspiral
 					aliases.Add(s);
 				}
 			}
-
-			// Save for use.
 			Modules.Templates.Register(this);
 		}
 		internal void CopyTo(GameObject copyingTo)
@@ -53,7 +51,7 @@ namespace inspiral
 			copyingTo.gender = Modules.Gender.GetByTerm(objectGender);
 			foreach(JProperty s in components)
 			{
-				copyingTo.AddComponent(System.Type.GetType(s.Name), s);
+				copyingTo.AddComponent(Game.GetTypeFromString(s.Name), s);
 			}
 			Game.Objects.QueueForUpdate(copyingTo);
 		}

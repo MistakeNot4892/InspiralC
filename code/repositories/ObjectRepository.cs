@@ -69,7 +69,7 @@ namespace inspiral
 
 			foreach(string comp in JsonConvert.DeserializeObject<List<string>>(reader["components"].ToString()))
 			{
-				gameObj.AddComponent(System.Type.GetType(comp));
+				gameObj.AddComponent(Game.GetTypeFromString(comp));
 			}
 			if(Game.InitComplete)
 			{

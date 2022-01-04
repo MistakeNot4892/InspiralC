@@ -6,13 +6,15 @@ namespace inspiral
 	internal static class Game
 	{
 		internal static System.Random rand = new System.Random();
+		internal static Dictionary<string, System.Type> typesByString;
 		internal static bool InitComplete = false;
 		internal static AccountRepository Accounts;
 		internal static ObjectRepository Objects;
 		static Game()
 		{
-			Accounts =  new AccountRepository();
-			Objects =   new ObjectRepository();
+			typesByString = new Dictionary<string, System.Type>();
+			Accounts =      new AccountRepository();
+			Objects =       new ObjectRepository();
 		}
 		internal static void Initialize() 
 		{
@@ -43,6 +45,15 @@ namespace inspiral
 			}
 			Accounts.Exit();
 			Objects.Exit();
+		}
+
+		internal static System.Type GetTypeFromString(string typeString)
+		{
+			if(!typesByString.ContainsKey(typeString))
+			{
+				typesByString.Add(typeString, System.Type.GetType(typeString));
+			}
+			return typesByString[typeString];
 		}
 	}
 }
