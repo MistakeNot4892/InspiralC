@@ -35,6 +35,7 @@ namespace inspiral
 				roleDetails[header].Add(Text.FormatPopup(role.name, role.GetSummary(), wrap + Text.NestedWrapwidthModifier));
 			}
 			invoker.WriteLine(Text.FormatBlock(roleDetails, wrap), true);
+			invoker.SendPrompt(); 
 		}
 	}
 }

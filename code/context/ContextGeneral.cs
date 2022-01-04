@@ -21,6 +21,7 @@ namespace inspiral
 			else
 			{
 				viewer.shell.location.ExaminedBy(viewer.shell, true);
+				viewer.SendPrompt();
 			}
 		}
 		internal override bool TakeInput(GameClient invoker, string command, string rawCommand, string arguments)
@@ -51,6 +52,7 @@ namespace inspiral
 							invoker.shell.Move(destination);
 							loc.ShowToContents($"{mob.GetString(Text.FieldLeaveMessage).Replace("$DIR", tmp)}");
 						}
+						invoker.SendPrompt();
 						return true;
 					}
 				}

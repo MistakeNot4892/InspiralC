@@ -7,6 +7,7 @@ namespace inspiral
 			if(invoker.location == null)
 			{
 				invoker.SendLine("You cannot see anything here.");
+				invoker.SendPrompt(); 
 				return;
 			}
 
@@ -37,6 +38,7 @@ namespace inspiral
 			{
 				invoker.SendLine("You can see nothing here by that name.");
 			}
+			invoker.SendPrompt(); 
 		}
 	}
 }

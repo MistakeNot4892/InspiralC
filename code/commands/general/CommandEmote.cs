@@ -15,6 +15,7 @@ namespace inspiral
 				if(rst.Length <= secondParen+3)
 				{
 					invoker.SendLine("Please specify emote text after the preface.");
+					invoker.SendPrompt(); 
 					return;
 				}
 				string end = rst.Substring(secondParen + 3);
@@ -40,12 +41,14 @@ namespace inspiral
 					if(mentioned == null)
 					{
 						invoker.SendLine($"You cannot see '{findingRaw}' here.");
+						invoker.SendPrompt(); 
 						return;
 					}
 					string pronounToken = m.Groups[2]?.Value.ToString().ToLower();
 					if(pronounToken != null && pronounToken != "" && !Modules.Gender.Tokens.Contains(pronounToken))
 					{
 						invoker.SendLine($"Unknown token '{pronounToken}'. Valid tokens for emotes are: {Text.EnglishList(Modules.Gender.Tokens)}.");
+						invoker.SendPrompt(); 
 						return;
 					}
 					if(!showingMessages.ContainsKey(mentioned))
@@ -76,6 +79,7 @@ namespace inspiral
 				}
 			}
 			invoker.WriteLine($"You have emoted: {emoteText}", true);
+			invoker.SendPrompt(); 
 		}
 	}
 }

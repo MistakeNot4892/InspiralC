@@ -17,6 +17,7 @@ namespace inspiral
 			{
 				invoker.SendLine("You aren't a mob.");
 			}
+			invoker.SendPrompt(); 
 		}
 	}
 }

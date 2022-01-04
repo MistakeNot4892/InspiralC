@@ -18,6 +18,7 @@ namespace inspiral
 				if(target == null)
 				{
 					invoker.SendLine($"You cannot see '{targetName}' here.");
+					invoker.SendPrompt(); 
 					return;
 				}
 			}
@@ -78,8 +79,8 @@ namespace inspiral
 			else
 			{
 				invoker.ShowNearby(invoker, $"{prefix1p}, \"{invocation}\"", $"{prefix3p} \"{invocation}\"");
-				invoker.SendPrompt();
 			}
+			invoker.SendPrompt();
 		}
 	}
 }

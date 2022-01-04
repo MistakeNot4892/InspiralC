@@ -187,9 +187,7 @@ namespace inspiral
 				PhysicsComponent phys = (PhysicsComponent)parent.GetComponent<PhysicsComponent>();
 				mainDesc = $"{mainDesc}\n{phys.GetExaminedSummary(viewer)}";
 			}
-
 			viewer.WriteLine(mainDesc);
-			viewer.SendPrompt();
 		}
 		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
 		{

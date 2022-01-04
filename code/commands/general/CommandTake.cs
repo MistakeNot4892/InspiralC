@@ -7,6 +7,7 @@ namespace inspiral
 			if(!invoker.HasComponent<InventoryComponent>())
 			{
 				invoker.WriteLine("You cannot hold objects.");
+				invoker.SendPrompt();
 				return;
 			}
 			if(invoker.TryUseBalance("poise"))

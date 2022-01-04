@@ -4,7 +4,6 @@ namespace inspiral
 	{
 		internal void CmdQuit(GameObject invoker, CommandData cmd)
 		{
-			Game.Objects.SaveObject(invoker);
 			invoker.SendLine("Goodbye!");
 			invoker.Quit();
 		}

@@ -52,6 +52,7 @@ namespace inspiral
 			if(clientComp != null && clientComp.client != null)
 			{
 				ExaminedBy(clientComp.parent, true);
+				clientComp.client.SendPrompt();
 			}
 			return true;
 		}

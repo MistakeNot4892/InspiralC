@@ -164,12 +164,13 @@ namespace inspiral
 				if(Text.exits.Contains(cmd))
 				{
 					WriteLine($"There is no exit to the {cmd}.");
+					SendPrompt();
 				}
 				else
 				{
 					WriteLine($"Unknown command '{rawCmd}'.");
+					SendPrompt();
 				}
-				SendPrompt();
 			}
 		}
 		private string FormatOutgoingString(string message)
@@ -181,8 +182,15 @@ namespace inspiral
 
 		internal void SendLine(string message)
 		{
+			SendLine(message, true);
+		}
+		internal void SendLine(string message, bool showPrompt)
+		{
 			WriteLine(message);
-			SendPrompt();
+			if(showPrompt)
+			{
+				SendPrompt();
+			}
 		}
 		internal void SendPrompt()
 		{

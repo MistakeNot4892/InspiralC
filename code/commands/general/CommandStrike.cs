@@ -66,6 +66,7 @@ namespace inspiral
 						if(!prop.HasComponent<PhysicsComponent>())
 						{
 							invoker.SendLine($"You cannot use {prop.GetShort()} as a weapon.");
+							invoker.SendPrompt();
 							return;
 						}
 						strikeWith = prop;
@@ -125,6 +126,7 @@ namespace inspiral
 				$"{Text.Capitalize(invoker.GetShort())} strikes you{bpString} with {strikeString}!",
 				$"{Text.Capitalize(invoker.GetShort())} strikes {targetObj.GetShort()}{bpString} with {strikeString}!"
 				);
+			invoker.SendPrompt();
 		}
 	}
 }

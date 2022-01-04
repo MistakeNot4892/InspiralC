@@ -94,10 +94,12 @@ namespace inspiral
 					{
 						saveCount = updateQueue.Count;
 					}
+					var saveTransaction = dbConnection.BeginTransaction();
 					for(int i = 0;i<saveCount;i++)
 					{					
 						SaveObject(updateQueue[0]);
 					}
+					saveTransaction.Commit();
 				}
 				Thread.Sleep(5000);
 			}

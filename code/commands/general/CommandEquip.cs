@@ -6,7 +6,8 @@ namespace inspiral
 		{
 			if(!invoker.HasComponent<InventoryComponent>())
 			{
-				invoker.WriteLine("You cannot equip objects.");
+				invoker.WriteLine("You are unable to equip objects.");
+				invoker.SendPrompt(); 
 				return;
 			}
 			if(invoker.TryUseBalance("poise"))

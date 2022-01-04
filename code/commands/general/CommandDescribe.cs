@@ -12,6 +12,7 @@ namespace inspiral
 			string lastDesc = invoker.GetString<VisibleComponent>(Text.FieldExaminedDesc);
 			invoker.SetString<VisibleComponent>(Text.FieldExaminedDesc, cmd.rawInput);
 			invoker.SendLine($"Your appearance has been updated.\nFor reference, your last appearance was:\n{lastDesc}");
+			invoker.SendPrompt(); 
 		}
 	}
 }
