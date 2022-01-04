@@ -1,8 +1,14 @@
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandSay : GameCommand
 	{
-		internal void CmdSay(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "say", "ask" };
+			description = "Vocally communicates with the people and things around you.";
+			usage = "say <(emote text)> [speech text] <emoticon>";
+		}
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			GameObject target = null;
 			string invocation = cmd.rawInput;

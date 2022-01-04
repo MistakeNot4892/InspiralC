@@ -1,5 +1,10 @@
 {
 	"name" : "Administrator",
-	"commands" : [ "test", "roles", "addrole", "takerole" ],
+	"commands" : [ 
+		"inspiral.CommandTest", 
+		"inspiral.CommandViewRoles", 
+		"inspiral.CommandAddRole", 
+		"inspiral.CommandTakeRole" 
+	],
 	"description" : "Contains role and game administration functions."
   }

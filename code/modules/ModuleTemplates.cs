@@ -62,25 +62,25 @@ namespace inspiral
 		internal override void Initialize()
 		{
 			Modules.Templates = this;
-			Debug.WriteLine("Loading templates.");
+			Game.LogError("Loading templates.");
 			foreach (var f in (from file in Directory.EnumerateFiles(@"data/definitions/templates", "*.json", SearchOption.AllDirectories) select new { File = file }))
 			{
-				Debug.WriteLine($"- Loading template definition {f.File}.");
+				Game.LogError($"- Loading template definition {f.File}.");
 				try
 				{
 					new GameObjectTemplate(File.ReadAllText(f.File));
 				}
 				catch(System.Exception e)
 				{
-					Debug.WriteLine($"Exception when loading template from file {f.File} - {e.Message}");
+					Game.LogError($"Exception when loading template from file {f.File} - {e.Message}");
 				}
 			}
-			Debug.WriteLine("Done.");
+			Game.LogError("Done.");
 		}
 		internal GameObject Instantiate(string template)
 		{
 			GameObject creating = null;
-			GameObjectTemplate temp = Get(template);
+			GameObjectTemplate temp = GetTemplate(template);
 			if(temp != null)
 			{
 				creating = (GameObject)Game.Objects.CreateNewInstance(false);
@@ -93,7 +93,7 @@ namespace inspiral
 		{
 			templates.Add(template.templateName, template);
 		}
-		internal GameObjectTemplate Get(string temp)
+		internal GameObjectTemplate GetTemplate(string temp)
 		{
 			if(templates.ContainsKey(temp))
 			{

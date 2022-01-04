@@ -1,8 +1,14 @@
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandTest : GameCommand
 	{
-		internal void CmdTest(GameObject invoker, CommandData cmd) 
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "test" };
+			description = "Test command, please ignore.";
+			usage = "test";
+		}
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(invoker.HasComponent<MobileComponent>())
 			{

@@ -1,5 +1,10 @@
 {
 	"name" : "Builder",
-	"commands" : [ "create", "addroom", "set", "view" ],
+	"commands" : [ 
+		"inspiral.CommandCreate", 
+		"inspiral.CommandAddRoom", 
+		"inspiral.CommandSet", 
+		"inspiral.CommandView"
+	],
 	"description" : "Grants room and object viewing/modification functions."
 }

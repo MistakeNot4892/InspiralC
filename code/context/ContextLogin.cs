@@ -46,7 +46,7 @@ namespace inspiral
 		}
 		private void HandleLogin(GameClient invoker)
 		{
-			GameObject wakingShell = (GameObject)Game.Objects.Get(invoker.account.objectId);
+			GameObject wakingShell = (GameObject)Game.Objects.GetByID(invoker.account.objectId);
 			wakingShell.ShowNearby(wakingShell, $"{wakingShell.GetShort()} wakes up.");
 			wakingShell.SetString<VisibleComponent>(Text.FieldRoomDesc, $"{wakingShell.GetShort()} is here.");
 

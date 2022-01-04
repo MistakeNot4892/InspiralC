@@ -55,5 +55,10 @@ namespace inspiral
 			}
 			return typesByString[typeString];
 		}
+		internal static void LogError(string error)
+		{
+			// todo: errors command
+			System.Diagnostics.Debug.WriteLine(error);
+		}
 	}
 }

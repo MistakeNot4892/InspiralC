@@ -2,9 +2,15 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandInventory : GameCommand
 	{
-		internal void CmdInventory(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "inventory", "inv", "ii", "i" };
+			description = "Shows your inventory.";
+			usage = "inventory";
+		}
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(!invoker.HasComponent<InventoryComponent>())
 			{

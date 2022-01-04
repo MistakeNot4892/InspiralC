@@ -17,18 +17,18 @@ namespace inspiral
 			Modules.Components = this;
 			builders = new Dictionary<System.Type, GameComponentBuilder>();
 			allComponents = new Dictionary<System.Type, List<GameComponent>>();
-			Debug.WriteLine($"Initializing component builders.");
+			Game.LogError($"Initializing component builders.");
 			foreach(var t in (from domainAssembly in System.AppDomain.CurrentDomain.GetAssemblies()
 				from assemblyType in domainAssembly.GetTypes()
 				where assemblyType.IsSubclassOf(typeof(GameComponentBuilder))
 				select assemblyType))
 			{
-				Debug.WriteLine($"- Creating component builder {t}.");
+				Game.LogError($"- Creating component builder {t}.");
 				GameComponentBuilder builder = (GameComponentBuilder)System.Activator.CreateInstance(t);
 				builders.Add(builder.ComponentType, builder);
 				allComponents.Add(builder.ComponentType, new List<GameComponent>());
 			}
-			Debug.WriteLine($"Done.");
+			Game.LogError($"Done.");
 		}
 
 		internal GameComponent MakeComponent<T>()
@@ -37,7 +37,6 @@ namespace inspiral
 		}
 		internal GameComponent MakeComponent(System.Type compType)
 		{
-			Debug.WriteLine($"- Creating component {compType.ToString()}.");
 			GameComponent returning = (GameComponent)System.Activator.CreateInstance(builders[compType].ComponentType);
 			allComponents[compType].Add(returning);
 			return returning;

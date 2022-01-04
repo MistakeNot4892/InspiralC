@@ -39,7 +39,7 @@ namespace inspiral
 			client = _client;
 			stream = _client.GetStream();
 			id =     _id;
-			Debug.WriteLine($"{id}: client created.");
+			Game.LogError($"{id}: client created.");
 			SetContext(Contexts.Login);
 		}
 		internal void SetContext(GameContext new_context)
@@ -120,7 +120,7 @@ namespace inspiral
 			}
 			catch (System.Exception e)
 			{
-				Debug.WriteLine($"{id}: disconnected ({e.Message}).");
+				Game.LogError($"{id}: disconnected ({e.Message}).");
 			}
 			finally
 			{

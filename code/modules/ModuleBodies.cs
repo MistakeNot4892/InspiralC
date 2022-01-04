@@ -18,10 +18,10 @@ namespace inspiral
 		internal override void Initialize() 
 		{
 			Modules.Bodies = this;
-			Debug.WriteLine("- Loading bodypart definitions.");
+			Game.LogError("- Loading bodypart definitions.");
 			foreach (var f in (from file in Directory.EnumerateFiles(@"data/definitions/bodies/parts", "*.json", SearchOption.AllDirectories) select new { File = file }))
 			{
-				Debug.WriteLine($"- Loading bodypart definition {f.File}.");
+				Game.LogError($"- Loading bodypart definition {f.File}.");
 				try
 				{
 					JObject r = JObject.Parse(File.ReadAllText(f.File));
@@ -55,13 +55,13 @@ namespace inspiral
 				}
 				catch(System.Exception e)
 				{
-					Debug.WriteLine($"Exception when loading bodypart from file {f.File} - {e.Message}");
+					Game.LogError($"Exception when loading bodypart from file {f.File} - {e.Message}");
 				}
 			}
-			Debug.WriteLine("Done.\nLoading bodyplan definitions.");
+			Game.LogError("Done.\nLoading bodyplan definitions.");
 			foreach (var f in (from file in Directory.EnumerateFiles(@"data/definitions/bodies/plans", "*.json", SearchOption.AllDirectories) select new { File = file }))
 			{
-				Debug.WriteLine($"- Loading bodyplan definition {f.File}.");
+				Game.LogError($"- Loading bodyplan definition {f.File}.");
 				try
 				{
 					JObject r = JObject.Parse(File.ReadAllText(f.File));
@@ -85,10 +85,10 @@ namespace inspiral
 				}
 				catch(System.Exception e)
 				{
-					Debug.WriteLine($"Exception when loading bodyplan from file {f.File} - {e.Message}");
+					Game.LogError($"Exception when loading bodyplan from file {f.File} - {e.Message}");
 				}
 			}
-			Debug.WriteLine("Done.");
+			Game.LogError("Done.");
 		}
 		internal Bodyplan GetPlan(string name)		{
 			name = name.ToLower();

@@ -1,8 +1,14 @@
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandInfo : GameCommand
 	{
-		internal void CmdInfo(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "info", "p", "probe" };
+			description = "Examines a nearby object or room.";
+			usage = "info [object name or id]";
+		}
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(invoker.location == null)
 			{

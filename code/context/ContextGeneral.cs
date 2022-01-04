@@ -12,7 +12,7 @@ namespace inspiral
 			{
 				if(Modules.Components.Rooms.Count <= 0)
 				{
-					Debug.WriteLine("First run: cannot find a room, creating a new one.");
+					Game.LogError("First run: cannot find a room, creating a new one.");
 					Modules.Templates.Instantiate("room");
 				}
 				GameObject room = (GameObject)Modules.Components.Rooms[0].parent;
@@ -39,7 +39,7 @@ namespace inspiral
 					RoomComponent room = (RoomComponent)invoker.shell.location.GetComponent<RoomComponent>();
 					if(room.exits.ContainsKey(tmp))
 					{
-						GameObject destination = (GameObject)Game.Objects.Get(room.exits[tmp]);
+						GameObject destination = (GameObject)Game.Objects.GetByID(room.exits[tmp]);
 						if(destination == null)
 						{
 							invoker.WriteLine($"Strangely, there is nothing to the {tmp}. You stay where you are.");

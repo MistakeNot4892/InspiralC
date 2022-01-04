@@ -2,9 +2,15 @@ using System.Diagnostics;
 
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandAddRoom : GameCommand
 	{
-		internal void CmdAddroom(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "addroom", "connect" };
+			description = "Adds a new exit to a room.";
+			usage = "addroom [direction] [room id or 'new'] <one-way>";
+		}
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(invoker.location == null || !invoker.location.HasComponent<RoomComponent>())
 			{
@@ -48,17 +54,17 @@ namespace inspiral
 							}
 							catch(System.Exception e)
 							{
-								Debug.WriteLine($"Room ID exception: {e.ToString()}.");
+								Game.LogError($"Room ID exception: {e.ToString()}.");
 							}
 						}
-						if(roomId == -1 || Game.Objects.Get(roomId) == null)
+						if(roomId == -1 || Game.Objects.GetByID(roomId) == null)
 						{
 							invoker.WriteLine("Please specify a valid room ID to link to, or 'new' to use a new room.");
 						}
 						else
 						{
 							bool saveEditedRoom = true;
-							GameObject linkingRoom = (GameObject)Game.Objects.Get(roomId);
+							GameObject linkingRoom = (GameObject)Game.Objects.GetByID(roomId);
 							if((cmd.strArgs.Length >= 2 && cmd.strArgs[1].ToLower() == "one-way") || !linkingRoom.HasComponent<RoomComponent>() || !Text.reversedExits.ContainsKey(exitToAdd))
 							{
 								room.exits.Add(exitToAdd, roomId);

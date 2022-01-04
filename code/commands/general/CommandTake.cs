@@ -1,8 +1,14 @@
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandTake : GameCommand
 	{
-		internal void CmdTake(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "take", "get", "g", "pickup" };
+			description = "Picks up an object.";
+			usage = "take [object name or id]";
+		}
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(!invoker.HasComponent<InventoryComponent>())
 			{

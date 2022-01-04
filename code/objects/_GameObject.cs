@@ -83,7 +83,7 @@ namespace inspiral
 				}
 				if(room.exits.ContainsKey(lookingFor))
 				{
-					GameObject otherRoom = (GameObject)Game.Objects.Get(room.exits[lookingFor]);
+					GameObject otherRoom = (GameObject)Game.Objects.GetByID(room.exits[lookingFor]);
 					if(otherRoom != null)
 					{
 						return otherRoom;

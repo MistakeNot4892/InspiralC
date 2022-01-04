@@ -1,8 +1,14 @@
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule 
+	internal class CommandCreate : GameCommand
 	{
-		internal void CmdCreate(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "create" };
+			description = "Creates a new database entry for an object or room.";
+			usage = "create [object or room]";
+		}
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(cmd.objTarget != null)
 			{

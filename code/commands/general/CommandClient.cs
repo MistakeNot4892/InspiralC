@@ -1,8 +1,14 @@
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandClient : GameCommand
 	{
-		internal void CmdClient(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "client" };
+			description = "Shows your client details.";
+			usage = "client";
+		}
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(invoker.HasComponent<ClientComponent>())
 			{

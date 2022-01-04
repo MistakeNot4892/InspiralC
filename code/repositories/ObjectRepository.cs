@@ -53,7 +53,7 @@ namespace inspiral
 						}
 						catch(System.Exception e)
 						{
-							Debug.WriteLine($"Component SQL exception ({builder.Key}): {e.ToString()} - entire query is [{builder.Value.TableSchema}]");
+							Game.LogError($"Component SQL exception ({builder.Key}): {e.ToString()} - entire query is [{builder.Value.TableSchema}]");
 						}
 					}
 				}
@@ -98,7 +98,7 @@ namespace inspiral
 						}
 						catch(System.Exception e)
 						{
-							Debug.WriteLine($"SQL exception 4 ({repoName}): {e.ToString()} - entire query is [{Modules.Components.builders[comp.Key].LoadSchema}]");
+							Game.LogError($"SQL exception 4 ({repoName}): {e.ToString()} - entire query is [{Modules.Components.builders[comp.Key].LoadSchema}]");
 						}
 					}
 				}
@@ -126,7 +126,7 @@ namespace inspiral
 						}
 						catch(System.Exception e)
 						{
-							Debug.WriteLine($"SQL exception 5 ({repoName}): {e.ToString()} - entire query is [{Modules.Components.builders[comp.Key].InsertSchema}]");
+							Game.LogError($"SQL exception 5 ({repoName}): {e.ToString()} - entire query is [{Modules.Components.builders[comp.Key].InsertSchema}]");
 						}
 					}
 				}
@@ -157,8 +157,8 @@ namespace inspiral
 			{
 				if(loc.Value > 0)
 				{
-					GameObject obj =   (GameObject)Get(loc.Key);
-					GameObject other = (GameObject)Get(loc.Value);
+					GameObject obj =   (GameObject)GetByID(loc.Key);
+					GameObject other = (GameObject)GetByID(loc.Value);
 					if(obj != null && other != null)
 					{
 						obj.Move(other);
@@ -195,7 +195,7 @@ namespace inspiral
 						}
 						catch(System.Exception e)
 						{
-							Debug.WriteLine($"Component SQL exception 2 ({comp.Key}): {e.ToString()} - enter query is [{Modules.Components.builders[comp.Key].UpdateSchema}]");
+							Game.LogError($"Component SQL exception 2 ({comp.Key}): {e.ToString()} - enter query is [{Modules.Components.builders[comp.Key].UpdateSchema}]");
 						}
 					}
 				}

@@ -1,22 +1,22 @@
 {
 	"name" : "Player",
 	"commands" : [ 
-		"say", 
-		"emote", 
-		"take", 
-		"drop", 
-		"inventory", 
-		"quit", 
-		"look", 
-		"client", 
-		"help", 
-		"config",
-		"equip",
-		"unequip",
-		"describe",
-		"info",
-		"prompt",
-		"strike"
+		"inspiral.CommandSay", 
+		"inspiral.CommandEmote", 
+		"inspiral.CommandTake", 
+		"inspiral.CommandDrop", 
+		"inspiral.CommandInventory", 
+		"inspiral.CommandQuit", 
+		"inspiral.CommandLook", 
+		"inspiral.CommandClient", 
+		"inspiral.CommandHelp", 
+		"inspiral.CommandConfig",
+		"inspiral.CommandEquip",
+		"inspiral.CommandUnequip",
+		"inspiral.CommandDescribe",
+		"inspiral.CommandInfo",
+		"inspiral.CommandPrompt",
+		"inspiral.CommandStrike"
 	],
 	"description" : "Grants general world interaction and communication commands."
 }

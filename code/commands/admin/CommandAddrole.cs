@@ -1,8 +1,14 @@
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandAddRole : GameCommand
 	{
-		internal void CmdAddrole(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "addrole" };
+			description = "Adds a role to an account.";
+			usage = "addrole [account name or id] [role name or id]";			
+		}
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(cmd.objTarget == null)
 			{

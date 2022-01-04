@@ -106,7 +106,7 @@ namespace inspiral
 			// If the account DB is empty, give them admin roles.
 			if(accounts.Count <= 0)
 			{
-				Debug.WriteLine($"No accounts found, giving admin roles to {acct.userName}.");
+				Game.LogError($"No accounts found, giving admin roles to {acct.userName}.");
 				acct.roles.Add(Modules.Roles.GetRole("builder"));
 				acct.roles.Add(Modules.Roles.GetRole("administrator"));
 			}

@@ -1,8 +1,14 @@
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandEquip : GameCommand
 	{
-		internal void CmdEquip(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "equip", "wear" };
+			description = "Equips an object.";
+			usage = "equip [object name or id] <slot>";
+		}
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(!invoker.HasComponent<InventoryComponent>())
 			{

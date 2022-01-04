@@ -1,8 +1,14 @@
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandLook : GameCommand
 	{
-		internal void CmdLook(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "look", "l", "ql" };
+			description = "Examines a creature, object or location.";
+			usage = "look <at> <target>";
+		}
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(invoker.location == null)
 			{

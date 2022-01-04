@@ -32,11 +32,11 @@ namespace inspiral
 		}
 
 		internal virtual void Load() {
-			Debug.WriteLine($"Loading {repoName} from database.");
+			Game.LogError($"Loading {repoName} from database.");
 			dbPath = $"data/{dbTableName}.sqlite";
 			if(!File.Exists(dbPath))
 			{
-				Debug.WriteLine("No database found, creating empty.");
+				Game.LogError("No database found, creating empty.");
 				SQLiteConnection.CreateFile(dbPath);
 			}
 
@@ -51,15 +51,15 @@ namespace inspiral
 				}
 				catch(Exception e)
 				{
-					Debug.WriteLine($"SQL exception 1 ({repoName}): {e.ToString()} - entire query is [{createQuery}]");
+					Game.LogError($"SQL exception 1 ({repoName}): {e.ToString()} - entire query is [{createQuery}]");
 				}
 			}
 			HandleSecondarySQLInitialization(dbConnection);
-			Debug.WriteLine($"Finished loading {repoName}.");
+			Game.LogError($"Finished loading {repoName}.");
 		}
 		internal virtual void Initialize() 
 		{
-			Debug.WriteLine($"Initializing {repoName}.");
+			Game.LogError($"Initializing {repoName}.");
 			SQLiteConnection dbConnection = new SQLiteConnection($"Data Source={dbPath};Version={dbVersion};");
 			dbConnection.Open();
 			string selectQuery = $"SELECT * FROM {dbTableName};";
@@ -75,16 +75,16 @@ namespace inspiral
 				}
 				catch(Exception e)
 				{
-					Debug.WriteLine($"SQL exception 2 ({repoName}): {e.ToString()} - entire query is [{selectQuery}]");
+					Game.LogError($"SQL exception 2 ({repoName}): {e.ToString()} - entire query is [{selectQuery}]");
 				}
 			}
 			Task.Run(() => DoPeriodicDatabaseUpdate() );
-			Debug.WriteLine($"Finished initializing {repoName}.");
+			Game.LogError($"Finished initializing {repoName}.");
 		}
 
 		internal void DoPeriodicDatabaseUpdate()
 		{
-			Debug.WriteLine($"Starting periodic save thread for {repoName}.");
+			Game.LogError($"Starting periodic save thread for {repoName}.");
 			while(!killUpdateProcess)
 			{
 				if(updateQueue.Count > 0)
@@ -103,11 +103,11 @@ namespace inspiral
 				}
 				Thread.Sleep(5000);
 			}
-			Debug.WriteLine($"Terminating periodic save thread for {repoName}.");
+			Game.LogError($"Terminating periodic save thread for {repoName}.");
 		}
 
 		internal virtual void PostInitialize() {}
-		internal Object Get(long id)
+		internal Object GetByID(long id)
 		{
 			if(contents.ContainsKey(id))
 			{
@@ -131,7 +131,7 @@ namespace inspiral
 			{
 				AddDatabaseEntry(newInstance);
 			}
-			return Get(id);
+			return GetByID(id);
 		}
 		internal virtual void AddDatabaseEntry(Object newInstance)
 		{
@@ -144,7 +144,7 @@ namespace inspiral
 				}
 				catch(Exception e)
 				{
-					Debug.WriteLine($"SQL exception 3 ({repoName}): {e.ToString()} - enter query is [{dbInsertQuery}]");
+					Game.LogError($"SQL exception 3 ({repoName}): {e.ToString()} - enter query is [{dbInsertQuery}]");
 				}
 			}
 			HandleAdditionalSQLInsertion(newInstance, dbConnection);
@@ -164,14 +164,14 @@ namespace inspiral
 				}
 				catch(Exception e)
 				{
-					Debug.WriteLine($"SQL exception 6 ({repoName}): {e.ToString()} - enter query is [{dbUpdateQuery}]");
+					Game.LogError($"SQL exception 6 ({repoName}): {e.ToString()} - enter query is [{dbUpdateQuery}]");
 				}
 			}
 			HandleAdditionalObjectSave(objInstance, dbConnection);
 		}
 		public virtual void HandleAdditionalObjectSave(Object objInstance, SQLiteConnection dbConnection) {}
 		public virtual void HandleAdditionalSQLInsertion(Object newInstance, SQLiteConnection dbConnection) {}
-		public virtual void DumpToConsole() { Debug.WriteLine("Repo dump not implemented for this repo, sorry."); }
+		public virtual void DumpToConsole() { Game.LogError("Repo dump not implemented for this repo, sorry."); }
 		internal virtual void InstantiateFromRecord(SQLiteDataReader reader, SQLiteConnection dbConnection) {}
 		internal virtual Object CreateRepositoryType(long id) { return null; }
 		internal virtual void AddCommandParameters(SQLiteCommand command, Object instance) {}

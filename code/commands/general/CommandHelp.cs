@@ -1,8 +1,14 @@
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandHelp : GameCommand
 	{
-		internal void CmdHelp(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "help" };
+			description = "Shows details on commands. WIP.";
+			usage = "help <term>";
+		}
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(cmd.rawInput != "" && cmd.rawInput != null)
 			{

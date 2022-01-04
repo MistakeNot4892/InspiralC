@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json.Linq;
 
 namespace inspiral
 {
@@ -15,130 +13,117 @@ namespace inspiral
 	}
 	internal partial class CommandModule : GameModule
 	{
-		private Regex matchCmdWithIn = new Regex(@"([a-zA-Z0-9]+) with (.+) in (.+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-		private Regex matchCmdInWith = new Regex(@"([a-zA-Z0-9]+) in (.+) with (.+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-		private Regex matchCmdWith =   new Regex(@"([a-zA-Z0-9]+) with (.+)",         RegexOptions.Compiled | RegexOptions.IgnoreCase);
-		private Regex matchCmdIn =     new Regex(@"([a-zA-Z0-9]+) in (.+)",           RegexOptions.Compiled | RegexOptions.IgnoreCase);
-		private Dictionary<string, GameCommand> commands = new Dictionary<string, GameCommand>();
+		private Dictionary<System.Type, GameCommand> commands = new Dictionary<System.Type, GameCommand>();
 		internal override void Initialize()
 		{
 			Modules.Commands = this;
-			Debug.WriteLine($"Building command method lookup table.");
-			
-			Dictionary<string, MethodInfo> methods = new Dictionary<string, MethodInfo>();
-			MethodInfo[] methodInfos = typeof(CommandModule).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance);
-			for(int i = 0;i < methodInfos.Length;i++)
+			Game.LogError($"Building command dictionary.");
+			foreach(var t in (from domainAssembly in System.AppDomain.CurrentDomain.GetAssemblies()
+				from assemblyType in domainAssembly.GetTypes()
+				where assemblyType.IsSubclassOf(typeof(GameCommand))
+				select assemblyType))
 			{
-				if(methodInfos[i].Name.Substring(0, 3) == "Cmd")
+				Game.LogError($"- Creating command instance {t}.");
+				GameCommand command = (GameCommand)System.Activator.CreateInstance(t);
+				if(command != null && command.aliases != null && command.aliases.Count > 0)
 				{
-					System.Console.WriteLine($"- Caching MethodInfo for {methodInfos[i].Name}.");
-					methods.Add(methodInfos[i].Name, methodInfos[i]);
+					RegisterCommand(command);
 				}
 			}
-
-			Debug.WriteLine($"Building command dictionary.");
-			foreach (var f in (from file in Directory.EnumerateFiles(@"data/definitions/commands", "*.json", SearchOption.AllDirectories) select new { File = file }))
-			{
-				Debug.WriteLine($"- Loading command definition {f.File}.");
-				try
-				{
-					JObject r = JObject.Parse(File.ReadAllText(f.File));
-					List<string> aliases = new List<string>();
-					foreach(JValue token in r["aliases"].Children<JValue>())
-					{
-						aliases.Add(token.ToString());
-					}
-					MethodInfo method = methods[(string)r["method"]];
-					GameCommand command = new GameCommand(
-						(string)r["command"],
-						aliases,
-						(string)r["usage"],
-						(string)r["description"],
-						method
-					);
-					commands.Add(command.command, command);
-				}
-				catch(System.Exception e)
-				{
-					Debug.WriteLine($"Exception when loading command from file {f.File} - {e.Message}");
-				}
-			}
-			Debug.WriteLine($"Done.");
+			Game.LogError($"Done.");
 		}
-		internal GameCommand Get(string command)
+		internal void RegisterCommand(GameCommand command)
 		{
-			command = command.ToLower();
-			if(commands.ContainsKey(command))
+			commands.Add(command.GetType(), command);
+		}
+		internal GameCommand GetCommand(System.Type cmdType)
+		{
+			if(commands.ContainsKey(cmdType))
 			{
-				return commands[command];
+				return commands[cmdType];
 			}
 			return null;
+
 		}
-
-		internal class CommandData
+		internal GameCommand GetCommand(string cmdClass)
 		{
-			internal string strCmd =    null;
-			internal string[] strArgs = null;
-			internal string objTarget = null;
-			internal string objWith =   null;
-			internal string objIn =     null;
-			internal string objAt =     null;
-			internal string objTo =     null;
-			internal string objFrom =   null;
-			internal string rawInput =  null;
-			private void SaveSubstringAsField(string field, string substring)
+			System.Type cmdType = System.Type.GetType(cmdClass);
+			if(cmdType == null)
 			{
-				switch(field)
-				{
-					case "args":
-						strArgs = substring.Split(" ");
-						break;
-					case "at":
-						objAt = substring;
-						break;
-					case "with":
-						objWith = substring;
-						break;
-					case "in":
-						objIn = substring;
-						break;
-					case "to":
-						objTo = substring;
-						break;
-					case "from":
-						objFrom = substring;
-						break;
-				}
+				Game.LogError($"Could not determine a valid command type from '{cmdClass}'.");
+				return null;
 			}
-			internal string GetSummary()
-			{
-				string safeStrCmd =    strCmd ==    null ? "null" :                strCmd;
-				string safeObjTarget = objTarget == null ? "null" :                objTarget;
-				string[] safeStrArgs = strArgs ==   null ? new string[] {"null"} : strArgs;
-				string safeObjWith =   objWith ==   null ? "null" :                objWith;
-				string safeObjIn =     objIn ==     null ? "null" :                objIn;
-				string safeObjAt =     objAt ==     null ? "null" :                objAt;
-				string safeObjTo =     objTo ==     null ? "null" :                objTo;
-				string safeObjFrom =   objFrom ==   null ? "null" :                objFrom;
+			return GetCommand(cmdType);
+		}
+		internal GameCommand GetCommand<T>()
+		{
+			return GetCommand(typeof(T));
+		}
+	}
 
-				return $"cmd [{safeStrCmd}] target [{safeObjTarget}] args [{string.Join(", ", safeStrArgs)}] with [{safeObjWith}] in [{safeObjIn}] at [{safeObjAt}] to [{safeObjTo}] from [{safeObjFrom}] raw [{rawInput}]";
-			}
-			internal CommandData(string command, string input)
+	internal class CommandData
+	{
+		internal string strCmd =    null;
+		internal string[] strArgs = null;
+		internal string objTarget = null;
+		internal string objWith =   null;
+		internal string objIn =     null;
+		internal string objAt =     null;
+		internal string objTo =     null;
+		internal string objFrom =   null;
+		internal string rawInput =  null;
+		private void SaveSubstringAsField(string field, string substring)
+		{
+			switch(field)
 			{
-				strCmd = command;
-				rawInput = input;
-				string[] tokens = input.ToLower().Split(" ");
-				List<string> validTokens = new List<string>();
-				for(int i = 0;i<tokens.Length;i++)
+				case "args":
+					strArgs = substring.Split(" ");
+					break;
+				case "at":
+					objAt = substring;
+					break;
+				case "with":
+					objWith = substring;
+					break;
+				case "in":
+					objIn = substring;
+					break;
+				case "to":
+					objTo = substring;
+					break;
+				case "from":
+					objFrom = substring;
+					break;
+			}
+		}
+		internal string GetSummary()
+		{
+			string safeStrCmd =    strCmd ==    null ? "null" :                strCmd;
+			string safeObjTarget = objTarget == null ? "null" :                objTarget;
+			string[] safeStrArgs = strArgs ==   null ? new string[] {"null"} : strArgs;
+			string safeObjWith =   objWith ==   null ? "null" :                objWith;
+			string safeObjIn =     objIn ==     null ? "null" :                objIn;
+			string safeObjAt =     objAt ==     null ? "null" :                objAt;
+			string safeObjTo =     objTo ==     null ? "null" :                objTo;
+			string safeObjFrom =   objFrom ==   null ? "null" :                objFrom;
+			return $"cmd [{safeStrCmd}] target [{safeObjTarget}] args [{string.Join(", ", safeStrArgs)}] with [{safeObjWith}] in [{safeObjIn}] at [{safeObjAt}] to [{safeObjTo}] from [{safeObjFrom}] raw [{rawInput}]";
+		}
+		internal CommandData(string command, string input)
+		{
+			strCmd = command;
+			rawInput = input;
+			string[] tokens = input.ToLower().Split(" ");
+			List<string> validTokens = new List<string>();
+			for(int i = 0;i<tokens.Length;i++)
+			{
+				string t = tokens[i].Trim();
+				if(t != "")
 				{
-					string t = tokens[i].Trim();
-					if(t != "")
-					{
-						validTokens.Add(t);
-					}
+					validTokens.Add(t);
 				}
-				if(validTokens.Count > 0)
-				{
+			}
+			if(validTokens.Count > 0)
+			{
 					string lastSubstring = "";
 					string lastField = "args";
 					foreach(string s in validTokens)
@@ -169,32 +154,26 @@ namespace inspiral
 					{
 						SaveSubstringAsField(lastField, lastSubstring.Trim());
 					}
-					if(strArgs != null && strArgs.Length > 0)
-					{
-						objTarget = strArgs[0];
-					}
+				if(strArgs != null && strArgs.Length > 0)
+				{
+					objTarget = strArgs[0];
 				}
 			}
 		}
 	}
+
 	internal class GameCommand
 	{
-		internal string command;
-		internal List<string> aliases;
+		internal List<string> aliases = null;
 		internal string usage;
 		internal string description;
-		internal MethodInfo invokedMethod;
-		internal GameCommand(string _command, List<string> _aliases, string _usage, string _description, MethodInfo _method)
-		{
-			command = _command;
-			aliases = _aliases;
-			usage = _usage;
-			description = _description;
-			invokedMethod = _method;
-		}
+		internal GameCommand() { Initialize(); }
+		internal virtual void Initialize() {}
+		internal virtual void InvokeCommand(GameObject invoker, CommandData cmd) {}
+
 		internal string GetSummary()
 		{
-			return $"{command} [{Text.EnglishList(aliases)}]";
+			return $"[{Text.EnglishList(aliases)}]";
 		}
 	}
 }

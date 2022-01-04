@@ -3,9 +3,19 @@ using System.Text.RegularExpressions;
 
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandEmote : GameCommand
 	{
-		internal void CmdEmote(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "emote", "em", "me" };
+			description = "Performs a complex narration or action.";
+			usage = "emote <(preceeding text)> [following text]";
+		}
+/*
+{
+}
+*/
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			string emoteText = invoker.GetShort();
 			if(cmd.rawInput[0] == '(' && cmd.rawInput.IndexOf(')') != -1)

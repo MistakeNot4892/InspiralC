@@ -16,10 +16,10 @@ namespace inspiral
 		internal override void PostInitialize()
 		{
 			Modules.Roles = this;
-			Debug.WriteLine("Loading role definitions.");
+			Game.LogError("Loading role definitions.");
 			foreach (var f in (from file in Directory.EnumerateFiles(@"data/definitions/roles", "*.json", SearchOption.AllDirectories) select new { File = file }))
 			{
-				Debug.WriteLine($"- Loading role definition {f.File}.");
+				Game.LogError($"- Loading role definition {f.File}.");
 				try
 				{
 					JObject r = JObject.Parse(File.ReadAllText(f.File));
@@ -28,7 +28,7 @@ namespace inspiral
 					List<GameCommand> roleCommands = new List<GameCommand>();
 					foreach(string cmd in r["commands"].Select(t => (string)t).ToList())
 					{
-						GameCommand _cmd = Modules.Commands.Get(cmd);
+						GameCommand _cmd = Modules.Commands.GetCommand(cmd);
 						if(_cmd != null)
 						{
 							if(!roleCommands.Contains(_cmd))
@@ -36,20 +36,16 @@ namespace inspiral
 								roleCommands.Add(_cmd);
 							}
 						}
-						else
-						{
-							Debug.WriteLine($"Could not find command '{cmd}' for role '{roleName}'.");
-						}
 					}
 					GameRole role = new GameRole(roleName, roleDescription, roleCommands);
 					roles.Add(role.name.ToLower(), role);
 				}
 				catch(System.Exception e)
 				{
-					Debug.WriteLine($"Exception when loading role from file {f.File} - {e.Message}");
+					Game.LogError($"Exception when loading role from file {f.File} - {e.Message}");
 				}
 			}
-			Debug.WriteLine("Done.");
+			Game.LogError("Done.");
 		}
 		internal GameRole GetRole(string key)
 		{
@@ -75,10 +71,6 @@ namespace inspiral
 			UniqueCommands = _cmds;
 			foreach(GameCommand command in UniqueCommands)
 			{
-				if(!AllCommands.ContainsKey(command.command))
-				{
-					AllCommands.Add(command.command, command);
-				}
 				foreach(string alias in command.aliases)
 				{
 					if(!AllCommands.ContainsKey(alias))
@@ -107,7 +99,7 @@ namespace inspiral
 			string result = $"{name}:";
 			foreach(GameCommand command in UniqueCommands)
 			{
-				result += $"\n   {command.command} [{Text.EnglishList(command.aliases)}]:\n";
+				result += $"\n   [{Text.EnglishList(command.aliases)}]:\n";
 				result += $"\n     Usage: {command.usage}\n     {command.description}";
 			}
 			return result;

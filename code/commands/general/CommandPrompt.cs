@@ -1,8 +1,14 @@
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandPrompt : GameCommand
 	{
-		internal void CmdPrompt(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "prompt" };
+			description = "Shows your full prompt.";
+			usage = "prompt";
+		}
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			invoker.SendPrompt(true);
 		}

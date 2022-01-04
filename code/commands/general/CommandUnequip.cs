@@ -1,8 +1,14 @@
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandUnequip : GameCommand
 	{
-		internal void CmdUnequip(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "unequip", "remove" };
+			description = "Unequips an object.";
+			usage = "unequip [object name or id]";
+		}
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(!invoker.HasComponent<InventoryComponent>())
 			{

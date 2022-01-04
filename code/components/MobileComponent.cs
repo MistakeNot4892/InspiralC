@@ -178,7 +178,7 @@ namespace inspiral
 			deathMessage = reader[Text.FieldDeathMessage].ToString();
 			foreach(KeyValuePair<string, long> limb in JsonConvert.DeserializeObject<Dictionary<string, long>>((string)reader[Text.FieldBodypartList]))
 			{
-				limbs.Add(limb.Key, (limb.Value != 0 ? (GameObject)Game.Objects.Get(limb.Value) : null));
+				limbs.Add(limb.Key, (limb.Value != 0 ? (GameObject)Game.Objects.GetByID(limb.Value) : null));
 			}
 		}
 

@@ -2,9 +2,16 @@ using System.Diagnostics;
 
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandView : GameCommand
 	{
-		internal void CmdView(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "view", "vv" };
+			description = "Views the components and fields of an object.";
+			usage = "view [object name or id]";
+		}
+
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(cmd.objTarget == null)
 			{
@@ -17,11 +24,11 @@ namespace inspiral
 				{
 					try
 					{
-						viewing = (GameObject)Game.Objects.Get((long)System.Convert.ToInt64(cmd.objTarget));
+						viewing = (GameObject)Game.Objects.GetByID((long)System.Convert.ToInt64(cmd.objTarget));
 					}
 					catch(System.Exception e) 
 					{
-						Debug.WriteLine($"Tried to look up a non-long var in the global db ({e.Message})");
+						Game.LogError($"Tried to look up a non-long var in the global db ({e.Message})");
 					}
 					invoker.WriteLine($"Cannot find '{cmd.objTarget}'.");
 				}

@@ -2,9 +2,15 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandSet : GameCommand
 	{
-		internal void CmdSet(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "set", "vs" };
+			description = "Modifies the editable fields of an object.";
+			usage = "set [object name or id] [object field] [new value]";
+		}
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(cmd.objTarget == null || cmd.strArgs.Length < 3)
 			{

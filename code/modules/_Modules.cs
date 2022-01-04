@@ -37,13 +37,13 @@ namespace inspiral
 		private static List<GameModule> modules = new List<GameModule>();
 		internal static void Initialize()
 		{
-			Debug.WriteLine($"Initializing modules.");
+			Game.LogError($"Initializing modules.");
 			foreach(var t in (from domainAssembly in System.AppDomain.CurrentDomain.GetAssemblies()
 				from assemblyType in domainAssembly.GetTypes()
 				where assemblyType.IsSubclassOf(typeof(GameModule))
 				select assemblyType))
 			{
-				Debug.WriteLine($"Initializing module {t}.");
+				Game.LogError($"Initializing module {t}.");
 				GameModule module = (GameModule)System.Activator.CreateInstance(t);
 				module.Initialize();
 				modules.Add(module);
@@ -53,12 +53,12 @@ namespace inspiral
 
 		internal static void PostInitialize()
 		{
-			Debug.WriteLine($"Post-initializing modules.");
+			Game.LogError($"Post-initializing modules.");
 			foreach(GameModule module in modules)
 			{
 				module.PostInitialize();
 			}
-			Debug.WriteLine($"Done.");
+			Game.LogError($"Done.");
 		}
 	}
 }

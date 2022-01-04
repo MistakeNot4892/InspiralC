@@ -2,9 +2,15 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandViewRoles : GameCommand
 	{
-		internal void CmdRoles(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "roles" };
+			description = "Shows the details of roles attached to an account.";
+			usage = "roles [account name or id]";
+		}
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(cmd.objTarget == null)
 			{

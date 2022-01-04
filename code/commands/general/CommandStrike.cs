@@ -1,9 +1,15 @@
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandStrike : GameCommand
 	{
 
-		internal void CmdStrike(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "strike", "attack", "hit", "bash" };
+			description = "Attacks another entity.";
+			usage = "strike [target] <in bodypart> <with bodypart or object>";
+		}
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 
 			GameObject targetObj = null;

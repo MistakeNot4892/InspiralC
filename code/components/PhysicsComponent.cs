@@ -150,7 +150,7 @@ namespace inspiral
 			}
 			catch(System.Exception e)
 			{
-				Debug.WriteLine($"Conversion exception in physics SetValue(): {e.Message}");
+				Game.LogError($"Conversion exception in physics SetValue(): {e.Message}");
 				return false; 
 			}
 		}

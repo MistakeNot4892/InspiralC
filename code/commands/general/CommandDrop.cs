@@ -1,8 +1,14 @@
 namespace inspiral
 {
-	internal partial class CommandModule : GameModule
+	internal class CommandDrop : GameCommand
 	{
-		internal void CmdDrop(GameObject invoker, CommandData cmd)
+		internal override void Initialize()
+		{
+			aliases = new System.Collections.Generic.List<string>() { "drop" };
+			description = "Drops an object.";
+			usage = "drop [object name or id]";
+		}
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(!invoker.HasComponent<InventoryComponent>())
 			{

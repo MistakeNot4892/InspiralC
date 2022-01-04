@@ -35,10 +35,10 @@ namespace inspiral
 		internal override void Initialize() 
 		{
 			Modules.Gender = this;
-			Debug.WriteLine($"- Loading gender definitions.");
+			Game.LogError($"- Loading gender definitions.");
 			foreach (var f in (from file in Directory.EnumerateFiles(@"data/definitions/genders", "*.json", SearchOption.AllDirectories) select new { File = file }))
 			{
-				Debug.WriteLine($"- Loading gender definition {f.File}.");
+				Game.LogError($"- Loading gender definition {f.File}.");
 				try
 				{
 					Dictionary<string, string> genderStrings = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(f.File));
@@ -63,7 +63,7 @@ namespace inspiral
 				}
 				catch(System.Exception e)
 				{
-					Debug.WriteLine($"Exception when loading gender from file {f.File} - {e.Message}");
+					Game.LogError($"Exception when loading gender from file {f.File} - {e.Message}");
 				}
 			}
 			// 'it' is useless as it is ambiguous, just get rid of it.
@@ -71,7 +71,7 @@ namespace inspiral
 			{
 				Tokens.Remove("it");
 			}
-			Debug.WriteLine($"Done.");
+			Game.LogError($"Done.");
 		}
 		internal GenderObject GetByTerm(string term)
 		{
