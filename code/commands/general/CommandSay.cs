@@ -53,11 +53,11 @@ namespace inspiral
 
 			if(invocation.Length <= 0)
 			{
-				invoker.ShowNearby(invoker, $"You open your mouth but say nothing.", $"{invoker.GetShort()} opens {invoker.gender.Their} mouth but says nothing.");
+				invoker.ShowNearby(invoker, $"You open your mouth but say nothing.", $"{invoker.GetShortDesc()} opens {invoker.gender.Their} mouth but says nothing.");
 				return;
 			}
 			string prefix1p = $"You {speechVerb1p}";
-			string prefix3p = $"{invoker.GetShort()} {speechVerb3p}";
+			string prefix3p = $"{invoker.GetShortDesc()} {speechVerb3p}";
 
 			if(invocation[0] == '(' && invocation.IndexOf(')') != -1)
 			{
@@ -71,7 +71,7 @@ namespace inspiral
 			invocation = Text.FormatProse(invocation);
 			if(target != null)
 			{
-				string targetName = target.GetShort();
+				string targetName = target.GetShortDesc();
 				invoker.ShowNearby(
 					invoker, 
 					target,

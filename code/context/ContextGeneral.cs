@@ -47,9 +47,9 @@ namespace inspiral
 						{
 							GameEntity loc = invoker.shell.location;
 							invoker.WriteLine($"You depart to the {tmp}.");
-							destination.ShowToContents($"{mob.GetString(Text.FieldEnterMessage).Replace("$DIR", tmp)}");
+							destination.ShowToContents(invoker.shell.ApplyStringTokens(mob.GetString(Text.FieldEnterMessage), tmp));
 							invoker.shell.Move(destination);
-							loc.ShowToContents($"{mob.GetString(Text.FieldLeaveMessage).Replace("$DIR", tmp)}");
+							loc.ShowToContents(invoker.shell.ApplyStringTokens(mob.GetString(Text.FieldLeaveMessage), tmp));
 						}
 						invoker.SendPrompt();
 						return true;

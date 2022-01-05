@@ -103,7 +103,7 @@ namespace inspiral
 		}
 		internal void Probed(GameEntity invoker)
 		{
-			string reply = $"{GetShort()} ({name}#{id})";
+			string reply = $"{GetShortDesc()} ({name}#{id})";
 			reply += "\nContents:";
 			if(contents.Count > 0)
 			{
@@ -134,22 +134,22 @@ namespace inspiral
 						{
 							if(equip.GetWieldableSlots().Contains(equ.Key))
 							{
-								result.Add($"{equ.Value.GetShort()} ({equ.Value.name}#{equ.Value.id}) ({equ.Key}, wielded)");
+								result.Add($"{equ.Value.GetShortDesc()} ({equ.Value.name}#{equ.Value.id}) ({equ.Key}, wielded)");
 							}
 							else
 							{
-								result.Add($"{equ.Value.GetShort()} ({equ.Value.name}#{equ.Value.id}) ({equ.Key}, worn)");
+								result.Add($"{equ.Value.GetShortDesc()} ({equ.Value.name}#{equ.Value.id}) ({equ.Key}, worn)");
 							}
 						}
 						else
 						{
 							if(equip.GetWieldableSlots().Contains(equ.Key))
 							{
-								result.Add($"{equ.Value.GetShort()} in {their} {equ.Key}.");
+								result.Add($"{equ.Value.GetShortDesc()} in {their} {equ.Key}.");
 							}
 							else
 							{
-								result.Add($"{equ.Value.GetShort()} on {their} {equ.Key}.");
+								result.Add($"{equ.Value.GetShortDesc()} on {their} {equ.Key}.");
 							}
 						}
 					}
@@ -161,13 +161,13 @@ namespace inspiral
 				{
 					if(quickView)
 					{
-						result.Add($"{gameObj.GetShort()} ({gameObj.name}#{gameObj.id})");
+						result.Add($"{gameObj.GetShortDesc()} ({gameObj.name}#{gameObj.id})");
 					}
 					else
 					{
 						if(gameObj != viewer)
 						{
-							result.Add(gameObj.GetString<VisibleComponent>(Text.FieldRoomDesc));
+							result.Add(gameObj.GetRoomDesc());
 						}
 					}
 				}
@@ -186,9 +186,13 @@ namespace inspiral
 				viewer.WriteLine("There is nothing there.");
 			}
 		}
-		internal string GetShort()
+		internal string GetShortDesc()
 		{
-			return GetString<VisibleComponent>(Text.FieldShortDesc);
+			return ApplyStringTokens(GetString<VisibleComponent>(Text.FieldShortDesc));
+		}
+		internal string GetRoomDesc()
+		{
+			return ApplyStringTokens(GetString<VisibleComponent>(Text.FieldRoomDesc));
 		}
 	}
 }

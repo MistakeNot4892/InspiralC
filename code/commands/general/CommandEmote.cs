@@ -13,7 +13,7 @@ namespace inspiral
 		}
 		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
-			string emoteText = invoker.GetShort();
+			string emoteText = invoker.GetShortDesc();
 			if(cmd.rawInput[0] == '(' && cmd.rawInput.IndexOf(')') != -1)
 			{
 				int secondParen = cmd.rawInput.IndexOf(')')-1;

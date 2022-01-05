@@ -10,7 +10,7 @@
 		{
 			"shortdesc" :    "an axe",
 			"examineddesc" : "This is a sharp axe.",
-			"roomdesc" :     "An axe has been left here."
+			"roomdesc" :     "$Short$ has been left here."
 		},
 		"inspiral.PhysicsComponent" :
 		{

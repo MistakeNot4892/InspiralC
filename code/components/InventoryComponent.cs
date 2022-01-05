@@ -133,8 +133,8 @@ namespace inspiral
 				if(!silent)
 				{
 					parent.ShowNearby(parent, 
-						$"You {removeMessage1p} {dropping.GetShort()}.",
-						$"{Text.Capitalize(parent.GetShort())} {removeMessage3p} {dropping.GetShort()}."
+						$"You {removeMessage1p} {dropping.GetShortDesc()}.",
+						$"{Text.Capitalize(parent.GetShortDesc())} {removeMessage3p} {dropping.GetShortDesc()}."
 						);
 				}
 				dropping.Move(parent.location);
@@ -256,8 +256,8 @@ namespace inspiral
 				if(success)
 				{
 					Game.Objects.QueueForUpdate(parent);
-					string collectionMessage1p = $"You pick up {equipping.GetShort()}";
-					string collectionMessage3p = $"{Text.Capitalize(parent.GetShort())} picks up {equipping.GetShort()}";
+					string collectionMessage1p = $"You pick up {equipping.GetShortDesc()}";
+					string collectionMessage3p = $"{Text.Capitalize(parent.GetShortDesc())} picks up {equipping.GetShortDesc()}";
 					if(slot != null && slot != "default")
 					{
 						collectionMessage1p = $"{collectionMessage1p} with your {slot}";
@@ -365,8 +365,8 @@ namespace inspiral
 				if(!silent)
 				{
 					parent.ShowNearby(parent, 
-						$"You equip {equipping.GetShort()} to your {slot}.",
-						$"{Text.Capitalize(parent.GetShort())} equips {equipping.GetShort()} to {parent.gender.Their} {slot}."
+						$"You equip {equipping.GetShortDesc()} to your {slot}.",
+						$"{Text.Capitalize(parent.GetShortDesc())} equips {equipping.GetShortDesc()} to {parent.gender.Their} {slot}."
 					);
 				}
 				Game.Objects.QueueForUpdate(parent);
@@ -402,8 +402,8 @@ namespace inspiral
 						}
 					}
 					parent.ShowNearby(parent, 
-						$"You remove {unequipping.GetShort()} from your {removingSlot}.",
-						$"{Text.Capitalize(parent.GetShort())} removes {unequipping.GetShort()} from {parent.gender.Their} {removingSlot}."
+						$"You remove {unequipping.GetShortDesc()} from your {removingSlot}.",
+						$"{Text.Capitalize(parent.GetShortDesc())} removes {unequipping.GetShortDesc()} from {parent.gender.Their} {removingSlot}."
 					);
 					Game.Objects.QueueForUpdate(parent);
 				}

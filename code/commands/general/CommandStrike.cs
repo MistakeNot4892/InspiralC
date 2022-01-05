@@ -71,7 +71,7 @@ namespace inspiral
 					{
 						if(!prop.HasComponent<PhysicsComponent>())
 						{
-							invoker.WriteLine($"You cannot use {prop.GetShort()} as a weapon.");
+							invoker.WriteLine($"You cannot use {prop.GetShortDesc()} as a weapon.");
 							return;
 						}
 						strikeWith = prop;
@@ -99,12 +99,12 @@ namespace inspiral
 				}
 				else
 				{
-					invoker.WriteLine($"{Text.Capitalize(targetObj.GetShort())} is missing that bodypart!");
+					invoker.WriteLine($"{Text.Capitalize(targetObj.GetShortDesc())} is missing that bodypart!");
 					return;
 				}
 			}
 
-			string strikeString = $"{strikeWith.GetShort()}, {strikeAgainst.HandleImpact(invoker, strikeWith, 3.0)}";
+			string strikeString = $"{strikeWith.GetShortDesc()}, {strikeAgainst.HandleImpact(invoker, strikeWith, 3.0)}";
 			string firstPersonStrikeWith = strikeString;
 			if(firstPersonStrikeWith.Substring(0,2) == "a ")
 			{
@@ -123,11 +123,11 @@ namespace inspiral
 				}
 			}
 
-			string bpString = $" in the {strikeAgainst.GetShort()}";
+			string bpString = $" in the {strikeAgainst.GetShortDesc()}";
 			invoker.ShowNearby(invoker, targetObj,
-				$"You strike {targetObj.GetShort()}{bpString} with your {firstPersonStrikeWith}!",
-				$"{Text.Capitalize(invoker.GetShort())} strikes you{bpString} with {strikeString}!",
-				$"{Text.Capitalize(invoker.GetShort())} strikes {targetObj.GetShort()}{bpString} with {strikeString}!"
+				$"You strike {targetObj.GetShortDesc()}{bpString} with your {firstPersonStrikeWith}!",
+				$"{Text.Capitalize(invoker.GetShortDesc())} strikes you{bpString} with {strikeString}!",
+				$"{Text.Capitalize(invoker.GetShortDesc())} strikes {targetObj.GetShortDesc()}{bpString} with {strikeString}!"
 				);
 		}
 	}

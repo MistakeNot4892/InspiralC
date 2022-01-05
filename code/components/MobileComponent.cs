@@ -17,7 +17,7 @@ namespace inspiral
 		internal const string FieldLeaveMessage = "leave";
 		internal const string FieldDeathMessage = "death";
 		internal const string FieldBodyplan =     "bodyplan";
-		internal const string FieldRace =         "race";
+		internal const string FieldSpecies =      "species";
 		internal const string FieldBodypartList = "bodyparts";
 	}
 
@@ -60,10 +60,10 @@ namespace inspiral
 
 	internal class MobileComponent : GameComponent
 	{
-		internal string enterMessage = "A generic object enters from the $DIR.";
-		internal string leaveMessage = "A generic object leaves to the $DIR.";
-		internal string deathMessage = "A generic object lies here, dead.";
-		internal string race =         "human";
+		internal string enterMessage = Text.DefaultEnterMessage;
+		internal string leaveMessage = Text.DefaultLeaveMessage;
+		internal string deathMessage = Text.DefaultDeathMessage;
+		internal string species =      "human";
 		internal List<string> strikers = new List<string>();
 		internal List<string> graspers = new List<string>();
 		internal List<string> stance = new List<string>();
@@ -109,8 +109,8 @@ namespace inspiral
 					return leaveMessage;
 				case Text.FieldDeathMessage:
 					return deathMessage;
-				case Text.FieldRace:
-					return race;
+				case Text.FieldSpecies:
+					return species;
 				default:
 					return null;
 			}
@@ -121,9 +121,6 @@ namespace inspiral
 		}
 		internal override void ConfigureFromJson(JToken compData)
 		{
-			enterMessage = $"{parent.name} enters from the $DIR.";
-			leaveMessage = $"{parent.name} leaves to the $DIR.";
-			deathMessage = $"The corpse of {parent.name} lies here.";
 
 			Bodyplan bp = null;
 			if(!JsonExtensions.IsNullOrEmpty(compData["mobtype"]))

@@ -24,7 +24,7 @@ namespace inspiral
 					if(hat != null)
 					{
 						hat.Move(invoker.location);
-						invoker.WriteLine($"Created {hat.GetShort()} ({hat.name}#{hat.id}).");
+						invoker.WriteLine($"Created {hat.GetShortDesc()} ({hat.name}#{hat.id}).");
 						msgSent = true;
 					}
 				}

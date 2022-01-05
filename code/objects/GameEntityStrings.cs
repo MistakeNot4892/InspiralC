@@ -4,6 +4,21 @@ namespace inspiral
 {
 	internal partial class GameEntity
 	{
+		internal string ApplyStringTokens(string msg)
+		{
+			if(HasComponent<VisibleComponent>())
+			{
+				msg = msg.Replace(GlobalConfig.StringTokenShort, GetString<VisibleComponent>(Text.FieldShortDesc));
+				msg = msg.Replace(GlobalConfig.StringTokenShortCaps, Text.Capitalize(GetString<VisibleComponent>(Text.FieldShortDesc)));
+			}
+			return msg;
+		}
+
+		internal string ApplyStringTokens(string msg, string dir)
+		{
+			msg = msg.Replace(GlobalConfig.StringTokenDir, dir);
+			return ApplyStringTokens(msg);
+		}
 		internal string GetString<T>(string field)
 		{
 			System.Type compType = typeof(T);
@@ -51,7 +66,7 @@ namespace inspiral
 			summary[fieldKey].Add($"gender:   {gender.Term}");
 			if(location != null)
 			{
-				summary[fieldKey].Add($"location (read-only): {location.GetShort()} (#{location.id})");
+				summary[fieldKey].Add($"location (read-only): {location.GetShortDesc()} (#{location.id})");
 			}
 			else
 			{

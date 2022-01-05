@@ -9,8 +9,8 @@
 		"inspiral.VisibleComponent" : 
 		{
 			"shortdesc" :    "a stick",
-			"examineddesc" : "This is a stick. It's brown and sticky.",
-			"roomdesc" :     "A stick has been left here."
+			"examineddesc" : "This is $short$. It's brown and sticky.",
+			"roomdesc" :     "$Short$ has been left here."
 		},
 		"inspiral.PhysicsComponent" :
 		{

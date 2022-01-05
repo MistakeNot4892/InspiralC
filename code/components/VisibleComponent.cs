@@ -99,7 +99,7 @@ namespace inspiral
 		}
 		internal void ExaminedBy(GameEntity viewer, bool fromInside)
 		{
-			string mainDesc = $"{Colours.Fg(Text.Capitalize(shortDescription),Colours.BoldWhite)}.";
+			string mainDesc = $"{Colours.Fg(parent.GetShortDesc(), Colours.BoldWhite)}.";
 			if(parent.HasComponent<MobileComponent>())
 			{
 				string startingToken;
@@ -119,10 +119,10 @@ namespace inspiral
 				}
 
 				MobileComponent mob = (MobileComponent)parent.GetComponent<MobileComponent>();
-				mainDesc = $"{startingToken} {mainDesc}\n{theyAre} a {mob.race}";
+				mainDesc = $"{startingToken} {mainDesc}\n{theyAre} a {mob.species}";
 				if(viewer == parent)
 				{
-					mainDesc += $". When people look at you, they see:\n{Text.Capitalize(parent.gender.They)} {parent.gender.Is} a {mob.race}";
+					mainDesc += $". When people look at you, they see:\n{Text.Capitalize(parent.gender.They)} {parent.gender.Is} a {mob.species}";
 				}
 				if(examinedDescription == null || examinedDescription.Length <= 0)
 				{
@@ -130,11 +130,11 @@ namespace inspiral
 				}
 				else if(examinedDescription[0] == '.' || examinedDescription[0] == '!' || examinedDescription[0] == '?')
 				{
-					mainDesc += examinedDescription;
+					mainDesc += parent.ApplyStringTokens(examinedDescription);
 				}
 				else
 				{
-					mainDesc += $" {examinedDescription}";
+					mainDesc += $" {parent.ApplyStringTokens(examinedDescription)}";
 				}
 
 				List<string> clothing = parent.GetVisibleContents(viewer, false);

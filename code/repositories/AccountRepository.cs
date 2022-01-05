@@ -84,20 +84,14 @@ namespace inspiral
 			acct.passwordHash = passwordHash;
 
 			// Create the shell the client will be piloting around, saving data to, etc.
-			GameEntity gameObj = Modules.Templates.Instantiate("mob");
+			GameEntity gameObj = Modules.Templates.Instantiate(GlobalConfig.DefaultShellTemplate);
 			gameObj.name = Text.Capitalize(acct.userName);
-			gameObj.gender = Modules.Gender.GetByTerm(Text.GenderPlural);
+			gameObj.gender = Modules.Gender.GetByTerm(GlobalConfig.DefaultPlayerGender);
 			gameObj.aliases = new List<string>() { gameObj.name.ToLower() };
 
 			VisibleComponent vis = (VisibleComponent)gameObj.GetComponent<VisibleComponent>(); 
 			vis.SetValue(Text.FieldShortDesc,    $"{gameObj.name}");
-			vis.SetValue(Text.FieldRoomDesc,     $"{gameObj.name} is here.");
-			vis.SetValue(Text.FieldExaminedDesc, "and are completely uninteresting.");
-
-			MobileComponent mob = (MobileComponent)gameObj.GetComponent<MobileComponent>();
-			mob.SetValue(Text.FieldEnterMessage, $"{gameObj.name} enters from the $DIR.");
-			mob.SetValue(Text.FieldLeaveMessage, $"{gameObj.name} leaves to the $DIR.");
-			mob.SetValue(Text.FieldDeathMessage, $"The corpse of {gameObj.name} lies here.");
+			vis.SetValue(Text.FieldExaminedDesc, $"and {gameObj.gender.Is} completely uninteresting.");
 			Game.Objects.QueueForUpdate(gameObj);
 
 			acct.objectId = gameObj.id;

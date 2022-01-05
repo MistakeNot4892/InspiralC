@@ -13,11 +13,11 @@ namespace inspiral
 		internal const string DefaultRoomLong =            "This is a completely empty room.";
 		internal const string DefaultName =                "object";
 		internal const string DefaultShortDescription =    "a generic object";
-		internal const string DefaultRoomDescription =     "A generic object is here.";
+		internal const string DefaultRoomDescription =     "$Short$ is here.";
 		internal const string DefaultExaminedDescription = "This is a generic object. Fascinating stuff.";
-		internal const string DefaultEnterMessage =        "A generic object enters from the $DIR.";
-		internal const string DefaultLeaveMessage =        "A generic object leaves to the $DIR";
-		internal const string DefaultDeathMessage =        "A generic object lies here, dead.";
+		internal const string DefaultEnterMessage =        "$Short$ enters from the $dir$.";
+		internal const string DefaultLeaveMessage =        "$Short$ leaves to the $dir$";
+		internal const string DefaultDeathMessage =        "$Short$ lies here, dead.";
 		internal static Dictionary<string, List<string>> speechVerbs = new Dictionary<string, List<string>>();
 		internal static Regex stripRegex = new Regex($"{'\u001b'}\\[\\d+;*\\d*m", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		internal static Regex mentionRegex = new Regex(@"\$([0-9a-z]+)_*([a-zA-Z]*)\$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -313,7 +313,7 @@ namespace inspiral
 					return message;
 				}
 
-				replacementValue = thirdPerson ? $"{other.GetShort()}'s" : "your";
+				replacementValue = thirdPerson ? $"{other.GetShortDesc()}'s" : "your";
 				message = Regex.Replace(
 					message,
 					$"\\${token}'s\\$",
@@ -325,7 +325,7 @@ namespace inspiral
 					return message;
 				}
 
-				replacementValue = thirdPerson ? $"{other.GetShort()}" : "you";
+				replacementValue = thirdPerson ? $"{other.GetShortDesc()}" : "you";
 				message = Regex.Replace(
 					message,
 					$"\\${token}\\$",

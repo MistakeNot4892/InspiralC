@@ -11,7 +11,7 @@
 		{
 			"shortdesc" :    "a gasmask",
 			"examineddesc" : "This is a gasmask.",
-			"roomdesc" :     "A gasmask has been left here."
+			"roomdesc" :     "$Short$ has been left here."
 		},
 		"inspiral.WearableComponent" : 
 		{ 
