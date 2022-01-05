@@ -14,8 +14,7 @@ namespace inspiral
 		{
 			if(!invoker.HasComponent<InventoryComponent>())
 			{
-				invoker.SendLine("You cannot hold objects.");
-				invoker.SendPrompt(); 
+				invoker.SendLine("You cannot hold objects."); 
 				return;
 			}
 			InventoryComponent inv = (InventoryComponent)invoker.GetComponent<InventoryComponent>();
@@ -32,8 +31,7 @@ namespace inspiral
 			{
 				inventorySummary += "\n- nothing.";
 			}
-			invoker.SendLine(inventorySummary);
-			invoker.SendPrompt(); 
+			invoker.SendLine(inventorySummary); 
 		}
 	}
 }

@@ -12,8 +12,7 @@ namespace inspiral
 		{
 			if(!invoker.HasComponent<InventoryComponent>())
 			{
-				invoker.WriteLine("You are unable to equip objects.");
-				invoker.SendPrompt(); 
+				invoker.WriteLine("You are unable to equip objects."); 
 				return;
 			}
 			if(invoker.TryUseBalance("poise"))
@@ -24,7 +23,6 @@ namespace inspiral
 					invoker.UseBalance("poise", 500);
 				}
 			}
-			invoker.SendPrompt();
 		}
 	}
 }

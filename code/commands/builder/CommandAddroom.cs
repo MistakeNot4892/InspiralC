@@ -98,7 +98,6 @@ namespace inspiral
 					}
 				}
 			}
-			invoker.SendPrompt();
 		}
 	}
 }

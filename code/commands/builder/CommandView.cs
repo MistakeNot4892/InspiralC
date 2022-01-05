@@ -51,7 +51,6 @@ namespace inspiral
 					}
 				}
 			}
-			invoker.SendPrompt();
 		}
 	}
 }

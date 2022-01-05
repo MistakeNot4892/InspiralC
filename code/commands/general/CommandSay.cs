@@ -23,8 +23,7 @@ namespace inspiral
 				}
 				if(target == null)
 				{
-					invoker.SendLine($"You cannot see '{targetName}' here.");
-					invoker.SendPrompt(); 
+					invoker.SendLine($"You cannot see '{targetName}' here."); 
 					return;
 				}
 			}
@@ -55,7 +54,6 @@ namespace inspiral
 			if(invocation.Length <= 0)
 			{
 				invoker.ShowNearby(invoker, $"You open your mouth but say nothing.", $"{invoker.GetShort()} opens {invoker.gender.Their} mouth but says nothing.");
-				invoker.SendPrompt();
 				return;
 			}
 			string prefix1p = $"You {speechVerb1p}";
@@ -86,7 +84,6 @@ namespace inspiral
 			{
 				invoker.ShowNearby(invoker, $"{prefix1p}, \"{invocation}\"", $"{prefix3p} \"{invocation}\"");
 			}
-			invoker.SendPrompt();
 		}
 	}
 }

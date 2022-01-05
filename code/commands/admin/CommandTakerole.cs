@@ -43,7 +43,6 @@ namespace inspiral
 				Game.Accounts.QueueForUpdate(acct);
 				invoker.SendLine($"Removed role '{role.name}' from '{acct.userName}'.");
 			}
-			invoker.SendPrompt(); 
 		}
 	}
 }

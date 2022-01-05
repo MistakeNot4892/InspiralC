@@ -15,7 +15,6 @@ namespace inspiral
 				ClientComponent client = (ClientComponent)invoker.GetComponent<ClientComponent>();
 				invoker.WriteLine(client.client.GetClientSummary());
 			}
-			invoker.SendPrompt();
 		}
 	}
 }

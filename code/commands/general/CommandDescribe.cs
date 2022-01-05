@@ -12,13 +12,12 @@ namespace inspiral
 		{
 			if(cmd.rawInput.Length <= 0)
 			{
-				invoker.SendLine("Please supply a new description to use.");
+				invoker.WriteLine("Please supply a new description to use.");
 				return;
 			}
 			string lastDesc = invoker.GetString<VisibleComponent>(Text.FieldExaminedDesc);
 			invoker.SetString<VisibleComponent>(Text.FieldExaminedDesc, cmd.rawInput);
-			invoker.SendLine($"Your appearance has been updated.\nFor reference, your last appearance was:\n{lastDesc}");
-			invoker.SendPrompt(); 
+			invoker.WriteLine($"Your appearance has been updated.\nFor reference, your last appearance was:\n{lastDesc}"); 
 		}
 	}
 }

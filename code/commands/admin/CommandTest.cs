@@ -17,13 +17,11 @@ namespace inspiral
 				invoker.WriteLine($"Stance: {string.Join(", ", mob.stance.ToArray())}");
 				invoker.WriteLine($"Strike: {string.Join(", ", mob.strikers.ToArray())}");
 				invoker.WriteLine($"Equip:  {string.Join(", ", mob.equipmentSlots.ToArray())}");
-				invoker.SendPrompt();
 			}
 			else
 			{
 				invoker.SendLine("You aren't a mob.");
 			}
-			invoker.SendPrompt(); 
 		}
 	}
 }

@@ -23,7 +23,6 @@ namespace inspiral
 				}
 				invoker.WriteLine("\nEnd of command list.");
 			}
-			invoker.SendPrompt();
 		}
 	}
 }

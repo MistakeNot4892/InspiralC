@@ -43,7 +43,6 @@ namespace inspiral
 				Game.Accounts.QueueForUpdate(acct);
 				invoker.WriteLine($"Added role '{role.name}' to '{acct.userName}'.");
 			}
-			invoker.SendPrompt();
 		}
 	}
 }

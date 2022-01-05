@@ -6,23 +6,33 @@ namespace inspiral
 		{
 			aliases = new System.Collections.Generic.List<string>() { "create" };
 			description = "Creates a new database entry for an object or room.";
-			usage = "create [object or room]";
+			usage = "create [object]";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
+			bool msgSent = false;
 			if(cmd.objTarget != null)
 			{
-				GameObject hat = Modules.Templates.Instantiate(cmd.objTarget);
-				if(hat != null)
+				if(cmd.objTarget == "room")
 				{
-					hat.Move(invoker.location);
-					invoker.WriteLine($"Created {hat.GetShort()} ({hat.name}#{hat.id}).");
-					invoker.SendPrompt();
-					return;
+					invoker.WriteLine("Rooms must be created only with the addroom command.");
+					msgSent = true;
+				}
+				else
+				{
+					GameObject hat = Modules.Templates.Instantiate(cmd.objTarget);
+					if(hat != null)
+					{
+						hat.Move(invoker.location);
+						invoker.WriteLine($"Created {hat.GetShort()} ({hat.name}#{hat.id}).");
+						msgSent = true;
+					}
 				}
 			}
-			invoker.WriteLine($"You can create the following: {Text.EnglishList(Modules.Templates.GetTemplateNames())}");
-			invoker.SendPrompt();
+			if(!msgSent)
+			{
+				invoker.WriteLine($"You can create the following: {Text.EnglishList(Modules.Templates.GetTemplateNames())}");
+			}
 		}
 	}
 }

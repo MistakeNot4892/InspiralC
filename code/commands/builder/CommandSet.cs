@@ -96,7 +96,6 @@ namespace inspiral
 			{
 				invoker.WriteLine($"Set field '{field}' of object {editing.name}#{editing.id} ({editing.GetShort()}) to '{newVal}'.\nFor reference, previous value was '{lastVal}'.");
 			}
-			invoker.SendPrompt();
 		}
 	}
 }

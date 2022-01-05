@@ -20,7 +20,6 @@ namespace inspiral
 				InventoryComponent inv = (InventoryComponent)invoker.GetComponent<InventoryComponent>();
 				inv.TryToDrop(cmd.rawInput);
 			}
-			invoker.SendPrompt();
 		}
 	}
 }

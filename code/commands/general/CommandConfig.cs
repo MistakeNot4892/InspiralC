@@ -10,8 +10,7 @@ namespace inspiral
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
-			invoker.SendLine("Config not implemented yet sorry.");
-			invoker.SendPrompt(); 
+			invoker.SendLine("Config not implemented yet sorry."); 
 		}
 	}
 }

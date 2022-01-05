@@ -20,7 +20,7 @@ namespace inspiral
 			if(targetObj == null)
 			{
 				invoker.WriteLine($"You cannot find '{cmd.objTarget}' nearby.");
-				invoker.SendPrompt();
+
 				return;
 			}
 
@@ -72,7 +72,6 @@ namespace inspiral
 						if(!prop.HasComponent<PhysicsComponent>())
 						{
 							invoker.SendLine($"You cannot use {prop.GetShort()} as a weapon.");
-							invoker.SendPrompt();
 							return;
 						}
 						strikeWith = prop;
@@ -83,7 +82,6 @@ namespace inspiral
 			if(strikeWith == null)
 			{
 				invoker.WriteLine($"You are not holding '{usingItem}'.");
-				invoker.SendPrompt();
 				return;
 			}
 
@@ -102,7 +100,6 @@ namespace inspiral
 				else
 				{
 					invoker.WriteLine($"{Text.Capitalize(targetObj.GetShort())} is missing that bodypart!");
-					invoker.SendPrompt();
 					return;
 				}
 			}
@@ -132,7 +129,6 @@ namespace inspiral
 				$"{Text.Capitalize(invoker.GetShort())} strikes you{bpString} with {strikeString}!",
 				$"{Text.Capitalize(invoker.GetShort())} strikes {targetObj.GetShort()}{bpString} with {strikeString}!"
 				);
-			invoker.SendPrompt();
 		}
 	}
 }

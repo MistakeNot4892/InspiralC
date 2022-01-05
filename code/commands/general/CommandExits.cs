@@ -12,13 +12,11 @@ namespace inspiral
 		{
 			if(invoker.location == null || !invoker.location.HasComponent<RoomComponent>())
 			{
-				invoker.SendLine("You cannot see any exits here.");
-				invoker.SendPrompt(); 
+				invoker.SendLine("You cannot see any exits here."); 
 				return;
 			}
 			RoomComponent roomComp = (RoomComponent)invoker.location.GetComponent<RoomComponent>();
-			invoker.WriteLine($"{Colours.Fg(roomComp.GetExitString(), Colours.BoldCyan)}");
-			invoker.SendPrompt(); 
+			invoker.WriteLine($"{Colours.Fg(roomComp.GetExitString(), Colours.BoldCyan)}"); 
 		}
 	}
 }
