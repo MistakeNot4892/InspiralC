@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace inspiral
 {
 	internal class CommandAddRoom : GameCommand

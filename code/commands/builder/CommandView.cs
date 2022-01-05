@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace inspiral
 {
 	internal class CommandView : GameCommand

@@ -2,10 +2,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Collections.Generic;
-using System.Diagnostics;
 
-//TODO: https://www.gammon.com.au/mushclient/addingservermxp.htm
-
+// TODO: https://www.gammon.com.au/mushclient/addingservermxp.htm
+// TODO: truecolour
+// TODO: SSL to Telnet wrapper?
 namespace inspiral
 {
 

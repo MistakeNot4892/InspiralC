@@ -6,7 +6,7 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			aliases = new System.Collections.Generic.List<string>() { "set", "vs" };
+			aliases = new List<string>() { "set", "vs" };
 			description = "Modifies the editable fields of an object.";
 			usage = "set [object name or id] [object field] [new value]";
 			skipArticles = false;

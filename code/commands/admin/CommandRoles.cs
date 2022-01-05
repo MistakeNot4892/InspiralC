@@ -6,7 +6,7 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			aliases = new System.Collections.Generic.List<string>() { "roles" };
+			aliases = new List<string>() { "roles" };
 			description = "Shows the details of roles attached to an account.";
 			usage = "roles [account name or id]";
 		}

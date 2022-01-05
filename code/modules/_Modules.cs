@@ -1,27 +1,4 @@
-// Module template for later use.
-/*
-namespace inspiral
-{
-	internal static partial class Modules
-	{
-		internal static SomeModule SomeModuleName
-	}
-	internal class SomeModule : GameModule
-	{
-		internal override void Initialize() 
-		{
-			Modules.SomeModuleName = this;
-		}
-		internal override void PostInitialize() 
-		{
-			SomeFunction();
-		}
-	}
-}
-*/
-
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace inspiral

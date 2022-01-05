@@ -11,10 +11,6 @@ namespace inspiral
 			description = "Performs a complex narration or action.";
 			usage = "emote <(preceeding text)> [following text]";
 		}
-/*
-{
-}
-*/
 		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
 			string emoteText = invoker.GetShort();
