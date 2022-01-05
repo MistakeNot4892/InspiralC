@@ -9,12 +9,7 @@ namespace inspiral
 		internal static List<string> exits = new List<string>();
 		internal static Dictionary<string, string> shortExits = new Dictionary<string, string>();
 		internal static Dictionary<string, string> reversedExits = new Dictionary<string, string>();
-		internal const string DefaultRoomShort =           "an empty room";
-		internal const string DefaultRoomLong =            "This is a completely empty room.";
 		internal const string DefaultName =                "object";
-		internal const string DefaultShortDescription =    "a generic object";
-		internal const string DefaultRoomDescription =     "$Short$ is here.";
-		internal const string DefaultExaminedDescription = "This is a generic object. Fascinating stuff.";
 		internal const string DefaultEnterMessage =        "$Short$ enters from the $dir$.";
 		internal const string DefaultLeaveMessage =        "$Short$ leaves to the $dir$";
 		internal const string DefaultDeathMessage =        "$Short$ lies here, dead.";
@@ -146,27 +141,28 @@ namespace inspiral
 			}
 			return Capitalize(input);
 		}
-		private static string sideBar = Colours.Fg("||", Colours.Blue);
-		internal static string FormatPopup(string header, string boxContents, int wrapwidth)
+		internal static string FormatPopup(GameEntity viewer, string header, string boxContents, int wrapwidth)
 		{
+			string sideBar = Colours.Fg("||", viewer.GetColour(Text.ColourDefaultFrameSecondary));
 			string useHeader = Wrap(header, wrapwidth - 14).Split('\n')[0];
 			int padNeeded = wrapwidth - (StripColours(useHeader).Length + 7);
-			string result = $"{Colours.Fg($"[{new System.String('=', padNeeded/2)}\\", Colours.Cyan)} {Colours.Fg(useHeader, Colours.BoldCyan)} {Colours.Fg($"/{new System.String('=', padNeeded-(padNeeded/2))}]",Colours.Cyan)}";
+			string result = $"{Colours.Fg($"[{new System.String('=', padNeeded/2)}\\", viewer.GetColour(Text.ColourDefaultFramePrimary))} {Colours.Fg(useHeader, viewer.GetColour(Text.ColourDefaultFrameHighlight))} {Colours.Fg($"/{new System.String('=', padNeeded-(padNeeded/2))}]",viewer.GetColour(Text.ColourDefaultFramePrimary))}";
 			string emptyLine = $" {sideBar}{new System.String(' ', wrapwidth-7)}{sideBar}";
 			result += $"\n{emptyLine}";
 			string[] useContents = Wrap(boxContents, wrapwidth - 10).Split('\n');
 			for(int i = 0;i < useContents.Length;i++)
 			{
 				string useLine = useContents[i];
-				result += $"\n {sideBar}  {Colours.Fg(useLine, Colours.BoldWhite)}{new System.String(' ', wrapwidth - StripColours(useLine).Length - 9)}{sideBar}";
+				result += $"\n {sideBar}  {Colours.Fg(useLine, viewer.GetColour(Text.ColourDefaultHighlight))}{new System.String(' ', wrapwidth - StripColours(useLine).Length - 9)}{sideBar}";
 			}
 			result += $"\n{emptyLine}";
-			result += $"\n{Colours.Fg($"[{new System.String('=', wrapwidth-3)}]", Colours.Cyan)}";
+			result += $"\n{Colours.Fg($"[{new System.String('=', wrapwidth-3)}]", viewer.GetColour(Text.ColourDefaultFramePrimary))}";
 			return result;
 		}
-		internal static string FormatBlock(Dictionary<string, List<string>> formatLines, int wrapwidth)
+		internal static string FormatBlock(GameEntity viewer, Dictionary<string, List<string>> formatLines, int wrapwidth)
 		{
-			string divider = Colours.Fg($"[{new System.String('=', wrapwidth-3)}]", Colours.Cyan);
+			string sideBar = Colours.Fg("||", viewer.GetColour(Text.ColourDefaultFrameSecondary));
+			string divider = Colours.Fg($"[{new System.String('=', wrapwidth-3)}]", viewer.GetColour(Text.ColourDefaultFramePrimary));
 			string emptyLine = $" {sideBar}{new System.String(' ', wrapwidth-7)}{sideBar}";
 			string result = "";
 			foreach(KeyValuePair<string, List<string>> subSection in formatLines)
@@ -179,7 +175,7 @@ namespace inspiral
 					int padNeeded = wrapwidth - (StripColours(headerLine).Length+7);
 					int padLeft = padNeeded/2;
 					int padRight = padNeeded-padLeft;
-					result += $"\n {sideBar}{new System.String(' ', padLeft)}{Colours.Fg(headerLine, Colours.BoldCyan)}{new System.String(' ', padRight)}{sideBar}";
+					result += $"\n {sideBar}{new System.String(' ', padLeft)}{Colours.Fg(headerLine, viewer.GetColour(Text.ColourDefaultFrameHighlight))}{new System.String(' ', padRight)}{sideBar}";
 				}
 				result += $"\n{divider}";
 				result += $"\n{emptyLine}";
@@ -189,7 +185,7 @@ namespace inspiral
 					for(int i = 0;i<subLines.Length;i++)
 					{
 						string subLine = subLines[i];
-						result += $"\n {sideBar}   {Colours.Fg(subLine, Colours.BoldWhite)}{new System.String(' ', wrapwidth - StripColours(subLine).Length - 10)}{sideBar}";
+						result += $"\n {sideBar}   {Colours.Fg(subLine, viewer.GetColour(Text.ColourDefaultHighlight))}{new System.String(' ', wrapwidth - StripColours(subLine).Length - 10)}{sideBar}";
 					}
 				}
 				result += $"\n{emptyLine}";

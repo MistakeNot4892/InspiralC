@@ -99,7 +99,7 @@ namespace inspiral
 		}
 		internal void ExaminedBy(GameEntity viewer, bool fromInside)
 		{
-			string mainDesc = $"{Colours.Fg(parent.GetShortDesc(), Colours.BoldWhite)}.";
+			string mainDesc = $"{Colours.Fg(parent.GetShortDesc(), viewer.GetColour(Text.ColourDefaultHighlight))}.";
 			if(parent.HasComponent<MobileComponent>())
 			{
 				string startingToken;
@@ -165,7 +165,7 @@ namespace inspiral
 			}
 			else
 			{
-				mainDesc += $"\n{Colours.Fg(examinedDescription, Colours.BoldBlack)}";
+				mainDesc += $"\n{Colours.Fg(parent.ApplyStringTokens(examinedDescription), parent.GetColour(Text.ColourDefaultSubtle))}";
 				if(parent.contents.Count > 0)
 				{
 					List<string> roomAppearances = parent.GetVisibleContents(viewer, false);
@@ -179,7 +179,7 @@ namespace inspiral
 			if(parent.HasComponent<RoomComponent>())
 			{
 				RoomComponent roomComp = (RoomComponent)parent.GetComponent<RoomComponent>();
-				mainDesc = $"{mainDesc}\n{Colours.Fg(roomComp.GetExitString(), Colours.BoldCyan)}";
+				mainDesc = $"{mainDesc}\n{Colours.Fg(roomComp.GetExitString(), viewer.GetColour(Text.ColourDefaultExits))}";
 			}
 
 			if(parent.HasComponent<PhysicsComponent>())

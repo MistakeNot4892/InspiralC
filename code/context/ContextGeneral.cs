@@ -70,7 +70,7 @@ namespace inspiral
 				}
 			}
 			p = p.Trim();
-			string final = Colours.Fg("> ", Colours.Yellow);
+			string final = Colours.Fg("> ", viewer.shell.GetColour(Text.ColourDefaultPrompt));
 			if(p == null || p == "" || p == viewer.lastPrompt)
 			{
 				return final;

@@ -188,11 +188,17 @@ namespace inspiral
 		}
 		internal string GetShortDesc()
 		{
-			return ApplyStringTokens(GetString<VisibleComponent>(Text.FieldShortDesc));
+			// Re-enable token replacement if relevant tokens are added
+			return GetString<VisibleComponent>(Text.FieldShortDesc);
 		}
 		internal string GetRoomDesc()
 		{
 			return ApplyStringTokens(GetString<VisibleComponent>(Text.FieldRoomDesc));
+		}
+		internal string GetColour(string colourType)
+		{
+			// TODO: client config
+			return GlobalConfig.GetColour(colourType);
 		}
 	}
 }

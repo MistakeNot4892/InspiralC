@@ -38,7 +38,7 @@ namespace inspiral
 						ClientComponent client = (ClientComponent)invoker.GetComponent<ClientComponent>();
 						wrap = client.client.config.wrapwidth;
 					}
-					string viewSummary = viewing.GetStringSummary(wrap);
+					string viewSummary = viewing.GetStringSummary(invoker, wrap);
 					if(viewSummary != null)
 					{
 						invoker.WriteLine(viewSummary);

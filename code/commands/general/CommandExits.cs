@@ -16,7 +16,7 @@ namespace inspiral
 				return;
 			}
 			RoomComponent roomComp = (RoomComponent)invoker.location.GetComponent<RoomComponent>();
-			invoker.WriteLine($"{Colours.Fg(roomComp.GetExitString(), Colours.BoldCyan)}"); 
+			invoker.WriteLine($"{Colours.Fg(roomComp.GetExitString(), invoker.GetColour(Text.ColourDefaultExits))}"); 
 		}
 	}
 }

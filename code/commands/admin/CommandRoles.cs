@@ -38,9 +38,9 @@ namespace inspiral
 
 			foreach(GameRole role in acct.roles)
 			{
-				roleDetails[header].Add(Text.FormatPopup(role.name, role.GetSummary(), wrap + Text.NestedWrapwidthModifier));
+				roleDetails[header].Add(Text.FormatPopup(invoker, role.name, role.GetSummary(), wrap + Text.NestedWrapwidthModifier));
 			}
-			invoker.WriteLine(Text.FormatBlock(roleDetails, wrap), true);
+			invoker.WriteLine(Text.FormatBlock(invoker, roleDetails, wrap), true);
 		}
 	}
 }

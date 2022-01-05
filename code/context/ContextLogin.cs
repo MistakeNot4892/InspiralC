@@ -26,8 +26,9 @@ namespace inspiral
 		private void ShowSplashScreen(GameClient viewer)
 		{
 			viewer.WriteLine(Text.FormatPopup(
+				viewer.shell,
 				"Inspiral, Coalescence, Ringdown", 
-				$"{Colours.Fg("- Enter your character name to log in.", Colours.BoldWhite)}\n{Colours.Fg("- Enter ", Colours.BoldWhite)}{Colours.Fg("register [username]", Colours.BoldYellow)}{Colours.Fg(" to register a new account.", Colours.BoldWhite)}",viewer.config.wrapwidth
+				$"{Colours.Fg("- Enter your character name to log in.", GlobalConfig.GetColour(Text.ColourDefaultHighlight))}\n{Colours.Fg("- Enter ",  viewer.shell.GetColour(Text.ColourDefaultHighlight))}{Colours.Fg("register [username]", viewer.shell.GetColour(Text.ColourDefaultPromptHighlight))}{Colours.Fg(" to register a new account.",  viewer.shell.GetColour(Text.ColourDefaultHighlight))}",viewer.config.wrapwidth
 				));
 		}
 		private bool ValidatePassword(string givenPass)
@@ -97,7 +98,7 @@ namespace inspiral
 						PlayerAccount acct = Game.Accounts.GetAccountByUser(command);
 						if(acct == null)
 						{
-							invoker.WriteLine($"No account exists for '{command}'. Use {Colours.Fg("register [username]", Colours.BoldWhite)} to create one.");
+							invoker.WriteLine($"No account exists for '{command}'. Use {Colours.Fg("register [username]",  invoker.shell.GetColour(Text.ColourDefaultHighlight))} to create one.");
 						}
 						else
 						{

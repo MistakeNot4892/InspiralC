@@ -82,7 +82,7 @@ namespace inspiral
 			{
 				p += bal.Value.Enabled ? '-' : bal.Key[0];
 			}
-			return $"{Colours.Fg("[", Colours.Yellow)}{Colours.Fg(p, Colours.BoldWhite)}{Colours.Fg("]", Colours.Yellow)}";
+			return $"{Colours.Fg("[", parent.GetColour(Text.ColourDefaultPrompt))}{Colours.Fg(p, parent.GetColour(Text.ColourDefaultHighlight))}{Colours.Fg("]", parent.GetColour(Text.ColourDefaultPrompt))}";
 		}
 	}
 }

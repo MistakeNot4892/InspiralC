@@ -56,7 +56,7 @@ namespace inspiral
 			}
 		}
 
-		internal string GetStringSummary(int wrapWidth)
+		internal string GetStringSummary(GameEntity viewer, int wrapWidth)
 		{
 			Dictionary<string, List<string>> summary = new Dictionary<string, List<string>>();
 
@@ -77,14 +77,14 @@ namespace inspiral
 				string compSummary = comp.Value.GetStringSummary();
 				if(compSummary != null)
 				{
-					summary[fieldKey].Add($"\n{Text.FormatPopup(comp.Value.GetType().ToString(), compSummary, wrapWidth+Text.NestedWrapwidthModifier)}");
+					summary[fieldKey].Add($"\n{Text.FormatPopup(this, comp.Value.GetType().ToString(), compSummary, wrapWidth+Text.NestedWrapwidthModifier)}");
 				}
 			}
-			return Text.FormatBlock(summary, wrapWidth);
+			return Text.FormatBlock(this, summary, wrapWidth);
 		}
 		internal string GetStringSummary(GameClient invoker)
 		{
-			return GetStringSummary(invoker.config.wrapwidth);
+			return GetStringSummary(invoker.shell, invoker.config.wrapwidth);
 		}
 	}
 }

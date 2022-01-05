@@ -34,11 +34,13 @@ namespace inspiral
 
 		private byte[] outputBuffer = new byte[2048];
 		private int outputBufferIndex = 0;
+		private static GameEntity DummyShell = new GameEntity();
 
 		internal GameClient(TcpClient _client, string _id)
 		{
 			client = _client;
 			stream = _client.GetStream();
+			shell =  DummyShell;
 			id =     _id;
 			Game.LogError($"{id}: client created.");
 			SetContext(Contexts.Login);
@@ -145,7 +147,10 @@ namespace inspiral
 					shell.RemoveComponent<ClientComponent>();
 				}
 			}
-			shell = null;
+			if(shell != null)
+			{
+				shell = null;
+			}
 			Clients.RemoveClient(this);
 		}
 		internal void ReceiveInput(string inputMessage)
@@ -201,6 +206,7 @@ namespace inspiral
 			{
 				sentPrompt = false;
 				WriteToStream(FormatOutgoingString($"{message}\n"));
+				Flush();
 			}
 		}
 		public void WriteToStream(string message)
@@ -268,7 +274,7 @@ namespace inspiral
 					reply["GMCP Values"].Add($"- {gmcpValue.Key}: {gmcpValue.Value}");
 				}
 			}
-			return Text.FormatBlock(reply, config.wrapwidth);
+			return Text.FormatBlock(shell, reply, config.wrapwidth);
 		}
 	}
 }
