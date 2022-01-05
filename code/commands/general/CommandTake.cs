@@ -8,7 +8,7 @@ namespace inspiral
 			description = "Picks up an object.";
 			usage = "take [object name or id]";
 		}
-		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
+		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
 			if(!invoker.HasComponent<InventoryComponent>())
 			{

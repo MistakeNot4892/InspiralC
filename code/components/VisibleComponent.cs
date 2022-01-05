@@ -97,7 +97,7 @@ namespace inspiral
 					return null;
 			}
 		}
-		internal void ExaminedBy(GameObject viewer, bool fromInside)
+		internal void ExaminedBy(GameEntity viewer, bool fromInside)
 		{
 			string mainDesc = $"{Colours.Fg(Text.Capitalize(shortDescription),Colours.BoldWhite)}.";
 			if(parent.HasComponent<MobileComponent>())
@@ -151,7 +151,7 @@ namespace inspiral
 					mainDesc += $"\n{theyAre} completely naked.";
 				}
 				
-				foreach(KeyValuePair<string, GameObject> bp in mob.limbs)
+				foreach(KeyValuePair<string, GameEntity> bp in mob.limbs)
 				{
 					if(bp.Value == null)
 					{

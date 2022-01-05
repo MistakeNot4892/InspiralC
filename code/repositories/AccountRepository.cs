@@ -85,7 +85,7 @@ namespace inspiral
 			acct.passwordHash = passwordHash;
 
 			// Create the shell the client will be piloting around, saving data to, etc.
-			GameObject gameObj = Modules.Templates.Instantiate("mob");
+			GameEntity gameObj = Modules.Templates.Instantiate("mob");
 			gameObj.name = Text.Capitalize(acct.userName);
 			gameObj.gender = Modules.Gender.GetByTerm(Text.GenderPlural);
 			gameObj.aliases = new List<string>() { gameObj.name.ToLower() };

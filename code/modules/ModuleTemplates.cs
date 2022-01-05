@@ -41,7 +41,7 @@ namespace inspiral
 			}
 			Modules.Templates.Register(this);
 		}
-		internal void CopyTo(GameObject copyingTo)
+		internal void CopyTo(GameEntity copyingTo)
 		{
 			foreach(string s in aliases)
 			{
@@ -77,13 +77,13 @@ namespace inspiral
 			}
 			Game.LogError("Done.");
 		}
-		internal GameObject Instantiate(string template)
+		internal GameEntity Instantiate(string template)
 		{
-			GameObject creating = null;
+			GameEntity creating = null;
 			GameObjectTemplate temp = GetTemplate(template);
 			if(temp != null)
 			{
-				creating = (GameObject)Game.Objects.CreateNewInstance(false);
+				creating = (GameEntity)Game.Objects.CreateNewInstance(false);
 				temp.CopyTo(creating);
 				Game.Objects.AddDatabaseEntry(creating);
 			}

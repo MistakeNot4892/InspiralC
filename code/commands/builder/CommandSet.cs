@@ -12,17 +12,17 @@ namespace inspiral
 			skipArticles = false;
 			skipTokenQualifiers = true;
 		}
-		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
+		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
 			if(cmd.objTarget == null || cmd.strArgs.Length < 3)
 			{
-				invoker.SendLine("Usage: SET <target> <field> <value>");
+				invoker.WriteLine("Usage: SET <target> <field> <value>");
 				return;
 			}
-			GameObject editing = invoker.FindGameObjectNearby(cmd.objTarget);
+			GameEntity editing = invoker.FindGameObjectNearby(cmd.objTarget);
 			if(editing == null)
 			{
-				invoker.SendLine("Cannot find object to modify.");
+				invoker.WriteLine("Cannot find object to modify.");
 				return;
 			}
 

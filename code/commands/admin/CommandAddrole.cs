@@ -8,7 +8,7 @@ namespace inspiral
 			description = "Adds a role to an account.";
 			usage = "addrole [account name or id] [role name or id]";			
 		}
-		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
+		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
 			if(cmd.objTarget == null)
 			{

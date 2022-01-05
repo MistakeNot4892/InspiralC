@@ -182,7 +182,7 @@ namespace inspiral
 		internal bool skipTokenQualifiers = false; // Do not parse 'with' 'from' etc. as special tokens.
 		internal GameCommand() { Initialize(); }
 		internal virtual void Initialize() {}
-		internal virtual void InvokeCommand(GameObject invoker, CommandData cmd) {}
+		internal virtual void InvokeCommand(GameEntity invoker, CommandData cmd) {}
 
 		internal string GetSummary()
 		{

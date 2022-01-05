@@ -288,7 +288,7 @@ namespace inspiral
 				return $"{(double)(cm / 100000.0)} kilometers";
 			}
 		}
-		internal string GetExaminedSummary(GameObject viewer)
+		internal string GetExaminedSummary(GameEntity viewer)
 		{
 			string result = "";
 			string You;

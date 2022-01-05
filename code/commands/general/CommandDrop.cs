@@ -8,11 +8,11 @@ namespace inspiral
 			description = "Drops an object.";
 			usage = "drop [object name or id]";
 		}
-		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
+		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
 			if(!invoker.HasComponent<InventoryComponent>())
 			{
-				invoker.SendLine("You cannot drop objects.");
+				invoker.WriteLine("You cannot drop objects.");
 				return;
 			}
 			if(invoker.TryUseBalance("poise"))

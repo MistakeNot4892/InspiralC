@@ -11,7 +11,7 @@ namespace inspiral
 			usage = "view [object name or id]";
 		}
 
-		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
+		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
 			if(cmd.objTarget == null)
 			{
@@ -19,12 +19,12 @@ namespace inspiral
 			}
 			else
 			{
-				GameObject viewing = invoker.FindGameObjectNearby(cmd.objTarget);
+				GameEntity viewing = invoker.FindGameObjectNearby(cmd.objTarget);
 				if(viewing == null)
 				{
 					try
 					{
-						viewing = (GameObject)Game.Objects.GetByID((long)System.Convert.ToInt64(cmd.objTarget));
+						viewing = (GameEntity)Game.Objects.GetByID((long)System.Convert.ToInt64(cmd.objTarget));
 					}
 					catch(System.Exception e) 
 					{

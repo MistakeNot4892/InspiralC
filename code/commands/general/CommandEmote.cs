@@ -15,7 +15,7 @@ namespace inspiral
 {
 }
 */
-		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
+		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
 			string emoteText = invoker.GetShort();
 			if(cmd.rawInput[0] == '(' && cmd.rawInput.IndexOf(')') != -1)
@@ -24,7 +24,7 @@ namespace inspiral
 				string rst = cmd.rawInput;
 				if(rst.Length <= secondParen+3)
 				{
-					invoker.SendLine("Please specify emote text after the preface."); 
+					invoker.WriteLine("Please specify emote text after the preface."); 
 					return;
 				}
 				string end = rst.Substring(secondParen + 3);
@@ -36,11 +36,11 @@ namespace inspiral
 			}
 			if(invoker.location != null)
 			{
-				Dictionary<GameObject, string> showingMessages = new Dictionary<GameObject, string>();
+				Dictionary<GameEntity, string> showingMessages = new Dictionary<GameEntity, string>();
 
 				foreach(Match m in Text.mentionRegex.Matches(emoteText))
 				{
-					GameObject mentioned = null;
+					GameEntity mentioned = null;
 					string findingRaw = m.Groups[1]?.Value.ToString();
 					string finding = findingRaw.ToLower();
 					if(finding != null)
@@ -49,13 +49,13 @@ namespace inspiral
 					}
 					if(mentioned == null)
 					{
-						invoker.SendLine($"You cannot see '{findingRaw}' here."); 
+						invoker.WriteLine($"You cannot see '{findingRaw}' here."); 
 						return;
 					}
 					string pronounToken = m.Groups[2]?.Value.ToString().ToLower();
 					if(pronounToken != null && pronounToken != "" && !Modules.Gender.Tokens.Contains(pronounToken))
 					{
-						invoker.SendLine($"Unknown token '{pronounToken}'. Valid tokens for emotes are: {Text.EnglishList(Modules.Gender.Tokens)}."); 
+						invoker.WriteLine($"Unknown token '{pronounToken}'. Valid tokens for emotes are: {Text.EnglishList(Modules.Gender.Tokens)}."); 
 						return;
 					}
 					if(!showingMessages.ContainsKey(mentioned))
@@ -69,10 +69,10 @@ namespace inspiral
 				}
 				if(showingMessages.Count >= 1)
 				{
-					foreach(KeyValuePair<GameObject, string> showing in showingMessages)
+					foreach(KeyValuePair<GameEntity, string> showing in showingMessages)
 					{
 						string finalMessage = emoteText;
-						foreach(KeyValuePair<GameObject, string> subject in showingMessages)
+						foreach(KeyValuePair<GameEntity, string> subject in showingMessages)
 						{
 							finalMessage = Text.ReplacePronouns(subject.Value, subject.Key, finalMessage, (subject.Key != showing.Key));
 						}

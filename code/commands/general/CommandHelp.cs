@@ -8,7 +8,7 @@ namespace inspiral
 			description = "Shows details on commands. WIP.";
 			usage = "help <term>";
 		}
-		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
+		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
 			if(cmd.rawInput != "" && cmd.rawInput != null)
 			{

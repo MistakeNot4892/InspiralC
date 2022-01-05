@@ -8,14 +8,14 @@ namespace inspiral
 			description = "Examines a nearby object or room.";
 			usage = "info [object name or id]";
 		}
-		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
+		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
 			if(invoker.location == null)
 			{
-				invoker.SendLine("You cannot see anything here."); 
+				invoker.WriteLine("You cannot see anything here."); 
 				return;
 			}
-			GameObject examining = null;
+			GameEntity examining = null;
 			if(cmd.objTarget != null)
 			{
 				examining = invoker.FindGameObjectNearby(cmd.objTarget);
@@ -30,7 +30,7 @@ namespace inspiral
 			}
 			else
 			{
-				invoker.SendLine("You can see nothing here by that name.");
+				invoker.WriteLine("You can see nothing here by that name.");
 			} 
 		}
 	}

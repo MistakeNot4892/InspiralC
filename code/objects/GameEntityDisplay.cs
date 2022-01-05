@@ -2,31 +2,31 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal partial class GameObject
+	internal partial class GameEntity
 	{
 		internal void ShowToContents(string message)
 		{
-			foreach(GameObject obj in contents)
+			foreach(GameEntity obj in contents)
 			{
 				obj.WriteLine(message, true);
 			}
 		}
-		internal void ShowToContents(GameObject source, string message)
+		internal void ShowToContents(GameEntity source, string message)
 		{
 			ShowToContents(source, message, message);
 		}
-		internal void ShowToContents(GameObject source, string message1p, string message3p)
+		internal void ShowToContents(GameEntity source, string message1p, string message3p)
 		{
 			ShowToContents(source, message1p, message3p, false);
 		}
 
-		internal void ShowToContents(GameObject source, string message1p, string message3p, bool sendPromptToSource)
+		internal void ShowToContents(GameEntity source, string message1p, string message3p, bool sendPromptToSource)
 		{
 			if(source.HasComponent<ClientComponent>())
 			{
 				source.WriteLine(message1p, sendPromptToSource);
 			}
-			foreach(GameObject obj in contents)
+			foreach(GameEntity obj in contents)
 			{
 				if(obj != source && obj.HasComponent<ClientComponent>())
 				{
@@ -52,19 +52,19 @@ namespace inspiral
 			}
 		}
 
-		internal virtual void ShowNearby(GameObject source, GameObject other,
+		internal virtual void ShowNearby(GameEntity source, GameEntity other,
 			string message1p, string message2p, string message3p)
 		{
-			source.SendLine(message1p);
-			other.SendLine(message2p);
-			ShowNearby(source, message3p, new List<GameObject>() { source, other });
+			source.WriteLine(message1p);
+			other.WriteLine(message2p);
+			ShowNearby(source, message3p, new List<GameEntity>() { source, other });
 		}
 
-		internal virtual void ShowNearby(GameObject source, string message, List<GameObject> exceptions)
+		internal virtual void ShowNearby(GameEntity source, string message, List<GameEntity> exceptions)
 		{
 			if(source.location != null)
 			{
-				foreach(GameObject obj in source.location.contents)
+				foreach(GameEntity obj in source.location.contents)
 				{
 					if(!exceptions.Contains(obj))
 					{
@@ -82,12 +82,12 @@ namespace inspiral
 			}
 		}
 
-		internal virtual void ShowNearby(GameObject source, string message)
+		internal virtual void ShowNearby(GameEntity source, string message)
 		{
 			ShowNearby(source, message, message);
 		}
 
-		internal virtual void ShowNearby(GameObject source, string message1p, string message3p)
+		internal virtual void ShowNearby(GameEntity source, string message1p, string message3p)
 		{
 			if(source.location != null)
 			{
@@ -101,7 +101,7 @@ namespace inspiral
 				}
 			}
 		}
-		internal void Probed(GameObject invoker)
+		internal void Probed(GameEntity invoker)
 		{
 			string reply = $"{GetShort()} ({name}#{id})";
 			reply += "\nContents:";
@@ -116,14 +116,10 @@ namespace inspiral
 			{
 				reply += "\n- nothing.";
 			}
-			invoker.SendLine(reply);
+			invoker.WriteLine(reply);
 		}
 
-		internal void SendLine(string input)
-		{
-			WriteLine(input, true);
-		}
-		internal List<string> GetVisibleContents(GameObject viewer, bool quickView)
+		internal List<string> GetVisibleContents(GameEntity viewer, bool quickView)
 		{
 			List<string> result = new List<string>();
 			if(HasComponent<MobileComponent>())
@@ -132,7 +128,7 @@ namespace inspiral
 				{
 					string their = (this == viewer) ? "your" : gender.Their;
 					InventoryComponent equip = (InventoryComponent)GetComponent<InventoryComponent>();
-					foreach(KeyValuePair<string, GameObject> equ in equip.carrying)
+					foreach(KeyValuePair<string, GameEntity> equ in equip.carrying)
 					{
 						if(quickView)
 						{
@@ -161,7 +157,7 @@ namespace inspiral
 			}
 			else
 			{
-				foreach(GameObject gameObj in contents)
+				foreach(GameEntity gameObj in contents)
 				{
 					if(quickView)
 					{
@@ -178,7 +174,7 @@ namespace inspiral
 			}
 			return result;
 		}
-		internal void ExaminedBy(GameObject viewer, bool fromInside)
+		internal void ExaminedBy(GameEntity viewer, bool fromInside)
 		{
 			if(HasComponent<VisibleComponent>())
 			{

@@ -8,9 +8,9 @@ namespace inspiral
 			description = "Configures various options related to gameplay and presentation. WIP.";
 			usage = "config [option] <value>";
 		}
-		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
+		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
-			invoker.SendLine("Config not implemented yet sorry."); 
+			invoker.WriteLine("Config not implemented yet sorry."); 
 		}
 	}
 }

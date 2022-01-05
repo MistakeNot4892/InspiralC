@@ -69,7 +69,7 @@ namespace inspiral
 		internal List<string> stance = new List<string>();
 		internal List<string> equipmentSlots = new List<string>();
 
-		internal Dictionary<string, GameObject> limbs = new Dictionary<string, GameObject>();
+		internal Dictionary<string, GameEntity> limbs = new Dictionary<string, GameEntity>();
 		internal override bool SetValue(string field, string newValue)
 		{
 			bool success = false;
@@ -137,7 +137,7 @@ namespace inspiral
 
 			foreach(Bodypart b in bp.allParts)
 			{
-				GameObject newLimb = (GameObject)Game.Objects.CreateNewInstance(false);
+				GameEntity newLimb = (GameEntity)Game.Objects.CreateNewInstance(false);
 				newLimb.name = "limb";
 				newLimb.aliases.Add("bodypart");
 
@@ -178,7 +178,7 @@ namespace inspiral
 			deathMessage = reader[Text.FieldDeathMessage].ToString();
 			foreach(KeyValuePair<string, long> limb in JsonConvert.DeserializeObject<Dictionary<string, long>>((string)reader[Text.FieldBodypartList]))
 			{
-				limbs.Add(limb.Key, (limb.Value != 0 ? (GameObject)Game.Objects.GetByID(limb.Value) : null));
+				limbs.Add(limb.Key, (limb.Value != 0 ? (GameEntity)Game.Objects.GetByID(limb.Value) : null));
 			}
 		}
 
@@ -192,7 +192,7 @@ namespace inspiral
 			strikers.Clear();
 			stance.Clear();
 			equipmentSlots.Clear();
-			foreach(KeyValuePair<string, GameObject> limb in limbs)
+			foreach(KeyValuePair<string, GameEntity> limb in limbs)
 			{
 				if(limb.Value != null)
 				{
@@ -226,7 +226,7 @@ namespace inspiral
 			command.Parameters.AddWithValue("@p2", leaveMessage);
 			command.Parameters.AddWithValue("@p3", deathMessage);
 			Dictionary<string, long> limbKeys = new Dictionary<string, long>();
-			foreach(KeyValuePair<string, GameObject> limb in limbs)
+			foreach(KeyValuePair<string, GameEntity> limb in limbs)
 			{
 				limbKeys.Add(limb.Key, limb.Value != null ? limb.Value.id : 0);
 			}

@@ -9,10 +9,10 @@ namespace inspiral
 			description = "Attacks another entity.";
 			usage = "strike [target] <in bodypart> <with bodypart or object>";
 		}
-		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
+		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
 
-			GameObject targetObj = null;
+			GameEntity targetObj = null;
 			if(cmd.objTarget != null && cmd.objTarget != "")
 			{
 				targetObj = invoker.FindGameObjectNearby(cmd.objTarget);
@@ -25,8 +25,8 @@ namespace inspiral
 			}
 
 			string usingItem = cmd.objWith;
-			GameObject strikeWith = null;
-			GameObject strikeAgainst = null;
+			GameEntity strikeWith = null;
+			GameEntity strikeAgainst = null;
 
 			if(invoker.HasComponent<InventoryComponent>())
 			{
@@ -63,7 +63,7 @@ namespace inspiral
 
 			if(strikeWith == null)
 			{
-				GameObject prop = invoker.FindGameObjectInContents(usingItem);
+				GameEntity prop = invoker.FindGameObjectInContents(usingItem);
 				if(prop != null && invoker.HasComponent<InventoryComponent>())
 				{
 					InventoryComponent inv = (InventoryComponent)invoker.GetComponent<InventoryComponent>();
@@ -71,7 +71,7 @@ namespace inspiral
 					{
 						if(!prop.HasComponent<PhysicsComponent>())
 						{
-							invoker.SendLine($"You cannot use {prop.GetShort()} as a weapon.");
+							invoker.WriteLine($"You cannot use {prop.GetShort()} as a weapon.");
 							return;
 						}
 						strikeWith = prop;

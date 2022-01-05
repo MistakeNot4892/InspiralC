@@ -8,16 +8,16 @@ namespace inspiral
 			description = "Examines a creature, object or location.";
 			usage = "look <at> <target>";
 		}
-		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
+		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
 			if(invoker.location == null)
 			{
-				invoker.SendLine("You cannot see anything here."); 
+				invoker.WriteLine("You cannot see anything here."); 
 				return;
 			}
 
 			string examineKey = cmd.objAt;
-			GameObject examining = null;
+			GameEntity examining = null;
 			if(examineKey == null)
 			{
 				examineKey = cmd.objTarget;
@@ -41,7 +41,7 @@ namespace inspiral
 			}
 			else
 			{
-				invoker.SendLine("You can see nothing here by that name.");
+				invoker.WriteLine("You can see nothing here by that name.");
 			} 
 		}
 	}

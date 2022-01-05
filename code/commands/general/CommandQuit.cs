@@ -8,10 +8,9 @@ namespace inspiral
 			description = "Quits the game, leaving your character asleep where they were.";
 			usage = "quit";
 		}
-		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
+		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
-			invoker.SendLine("Goodbye!");
-			invoker.Quit();
+			invoker.Farewell("Goodbye!");
 		}
 	}
 }

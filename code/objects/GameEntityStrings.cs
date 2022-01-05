@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal partial class GameObject
+	internal partial class GameEntity
 	{
 		internal string GetString<T>(string field)
 		{

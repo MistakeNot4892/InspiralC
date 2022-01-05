@@ -2,23 +2,23 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal partial class GameObject
+	internal partial class GameEntity
 	{
 		internal long id;
 		internal string name = "object";
 		internal GenderObject gender;
 		internal List<string> aliases = new List<string>();
-		internal GameObject location;
-		internal List<GameObject> contents;
+		internal GameEntity location;
+		internal List<GameEntity> contents;
 		internal long flags = 0;
 		internal Dictionary<System.Type, GameComponent> components;
-		internal GameObject()
+		internal GameEntity()
 		{
-			contents = new List<GameObject>();
+			contents = new List<GameEntity>();
 			components = new Dictionary<System.Type, GameComponent>();
 			gender = Modules.Gender.GetByTerm(Text.GenderInanimate);
 		}
-		internal GameObject FindGameObjectNearby(string token)
+		internal GameEntity FindGameObjectNearby(string token)
 		{
 			string checkToken = token.ToLower();
 			if(checkToken == "me" || checkToken == "self")
@@ -40,15 +40,15 @@ namespace inspiral
 			}
 			return null;
 		}
-		internal GameObject FindGameObjectInContents(string token)
+		internal GameEntity FindGameObjectInContents(string token)
 		{
 			return FindGameObjectInContents(token, true);
 		}
 
-		internal GameObject FindGameObjectInContents(string token, bool silent)
+		internal GameEntity FindGameObjectInContents(string token, bool silent)
 		{
 			string checkToken = token.ToLower();
-			foreach(GameObject gameObj in contents)
+			foreach(GameEntity gameObj in contents)
 			{
 				if($"{gameObj.id}" == checkToken || 
 					gameObj.name.ToLower() == checkToken || 
@@ -59,7 +59,7 @@ namespace inspiral
 					return gameObj;
 				}
 			}
-			foreach(GameObject gameObj in contents)
+			foreach(GameEntity gameObj in contents)
 			{
 				if(gameObj.name.ToLower().Contains(checkToken))
 				{
@@ -83,7 +83,7 @@ namespace inspiral
 				}
 				if(room.exits.ContainsKey(lookingFor))
 				{
-					GameObject otherRoom = (GameObject)Game.Objects.GetByID(room.exits[lookingFor]);
+					GameEntity otherRoom = (GameEntity)Game.Objects.GetByID(room.exits[lookingFor]);
 					if(otherRoom != null)
 					{
 						return otherRoom;
@@ -92,7 +92,7 @@ namespace inspiral
 			}
 			return null;
 		}
-		internal bool Collectable(GameObject collecting)
+		internal bool Collectable(GameEntity collecting)
 		{
 			return !HasComponent<RoomComponent>() && !HasComponent<MobileComponent>();
 		}
@@ -153,25 +153,33 @@ namespace inspiral
 				client.client.SendPrompt();
 			}
 		}
-		internal void Quit()
+		internal void Farewell(string farewell)
 		{
 			if(HasComponent<ClientComponent>())
 			{
 				ClientComponent client = (ClientComponent)GetComponent<ClientComponent>();
-				client.client.Quit();
+				if(client.client != null)
+				{
+					client.client.Farewell(farewell);
+
+				}
 			}
 		}
+
 		internal void SendPrompt(bool forceClear)
 		{
 			if(HasComponent<ClientComponent>())
 			{
 				ClientComponent client = (ClientComponent)GetComponent<ClientComponent>();
-				if(forceClear)
+				if(client.client != null)
 				{
-					client.client.lastPrompt = null;
-					client.client.sentPrompt = false;
+					if(forceClear)
+					{
+						client.client.lastPrompt = null;
+						client.client.sentPrompt = false;
+					}
+					client.client.SendPrompt();
 				}
-				client.client.SendPrompt();
 			}
 		}
 
@@ -184,7 +192,7 @@ namespace inspiral
 			}
 			return null;
 		}
-		internal string HandleImpact(GameObject wielder, GameObject impacting, double force)
+		internal string HandleImpact(GameEntity wielder, GameEntity impacting, double force)
 		{
 			if(impacting.HasComponent<PhysicsComponent>())
 			{

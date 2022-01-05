@@ -229,17 +229,17 @@ namespace inspiral
 			return EnglishList(keys);
 		}
 
-		internal static string GameObjListToEnglishList(List<GameObject> input)
+		internal static string GameObjListToEnglishList(List<GameEntity> input)
 		{
 			List<string> ids = new List<string>();
-			foreach(GameObject entry in input)
+			foreach(GameEntity entry in input)
 			{
 				ids.Add($"{entry.name} (#{entry.id})");
 			}
 			return EnglishList(ids);
 		}
 
-		internal static string ReplacePronouns(GameObject other, string message, bool thirdPerson = false)
+		internal static string ReplacePronouns(GameEntity other, string message, bool thirdPerson = false)
 		{
 			string token = other.name.ToLower();
 			if(!message.ToLower().Contains($"${token}"))
@@ -248,7 +248,7 @@ namespace inspiral
 			}
 			return ReplacePronouns(token, other, message, thirdPerson);
 		}
-		internal static string ReplacePronouns(string token, GameObject other, string message, bool thirdPerson = false)
+		internal static string ReplacePronouns(string token, GameEntity other, string message, bool thirdPerson = false)
 		{
 			System.Console.WriteLine(message);
 			if(message.ToLower().Contains($"${token}"))

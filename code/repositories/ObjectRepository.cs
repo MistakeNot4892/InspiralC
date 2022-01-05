@@ -61,7 +61,7 @@ namespace inspiral
 		}
 		internal override void InstantiateFromRecord(SQLiteDataReader reader, SQLiteConnection dbConnection) 
 		{
-			GameObject gameObj = (GameObject)CreateRepositoryType((long)reader["id"]);
+			GameEntity gameObj = (GameEntity)CreateRepositoryType((long)reader["id"]);
 			gameObj.name = reader["name"].ToString();
 			gameObj.flags = (long)reader["flags"];
 			gameObj.gender = Modules.Gender.GetByTerm(reader["gender"].ToString());
@@ -79,7 +79,7 @@ namespace inspiral
 			postInitLocations.Add(gameObj.id, (long)reader["location"]);
 		}
 
-		internal void LoadComponentData(GameObject gameObj)
+		internal void LoadComponentData(GameEntity gameObj)
 		{
 			foreach(KeyValuePair<System.Type, GameComponent> comp in gameObj.components)
 			{
@@ -106,13 +106,13 @@ namespace inspiral
 		}
 		internal override System.Object CreateRepositoryType(long id) 
 		{
-			GameObject gameObj = new GameObject();
+			GameEntity gameObj = new GameEntity();
 			gameObj.id = id;
 			return gameObj;
 		}
 		public override void HandleAdditionalSQLInsertion(System.Object newInstance, SQLiteConnection dbConnection) 
 		{
-			GameObject gameObj = (GameObject)newInstance;
+			GameEntity gameObj = (GameEntity)newInstance;
 			foreach(KeyValuePair<System.Type, GameComponent> comp in gameObj.components)
 			{
 				if(Modules.Components.builders[comp.Key].InsertSchema != null)
@@ -134,7 +134,7 @@ namespace inspiral
 		}
 		internal override void AddCommandParameters(SQLiteCommand command, System.Object instance) 
 		{
-			GameObject gameObj = (GameObject)instance;
+			GameEntity gameObj = (GameEntity)instance;
 			command.Parameters.AddWithValue("@p0", gameObj.id);
 			command.Parameters.AddWithValue("@p1", gameObj.name);
 			command.Parameters.AddWithValue("@p2", gameObj.gender.Term);
@@ -157,8 +157,8 @@ namespace inspiral
 			{
 				if(loc.Value > 0)
 				{
-					GameObject obj =   (GameObject)GetByID(loc.Key);
-					GameObject other = (GameObject)GetByID(loc.Value);
+					GameEntity obj =   (GameEntity)GetByID(loc.Key);
+					GameEntity other = (GameEntity)GetByID(loc.Value);
 					if(obj != null && other != null)
 					{
 						obj.Move(other);
@@ -167,11 +167,11 @@ namespace inspiral
 			}
 			foreach(KeyValuePair<long, System.Object> obj in contents)
 			{
-				LoadComponentData((GameObject)obj.Value);
+				LoadComponentData((GameEntity)obj.Value);
 			}
 			foreach(KeyValuePair<long, System.Object> obj in contents)
 			{
-				GameObject gameObj = (GameObject)obj.Value;
+				GameEntity gameObj = (GameEntity)obj.Value;
 				foreach(KeyValuePair<System.Type, GameComponent> comp in gameObj.components)
 				{
 					comp.Value.FinalizeObjectLoad();
@@ -181,7 +181,7 @@ namespace inspiral
 
 		public override void HandleAdditionalObjectSave(System.Object objInstance, SQLiteConnection dbConnection) 
 		{
-			GameObject gameObj = (GameObject) objInstance;
+			GameEntity gameObj = (GameEntity) objInstance;
 			foreach(KeyValuePair<System.Type, GameComponent> comp in gameObj.components)
 			{
 				if(comp.Value.isPersistent && Modules.Components.builders[comp.Key].UpdateSchema != null)

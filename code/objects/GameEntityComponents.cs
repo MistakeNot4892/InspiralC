@@ -2,7 +2,7 @@ using Newtonsoft.Json.Linq;
 
 namespace inspiral
 {
-	internal partial class GameObject
+	internal partial class GameEntity
 	{
 		internal GameComponent GetComponent<T>() 
 		{

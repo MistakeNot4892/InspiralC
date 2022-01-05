@@ -8,30 +8,30 @@ namespace inspiral
 			description = "Removes a role from an account.";
 			usage = "takerole [account name or id] [role name or id]";
 		}
-		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
+		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
 			if(cmd.objTarget == null)
 			{
-				invoker.SendLine("Who do you wish to view the roles of?");
+				invoker.WriteLine("Who do you wish to view the roles of?");
 				return;
 			}
 			else if(cmd.strArgs.Length < 1)
 			{
-				invoker.SendLine("Which role do you wish to add?");
+				invoker.WriteLine("Which role do you wish to add?");
 				return;
 			}
 
 			PlayerAccount acct = Game.Accounts.FindAccount(cmd.objTarget);
 			if(acct == null)
 			{
-				invoker.SendLine($"Cannot find account for '{cmd.objTarget}'.");
+				invoker.WriteLine($"Cannot find account for '{cmd.objTarget}'.");
 				return;
 			}
 
 			GameRole role = Modules.Roles.GetRole(cmd.strArgs[0]);
 			if(role == null)
 			{
-				invoker.SendLine($"Cannot find role for '{cmd.strArgs[0]}'.");
+				invoker.WriteLine($"Cannot find role for '{cmd.strArgs[0]}'.");
 			}
 			else if(!acct.roles.Contains(role))
 			{
@@ -41,7 +41,7 @@ namespace inspiral
 			{
 				acct.roles.Remove(role);
 				Game.Accounts.QueueForUpdate(acct);
-				invoker.SendLine($"Removed role '{role.name}' from '{acct.userName}'.");
+				invoker.WriteLine($"Removed role '{role.name}' from '{acct.userName}'.");
 			}
 		}
 	}

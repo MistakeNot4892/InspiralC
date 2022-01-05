@@ -16,7 +16,7 @@ namespace inspiral
 	class GameClient
 	{
 		internal string id;
-		internal GameObject shell;
+		internal GameEntity shell;
 		internal TcpClient client;
 		internal NetworkStream stream;
 		internal GameContext context;
@@ -179,19 +179,6 @@ namespace inspiral
 			message = Text.Wrap(message, config.wrapwidth);
 			message = message.Replace("\n","\r\n");
 			return message;
-		}
-
-		internal void SendLine(string message)
-		{
-			SendLine(message, true);
-		}
-		internal void SendLine(string message, bool showPrompt)
-		{
-			WriteLine(message);
-			if(showPrompt)
-			{
-				SendPrompt();
-			}
 		}
 		internal void SendPrompt()
 		{

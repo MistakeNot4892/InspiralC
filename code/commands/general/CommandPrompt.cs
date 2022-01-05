@@ -8,7 +8,7 @@ namespace inspiral
 			description = "Shows your full prompt.";
 			usage = "prompt";
 		}
-		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
+		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
 			invoker.SendPrompt(true);
 		}

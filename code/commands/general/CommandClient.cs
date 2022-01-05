@@ -8,7 +8,7 @@ namespace inspiral
 			description = "Shows your client details.";
 			usage = "client";
 		}
-		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
+		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
 			if(invoker.HasComponent<ClientComponent>())
 			{

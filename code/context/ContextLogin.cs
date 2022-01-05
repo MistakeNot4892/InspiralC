@@ -25,7 +25,7 @@ namespace inspiral
 		}
 		private void ShowSplashScreen(GameClient viewer)
 		{
-			viewer.SendLine(Text.FormatPopup(
+			viewer.WriteLine(Text.FormatPopup(
 				"Inspiral, Coalescence, Ringdown", 
 				$"{Colours.Fg("- Enter your character name to log in.", Colours.BoldWhite)}\n{Colours.Fg("- Enter ", Colours.BoldWhite)}{Colours.Fg("register [username]", Colours.BoldYellow)}{Colours.Fg(" to register a new account.", Colours.BoldWhite)}",viewer.config.wrapwidth
 				));
@@ -46,7 +46,7 @@ namespace inspiral
 		}
 		private void HandleLogin(GameClient invoker)
 		{
-			GameObject wakingShell = (GameObject)Game.Objects.GetByID(invoker.account.objectId);
+			GameEntity wakingShell = (GameEntity)Game.Objects.GetByID(invoker.account.objectId);
 			wakingShell.ShowNearby(wakingShell, $"{wakingShell.GetShort()} wakes up.");
 			wakingShell.SetString<VisibleComponent>(Text.FieldRoomDesc, $"{wakingShell.GetShort()} is here.");
 

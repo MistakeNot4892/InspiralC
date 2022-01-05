@@ -1,11 +1,11 @@
 namespace inspiral
 {
-	internal partial class GameObject
+	internal partial class GameEntity
 	{
-		internal bool Move(GameObject destination)
+		internal bool Move(GameEntity destination)
 		{
 			bool canMove = true;
-			GameObject lastLocation = location;
+			GameEntity lastLocation = location;
 			if(location != null)
 			{
 				canMove = location.Exited(this);
@@ -24,15 +24,15 @@ namespace inspiral
 			}
 			return canMove;
 		}
-		internal bool OnDeparture(GameObject departing)
+		internal bool OnDeparture(GameEntity departing)
 		{
 			return true;
 		}
-		internal bool OnEntry(GameObject entering)
+		internal bool OnEntry(GameEntity entering)
 		{
 			return true;
 		}
-		internal bool Exited(GameObject leaving)
+		internal bool Exited(GameEntity leaving)
 		{
 			if(!contents.Contains(leaving) || !leaving.OnDeparture(this))
 			{
@@ -41,18 +41,17 @@ namespace inspiral
 			contents.Remove(leaving);
 			return true;
 		}
-		internal bool Entered(GameObject entering)
+		internal bool Entered(GameEntity entering)
 		{
 			if(contents.Contains(entering) || !entering.OnEntry(this))
 			{
 				return false;
 			}
 			contents.Add(entering);
-			ClientComponent clientComp = (ClientComponent)entering.GetComponent<ClientComponent>();
-			if(clientComp != null && clientComp.client != null)
+			if(entering.HasComponent<ClientComponent>())
 			{
-				ExaminedBy(clientComp.parent, true);
-				clientComp.client.SendPrompt();
+				ExaminedBy(entering, true);
+				entering.SendPrompt();
 			}
 			return true;
 		}

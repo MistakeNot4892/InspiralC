@@ -8,11 +8,11 @@ namespace inspiral
 			description = "Shows the exits of the current location.";
 			usage = "exits";
 		}
-		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
+		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
 			if(invoker.location == null || !invoker.location.HasComponent<RoomComponent>())
 			{
-				invoker.SendLine("You cannot see any exits here."); 
+				invoker.WriteLine("You cannot see any exits here."); 
 				return;
 			}
 			RoomComponent roomComp = (RoomComponent)invoker.location.GetComponent<RoomComponent>();

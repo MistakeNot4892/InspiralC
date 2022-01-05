@@ -53,12 +53,12 @@ namespace inspiral
 	{
 		internal GameComponent() { Initialize(); }
 		internal virtual void Initialize() {}
-		internal GameObject parent;
+		internal GameEntity parent;
 		internal bool isPersistent = true;
 
 		internal virtual void FinalizeObjectLoad() {}
 
-		internal virtual void Added(GameObject addedTo)
+		internal virtual void Added(GameEntity addedTo)
 		{
 			parent = addedTo;
 			if(isPersistent)
@@ -66,7 +66,7 @@ namespace inspiral
 				Game.Objects.QueueForUpdate(parent);
 			}
 		}
-		internal virtual void Removed(GameObject takenFrom)
+		internal virtual void Removed(GameEntity takenFrom)
 		{
 			if(takenFrom == parent)
 			{

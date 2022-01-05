@@ -8,7 +8,7 @@ namespace inspiral
 			description = "Equips an object.";
 			usage = "equip [object name or id] <slot>";
 		}
-		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
+		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
 			if(!invoker.HasComponent<InventoryComponent>())
 			{

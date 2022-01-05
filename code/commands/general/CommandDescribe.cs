@@ -8,7 +8,7 @@ namespace inspiral
 			description = "Sets your personal description.";
 			usage = "describe [new description]";
 		}
-		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
+		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
 		{
 			if(cmd.rawInput.Length <= 0)
 			{
