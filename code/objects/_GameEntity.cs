@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal partial class GameEntity
+	internal partial class GameEntity : SharedBaseClass
 	{
 		internal long id;
 		internal string name = "object";

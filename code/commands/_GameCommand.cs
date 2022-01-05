@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace inspiral
 {
 
-	internal class CommandData
+	internal class CommandData : SharedBaseClass
 	{
 		internal string strCmd =    null;
 		internal string[] strArgs = null;

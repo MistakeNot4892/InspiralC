@@ -49,7 +49,7 @@ namespace inspiral
 		internal virtual List<string> viewableFields { get; set; } = null;
 	}
 
-	internal class GameComponent
+	internal class GameComponent : SharedBaseClass
 	{
 		internal GameComponent() { Initialize(); }
 		internal virtual void Initialize() {}

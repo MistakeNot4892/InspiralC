@@ -15,8 +15,10 @@ namespace inspiral
 				if(role.AllCommands.ContainsKey(cmdStr))
 				{
 					GameCommand cmd = role.AllCommands[cmdStr];
-					cmd.InvokeCommand(invoker.shell, new CommandData(cmd, cmdStr, arguments));
+					CommandData cmdData = new CommandData(cmd, cmdStr, arguments);
+					cmd.InvokeCommand(invoker.shell, cmdData);
 					invoker.SendPrompt();
+					cmdData.ReturnToPool();
 					return true;
 				}
 			}
