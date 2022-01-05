@@ -21,7 +21,7 @@ namespace inspiral
 		internal GameEntity FindGameObjectNearby(string token)
 		{
 			string checkToken = token.ToLower();
-			if(checkToken == "me" || checkToken == "self")
+			if(checkToken == "me" || checkToken == "self" || checkToken == "myself")
 			{
 				return this;
 			}
