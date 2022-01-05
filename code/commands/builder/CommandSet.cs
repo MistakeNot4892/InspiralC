@@ -9,6 +9,8 @@ namespace inspiral
 			aliases = new System.Collections.Generic.List<string>() { "set", "vs" };
 			description = "Modifies the editable fields of an object.";
 			usage = "set [object name or id] [object field] [new value]";
+			skipArticles = false;
+			skipTokenQualifiers = true;
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{

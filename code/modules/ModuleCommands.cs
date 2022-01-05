@@ -108,9 +108,9 @@ namespace inspiral
 			string safeObjFrom =   objFrom ==   null ? "null" :                objFrom;
 			return $"cmd [{safeStrCmd}] target [{safeObjTarget}] args [{string.Join(", ", safeStrArgs)}] with [{safeObjWith}] in [{safeObjIn}] at [{safeObjAt}] to [{safeObjTo}] from [{safeObjFrom}] raw [{rawInput}]";
 		}
-		internal CommandData(string command, string input)
+		internal CommandData(GameCommand command, string aliasUsed, string input)
 		{
-			strCmd = command;
+			strCmd = aliasUsed;
 			rawInput = input;
 			string[] tokens = input.ToLower().Split(" ");
 			List<string> validTokens = new List<string>();
@@ -131,13 +131,24 @@ namespace inspiral
 						switch(s)
 						{
 							case "a":
+							case "an":
 							case "the":
+							case "my":
+								if(!command.skipArticles)
+								{
+									lastSubstring += $" {s}";
+								}
 								break;
 							case "in":
 							case "with":
 							case "at":
 							case "to":
 							case "from":
+								if(command.skipTokenQualifiers)
+								{
+									lastSubstring += $" {s}";
+									break;
+								}
 								if(lastField != null && lastSubstring != "")
 								{
 									SaveSubstringAsField(lastField, lastSubstring.Trim());
@@ -167,6 +178,8 @@ namespace inspiral
 		internal List<string> aliases = null;
 		internal string usage;
 		internal string description;
+		internal bool skipArticles = true;         // Parse 'a' 'an' and 'the' as part of substrings instead of skipping.
+		internal bool skipTokenQualifiers = false; // Do not parse 'with' 'from' etc. as special tokens.
 		internal GameCommand() { Initialize(); }
 		internal virtual void Initialize() {}
 		internal virtual void InvokeCommand(GameObject invoker, CommandData cmd) {}

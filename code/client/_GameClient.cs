@@ -22,6 +22,7 @@ namespace inspiral
 		internal GameContext context;
 		internal string lastPrompt = null;
 		internal PlayerAccount account = null;
+		internal bool sentPrompt = false;
 
 		internal List<string> gmcpFlags = new List<string>();
 		internal Dictionary<string, string> gmcpValues = new Dictionary<string, string>();
@@ -194,6 +195,11 @@ namespace inspiral
 		}
 		internal void SendPrompt()
 		{
+			if(sentPrompt)
+			{
+				return;
+			}
+			sentPrompt = true;
 			string p = context.GetPrompt(this);
 			if(p != null && p.Length > 0)
 			{
@@ -206,6 +212,7 @@ namespace inspiral
 		{
 			if(message != "")
 			{
+				sentPrompt = false;
 				WriteToStream(FormatOutgoingString($"{message}\n"));
 			}
 		}

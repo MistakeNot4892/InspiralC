@@ -59,7 +59,11 @@ namespace inspiral
 			}
 			foreach(KeyValuePair<System.Type, GameComponent> comp in components)
 			{
-				summary[fieldKey].Add($"\n{Text.FormatPopup(comp.Value.GetType().ToString(), comp.Value.GetStringSummary(), wrapWidth+Text.NestedWrapwidthModifier)}");
+				string compSummary = comp.Value.GetStringSummary();
+				if(compSummary != null)
+				{
+					summary[fieldKey].Add($"\n{Text.FormatPopup(comp.Value.GetType().ToString(), compSummary, wrapWidth+Text.NestedWrapwidthModifier)}");
+				}
 			}
 			return Text.FormatBlock(summary, wrapWidth);
 		}

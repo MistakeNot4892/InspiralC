@@ -169,6 +169,7 @@ namespace inspiral
 				if(forceClear)
 				{
 					client.client.lastPrompt = null;
+					client.client.sentPrompt = false;
 				}
 				client.client.SendPrompt();
 			}

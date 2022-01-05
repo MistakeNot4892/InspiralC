@@ -100,10 +100,7 @@ namespace inspiral
 				}
 				return result;
 			}
-			else
-			{
-				return "No viewable values.";
-			}
+			return null;
 		}
 
 		internal string SetValueOfEditableField(string field, string value) 

@@ -8,14 +8,14 @@ namespace inspiral
 		}
 		internal virtual void OnContextSet(GameClient viewer) {}
 		internal virtual void OnContextUnset(GameClient viewer) {}
-		internal virtual bool InvokeCommand(GameClient invoker, string command, string arguments) 
+		internal virtual bool InvokeCommand(GameClient invoker, string cmdStr, string arguments) 
 		{
 			foreach(GameRole role in invoker.account.roles)
 			{
-				if(role.AllCommands.ContainsKey(command))
+				if(role.AllCommands.ContainsKey(cmdStr))
 				{
-					CommandData cmd = new CommandData(command, arguments);
-					role.AllCommands[command].InvokeCommand(invoker.shell, cmd);
+					GameCommand cmd = role.AllCommands[cmdStr];
+					cmd.InvokeCommand(invoker.shell, new CommandData(cmd, cmdStr, arguments));
 					return true;
 				}
 			}
