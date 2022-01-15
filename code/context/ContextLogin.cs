@@ -49,7 +49,7 @@ namespace inspiral
 		{
 			GameObject wakingShell = (GameObject)Game.Objects.GetByID(invoker.account.objectId);
 			wakingShell.ShowNearby(wakingShell, $"{wakingShell.GetShortDesc()} wakes up.");
-			wakingShell.SetString<VisibleComponent>(Text.FieldRoomDesc, "$Short$ is here.");
+			wakingShell.SetString<VisibleComponent>(Field.RoomDesc, "$Short$ is here.");
 
 			invoker.shell = wakingShell;
 			if(invoker.shell.HasComponent<ClientComponent>())
@@ -83,7 +83,7 @@ namespace inspiral
 					}
 					else
 					{
-						invoker.id = newUser;
+						invoker.clientId = newUser;
 						loginState.Remove(invoker);
 						loginState.Add(invoker, "registering_entering_password");
 						invoker.WriteLine("Enter a new password of at least 6 characters, including at least one number or symbol. Remember that Telnet is not secure; do not reuse an important personal password.");
@@ -142,7 +142,7 @@ namespace inspiral
 					case "registering_confirming_password":
 						if(passwordConfirmations.ContainsKey(invoker) && BCrypt.Net.BCrypt.Verify(rawCommand, passwordConfirmations[invoker]))
 						{
-							invoker.account = Game.Accounts.CreateAccount(invoker.id, passwordConfirmations[invoker]);
+							invoker.account = Game.Accounts.CreateAccount(invoker.clientId, passwordConfirmations[invoker]);
 							invoker.WriteLine("Account created.");
 							HandleLogin(invoker);
 						}

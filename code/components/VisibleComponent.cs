@@ -8,11 +8,11 @@ namespace inspiral
 		internal List<GameComponent> Visibles => GetComponents<VisibleComponent>();
 	}
 
-	internal static partial class Text
+	internal static partial class Field
 	{
-		internal const string FieldShortDesc    = "short";
-		internal const string FieldRoomDesc     =  "room";
-		internal const string FieldExaminedDesc = "examined";
+		internal const string ShortDesc    = "short";
+		internal const string RoomDesc     =  "room";
+		internal const string ExaminedDesc = "examined";
 	}
 
 	internal class VisibleBuilder : GameComponentBuilder
@@ -22,9 +22,9 @@ namespace inspiral
 			ComponentType = typeof(VisibleComponent);
 			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
 			{
-				{ Text.FieldShortDesc,    (typeof(string), "''", true, true)},
-				{ Text.FieldRoomDesc,     (typeof(string), "''", true, true)},
-				{ Text.FieldExaminedDesc, (typeof(string), "''", true, true)}
+				{ Field.ShortDesc,    (typeof(string), "''", true, true)},
+				{ Field.RoomDesc,     (typeof(string), "''", true, true)},
+				{ Field.ExaminedDesc, (typeof(string), "''", true, true)}
 			};
 			base.Initialize();
 		}
@@ -39,21 +39,21 @@ namespace inspiral
 			bool success = false;
 			switch(field)
 			{
-				case Text.FieldShortDesc:
+				case Field.ShortDesc:
 					if(shortDescription != newValue)
 					{
 						shortDescription = newValue;
 						success = true;
 					}
 					break;
-				case Text.FieldRoomDesc:
+				case Field.RoomDesc:
 					if(roomDescription != newValue)
 					{
 						roomDescription = newValue;
 						success = true;
 					}
 					break;
-				case Text.FieldExaminedDesc:
+				case Field.ExaminedDesc:
 					if(examinedDescription != newValue)
 					{
 						examinedDescription = newValue;
@@ -67,11 +67,11 @@ namespace inspiral
 		{
 			switch(field)
 			{
-				case Text.FieldShortDesc:
+				case Field.ShortDesc:
 					return shortDescription;
-				case Text.FieldRoomDesc:
+				case Field.RoomDesc:
 					return roomDescription;
-				case Text.FieldExaminedDesc:
+				case Field.ExaminedDesc:
 					return examinedDescription;
 				default:
 					return null;
@@ -172,17 +172,17 @@ namespace inspiral
 		internal override Dictionary<string, object> GetSaveData()
 		{
 			Dictionary<string, object> saveData = new Dictionary<string, object>();
-			saveData.Add(Text.FieldShortDesc,    shortDescription);
-			saveData.Add(Text.FieldRoomDesc,     roomDescription);
-			saveData.Add(Text.FieldExaminedDesc, examinedDescription);
+			saveData.Add(Field.ShortDesc,    shortDescription);
+			saveData.Add(Field.RoomDesc,     roomDescription);
+			saveData.Add(Field.ExaminedDesc, examinedDescription);
 			return saveData;
 		}
 		internal override void CopyFromRecord(DatabaseRecord record) 
 		{
 			base.CopyFromRecord(record);
-			shortDescription =    record.fields[Text.FieldShortDesc].ToString();
-			roomDescription =     record.fields[Text.FieldRoomDesc].ToString();
-			examinedDescription = record.fields[Text.FieldExaminedDesc].ToString();
+			shortDescription =    record.fields[Field.ShortDesc].ToString();
+			roomDescription =     record.fields[Field.RoomDesc].ToString();
+			examinedDescription = record.fields[Field.ExaminedDesc].ToString();
 		}
 	}
 }

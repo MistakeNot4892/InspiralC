@@ -9,9 +9,9 @@ namespace inspiral
 		internal List<GameComponent> Inventories => GetComponents<InventoryComponent>();
 	}
 
-	internal static partial class Text
+	internal static partial class Field
 	{
-		internal const string FieldEquippedSlots = "equipped";
+		internal const string EquippedSlots = "equipped";
 	}
 	internal class InventoryBuilder : GameComponentBuilder
 	{
@@ -20,7 +20,7 @@ namespace inspiral
 			ComponentType = typeof(InventoryComponent);
 			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
 			{
-				{ Text.FieldEquippedSlots, (typeof(string), "''", false, false) }
+				{ Field.EquippedSlots, (typeof(string), "''", false, false) }
 			};
 			base.Initialize();
 		}
@@ -382,7 +382,7 @@ namespace inspiral
 		internal override void CopyFromRecord(DatabaseRecord record) 
 		{
 			base.CopyFromRecord(record);
-			foreach(KeyValuePair<string, long> equippedId in JsonConvert.DeserializeObject<Dictionary<string, long>>(record.fields[Text.FieldEquippedSlots].ToString()))
+			foreach(KeyValuePair<string, long> equippedId in JsonConvert.DeserializeObject<Dictionary<string, long>>(record.fields[Field.EquippedSlots].ToString()))
 			{
 				GameObject obj = (GameObject)Game.Objects.GetByID(equippedId.Value);
 				if(obj != null && obj.location == parent)
@@ -397,9 +397,9 @@ namespace inspiral
 			Dictionary<string, long> equippedById = new Dictionary<string, long>();
 			foreach(KeyValuePair<string, GameObject> gameObj in carrying)
 			{
-				equippedById.Add(gameObj.Key, gameObj.Value.id);
+				equippedById.Add(gameObj.Key, gameObj.Value.GetLong(Field.Id));
 			}
-			saveData.Add(Text.FieldEquippedSlots, JsonConvert.SerializeObject(equippedById));
+			saveData.Add(Field.EquippedSlots, JsonConvert.SerializeObject(equippedById));
 			return saveData;
 		}
 	}

@@ -37,14 +37,14 @@ namespace inspiral
 					{
 						if(inv.carrying.ContainsKey(slot))
 						{
-							usingItem = inv.carrying[slot].id.ToString();
+							usingItem = inv.carrying[slot].GetLong(Field.Id).ToString();
 							break;
 						}
 					}
 				}
 				else if(inv.GetWieldableSlots().Contains(usingItem) && inv.carrying.ContainsKey(usingItem))
 				{
-					usingItem = inv.carrying[usingItem].id.ToString();
+					usingItem = inv.carrying[usingItem].GetLong(Field.Id).ToString();
 				}
 			}
 
@@ -117,7 +117,7 @@ namespace inspiral
 			if(strikeWith.HasComponent<BodypartComponent>())
 			{
 				BodypartComponent body = (BodypartComponent)strikeWith.GetComponent<BodypartComponent>();
-				if(body.isNaturalWeapon)
+				if(body.GetBool(Field.NaturalWeapon))
 				{
 					strikeString = $"{invoker.gender.Their} {strikeString}";
 				}

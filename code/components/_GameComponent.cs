@@ -98,11 +98,6 @@ namespace inspiral
 			}
 			return "Invalid field.";
 		}
-
-		internal virtual bool SetValue(string key, string newValue) { return false; }
-		internal virtual bool SetValue(string key, long newValue) { return false; }
-		internal virtual string GetString(string key) { return null; }
-		internal virtual long GetLong(string key) { return 0; }
 		internal virtual string GetPrompt()
 		{
 			return "";

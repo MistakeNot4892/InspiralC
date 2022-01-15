@@ -33,7 +33,7 @@ namespace inspiral
         {
             using(SQLiteCommand command = new SQLiteCommand($"INSERT INTO {tableName} ( id ) VALUES ( @id );", connection))
             {
-                command.Parameters.AddWithValue("@id", entity.id);
+                command.Parameters.AddWithValue("@id", entity.GetLong(Field.Id));
                 command.ExecuteNonQuery();
                 UpdateRecord(tableName, entity);
             }

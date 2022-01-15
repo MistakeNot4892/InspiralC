@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
 using System.Linq;
 using Newtonsoft.Json;
 
@@ -10,14 +9,14 @@ namespace inspiral
 		internal List<GameComponent> Mobiles =>  GetComponents<MobileComponent>();
 	}
 
-	internal static partial class Text
+	internal static partial class Field
 	{
-		internal const string FieldEnterMessage = "enter";
-		internal const string FieldLeaveMessage = "leave";
-		internal const string FieldDeathMessage = "death";
-		internal const string FieldBodyplan =     "bodyplan";
-		internal const string FieldSpecies =      "species";
-		internal const string FieldBodypartList = "bodyparts";
+		internal const string EnterMessage = "enter";
+		internal const string LeaveMessage = "leave";
+		internal const string DeathMessage = "death";
+		internal const string Bodyplan =     "bodyplan";
+		internal const string Species =      "species";
+		internal const string BodypartList = "bodyparts";
 	}
 
 	internal class MobileBuilder : GameComponentBuilder
@@ -27,10 +26,10 @@ namespace inspiral
 			ComponentType = typeof(MobileComponent);
 			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
 			{
-				{ Text.FieldEnterMessage, (typeof(string), $"'{Text.DefaultEnterMessage}'", true, true) },
-				{ Text.FieldLeaveMessage, (typeof(string), $"'{Text.DefaultLeaveMessage}'", true, true) },
-				{ Text.FieldDeathMessage, (typeof(string), $"'{Text.DefaultDeathMessage}'", true, true) },
-				{ Text.FieldBodypartList, (typeof(string), "''", false, false) }
+				{ Field.EnterMessage, (typeof(string), $"'{Text.DefaultEnterMessage}'", true, true) },
+				{ Field.LeaveMessage, (typeof(string), $"'{Text.DefaultLeaveMessage}'", true, true) },
+				{ Field.DeathMessage, (typeof(string), $"'{Text.DefaultDeathMessage}'", true, true) },
+				{ Field.BodypartList, (typeof(string), "''", false, false) }
 			};
 			base.Initialize();
 		}
@@ -52,21 +51,21 @@ namespace inspiral
 			bool success = false;
 			switch(field)
 			{
-				case Text.FieldEnterMessage:
+				case Field.EnterMessage:
 					if(enterMessage != newValue)
 					{
 						enterMessage = newValue;
 						success = true;
 					}
 					break;
-				case Text.FieldLeaveMessage:
+				case Field.LeaveMessage:
 					if(leaveMessage != newValue)
 					{
 						leaveMessage = newValue;
 						success = true;
 					}
 					break;
-				case Text.FieldDeathMessage:
+				case Field.DeathMessage:
 					if(deathMessage != newValue)
 					{
 						deathMessage = newValue;
@@ -80,13 +79,13 @@ namespace inspiral
 		{
 			switch(field)
 			{
-				case Text.FieldEnterMessage:
+				case Field.EnterMessage:
 					return enterMessage;
-				case Text.FieldLeaveMessage:
+				case Field.LeaveMessage:
 					return leaveMessage;
-				case Text.FieldDeathMessage:
+				case Field.DeathMessage:
 					return deathMessage;
-				case Text.FieldSpecies:
+				case Field.Species:
 					return species;
 				default:
 					return null;
@@ -111,19 +110,19 @@ namespace inspiral
 				if(limb.Value != null)
 				{
 					BodypartComponent bp = (BodypartComponent)limb.Value.GetComponent<BodypartComponent>();
-					if(bp.canGrasp && !graspers.Contains(limb.Key))
+					if(bp.GetBool(Field.CanGrasp) && !graspers.Contains(limb.Key))
 					{
 						graspers.Add(limb.Key);
 					}
-					if(bp.canStand && !stance.Contains(limb.Key))
+					if(bp.GetBool(Field.CanStand) && !stance.Contains(limb.Key))
 					{
 						stance.Add(limb.Key);
 					}
-					if(bp.isNaturalWeapon && !strikers.Contains(limb.Key))
+					if(bp.GetBool(Field.NaturalWeapon) && !strikers.Contains(limb.Key))
 					{
 						strikers.Add(limb.Key);
 					}
-					foreach(string slot in bp.equipmentSlots)
+					foreach(string slot in bp.GetStringList(Field.EquipmentSlots))
 					{
 						if(!equipmentSlots.Contains(slot))
 						{
@@ -144,10 +143,10 @@ namespace inspiral
 		internal override void CopyFromRecord(DatabaseRecord record) 
 		{
 			base.CopyFromRecord(record);
-			enterMessage = record.fields[Text.FieldEnterMessage].ToString();
-			leaveMessage = record.fields[Text.FieldLeaveMessage].ToString();
-			deathMessage = record.fields[Text.FieldDeathMessage].ToString();
-			foreach(KeyValuePair<string, long> limb in JsonConvert.DeserializeObject<Dictionary<string, long>>((string)record.fields[Text.FieldBodypartList]))
+			enterMessage = record.fields[Field.EnterMessage].ToString();
+			leaveMessage = record.fields[Field.LeaveMessage].ToString();
+			deathMessage = record.fields[Field.DeathMessage].ToString();
+			foreach(KeyValuePair<string, long> limb in JsonConvert.DeserializeObject<Dictionary<string, long>>((string)record.fields[Field.BodypartList]))
 			{
 				limbs.Add(limb.Key, (limb.Value != 0 ? (GameObject)Game.Objects.GetByID(limb.Value) : null));
 			}
@@ -169,9 +168,9 @@ namespace inspiral
 				newLimb.aliases.Add("bodypart");
 
 				VisibleComponent vis = (VisibleComponent)newLimb.AddComponent<VisibleComponent>();
-				vis.SetValue(Text.FieldShortDesc, b.name);
-				vis.SetValue(Text.FieldRoomDesc, $"A severed {b.name} has been left here.");
-				vis.SetValue(Text.FieldExaminedDesc, $"It is a severed {b.name} that has been lopped off its owner.");
+				vis.SetValue(Field.ShortDesc, b.name);
+				vis.SetValue(Field.RoomDesc, $"A severed {b.name} has been left here.");
+				vis.SetValue(Field.ExaminedDesc, $"It is a severed {b.name} that has been lopped off its owner.");
 
 				PhysicsComponent phys = (PhysicsComponent)newLimb.AddComponent<PhysicsComponent>();
 				phys.width =      b.width;
@@ -203,9 +202,9 @@ namespace inspiral
 			Dictionary<string, long> limbKeys = new Dictionary<string, long>();
 			foreach(KeyValuePair<string, GameObject> limb in limbs)
 			{
-				limbKeys.Add(limb.Key, limb.Value != null ? limb.Value.id : 0);
+				limbKeys.Add(limb.Key, limb.Value != null ? limb.Value.GetLong(Field.Id) : 0);
 			}
-			saveData.Add(Text.FieldBodypartList, JsonConvert.SerializeObject(limbKeys));
+			saveData.Add(Field.BodypartList, JsonConvert.SerializeObject(limbKeys));
 			return saveData;
 		}
 	}

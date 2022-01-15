@@ -144,7 +144,7 @@ namespace inspiral
 						}
 						break;
 					default:
-						Game.LogError($"Got unknown GMCP packet ({gmcpToken}) from {sender.id}. [{gmcpContents}]");
+						Game.LogError($"Got unknown GMCP packet ({gmcpToken}) from {sender.clientId}. [{gmcpContents}]");
 						break;
 				}
 			}

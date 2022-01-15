@@ -4,12 +4,12 @@ using Newtonsoft.Json.Linq;
 
 namespace inspiral
 {
-	internal partial class Text
+	internal static partial class Field
 	{
-		internal const string FieldCanGrasp = "cangrasp";
-		internal const string FieldCanStand = "canstand";
-		internal const string FieldNaturalWeapon = "isnaturalweapon";
-		internal const string FieldEquipmentSlots = "equipmentslots";
+		internal const string CanGrasp = "cangrasp";
+		internal const string CanStand = "canstand";
+		internal const string NaturalWeapon = "isnaturalweapon";
+		internal const string EquipmentSlots = "equipmentslots";
 	}
 	internal class BodypartBuilder : GameComponentBuilder
 	{
@@ -18,36 +18,36 @@ namespace inspiral
 			ComponentType = typeof(BodypartComponent);
 			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
 			{
-				{ Text.FieldCanGrasp,       (typeof(int),    "0",  false, false) },
-				{ Text.FieldCanStand,       (typeof(int),    "0",  false, false) },
-				{ Text.FieldNaturalWeapon,  (typeof(int),    "0",  false, false) },
-				{ Text.FieldEquipmentSlots, (typeof(string), "''", false, false) }
+				{ Field.CanGrasp,       (typeof(int),    "0",  false, false) },
+				{ Field.CanStand,       (typeof(int),    "0",  false, false) },
+				{ Field.NaturalWeapon,  (typeof(int),    "0",  false, false) },
+				{ Field.EquipmentSlots, (typeof(string), "''", false, false) }
 			};
 			base.Initialize();
 		}
 	}
 	internal class BodypartComponent : GameComponent
 	{
-		internal bool canGrasp = false;
-		internal bool canStand = false;
-		internal bool isNaturalWeapon = false;
-		internal List<string> equipmentSlots = new List<string>();
+		private bool canGrasp = false;
+		private bool canStand = false;
+		private bool isNaturalWeapon = false;
+		private List<string> equipmentSlots = new List<string>();
 		internal override Dictionary<string, object> GetSaveData()
 		{
 			Dictionary<string, object> saveData = new Dictionary<string, object>();
-			saveData.Add(Text.FieldCanGrasp,       (canGrasp ? 1 : 0));
-			saveData.Add(Text.FieldCanStand,       (canStand ? 1 : 0));
-			saveData.Add(Text.FieldNaturalWeapon,  (isNaturalWeapon ? 1 : 0));
-			saveData.Add(Text.FieldEquipmentSlots, JsonConvert.SerializeObject(equipmentSlots));
+			saveData.Add(Field.CanGrasp,       (canGrasp ? 1 : 0));
+			saveData.Add(Field.CanStand,       (canStand ? 1 : 0));
+			saveData.Add(Field.NaturalWeapon,  (isNaturalWeapon ? 1 : 0));
+			saveData.Add(Field.EquipmentSlots, JsonConvert.SerializeObject(equipmentSlots));
 			return saveData;
 		}
 		internal override void CopyFromRecord(DatabaseRecord record) 
 		{
 			base.CopyFromRecord(record);
-			canGrasp =        ((long)record.fields[Text.FieldCanGrasp] == 1);
-			canStand =        ((long)record.fields[Text.FieldCanStand] == 1);
-			isNaturalWeapon = ((long)record.fields[Text.FieldNaturalWeapon] == 1);
-			equipmentSlots =  JsonConvert.DeserializeObject<List<string>>((string)record.fields[Text.FieldEquipmentSlots]);
+			canGrasp =        ((long)record.fields[Field.CanGrasp] == 1);
+			canStand =        ((long)record.fields[Field.CanStand] == 1);
+			isNaturalWeapon = ((long)record.fields[Field.NaturalWeapon] == 1);
+			equipmentSlots =  JsonConvert.DeserializeObject<List<string>>((string)record.fields[Field.EquipmentSlots]);
 		}
 	}
 }

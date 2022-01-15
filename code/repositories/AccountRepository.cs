@@ -10,10 +10,7 @@ namespace inspiral
 		internal string passwordHash;
 		internal List<GameRole> roles = new List<GameRole>();
 
-		internal PlayerAccount(long _id) : base(_id)
-		{
-			id = _id;
-		}
+		internal PlayerAccount(long _id) : base(_id) {}
 		internal bool CheckPassword(string pass)
 		{
 			return BCrypt.Net.BCrypt.Verify(pass, passwordHash);
@@ -58,7 +55,7 @@ namespace inspiral
 				}
 			}
 			accounts.Add(acct.userName, acct);
-			records.Add(acct.id, acct);
+			records.Add(acct.GetLong(Field.Id), acct);
 		}
 		internal PlayerAccount CreateAccount(string userName, string passwordHash)
 		{
@@ -74,11 +71,11 @@ namespace inspiral
 			gameObj.aliases = new List<string>() { gameObj.name.ToLower() };
 
 			VisibleComponent vis = (VisibleComponent)gameObj.GetComponent<VisibleComponent>(); 
-			vis.SetValue(Text.FieldShortDesc,    $"{gameObj.name}");
-			vis.SetValue(Text.FieldExaminedDesc, $"and {gameObj.gender.Is} completely uninteresting.");
+			vis.SetValue(Field.ShortDesc,    $"{gameObj.name}");
+			vis.SetValue(Field.ExaminedDesc, $"and {gameObj.gender.Is} completely uninteresting.");
 			Game.Objects.QueueForUpdate(gameObj);
 
-			acct.objectId = gameObj.id;
+			acct.objectId = gameObj.GetLong(Field.Id);
 			
 			// If the account DB is empty, give them admin roles.
 			if(accounts.Count <= 0)
@@ -105,7 +102,7 @@ namespace inspiral
 			foreach(KeyValuePair<string, PlayerAccount> account in accounts)
 			{
 				if(account.Value.userName.ToLower() == searchstring ||
-					$"{account.Value.id}" == searchstring)
+					$"{account.Value.GetLong(Field.Id)}" == searchstring)
 				{
 					return account.Value;
 				}
@@ -119,7 +116,7 @@ namespace inspiral
 		internal override void AddCommandParameters(SQLiteCommand command, System.Object instance)
 		{
 			PlayerAccount acct = (PlayerAccount)instance;
-			command.Parameters.AddWithValue("@p0", acct.id);
+			command.Parameters.AddWithValue("@p0", acct.GetLong(Field.Id));
 			command.Parameters.AddWithValue("@p1", acct.userName);
 			command.Parameters.AddWithValue("@p2", acct.passwordHash);
 			command.Parameters.AddWithValue("@p3", acct.objectId);

@@ -10,9 +10,9 @@ namespace inspiral
 		internal List<GameComponent> Rooms => GetComponents<RoomComponent>();
 	}
 
-	internal static partial class Text
+	internal static partial class Field
 	{
-		internal const string FieldExits = "exits";
+		internal const string Exits = "exits";
 	}
 
 	internal class RoomBuilder : GameComponentBuilder
@@ -22,7 +22,7 @@ namespace inspiral
 			ComponentType = typeof(RoomComponent);
 			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
 			{
-				{ Text.FieldExits, (typeof(string), "''", true, false)}
+				{ Field.Exits, (typeof(string), "''", true, false)}
 			};
 			base.Initialize();
 		}
@@ -54,7 +54,7 @@ namespace inspiral
 		}
 		internal override string GetString(string field)
 		{
-			if(field == Text.FieldExits)
+			if(field == Field.Exits)
 			{
 				string exitString = null;
 				if(exits.Count == 0)
@@ -80,13 +80,13 @@ namespace inspiral
 		internal override Dictionary<string, object> GetSaveData()
 		{
 			Dictionary<string, object> saveData = base.GetSaveData();
-			saveData.Add(Text.FieldExits, JsonConvert.SerializeObject(exits));
+			saveData.Add(Field.Exits, JsonConvert.SerializeObject(exits));
 			return saveData;
 		}
 		internal override void CopyFromRecord(DatabaseRecord record) 
 		{
 			base.CopyFromRecord(record);
-			exits = JsonConvert.DeserializeObject<Dictionary<string, long>>(record.fields[Text.FieldExits].ToString());			
+			exits = JsonConvert.DeserializeObject<Dictionary<string, long>>(record.fields[Field.Exits].ToString());			
 		}
 	}
 }

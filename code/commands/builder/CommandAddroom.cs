@@ -42,7 +42,7 @@ namespace inspiral
 						System.Console.WriteLine(cmd.strArgs[1]);
 						if(cmd.strArgs[1].ToLower() == "new")
 						{
-							roomId = Modules.Templates.Instantiate("room").id;
+							roomId = Modules.Templates.Instantiate("room").GetLong(Field.Id);
 						}
 						else
 						{
@@ -67,7 +67,7 @@ namespace inspiral
 							{
 								room.exits.Add(exitToAdd, roomId);
 								saveEditedRoom = true;
-								invoker.WriteLine($"You have connected {room.parent.id} to {roomId} via a one-way exit to the {exitToAdd}.");
+								invoker.WriteLine($"You have connected {room.parent.GetLong(Field.Id)} to {roomId} via a one-way exit to the {exitToAdd}.");
 							}
 							else
 							{
@@ -77,15 +77,15 @@ namespace inspiral
 								{
 									room.exits.Add(exitToAdd, roomId);
 									saveEditedRoom = true;
-									invoker.WriteLine($"Target room already has an exit to the {otherExit}.\nYou have connected {room.parent.id} to {roomId} via a one-way exit to the {exitToAdd}.");
+									invoker.WriteLine($"Target room already has an exit to the {otherExit}.\nYou have connected {room.parent.GetLong(Field.Id)} to {roomId} via a one-way exit to the {exitToAdd}.");
 								}
 								else
 								{
 									room.exits.Add(exitToAdd, roomId);
 									saveEditedRoom = true;
-									otherRoom.exits.Add(otherExit, room.parent.id);
+									otherRoom.exits.Add(otherExit, room.parent.GetLong(Field.Id));
 									Game.Objects.QueueForUpdate(otherRoom.parent);
-									invoker.WriteLine($"You have connected {room.parent.id} to {roomId} via a bidirectional exit to the {exitToAdd}.");
+									invoker.WriteLine($"You have connected {room.parent.GetLong(Field.Id)} to {roomId} via a bidirectional exit to the {exitToAdd}.");
 								}
 							}
 							if(saveEditedRoom)

@@ -2,13 +2,13 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Text
+	internal static partial class Field
 	{
-		internal const string FieldClientId = "clientId";
+		internal const string ClientId = "clientId";
 	}
 	internal partial class ComponentModule : GameModule
 	{
-		internal List<GameComponent> Clients => GetComponents<ClientComponent>();
+		private List<GameComponent> Clients => GetComponents<ClientComponent>();
 	}
 	internal class ClientBuilder : GameComponentBuilder
 	{
@@ -17,7 +17,7 @@ namespace inspiral
 			ComponentType = typeof(ClientComponent);
 			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
 			{
-				{ Text.FieldClientId, (typeof(string), "''", true, false) }
+				{ Field.ClientId, (typeof(string), "''", true, false) }
 			};
 			base.Initialize();
 		}
@@ -46,11 +46,11 @@ namespace inspiral
 		}
 		internal override string GetString(string field)
 		{
-			if(field == Text.FieldClientId)
+			if(field == Field.ClientId)
 			{
 				if(client != null)
 				{
-					return $"#{client.id}";
+					return $"#{client.clientId}";
 				}
 				else
 				{

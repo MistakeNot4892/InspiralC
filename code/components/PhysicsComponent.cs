@@ -8,14 +8,14 @@ namespace inspiral
 		internal List<GameComponent> Physics => GetComponents<PhysicsComponent>();
 	}
 
-	internal static partial class Text
+	internal static partial class Field
 	{
-		internal const string FieldLength =  "length";
-		internal const string FieldWidth =   "width";
-		internal const string FieldHeight =  "height";
-		internal const string FieldDensity = "density";
-		internal const string FieldStrikeArea = "strikearea";
-		internal const string FieldEdged = "edged";
+		internal const string Length =  "length";
+		internal const string Width =   "width";
+		internal const string Height =  "height";
+		internal const string Density = "density";
+		internal const string StrikeArea = "strikearea";
+		internal const string Edged = "edged";
 	}
 	internal class PhysicsBuilder : GameComponentBuilder
 	{
@@ -24,12 +24,12 @@ namespace inspiral
 			ComponentType = typeof(PhysicsComponent);
 			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
 			{
-				{ Text.FieldLength,     (typeof(int),    "1",   true, true) },
-				{ Text.FieldWidth,      (typeof(int),    "1",   true, true) },
-				{ Text.FieldHeight,     (typeof(int),    "1",   true, true) },
-				{ Text.FieldDensity,    (typeof(double), "1.0", true, true) },
-				{ Text.FieldStrikeArea, (typeof(double), "1.0", true, true) }, 
-				{ Text.FieldEdged,      (typeof(int),    "0",   true, true) }
+				{ Field.Length,     (typeof(int),    "1",   true, true) },
+				{ Field.Width,      (typeof(int),    "1",   true, true) },
+				{ Field.Height,     (typeof(int),    "1",   true, true) },
+				{ Field.Density,    (typeof(double), "1.0", true, true) },
+				{ Field.StrikeArea, (typeof(double), "1.0", true, true) }, 
+				{ Field.Edged,      (typeof(int),    "0",   true, true) }
 			};
 			base.Initialize();
 		}
@@ -61,7 +61,7 @@ namespace inspiral
 		{
 			try
 			{
-				if(key == Text.FieldDensity)
+				if(key == Field.Density)
 				{
 					return SetDensity(System.Convert.ToDouble(newValue));
 				}
@@ -92,28 +92,28 @@ namespace inspiral
 			bool success = false;
 			switch(field)
 			{
-				case Text.FieldLength:
+				case Field.Length:
 					if(length != newValue)
 					{
 						length = newValue;
 						success = true;
 					}
 					break;
-				case Text.FieldWidth:
+				case Field.Width:
 					if(width != newValue)
 					{
 						width = newValue;
 						success = true;
 					}
 					break;
-				case Text.FieldHeight:
+				case Field.Height:
 					if(height != newValue)
 					{
 						height = newValue;
 						success = true;
 					}
 					break;
-				case Text.FieldDensity:
+				case Field.Density:
 					if(density != newValue)
 					{
 						density = newValue;
@@ -131,11 +131,11 @@ namespace inspiral
 		{
 			switch(field)
 			{
-				case Text.FieldWidth:
+				case Field.Width:
 					return width;
-				case Text.FieldLength:
+				case Field.Length:
 					return length;
-				case Text.FieldHeight:
+				case Field.Height:
 					return height;
 				default:
 					return 0;
@@ -145,15 +145,15 @@ namespace inspiral
 		{
 			switch(field)
 			{
-				case Text.FieldWidth:
-				case Text.FieldLength:
-				case Text.FieldHeight:
+				case Field.Width:
+				case Field.Length:
+				case Field.Height:
 					return GetLong(field).ToString();
-				case Text.FieldDensity:
+				case Field.Density:
 					return $"{density}";
-				case Text.FieldStrikeArea:
+				case Field.StrikeArea:
 					return $"{density}";
-				case Text.FieldEdged:
+				case Field.Edged:
 					return $"{density}";
 			}
 			return null;
@@ -246,23 +246,23 @@ namespace inspiral
 		internal override Dictionary<string, object> GetSaveData()
 		{
 			Dictionary<string, object> saveData = base.GetSaveData();
-			saveData.Add(Text.FieldLength,     length);
-			saveData.Add(Text.FieldWidth,      width);
-			saveData.Add(Text.FieldHeight,     height);
-			saveData.Add(Text.FieldDensity,    density);
-			saveData.Add(Text.FieldStrikeArea, strikeArea);
-			saveData.Add(Text.FieldEdged,      edged);
+			saveData.Add(Field.Length,     length);
+			saveData.Add(Field.Width,      width);
+			saveData.Add(Field.Height,     height);
+			saveData.Add(Field.Density,    density);
+			saveData.Add(Field.StrikeArea, strikeArea);
+			saveData.Add(Field.Edged,      edged);
 			return saveData;
 		}
 		internal override void CopyFromRecord(DatabaseRecord record) 
 		{
 			base.CopyFromRecord(record);
-			length =     (long)record.fields[Text.FieldLength];
-			width =      (long)record.fields[Text.FieldWidth];
-			height =     (long)record.fields[Text.FieldHeight];
-			density =    (double)record.fields[Text.FieldDensity];
-			strikeArea = (double)record.fields[Text.FieldStrikeArea];
-			edged =      (int)record.fields[Text.FieldEdged];
+			length =     (long)record.fields[Field.Length];
+			width =      (long)record.fields[Field.Width];
+			height =     (long)record.fields[Field.Height];
+			density =    (double)record.fields[Field.Density];
+			strikeArea = (double)record.fields[Field.StrikeArea];
+			edged =      (int)record.fields[Field.Edged];
 			UpdateValues();
 		}
 	}

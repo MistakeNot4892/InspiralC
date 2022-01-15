@@ -7,11 +7,11 @@ namespace inspiral
 		internal List<GameComponent> Containers => GetComponents<ContainerComponent>();
 	}
 
-	internal static partial class Text
+	internal static partial class Field
 	{
-		internal const string FieldIsOpen = "isopen";
-		internal const string FieldHasLid = "haslid";
-		internal const string FieldMaxCapacity = "maxcapacity";
+		internal const string IsOpen = "isopen";
+		internal const string HasLid = "haslid";
+		internal const string MaxCapacity = "maxcapacity";
 
 	}
 	internal class ContainerBuilder : GameComponentBuilder
@@ -21,32 +21,32 @@ namespace inspiral
 			ComponentType = typeof(ContainerComponent);
 			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
 			{
-				{ Text.FieldIsOpen,      (typeof(int), "1",  false, false) },
-				{ Text.FieldHasLid,      (typeof(int), "0",  false, false) },
-				{ Text.FieldMaxCapacity, (typeof(int), "10", false, false) }
+				{ Field.IsOpen,      (typeof(int), "1",  false, false) },
+				{ Field.HasLid,      (typeof(int), "0",  false, false) },
+				{ Field.MaxCapacity, (typeof(int), "10", false, false) }
 			};
 			base.Initialize();
 		}
 	}
 	class ContainerComponent : GameComponent
 	{
-		internal bool isOpen = true;
-		internal bool hasLid = false;
-		internal long maxCapacity = 10;
+		private bool isOpen = true;
+		private bool hasLid = false;
+		private long maxCapacity = 10;
 		internal override Dictionary<string, object> GetSaveData()
 		{
 			Dictionary<string, object> saveData = new Dictionary<string, object>();
-			saveData.Add(Text.FieldIsOpen, isOpen ? 1 : 0);
-			saveData.Add(Text.FieldHasLid, hasLid ? 1 : 0);
-			saveData.Add(Text.FieldMaxCapacity, maxCapacity);
+			saveData.Add(Field.IsOpen, isOpen ? 1 : 0);
+			saveData.Add(Field.HasLid, hasLid ? 1 : 0);
+			saveData.Add(Field.MaxCapacity, maxCapacity);
 			return saveData;
 		}
 		internal override void CopyFromRecord(DatabaseRecord record) 
 		{
 			base.CopyFromRecord(record);
-			isOpen =      ((long)record.fields[Text.FieldIsOpen] == 1);
-			hasLid =      ((long)record.fields[Text.FieldHasLid] == 1);
-			maxCapacity = (long)record.fields[Text.FieldMaxCapacity];
+			isOpen =      ((long)record.fields[Field.IsOpen] == 1);
+			hasLid =      ((long)record.fields[Field.HasLid] == 1);
+			maxCapacity = (long)record.fields[Field.MaxCapacity];
 		}
 	}
 }

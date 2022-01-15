@@ -9,9 +9,9 @@ namespace inspiral
 	{
 		internal List<GameComponent> Wearables => GetComponents<WearableComponent>();
 	}
-	internal static partial class Text
+	internal static partial class Field
 	{
-		internal const string FieldWearableSlots = "wearable_slots";
+		internal const string WearableSlots = "wearable_slots";
 	}
 	internal class WearableBuilder : GameComponentBuilder
 	{
@@ -20,7 +20,7 @@ namespace inspiral
 			ComponentType = typeof(WearableComponent);
 			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
 			{
-				{ Text.FieldWearableSlots, (typeof(string), "''", true, true) }
+				{ Field.WearableSlots, (typeof(string), "''", true, true) }
 			};
 			base.Initialize();
 		}
@@ -31,13 +31,13 @@ namespace inspiral
 		internal override Dictionary<string, object> GetSaveData()
 		{
 			Dictionary<string, object> saveData = base.GetSaveData();
-			saveData.Add(Text.FieldWearableSlots, JsonConvert.SerializeObject(wearableSlots));
+			saveData.Add(Field.WearableSlots, JsonConvert.SerializeObject(wearableSlots));
 			return saveData;
 		}
 		internal override void CopyFromRecord(DatabaseRecord record)
 		{
 			base.CopyFromRecord(record);
-			wearableSlots = JsonConvert.DeserializeObject<List<string>>(record.fields[Text.FieldWearableSlots].ToString());
+			wearableSlots = JsonConvert.DeserializeObject<List<string>>(record.fields[Field.WearableSlots].ToString());
 		}
 	}
 }

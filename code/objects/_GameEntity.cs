@@ -3,9 +3,21 @@ using Newtonsoft.Json;
 
 namespace inspiral
 {
+	internal static partial class Field
+	{
+		internal const string Id = "id";
+	}
 	internal partial class GameEntity : SharedBaseClass
 	{
-		internal long id;
+		private long id;
+
+		internal virtual bool SetValue(string key, string newValue) { return false; }
+		internal virtual bool SetValue(string key, long newValue) { return false; }
+		internal virtual bool SetValue(string key, bool newValue) { return false; }
+		internal virtual string GetString(string key) { return null; }
+		internal virtual long GetLong(string key) { return 0; }
+		internal virtual bool GetBool(string key) { return false; }
+		internal virtual List<string> GetStringList(string key) { return null; }
 		internal virtual void Initialize() {}
 		internal GameEntity() {}
 		internal GameEntity(long _id)
@@ -37,12 +49,12 @@ namespace inspiral
 		internal override Dictionary<string, object> GetSaveData()
 		{
 			Dictionary<string, object> saveData = base.GetSaveData();
-			saveData.Add("name",       name);
-			saveData.Add("gender",     gender.Term);
-			saveData.Add("aliases",    JsonConvert.SerializeObject(aliases));
-			saveData.Add("components", JsonConvert.SerializeObject(components.Keys));
-			saveData.Add("flags",      flags);
-			saveData.Add("location",   (location?.id ?? 0));
+			saveData.Add(Field.Name,       name);
+			saveData.Add(Field.Gender,     gender.Term);
+			saveData.Add(Field.Aliases,    JsonConvert.SerializeObject(aliases));
+			saveData.Add(Field.Components, JsonConvert.SerializeObject(components.Keys));
+			saveData.Add(Field.Flags,      flags);
+			saveData.Add(Field.Location,   (location?.GetLong(Field.Id) ?? 0));
 			return saveData;
 		}
 
@@ -68,7 +80,7 @@ namespace inspiral
 			{
 				if(checkToken == "here" || 
 					checkToken == "room" || 
-					"{location.id}" == checkToken || 
+					"{location.GetLong(Field.Id)}" == checkToken || 
 					location.name.ToLower() == checkToken || 
 					location.aliases.Contains(checkToken)
 					)
@@ -89,10 +101,10 @@ namespace inspiral
 			string checkToken = token.ToLower();
 			foreach(GameObject gameObj in contents)
 			{
-				if($"{gameObj.id}" == checkToken || 
+				if($"{gameObj.GetLong(Field.Id)}" == checkToken || 
 					gameObj.name.ToLower() == checkToken || 
 					gameObj.aliases.Contains(checkToken) || 
-					$"{gameObj.name}#{gameObj.id}" == checkToken
+					$"{gameObj.name}#{gameObj.GetLong(Field.Id)}" == checkToken
 					)
 				{
 					return gameObj;
@@ -106,7 +118,7 @@ namespace inspiral
 				}
 				foreach(string alias in gameObj.aliases)
 				{
-					if(alias.ToLower().Contains(checkToken) || $"{alias}#{gameObj.id}" == checkToken)
+					if(alias.ToLower().Contains(checkToken) || $"{alias}#{gameObj.GetLong(Field.Id)}" == checkToken)
 					{
 						return gameObj;
 					}

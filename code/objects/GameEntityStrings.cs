@@ -8,8 +8,8 @@ namespace inspiral
 		{
 			if(HasComponent<VisibleComponent>())
 			{
-				msg = msg.Replace(GlobalConfig.StringTokenShort, GetString<VisibleComponent>(Text.FieldShortDesc));
-				msg = msg.Replace(GlobalConfig.StringTokenShortCaps, Text.Capitalize(GetString<VisibleComponent>(Text.FieldShortDesc)));
+				msg = msg.Replace(GlobalConfig.StringTokenShort, GetString<VisibleComponent>(Field.ShortDesc));
+				msg = msg.Replace(GlobalConfig.StringTokenShortCaps, Text.Capitalize(GetString<VisibleComponent>(Field.ShortDesc)));
 			}
 			return msg;
 		}
@@ -60,13 +60,13 @@ namespace inspiral
 		{
 			Dictionary<string, List<string>> summary = new Dictionary<string, List<string>>();
 
-			string fieldKey = $"Object summary for {name} (#{id})";
+			string fieldKey = $"Object summary for {name} (#{GetLong(Field.Id)})";
 			summary.Add(fieldKey, new List<string>());
 			summary[fieldKey].Add($"aliases:  {Text.EnglishList(aliases)}");
 			summary[fieldKey].Add($"gender:   {gender.Term}");
 			if(location != null)
 			{
-				summary[fieldKey].Add($"location (read-only): {location.GetShortDesc()} (#{location.id})");
+				summary[fieldKey].Add($"location (read-only): {location.GetShortDesc()} (#{location.GetLong(Field.Id)})");
 			}
 			else
 			{

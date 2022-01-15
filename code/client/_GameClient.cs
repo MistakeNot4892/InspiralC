@@ -15,7 +15,7 @@ namespace inspiral
 	}
 	class GameClient
 	{
-		internal string id;
+		internal string clientId;
 		internal GameObject shell;
 		internal TcpClient client;
 		internal NetworkStream stream;
@@ -38,11 +38,11 @@ namespace inspiral
 
 		internal GameClient(TcpClient _client, string _id)
 		{
-			client = _client;
-			stream = _client.GetStream();
-			shell =  DummyShell;
-			id =     _id;
-			Game.LogError($"{id}: client created.");
+			client =   _client;
+			stream =   _client.GetStream();
+			shell =    DummyShell;
+			clientId = _id;
+			Game.LogError($"{clientId}: client created.");
 			SetContext(Contexts.Login);
 		}
 		internal void SetContext(GameContext new_context)
@@ -123,7 +123,7 @@ namespace inspiral
 			}
 			catch (System.Exception e)
 			{
-				Game.LogError($"{id}: disconnected ({e.Message}).");
+				Game.LogError($"{clientId}: disconnected ({e.Message}).");
 			}
 			finally
 			{
@@ -143,7 +143,7 @@ namespace inspiral
 				{
 					clientComp.Logout();
 					shell.ShowNearby(shell, $"{shell.GetShortDesc()} falls asleep.");
-					shell.SetString<VisibleComponent>(Text.FieldRoomDesc, "$Short is sound asleep here.");
+					shell.SetString<VisibleComponent>(Field.RoomDesc, "$Short is sound asleep here.");
 					shell.RemoveComponent<ClientComponent>();
 				}
 			}

@@ -229,7 +229,7 @@ namespace inspiral
 			List<string> ids = new List<string>();
 			foreach(GameObject entry in input)
 			{
-				ids.Add($"{entry.name} (#{entry.id})");
+				ids.Add($"{entry.name} (#{entry.GetLong(Field.Id)})");
 			}
 			return EnglishList(ids);
 		}
@@ -239,7 +239,7 @@ namespace inspiral
 			string token = other.name.ToLower();
 			if(!message.ToLower().Contains($"${token}"))
 			{
-				token = $"{other.id}";
+				token = $"{other.GetLong(Field.Id)}";
 			}
 			return ReplacePronouns(token, other, message, thirdPerson);
 		}

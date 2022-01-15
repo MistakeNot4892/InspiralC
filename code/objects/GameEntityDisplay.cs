@@ -103,7 +103,7 @@ namespace inspiral
 		}
 		internal void Probed(GameObject invoker)
 		{
-			string reply = $"{GetShortDesc()} ({name}#{id})";
+			string reply = $"{GetShortDesc()} ({GetString(Field.Name)}#{GetLong(Field.Id)})";
 			reply += "\nContents:";
 			if(contents.Count > 0)
 			{
@@ -134,11 +134,11 @@ namespace inspiral
 						{
 							if(equip.GetWieldableSlots().Contains(equ.Key))
 							{
-								result.Add($"{equ.Value.GetShortDesc()} ({equ.Value.name}#{equ.Value.id}) ({equ.Key}, wielded)");
+								result.Add($"{equ.Value.GetShortDesc()} ({equ.Value.name}#{equ.Value.GetLong(Field.Id)}) ({equ.Key}, wielded)");
 							}
 							else
 							{
-								result.Add($"{equ.Value.GetShortDesc()} ({equ.Value.name}#{equ.Value.id}) ({equ.Key}, worn)");
+								result.Add($"{equ.Value.GetShortDesc()} ({equ.Value.name}#{equ.Value.GetLong(Field.Id)}) ({equ.Key}, worn)");
 							}
 						}
 						else
@@ -161,7 +161,7 @@ namespace inspiral
 				{
 					if(quickView)
 					{
-						result.Add($"{gameObj.GetShortDesc()} ({gameObj.name}#{gameObj.id})");
+						result.Add($"{gameObj.GetShortDesc()} ({gameObj.name}#{gameObj.GetLong(Field.Id)})");
 					}
 					else
 					{
@@ -189,11 +189,11 @@ namespace inspiral
 		internal string GetShortDesc()
 		{
 			// Re-enable token replacement if relevant tokens are added
-			return GetString<VisibleComponent>(Text.FieldShortDesc);
+			return GetString<VisibleComponent>(Field.ShortDesc);
 		}
 		internal string GetRoomDesc()
 		{
-			return ApplyStringTokens(GetString<VisibleComponent>(Text.FieldRoomDesc));
+			return ApplyStringTokens(GetString<VisibleComponent>(Field.RoomDesc));
 		}
 		internal string GetColour(string colourType)
 		{
