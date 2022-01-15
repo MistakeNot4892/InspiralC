@@ -22,8 +22,8 @@ namespace inspiral
 				try
 				{
 					JObject r = JObject.Parse(File.ReadAllText(f.File));
-					string roleName = (string)r["name"];
-					string roleDescription = (string)r["description"];
+					string roleName = r["name"].ToString();
+					string roleDescription = r["description"].ToString();
 					List<GameCommand> roleCommands = new List<GameCommand>();
 					foreach(string cmd in r["commands"].Select(t => (string)t).ToList())
 					{

@@ -8,7 +8,7 @@ namespace inspiral
 			description = "Creates a new database entry for an object or room.";
 			usage = "create [object]";
 		}
-		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			bool msgSent = false;
 			if(cmd.objTarget != null)
@@ -20,7 +20,7 @@ namespace inspiral
 				}
 				else
 				{
-					GameEntity hat = Modules.Templates.Instantiate(cmd.objTarget);
+					GameObject hat = Modules.Templates.Instantiate(cmd.objTarget);
 					if(hat != null)
 					{
 						hat.Move(invoker.location);

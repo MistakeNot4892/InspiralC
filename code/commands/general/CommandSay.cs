@@ -8,9 +8,9 @@ namespace inspiral
 			description = "Vocally communicates with the people and things around you.";
 			usage = "say <(emote text)> [speech text] <emoticon>";
 		}
-		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
-			GameEntity target = null;
+			GameObject target = null;
 			string invocation = cmd.rawInput;
 			if(invocation.Length >= 3 && invocation.Substring(0,3) == "to " && invoker.location != null)
 			{

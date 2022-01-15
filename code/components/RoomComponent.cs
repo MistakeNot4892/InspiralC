@@ -1,6 +1,5 @@
 using System.Linq;
 using System.Collections.Generic;
-using System.Data.SQLite;
 using Newtonsoft.Json;
 
 namespace inspiral
@@ -21,24 +20,12 @@ namespace inspiral
 		internal override void Initialize()
 		{
 			ComponentType = typeof(RoomComponent);
+			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
+			{
+				{ Text.FieldExits, (typeof(string), "''", true, false)}
+			};
+			base.Initialize();
 		}
-		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldExits};
-		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_room WHERE id = @p0;";
-
-		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_room (
-				id INTEGER NOT NULL PRIMARY KEY UNIQUE, 
-				{Text.FieldExits} TEXT DEFAULT ''
-				);";
-		internal override string UpdateSchema { get; set; } = $@"UPDATE components_room SET 
-				{Text.FieldExits} = @p1 
-				WHERE id = @p0;";
-		internal override string InsertSchema { get; set; } = $@"INSERT INTO components_room (
-				id,
-				{Text.FieldExits}
-				) VALUES (
-				@p0,
-				@p1
-				);";
 	}
 
 	internal class RoomComponent : GameComponent
@@ -65,15 +52,6 @@ namespace inspiral
 				return $"You can see exits leading {Text.EnglishList(exits)}.";
 			}
 		}
-		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
-		{
-			exits = JsonConvert.DeserializeObject<Dictionary<string, long>>(reader[Text.FieldExits].ToString());
-		}
-		internal override void AddCommandParameters(SQLiteCommand command) 
-		{
-			command.Parameters.AddWithValue("@p0", parent.id);
-			command.Parameters.AddWithValue("@p1", JsonConvert.SerializeObject(exits));
-		}
 		internal override string GetString(string field)
 		{
 			if(field == Text.FieldExits)
@@ -98,6 +76,17 @@ namespace inspiral
 				return exitString;
 			}
 			return null;
+		}
+		internal override Dictionary<string, object> GetSaveData()
+		{
+			Dictionary<string, object> saveData = base.GetSaveData();
+			saveData.Add(Text.FieldExits, JsonConvert.SerializeObject(exits));
+			return saveData;
+		}
+		internal override void CopyFromRecord(DatabaseRecord record) 
+		{
+			base.CopyFromRecord(record);
+			exits = JsonConvert.DeserializeObject<Dictionary<string, long>>(record.fields[Text.FieldExits].ToString());			
 		}
 	}
 }

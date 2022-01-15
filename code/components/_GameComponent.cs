@@ -1,64 +1,46 @@
-using System.Data.SQLite;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
-
-/* Template for copypasting to new files:
-namespace inspiral
-{
-	internal partial class ComponentModule : GameModule
-	{
-		internal const string Foo = "foo";
-	}
-	internal static partial class Text
-	{
-		internal const string FieldFoo = "foofield";
-		internal const string FieldBar = "barfield";
-	}
-	internal class FooBuilder : GameComponentBuilder
-	{
-		internal override string TableSchema  { get; set; } = "CREATE TABLE IF NOT EXISTS foo () VALUES ();";
-		internal override string LoadSchema   { get; set; } = "SELECT * FROM foo WHERE id = @p0;"
-		internal override string UpdateSchema { get; set; } = "UPDATE foo;";
-		internal override string InsertSchema { get; set; } = "INSERT INTO foo VALUES () WHERE (id == @p0);";
-		internal FooBuilder()
-		{
-			ComponentType = typeof(FooComponent);
-		}
-	}
-	internal class FooComponent : GameComponent
-	{
-		internal virtual List<string> editableFields { get; set; } = new List<string>() { Text.FieldFoo, Text.FieldBar };
-		internal virtual List<string> viewableFields { get; set; } = new List<string>() { Text.FieldBar };
-	}
-}
-*/
 
 namespace inspiral
 {
 
 	internal class GameComponentBuilder
 	{
-		internal GameComponentBuilder()              { Initialize(); }
-		internal virtual void Initialize()           {}
-		internal virtual System.Type ComponentType   { get; set; } = null;
-		internal virtual string TableSchema          { get; set; } = null;
-		internal virtual string UpdateSchema         { get; set; } = null;
-		internal virtual string InsertSchema         { get; set; } = null;
-		internal virtual string LoadSchema           { get; set; } = null;
-		internal virtual List<string> editableFields { get; set; } = null;
-		internal virtual List<string> viewableFields { get; set; } = null;
+		internal GameComponentBuilder()
+		{
+			Initialize();
+		}
+		internal System.Type ComponentType;
+		internal List<string> editableFields = new List<string>();
+		internal List<string> viewableFields = new List<string>();
+		internal Dictionary<string, (System.Type, string, bool, bool)> schemaFields = null;
+		internal virtual void Initialize()
+		{
+			if(schemaFields != null)
+			{
+				foreach(KeyValuePair<string, (System.Type, string, bool, bool)> schemaField in schemaFields)
+				{
+					if(schemaField.Value.Item3)
+					{
+						viewableFields.Add(schemaField.Key);
+					}
+					if(schemaField.Value.Item4)
+					{
+						editableFields.Add(schemaField.Key);
+					}
+				}
+			}
+		}
 	}
 
-	internal class GameComponent : SharedBaseClass
+	internal class GameComponent : GameEntity
 	{
-		internal GameComponent() { Initialize(); }
-		internal virtual void Initialize() {}
-		internal GameEntity parent;
+		internal GameObject parent;
 		internal bool isPersistent = true;
 
 		internal virtual void FinalizeObjectLoad() {}
 
-		internal virtual void Added(GameEntity addedTo)
+		internal virtual void Added(GameObject addedTo)
 		{
 			parent = addedTo;
 			if(isPersistent)
@@ -66,7 +48,7 @@ namespace inspiral
 				Game.Objects.QueueForUpdate(parent);
 			}
 		}
-		internal virtual void Removed(GameEntity takenFrom)
+		internal virtual void Removed(GameObject takenFrom)
 		{
 			if(takenFrom == parent)
 			{
@@ -121,12 +103,9 @@ namespace inspiral
 		internal virtual bool SetValue(string key, long newValue) { return false; }
 		internal virtual string GetString(string key) { return null; }
 		internal virtual long GetLong(string key) { return 0; }
-		internal virtual void InstantiateFromRecord(SQLiteDataReader reader) {}
-		internal virtual void AddCommandParameters(SQLiteCommand command) {}
 		internal virtual string GetPrompt()
 		{
 			return "";
 		}
-		internal virtual void ConfigureFromJson(JToken compData) {}
 	}
 }

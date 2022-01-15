@@ -8,7 +8,7 @@ namespace inspiral
 			description = "Examines a creature, object or location.";
 			usage = "look <at> <target>";
 		}
-		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(invoker.location == null)
 			{
@@ -17,7 +17,7 @@ namespace inspiral
 			}
 
 			string examineKey = cmd.objAt;
-			GameEntity examining = null;
+			GameObject examining = null;
 			if(examineKey == null)
 			{
 				examineKey = cmd.objTarget;

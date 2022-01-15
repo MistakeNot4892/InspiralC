@@ -9,7 +9,6 @@ namespace inspiral
 		internal static List<string> exits = new List<string>();
 		internal static Dictionary<string, string> shortExits = new Dictionary<string, string>();
 		internal static Dictionary<string, string> reversedExits = new Dictionary<string, string>();
-		internal const string DefaultName =                "object";
 		internal const string DefaultEnterMessage =        "$Short$ enters from the $dir$.";
 		internal const string DefaultLeaveMessage =        "$Short$ leaves to the $dir$";
 		internal const string DefaultDeathMessage =        "$Short$ lies here, dead.";
@@ -141,7 +140,7 @@ namespace inspiral
 			}
 			return Capitalize(input);
 		}
-		internal static string FormatPopup(GameEntity viewer, string header, string boxContents, int wrapwidth)
+		internal static string FormatPopup(GameObject viewer, string header, string boxContents, int wrapwidth)
 		{
 			string sideBar = Colours.Fg("||", viewer.GetColour(Text.ColourDefaultFrameSecondary));
 			string useHeader = Wrap(header, wrapwidth - 14).Split('\n')[0];
@@ -159,7 +158,7 @@ namespace inspiral
 			result += $"\n{Colours.Fg($"[{new System.String('=', wrapwidth-3)}]", viewer.GetColour(Text.ColourDefaultFramePrimary))}";
 			return result;
 		}
-		internal static string FormatBlock(GameEntity viewer, Dictionary<string, List<string>> formatLines, int wrapwidth)
+		internal static string FormatBlock(GameObject viewer, Dictionary<string, List<string>> formatLines, int wrapwidth)
 		{
 			string sideBar = Colours.Fg("||", viewer.GetColour(Text.ColourDefaultFrameSecondary));
 			string divider = Colours.Fg($"[{new System.String('=', wrapwidth-3)}]", viewer.GetColour(Text.ColourDefaultFramePrimary));
@@ -225,17 +224,17 @@ namespace inspiral
 			return EnglishList(keys);
 		}
 
-		internal static string GameObjListToEnglishList(List<GameEntity> input)
+		internal static string GameObjListToEnglishList(List<GameObject> input)
 		{
 			List<string> ids = new List<string>();
-			foreach(GameEntity entry in input)
+			foreach(GameObject entry in input)
 			{
 				ids.Add($"{entry.name} (#{entry.id})");
 			}
 			return EnglishList(ids);
 		}
 
-		internal static string ReplacePronouns(GameEntity other, string message, bool thirdPerson = false)
+		internal static string ReplacePronouns(GameObject other, string message, bool thirdPerson = false)
 		{
 			string token = other.name.ToLower();
 			if(!message.ToLower().Contains($"${token}"))
@@ -244,7 +243,7 @@ namespace inspiral
 			}
 			return ReplacePronouns(token, other, message, thirdPerson);
 		}
-		internal static string ReplacePronouns(string token, GameEntity other, string message, bool thirdPerson = false)
+		internal static string ReplacePronouns(string token, GameObject other, string message, bool thirdPerson = false)
 		{
 			System.Console.WriteLine(message);
 			if(message.ToLower().Contains($"${token}"))

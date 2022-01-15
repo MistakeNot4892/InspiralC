@@ -16,7 +16,7 @@ namespace inspiral
 	class GameClient
 	{
 		internal string id;
-		internal GameEntity shell;
+		internal GameObject shell;
 		internal TcpClient client;
 		internal NetworkStream stream;
 		internal GameContext context;
@@ -34,7 +34,7 @@ namespace inspiral
 
 		private byte[] outputBuffer = new byte[2048];
 		private int outputBufferIndex = 0;
-		private static GameEntity DummyShell = new GameEntity();
+		private static GameObject DummyShell = new GameObject();
 
 		internal GameClient(TcpClient _client, string _id)
 		{

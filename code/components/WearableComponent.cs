@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Data.SQLite;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -19,43 +18,26 @@ namespace inspiral
 		internal override void Initialize()
 		{
 			ComponentType = typeof(WearableComponent);
+			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
+			{
+				{ Text.FieldWearableSlots, (typeof(string), "''", true, true) }
+			};
+			base.Initialize();
 		}
-		internal override List<string> editableFields { get; set; } = new List<string>() {Text.FieldWearableSlots};
-		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldWearableSlots};
-		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_wearable WHERE id = @p0;";
-		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_wearable (
-			id INTEGER NOT NULL PRIMARY KEY UNIQUE,
-			{Text.FieldWearableSlots} TEXT DEFAULT ''
-			);";
-		internal override string UpdateSchema { get; set; } = $@"UPDATE components_wearable SET 
-			{Text.FieldWearableSlots} = @p1 
-			WHERE id = @p0;";
-		internal override string InsertSchema { get; set; } = $@"INSERT INTO components_wearable (
-			id, 
-			{Text.FieldWearableSlots}
-			) VALUES (
-			@p0,
-			@p1 
-			);";
 	}
 	class WearableComponent : GameComponent 
 	{
 		internal List<string> wearableSlots = new List<string>();
-		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
+		internal override Dictionary<string, object> GetSaveData()
 		{
-			wearableSlots = JsonConvert.DeserializeObject<List<string>>(reader[Text.FieldWearableSlots].ToString());
+			Dictionary<string, object> saveData = base.GetSaveData();
+			saveData.Add(Text.FieldWearableSlots, JsonConvert.SerializeObject(wearableSlots));
+			return saveData;
 		}
-		internal override void AddCommandParameters(SQLiteCommand command) 
+		internal override void CopyFromRecord(DatabaseRecord record)
 		{
-			command.Parameters.AddWithValue("@p0", parent.id);
-			command.Parameters.AddWithValue("@p1", JsonConvert.SerializeObject(wearableSlots));
-		}
-		internal override void ConfigureFromJson(JToken compData)
-		{
-			foreach(string s in compData["worn"].Select(t => (string)t).ToList())
-			{
-				wearableSlots.Add(s);
-			}
+			base.CopyFromRecord(record);
+			wearableSlots = JsonConvert.DeserializeObject<List<string>>(record.fields[Text.FieldWearableSlots].ToString());
 		}
 	}
 }

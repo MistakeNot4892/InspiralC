@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Data.SQLite;
 using System.Timers;
 
 namespace inspiral
@@ -9,20 +8,14 @@ namespace inspiral
 		internal override void Initialize()
 		{
 			ComponentType = typeof(BalanceComponent);
+			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
+			{
+				{ "placeholder", (typeof(string), "''", false, false) }
+			};
+			base.Initialize();
 		}
-		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_balance WHERE id = @p0;";
-		internal override string TableSchema  { get; set; } = "CREATE TABLE IF NOT EXISTS components_balance ( id INTEGER NOT NULL PRIMARY KEY UNIQUE, placeholder STRING NOT NULL )";
-		internal override string InsertSchema { get; set; } = @"INSERT INTO components_balance (
-			id, 
-			placeholder
-			) VALUES (
-			@p0,
-			@p1
-			);";
-		internal override string UpdateSchema   { get; set; } = $@"UPDATE components_balance SET 
-			placeholder = @p1 
-			WHERE id = @p0;";
 	}
+
 	class BalanceComponent : GameComponent 
 	{
 		private Dictionary<string, Timer> offBalanceTimers = new Dictionary<string, Timer>();
@@ -31,11 +24,6 @@ namespace inspiral
 		{
 			AddBalanceTimer("poise");
 			AddBalanceTimer("concentration");
-		}
-		internal override void AddCommandParameters(SQLiteCommand command) // TODO: store balance configuration? does this need to be a component?
-		{
-			command.Parameters.AddWithValue("@p0", parent.id);
-			command.Parameters.AddWithValue("@p1", "placeholder");
 		}
 
 		internal Timer AddBalanceTimer(string balance)

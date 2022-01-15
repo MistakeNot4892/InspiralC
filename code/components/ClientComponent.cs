@@ -12,10 +12,14 @@ namespace inspiral
 	}
 	internal class ClientBuilder : GameComponentBuilder
 	{
-		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldClientId};
 		internal override void Initialize()
 		{
 			ComponentType = typeof(ClientComponent);
+			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
+			{
+				{ Text.FieldClientId, (typeof(string), "''", true, false) }
+			};
+			base.Initialize();
 		}
 	}
 	class ClientComponent : GameComponent 

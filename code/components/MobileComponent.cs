@@ -1,4 +1,3 @@
-using System.Data.SQLite;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using System.Linq;
@@ -26,36 +25,15 @@ namespace inspiral
 		internal override void Initialize()
 		{
 			ComponentType = typeof(MobileComponent);
+			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
+			{
+				{ Text.FieldEnterMessage, (typeof(string), $"'{Text.DefaultEnterMessage}'", true, true) },
+				{ Text.FieldLeaveMessage, (typeof(string), $"'{Text.DefaultLeaveMessage}'", true, true) },
+				{ Text.FieldDeathMessage, (typeof(string), $"'{Text.DefaultDeathMessage}'", true, true) },
+				{ Text.FieldBodypartList, (typeof(string), "''", false, false) }
+			};
+			base.Initialize();
 		}
-		internal override List<string> editableFields { get; set; } = new List<string>() {Text.FieldEnterMessage, Text.FieldLeaveMessage, Text.FieldDeathMessage};
-		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldEnterMessage, Text.FieldLeaveMessage, Text.FieldDeathMessage};
-		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_mobile WHERE id = @p0;";
-		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_mobile (
-				id INTEGER NOT NULL PRIMARY KEY UNIQUE, 
-				{Text.FieldEnterMessage} TEXT DEFAULT '', 
-				{Text.FieldLeaveMessage} TEXT DEFAULT '', 
-				{Text.FieldDeathMessage} TEXT DEFAULT '',
-				{Text.FieldBodypartList} TEXT DEFAULT ''
-				);";
-		internal override string UpdateSchema   { get; set; } = $@"UPDATE components_mobile SET 
-				{Text.FieldEnterMessage} = @p1, 
-				{Text.FieldLeaveMessage} = @p2, 
-				{Text.FieldDeathMessage} = @p3,
-				{Text.FieldBodypartList} = @p4
-				WHERE id = @p0;";
-		internal override string InsertSchema { get; set; } = $@"INSERT INTO components_mobile (
-				id,
-				{Text.FieldEnterMessage},
-				{Text.FieldLeaveMessage},
-				{Text.FieldDeathMessage},
-				{Text.FieldBodypartList}
-				) VALUES (
-				@p0, 
-				@p1, 
-				@p2, 
-				@p3, 
-				@p4
-				);";
 	}
 
 	internal class MobileComponent : GameComponent
@@ -68,8 +46,7 @@ namespace inspiral
 		internal List<string> graspers = new List<string>();
 		internal List<string> stance = new List<string>();
 		internal List<string> equipmentSlots = new List<string>();
-
-		internal Dictionary<string, GameEntity> limbs = new Dictionary<string, GameEntity>();
+		internal Dictionary<string, GameObject> limbs = new Dictionary<string, GameObject>();
 		internal override bool SetValue(string field, string newValue)
 		{
 			bool success = false;
@@ -119,9 +96,62 @@ namespace inspiral
 		{
 			return true;
 		}
-		internal override void ConfigureFromJson(JToken compData)
+		internal override void FinalizeObjectLoad()
 		{
-
+			UpdateLists();
+		}
+		internal void UpdateLists()
+		{
+			graspers.Clear();
+			strikers.Clear();
+			stance.Clear();
+			equipmentSlots.Clear();
+			foreach(KeyValuePair<string, GameObject> limb in limbs)
+			{
+				if(limb.Value != null)
+				{
+					BodypartComponent bp = (BodypartComponent)limb.Value.GetComponent<BodypartComponent>();
+					if(bp.canGrasp && !graspers.Contains(limb.Key))
+					{
+						graspers.Add(limb.Key);
+					}
+					if(bp.canStand && !stance.Contains(limb.Key))
+					{
+						stance.Add(limb.Key);
+					}
+					if(bp.isNaturalWeapon && !strikers.Contains(limb.Key))
+					{
+						strikers.Add(limb.Key);
+					}
+					foreach(string slot in bp.equipmentSlots)
+					{
+						if(!equipmentSlots.Contains(slot))
+						{
+							equipmentSlots.Add(slot);
+						}
+					}
+				}
+			}
+		}
+		internal override string GetPrompt()
+		{
+			return $"{Colours.Fg("Pain:",parent.GetColour(Text.ColourDefaultPain))}{Colours.Fg("0%",parent.GetColour(Text.ColourDefaultPainHighlight))} {Colours.Fg("Bleed:",parent.GetColour(Text.ColourDefaultBleeding))}{Colours.Fg("0%",parent.GetColour(Text.ColourDefaultBleedingHighlight))}";
+		}
+		internal string GetWeightedRandomBodypart()
+		{
+			return limbs.ElementAt(Game.rand.Next(0, limbs.Count)).Key;
+		}
+		internal override void CopyFromRecord(DatabaseRecord record) 
+		{
+			base.CopyFromRecord(record);
+			enterMessage = record.fields[Text.FieldEnterMessage].ToString();
+			leaveMessage = record.fields[Text.FieldLeaveMessage].ToString();
+			deathMessage = record.fields[Text.FieldDeathMessage].ToString();
+			foreach(KeyValuePair<string, long> limb in JsonConvert.DeserializeObject<Dictionary<string, long>>((string)record.fields[Text.FieldBodypartList]))
+			{
+				limbs.Add(limb.Key, (limb.Value != 0 ? (GameObject)Game.Objects.GetByID(limb.Value) : null));
+			}
+			/*
 			Bodyplan bp = null;
 			if(!JsonExtensions.IsNullOrEmpty(compData["mobtype"]))
 			{
@@ -134,7 +164,7 @@ namespace inspiral
 
 			foreach(Bodypart b in bp.allParts)
 			{
-				GameEntity newLimb = (GameEntity)Game.Objects.CreateNewInstance(false);
+				GameObject newLimb = (GameObject)Game.Objects.CreateNewInstance();
 				newLimb.name = "limb";
 				newLimb.aliases.Add("bodypart");
 
@@ -163,79 +193,20 @@ namespace inspiral
 						body.equipmentSlots.Add(s);
 					}
 				}
-				Game.Objects.AddDatabaseEntry(newLimb);
 				limbs.Add(b.name, newLimb);
 			}
-			UpdateLists();
+			*/
 		}
-		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
+		internal override Dictionary<string, object> GetSaveData()
 		{
-			enterMessage = reader[Text.FieldEnterMessage].ToString();
-			leaveMessage = reader[Text.FieldLeaveMessage].ToString();
-			deathMessage = reader[Text.FieldDeathMessage].ToString();
-			foreach(KeyValuePair<string, long> limb in JsonConvert.DeserializeObject<Dictionary<string, long>>((string)reader[Text.FieldBodypartList]))
-			{
-				limbs.Add(limb.Key, (limb.Value != 0 ? (GameEntity)Game.Objects.GetByID(limb.Value) : null));
-			}
-		}
-
-		internal override void FinalizeObjectLoad()
-		{
-			UpdateLists();
-		}
-		internal void UpdateLists()
-		{
-			graspers.Clear();
-			strikers.Clear();
-			stance.Clear();
-			equipmentSlots.Clear();
-			foreach(KeyValuePair<string, GameEntity> limb in limbs)
-			{
-				if(limb.Value != null)
-				{
-					BodypartComponent bp = (BodypartComponent)limb.Value.GetComponent<BodypartComponent>();
-					if(bp.canGrasp && !graspers.Contains(limb.Key))
-					{
-						graspers.Add(limb.Key);
-					}
-					if(bp.canStand && !stance.Contains(limb.Key))
-					{
-						stance.Add(limb.Key);
-					}
-					if(bp.isNaturalWeapon && !strikers.Contains(limb.Key))
-					{
-						strikers.Add(limb.Key);
-					}
-					foreach(string slot in bp.equipmentSlots)
-					{
-						if(!equipmentSlots.Contains(slot))
-						{
-							equipmentSlots.Add(slot);
-						}
-					}
-				}
-			}
-		}
-		internal override void AddCommandParameters(SQLiteCommand command) 
-		{
-			command.Parameters.AddWithValue("@p0", parent.id);
-			command.Parameters.AddWithValue("@p1", enterMessage);
-			command.Parameters.AddWithValue("@p2", leaveMessage);
-			command.Parameters.AddWithValue("@p3", deathMessage);
+			Dictionary<string, object> saveData = base.GetSaveData();
 			Dictionary<string, long> limbKeys = new Dictionary<string, long>();
-			foreach(KeyValuePair<string, GameEntity> limb in limbs)
+			foreach(KeyValuePair<string, GameObject> limb in limbs)
 			{
 				limbKeys.Add(limb.Key, limb.Value != null ? limb.Value.id : 0);
 			}
-			command.Parameters.AddWithValue("@p4", JsonConvert.SerializeObject(limbKeys));
-		}
-		internal override string GetPrompt()
-		{
-			return $"{Colours.Fg("Pain:",parent.GetColour(Text.ColourDefaultPain))}{Colours.Fg("0%",parent.GetColour(Text.ColourDefaultPainHighlight))} {Colours.Fg("Bleed:",parent.GetColour(Text.ColourDefaultBleeding))}{Colours.Fg("0%",parent.GetColour(Text.ColourDefaultBleedingHighlight))}";
-		}
-		internal string GetWeightedRandomBodypart()
-		{
-			return limbs.ElementAt(Game.rand.Next(0, limbs.Count)).Key;
+			saveData.Add(Text.FieldBodypartList, JsonConvert.SerializeObject(limbKeys));
+			return saveData;
 		}
 	}
 	internal class BodypartData

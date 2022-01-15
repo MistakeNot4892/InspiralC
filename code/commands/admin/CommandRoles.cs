@@ -10,7 +10,7 @@ namespace inspiral
 			description = "Shows the details of roles attached to an account.";
 			usage = "roles [account name or id]";
 		}
-		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(cmd.objTarget == null)
 			{

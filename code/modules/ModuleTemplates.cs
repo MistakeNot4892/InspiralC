@@ -19,7 +19,7 @@ namespace inspiral
 		internal GameObjectTemplate(string input)
 		{
 			JObject r = JObject.Parse(input);
-			templateName = (string)r["templateid"];
+			templateName = r["templateid"].ToString();
 			if(!JsonExtensions.IsNullOrEmpty(r["gender"]))
 			{
 				objectGender = r["gender"].ToString();
@@ -40,7 +40,7 @@ namespace inspiral
 			}
 			Modules.Templates.Register(this);
 		}
-		internal void CopyTo(GameEntity copyingTo)
+		internal void CopyTo(GameObject copyingTo)
 		{
 			foreach(string s in aliases)
 			{
@@ -50,7 +50,7 @@ namespace inspiral
 			copyingTo.gender = Modules.Gender.GetByTerm(objectGender);
 			foreach(JProperty s in components)
 			{
-				copyingTo.AddComponent(Game.GetTypeFromString(s.Name), s);
+				//copyingTo.AddComponent(Game.GetTypeFromString(s.Name), s);
 			}
 			Game.Objects.QueueForUpdate(copyingTo);
 		}
@@ -76,15 +76,14 @@ namespace inspiral
 			}
 			Game.LogError("Done.");
 		}
-		internal GameEntity Instantiate(string template)
+		internal GameObject Instantiate(string template)
 		{
-			GameEntity creating = null;
+			GameObject creating = null;
 			GameObjectTemplate temp = GetTemplate(template);
 			if(temp != null)
 			{
-				creating = (GameEntity)Game.Objects.CreateNewInstance(false);
+				creating = (GameObject)Game.Objects.CreateNewInstance();
 				temp.CopyTo(creating);
-				Game.Objects.AddDatabaseEntry(creating);
 			}
 			return creating;
 		}

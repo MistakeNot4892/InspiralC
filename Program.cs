@@ -15,8 +15,8 @@
 
 		static void OnProcessExit(object sender, System.EventArgs e)
 		{
-			Game.Exit();
 			System.Console.WriteLine ("Terminating.");
+			Game.Exit();
 		}
 	}
 }

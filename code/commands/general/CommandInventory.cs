@@ -10,7 +10,7 @@ namespace inspiral
 			description = "Shows your inventory.";
 			usage = "inventory";
 		}
-		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(!invoker.HasComponent<InventoryComponent>())
 			{
@@ -22,7 +22,7 @@ namespace inspiral
 			string inventorySummary = "You are carrying:";
 			if(inv.carrying.Count > 0)
 			{
-				foreach(KeyValuePair<string, GameEntity> gameObj in inv.carrying)
+				foreach(KeyValuePair<string, GameObject> gameObj in inv.carrying)
 				{
 					inventorySummary += $"\n- {gameObj.Value.GetShortDesc()} ({gameObj.Value.name}#{gameObj.Value.id}) - {gameObj.Key}.";
 				}

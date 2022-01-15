@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal partial class GameEntity
+	internal partial class GameObject
 	{
 		internal string ApplyStringTokens(string msg)
 		{
@@ -56,7 +56,7 @@ namespace inspiral
 			}
 		}
 
-		internal string GetStringSummary(GameEntity viewer, int wrapWidth)
+		internal string GetStringSummary(GameObject viewer, int wrapWidth)
 		{
 			Dictionary<string, List<string>> summary = new Dictionary<string, List<string>>();
 

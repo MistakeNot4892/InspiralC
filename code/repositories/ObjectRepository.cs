@@ -1,4 +1,3 @@
-using System.Data.SQLite;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -11,144 +10,38 @@ namespace inspiral
 		{
 			postInitLocations = new Dictionary<long, long>();
 			repoName = "objects";
-			dbTableName = "game_objects";
-			dbInsertQuery = $@"INSERT INTO {dbTableName} (
-				id, 
-				name,
-				gender,
-				aliases, 
-				components, 
-				flags,
-				location
-			) VALUES (
-				@p0,
-				@p1,
-				@p2,
-				@p3,
-				@p4,
-				@p5,
-				@p6
-			);";
-			dbTableSchema = $@"id INTEGER PRIMARY KEY UNIQUE,
-				name TEXT DEFAULT '{Text.DefaultName}',
-				gender TEXT DEFAULT '{Text.GenderInanimate}', 
-				aliases TEXT DEFAULT ' ',
-				components TEXT DEFAULT ' ',
-				flags INTEGER DEFAULT -1,
-				location INTEGER";
-			dbUpdateQuery =  "UPDATE game_objects SET name = @p1, gender = @p2, aliases = @p3, components = @p4, flags = @p5, location = @p6 WHERE id = @p0;";
-		}
-		internal override void HandleSecondarySQLInitialization(SQLiteConnection dbConnection)
-		{
-			foreach(KeyValuePair<System.Type, GameComponentBuilder> builder in Modules.Components.builders)
+			dbPath = "data/objects.sqlite";
+			schemaFields = new Dictionary<string, (System.Type, string)>() 
 			{
-				if(builder.Value.TableSchema != null)
-				{
-					using( SQLiteCommand command = new SQLiteCommand(builder.Value.TableSchema, dbConnection) )
-					{
-						try
-						{
-							command.ExecuteNonQuery();
-						}
-						catch(System.Exception e)
-						{
-							Game.LogError($"Component SQL exception ({builder.Key}): {e.ToString()} - entire query is [{builder.Value.TableSchema}]");
-						}
-					}
-				}
-			}
+				{"name",       (typeof(string), "'object'")},
+				{"gender",     (typeof(string), $"'{Text.GenderInanimate}'")}, 
+				{"aliases",    (typeof(string), "''")},
+				{"components", (typeof(string), "''")},
+				{"flags",      (typeof(int),    "-1")},
+				{"location",   (typeof(int),    "0")}
+			};
 		}
-		internal override void InstantiateFromRecord(SQLiteDataReader reader, SQLiteConnection dbConnection) 
+		internal override void InstantiateFromRecord(DatabaseRecord record) 
 		{
-			GameEntity gameObj = (GameEntity)CreateRepositoryType((long)reader["id"]);
-			gameObj.name = reader["name"].ToString();
-			gameObj.flags = (long)reader["flags"];
-			gameObj.gender = Modules.Gender.GetByTerm(reader["gender"].ToString());
-			gameObj.aliases = JsonConvert.DeserializeObject<List<string>>(reader["aliases"].ToString());
+			GameObject gameObj = (GameObject)CreateRepositoryType((long)record.fields["id"]);
+			gameObj.name =    record.fields["name"].ToString();
+			gameObj.flags =   (long)record.fields["flags"];
+			gameObj.gender =  Modules.Gender.GetByTerm(record.fields["gender"].ToString());
+			gameObj.aliases = JsonConvert.DeserializeObject<List<string>>(record.fields["aliases"].ToString());
 
-			foreach(string comp in JsonConvert.DeserializeObject<List<string>>(reader["components"].ToString()))
+			foreach(string comp in JsonConvert.DeserializeObject<List<string>>(record.fields["components"].ToString()))
 			{
 				gameObj.AddComponent(Game.GetTypeFromString(comp));
 			}
-			if(Game.InitComplete)
-			{
-				LoadComponentData(gameObj);
-			}
-			contents.Add(gameObj.id, gameObj);
-			postInitLocations.Add(gameObj.id, (long)reader["location"]);
+			records.Add(gameObj.id, gameObj);
+			postInitLocations.Add(gameObj.id, (long)record.fields["location"]);
 		}
-
-		internal void LoadComponentData(GameEntity gameObj)
+		internal void LoadComponentData(GameObject gameObj)
 		{
-			foreach(KeyValuePair<System.Type, GameComponent> comp in gameObj.components)
-			{
-				if(Modules.Components.builders[comp.Key].LoadSchema != null)
-				{
-					using( SQLiteCommand command = new SQLiteCommand(Modules.Components.builders[comp.Key].LoadSchema, dbConnection))
-					{
-						try
-						{
-							command.Parameters.AddWithValue("@p0", gameObj.id);
-							SQLiteDataReader reader = command.ExecuteReader();
-							while(reader.Read())
-							{
-								comp.Value.InstantiateFromRecord(reader);
-							}
-						}
-						catch(System.Exception e)
-						{
-							Game.LogError($"SQL exception 4 ({repoName}): {e.ToString()} - entire query is [{Modules.Components.builders[comp.Key].LoadSchema}]");
-						}
-					}
-				}
-			}
 		}
-		internal override System.Object CreateRepositoryType(long id) 
+		internal override GameEntity CreateRepositoryType(long id) 
 		{
-			GameEntity gameObj = new GameEntity();
-			gameObj.id = id;
-			return gameObj;
-		}
-		public override void HandleAdditionalSQLInsertion(System.Object newInstance, SQLiteConnection dbConnection) 
-		{
-			GameEntity gameObj = (GameEntity)newInstance;
-			foreach(KeyValuePair<System.Type, GameComponent> comp in gameObj.components)
-			{
-				if(Modules.Components.builders[comp.Key].InsertSchema != null)
-				{
-					using( SQLiteCommand command = new SQLiteCommand(Modules.Components.builders[comp.Key].InsertSchema, dbConnection))
-					{
-						try
-						{
-							comp.Value.AddCommandParameters(command);
-							command.ExecuteNonQuery();
-						}
-						catch(System.Exception e)
-						{
-							Game.LogError($"SQL exception 5 ({repoName}): {e.ToString()} - entire query is [{Modules.Components.builders[comp.Key].InsertSchema}]");
-						}
-					}
-				}
-			}
-		}
-		internal override void AddCommandParameters(SQLiteCommand command, System.Object instance) 
-		{
-			GameEntity gameObj = (GameEntity)instance;
-			command.Parameters.AddWithValue("@p0", gameObj.id);
-			command.Parameters.AddWithValue("@p1", gameObj.name);
-			command.Parameters.AddWithValue("@p2", gameObj.gender.Term);
-			command.Parameters.AddWithValue("@p3", JsonConvert.SerializeObject(gameObj.aliases));
-			List<string> componentKeys = new List<string>();
-			foreach(KeyValuePair<System.Type, GameComponent> comp in gameObj.components)
-			{
-				if(comp.Value.isPersistent)
-				{
-					componentKeys.Add(comp.Key.ToString());
-				}
-			}
-			command.Parameters.AddWithValue("@p4", JsonConvert.SerializeObject(componentKeys));
-			command.Parameters.AddWithValue("@p5", gameObj.flags);
-			command.Parameters.AddWithValue("@p6", gameObj.location?.id ?? 0);
+			return new GameEntity(id);
 		}
 		internal override void PostInitialize() 
 		{
@@ -156,49 +49,26 @@ namespace inspiral
 			{
 				if(loc.Value > 0)
 				{
-					GameEntity obj =   (GameEntity)GetByID(loc.Key);
-					GameEntity other = (GameEntity)GetByID(loc.Value);
+					GameObject obj =   (GameObject)GetByID(loc.Key);
+					GameObject other = (GameObject)GetByID(loc.Value);
 					if(obj != null && other != null)
 					{
 						obj.Move(other);
 					}
 				}
 			}
-			foreach(KeyValuePair<long, System.Object> obj in contents)
+			foreach(KeyValuePair<long, GameEntity> obj in records)
 			{
-				LoadComponentData((GameEntity)obj.Value);
+				LoadComponentData((GameObject)obj.Value);
 			}
-			foreach(KeyValuePair<long, System.Object> obj in contents)
+			foreach(KeyValuePair<long, GameEntity> obj in records)
 			{
-				GameEntity gameObj = (GameEntity)obj.Value;
+				GameObject gameObj = (GameObject)obj.Value;
 				foreach(KeyValuePair<System.Type, GameComponent> comp in gameObj.components)
 				{
 					comp.Value.FinalizeObjectLoad();
 				}
 			}
 		}
-
-		public override void HandleAdditionalObjectSave(System.Object objInstance, SQLiteConnection dbConnection) 
-		{
-			GameEntity gameObj = (GameEntity) objInstance;
-			foreach(KeyValuePair<System.Type, GameComponent> comp in gameObj.components)
-			{
-				if(comp.Value.isPersistent && Modules.Components.builders[comp.Key].UpdateSchema != null)
-				{
-					using(SQLiteCommand command = new SQLiteCommand(Modules.Components.builders[comp.Key].UpdateSchema, dbConnection))
-					{
-						try
-						{
-							comp.Value.AddCommandParameters(command);
-							command.ExecuteNonQuery();
-						}
-						catch(System.Exception e)
-						{
-							Game.LogError($"Component SQL exception 2 ({comp.Key}): {e.ToString()} - enter query is [{Modules.Components.builders[comp.Key].UpdateSchema}]");
-						}
-					}
-				}
-			}
-		}
 	}
-}	
+}

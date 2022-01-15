@@ -1,7 +1,6 @@
-using System.Data.SQLite;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace inspiral
 {
@@ -19,48 +18,17 @@ namespace inspiral
 		internal override void Initialize()
 		{
 			ComponentType = typeof(InventoryComponent);
+			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
+			{
+				{ Text.FieldEquippedSlots, (typeof(string), "''", false, false) }
+			};
+			base.Initialize();
 		}
-		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_inventory WHERE id = @p0;";
-		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_inventory (
-				id INTEGER NOT NULL PRIMARY KEY UNIQUE, 
-				{Text.FieldEquippedSlots} TEXT DEFAULT ''
-				);";
-		internal override string UpdateSchema   { get; set; } = $@"UPDATE components_inventory SET 
-				{Text.FieldEquippedSlots} = @p1 
-				WHERE id = @p0;";
-		internal override string InsertSchema { get; set; } = $@"INSERT INTO components_inventory (
-				id,
-				{Text.FieldEquippedSlots}
-				) VALUES (
-				@p0, 
-				@p1
-				);";
 	}
 	class InventoryComponent : GameComponent
 	{
-		internal Dictionary<string, GameEntity> carrying = new Dictionary<string, GameEntity>();
-		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
-		{
-			foreach(KeyValuePair<string, long> equippedId in JsonConvert.DeserializeObject<Dictionary<string, long>>(reader[Text.FieldEquippedSlots].ToString()))
-			{
-				GameEntity obj = (GameEntity)Game.Objects.GetByID(equippedId.Value);
-				if(obj != null && obj.location == parent)
-				{
-					carrying.Add(equippedId.Key.ToLower(), obj);
-				}
-			}
-		}
-		internal override void AddCommandParameters(SQLiteCommand command) 
-		{
-			command.Parameters.AddWithValue("@p0", parent.id);
-			Dictionary<string, long> equippedById = new Dictionary<string, long>();
-			foreach(KeyValuePair<string, GameEntity> gameObj in carrying)
-			{
-				equippedById.Add(gameObj.Key, gameObj.Value.id);
-			}
-			command.Parameters.AddWithValue("@p1", JsonConvert.SerializeObject(equippedById));
-		}
-		internal GameEntity GetObjectFromInput(string input, string action)
+		internal Dictionary<string, GameObject> carrying = new Dictionary<string, GameObject>();
+		internal GameObject GetObjectFromInput(string input, string action)
 		{
 			string inputRaw = input;
 			input = input.ToLower().Trim();
@@ -69,7 +37,7 @@ namespace inspiral
 				parent.WriteLine($"What do you wish to {action}?");
 				return null;
 			}
-			GameEntity returning = parent.FindGameObjectInContents(input);
+			GameObject returning = parent.FindGameObjectInContents(input);
 			if(returning == null)
 			{
 				if(carrying.ContainsKey(input))
@@ -85,14 +53,14 @@ namespace inspiral
 		}
 		internal bool TryToDrop(string input) 
 		{
-			GameEntity tryingToDrop = GetObjectFromInput(input, "drop");
+			GameObject tryingToDrop = GetObjectFromInput(input, "drop");
 			if(tryingToDrop != null)
 			{
 				return Drop(tryingToDrop, false);
 			}
 			return false;
 		}
-		internal bool Drop(GameEntity dropping, bool silent)
+		internal bool Drop(GameObject dropping, bool silent)
 		{
 			if(parent.location == null)
 			{
@@ -119,7 +87,7 @@ namespace inspiral
 				removeMessage3p = "removes and drops";
 			}
 			string removingSlot = null;
-			foreach(KeyValuePair<string, GameEntity> thing in carrying)
+			foreach(KeyValuePair<string, GameObject> thing in carrying)
 			{
 				if(thing.Value == dropping)
 				{
@@ -204,7 +172,7 @@ namespace inspiral
 			}
 			return new System.Tuple<string, string>(objKey, objSlot);
 		}
-		internal bool IsWielded(GameEntity equipping)
+		internal bool IsWielded(GameObject equipping)
 		{
 			foreach(string slot in GetWieldableSlots())
 			{
@@ -218,7 +186,7 @@ namespace inspiral
 			}
 			return false;
 		}
-		internal bool IsEquipped(GameEntity equipping)
+		internal bool IsEquipped(GameObject equipping)
 		{
 			foreach(string slot in GetEquippableSlots())
 			{
@@ -240,7 +208,7 @@ namespace inspiral
 				parent.WriteLine("What do you wish to pick up?");
 				return false;
 			}
-			GameEntity equipping = parent.FindGameObjectNearby(tokens.Item1);
+			GameObject equipping = parent.FindGameObjectNearby(tokens.Item1);
 			if(equipping != null)
 			{
 				bool success = false;
@@ -278,7 +246,7 @@ namespace inspiral
 			System.Tuple<string, string> tokens = GetSlotAndTokenFromInput(input);
 			string slot = tokens.Item2;
 
-			GameEntity equipping = GetObjectFromInput(tokens.Item1, "equip");
+			GameObject equipping = GetObjectFromInput(tokens.Item1, "equip");
 			if(equipping != null)
 			{
 				if(!equipping.HasComponent<WearableComponent>())
@@ -318,7 +286,7 @@ namespace inspiral
 		// TODO make it prioritize actually equipped items before held items.
 		internal bool TryToUnequip(string input)
 		{
-			GameEntity unequipping = GetObjectFromInput(input, "remove");
+			GameObject unequipping = GetObjectFromInput(input, "remove");
 			if(unequipping != null)
 			{
 				if(!IsEquipped(unequipping))
@@ -330,11 +298,11 @@ namespace inspiral
 			}
 			return false;
 		}
-		internal bool PutInHands(GameEntity thing, string slot)
+		internal bool PutInHands(GameObject thing, string slot)
 		{
 			return (!carrying.ContainsKey(slot) && Equip(thing, slot, true));
 		}
-		internal bool PutInHands(GameEntity thing)
+		internal bool PutInHands(GameObject thing)
 		{
 			foreach(string slot in GetWieldableSlots())
 			{
@@ -346,7 +314,7 @@ namespace inspiral
 			parent.WriteLine("Your hands are full.");
 			return false;
 		}
-		internal bool Equip(GameEntity equipping, string slot, bool silent) 
+		internal bool Equip(GameObject equipping, string slot, bool silent) 
 		{
 			if(!carrying.ContainsKey(slot))
 			{
@@ -375,14 +343,14 @@ namespace inspiral
 			return false; 
 		}
 
-		internal bool CanUnequip(GameEntity thing)
+		internal bool CanUnequip(GameObject thing)
 		{
 			return true;
 		}
-		internal bool Unequip(GameEntity unequipping) 
+		internal bool Unequip(GameObject unequipping) 
 		{
 			string removingSlot = null;
-			foreach(KeyValuePair<string, GameEntity> thing in carrying)
+			foreach(KeyValuePair<string, GameObject> thing in carrying)
 			{
 				if(thing.Value == unequipping)
 				{
@@ -410,6 +378,29 @@ namespace inspiral
 				return true;
 			}
 			return false;
+		}
+		internal override void CopyFromRecord(DatabaseRecord record) 
+		{
+			base.CopyFromRecord(record);
+			foreach(KeyValuePair<string, long> equippedId in JsonConvert.DeserializeObject<Dictionary<string, long>>(record.fields[Text.FieldEquippedSlots].ToString()))
+			{
+				GameObject obj = (GameObject)Game.Objects.GetByID(equippedId.Value);
+				if(obj != null && obj.location == parent)
+				{
+					carrying.Add(equippedId.Key.ToLower(), obj);
+				}
+			}
+		}
+		internal override Dictionary<string, object> GetSaveData()
+		{
+			Dictionary<string, object> saveData = new Dictionary<string, object>();
+			Dictionary<string, long> equippedById = new Dictionary<string, long>();
+			foreach(KeyValuePair<string, GameObject> gameObj in carrying)
+			{
+				equippedById.Add(gameObj.Key, gameObj.Value.id);
+			}
+			saveData.Add(Text.FieldEquippedSlots, JsonConvert.SerializeObject(equippedById));
+			return saveData;
 		}
 	}
 }

@@ -11,7 +11,7 @@ namespace inspiral
 			description = "Performs a complex narration or action.";
 			usage = "emote <(preceeding text)> [following text]";
 		}
-		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			string emoteText = invoker.GetShortDesc();
 			if(cmd.rawInput[0] == '(' && cmd.rawInput.IndexOf(')') != -1)
@@ -32,11 +32,11 @@ namespace inspiral
 			}
 			if(invoker.location != null)
 			{
-				Dictionary<GameEntity, string> showingMessages = new Dictionary<GameEntity, string>();
+				Dictionary<GameObject, string> showingMessages = new Dictionary<GameObject, string>();
 
 				foreach(Match m in Text.mentionRegex.Matches(emoteText))
 				{
-					GameEntity mentioned = null;
+					GameObject mentioned = null;
 					string findingRaw = m.Groups[1]?.Value.ToString();
 					string finding = findingRaw.ToLower();
 					if(finding != null)
@@ -65,10 +65,10 @@ namespace inspiral
 				}
 				if(showingMessages.Count >= 1)
 				{
-					foreach(KeyValuePair<GameEntity, string> showing in showingMessages)
+					foreach(KeyValuePair<GameObject, string> showing in showingMessages)
 					{
 						string finalMessage = emoteText;
-						foreach(KeyValuePair<GameEntity, string> subject in showingMessages)
+						foreach(KeyValuePair<GameObject, string> subject in showingMessages)
 						{
 							finalMessage = Text.ReplacePronouns(subject.Value, subject.Key, finalMessage, (subject.Key != showing.Key));
 						}

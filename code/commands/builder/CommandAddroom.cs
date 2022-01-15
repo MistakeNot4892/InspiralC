@@ -8,7 +8,7 @@ namespace inspiral
 			description = "Adds a new exit to a room.";
 			usage = "addroom [direction] [room id or 'new'] <one-way>";
 		}
-		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(invoker.location == null || !invoker.location.HasComponent<RoomComponent>())
 			{
@@ -62,7 +62,7 @@ namespace inspiral
 						else
 						{
 							bool saveEditedRoom = true;
-							GameEntity linkingRoom = (GameEntity)Game.Objects.GetByID(roomId);
+							GameObject linkingRoom = (GameObject)Game.Objects.GetByID(roomId);
 							if((cmd.strArgs.Length >= 2 && cmd.strArgs[1].ToLower() == "one-way") || !linkingRoom.HasComponent<RoomComponent>() || !Text.reversedExits.ContainsKey(exitToAdd))
 							{
 								room.exits.Add(exitToAdd, roomId);

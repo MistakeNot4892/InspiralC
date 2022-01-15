@@ -43,8 +43,9 @@ namespace inspiral
 			{
 				client.Farewell("The server is shutting down. Goodbye!");
 			}
-			Accounts.Exit();
 			Objects.Exit();
+			Accounts.Exit();
+			Database.Exit();
 		}
 
 		internal static System.Type GetTypeFromString(string typeString)

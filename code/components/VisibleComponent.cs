@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Data.SQLite;
 using Newtonsoft.Json.Linq;
 
 namespace inspiral
@@ -21,33 +20,14 @@ namespace inspiral
 		internal override void Initialize()
 		{
 			ComponentType = typeof(VisibleComponent);
+			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
+			{
+				{ Text.FieldShortDesc,    (typeof(string), "''", true, true)},
+				{ Text.FieldRoomDesc,     (typeof(string), "''", true, true)},
+				{ Text.FieldExaminedDesc, (typeof(string), "''", true, true)}
+			};
+			base.Initialize();
 		}
-		internal override List<string> editableFields { get; set; } = new List<string>() {Text.FieldShortDesc, Text.FieldRoomDesc, Text.FieldExaminedDesc};
-		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldShortDesc, Text.FieldRoomDesc, Text.FieldExaminedDesc};
-		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_visible WHERE id = @p0;";
-
-		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_visible (
-			id INTEGER NOT NULL PRIMARY KEY UNIQUE,
-			{Text.FieldShortDesc} TEXT DEFAULT '',
-			{Text.FieldRoomDesc} TEXT DEFAULT '',
-			{Text.FieldExaminedDesc} TEXT DEFAULT ''
-			);";
-		internal override string UpdateSchema { get; set; } = $@"UPDATE components_visible SET 
-			{Text.FieldShortDesc} = @p1, 
-			{Text.FieldRoomDesc} = @p2, 
-			{Text.FieldExaminedDesc} = @p3 
-			WHERE id = @p0;";
-		internal override string InsertSchema { get; set; } = $@"INSERT INTO components_visible (
-			id, 
-			{Text.FieldShortDesc}, 
-			{Text.FieldRoomDesc}, 
-			{Text.FieldExaminedDesc}
-			) VALUES (
-			@p0, 
-			@p1, 
-			@p2, 
-			@p3 
-			);";
 	}
 	internal class VisibleComponent : GameComponent
 	{
@@ -97,7 +77,7 @@ namespace inspiral
 					return null;
 			}
 		}
-		internal void ExaminedBy(GameEntity viewer, bool fromInside)
+		internal void ExaminedBy(GameObject viewer, bool fromInside)
 		{
 			string mainDesc = $"{Colours.Fg(parent.GetShortDesc(), viewer.GetColour(Text.ColourDefaultHighlight))}.";
 			if(parent.HasComponent<MobileComponent>())
@@ -151,7 +131,7 @@ namespace inspiral
 					mainDesc += $"\n{theyAre} completely naked.";
 				}
 				
-				foreach(KeyValuePair<string, GameEntity> bp in mob.limbs)
+				foreach(KeyValuePair<string, GameObject> bp in mob.limbs)
 				{
 					if(bp.Value == null)
 					{
@@ -189,25 +169,20 @@ namespace inspiral
 			}
 			viewer.WriteLine(mainDesc);
 		}
-		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
+		internal override Dictionary<string, object> GetSaveData()
 		{
-			shortDescription =    reader[Text.FieldShortDesc].ToString();
-			roomDescription =     reader[Text.FieldRoomDesc].ToString();
-			examinedDescription = reader[Text.FieldExaminedDesc].ToString();
+			Dictionary<string, object> saveData = new Dictionary<string, object>();
+			saveData.Add(Text.FieldShortDesc,    shortDescription);
+			saveData.Add(Text.FieldRoomDesc,     roomDescription);
+			saveData.Add(Text.FieldExaminedDesc, examinedDescription);
+			return saveData;
 		}
-		internal override void AddCommandParameters(SQLiteCommand command) 
+		internal override void CopyFromRecord(DatabaseRecord record) 
 		{
-			command.Parameters.AddWithValue("@p0", parent.id);
-			command.Parameters.AddWithValue("@p1", shortDescription);
-			command.Parameters.AddWithValue("@p2", roomDescription);
-			command.Parameters.AddWithValue("@p3", examinedDescription);	
-		}
-		internal override void ConfigureFromJson(JToken compData)
-		{
-			shortDescription =    (string)compData["shortdesc"];
-			roomDescription =     (string)compData["roomdesc"];
-			examinedDescription = (string)compData["examineddesc"];
+			base.CopyFromRecord(record);
+			shortDescription =    record.fields[Text.FieldShortDesc].ToString();
+			roomDescription =     record.fields[Text.FieldRoomDesc].ToString();
+			examinedDescription = record.fields[Text.FieldExaminedDesc].ToString();
 		}
 	}
 }
-

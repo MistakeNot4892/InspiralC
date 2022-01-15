@@ -1,4 +1,3 @@
-using System.Data.SQLite;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
@@ -23,106 +22,30 @@ namespace inspiral
 		internal override void Initialize()
 		{
 			ComponentType = typeof(PhysicsComponent);
+			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
+			{
+				{ Text.FieldLength,     (typeof(int),    "1",   true, true) },
+				{ Text.FieldWidth,      (typeof(int),    "1",   true, true) },
+				{ Text.FieldHeight,     (typeof(int),    "1",   true, true) },
+				{ Text.FieldDensity,    (typeof(double), "1.0", true, true) },
+				{ Text.FieldStrikeArea, (typeof(double), "1.0", true, true) }, 
+				{ Text.FieldEdged,      (typeof(int),    "0",   true, true) }
+			};
+			base.Initialize();
 		}
-		internal override List<string> editableFields { get; set; } = new List<string>() {Text.FieldLength, Text.FieldWidth, Text.FieldHeight, Text.FieldDensity, Text.FieldStrikeArea, Text.FieldEdged};
-		internal override List<string> viewableFields { get; set; } = new List<string>() {Text.FieldLength, Text.FieldWidth, Text.FieldHeight, Text.FieldDensity, Text.FieldStrikeArea, Text.FieldEdged};
-
-		internal override string LoadSchema   { get; set; } = "SELECT * FROM components_physics WHERE id = @p0;";
-		internal override string TableSchema  { get; set; } = $@"CREATE TABLE IF NOT EXISTS components_physics (
-				id INTEGER NOT NULL PRIMARY KEY UNIQUE, 
-				{Text.FieldLength}     INTEGER DEFAULT 1,
-				{Text.FieldWidth}      INTEGER DEFAULT 1,
-				{Text.FieldHeight}     INTEGER DEFAULT 1,
-				{Text.FieldDensity}    DOUBLE DEFAULT 1.0,
-				{Text.FieldStrikeArea} DOUBLE DEFAULT 1.0,
-				{Text.FieldEdged}      INTEGER DEFAULT 0
-				);";
-		internal override string UpdateSchema   { get; set; } = $@"UPDATE components_physics SET 
-				{Text.FieldLength} =     @p1, 
-				{Text.FieldWidth} =      @p2, 
-				{Text.FieldHeight} =     @p3, 
-				{Text.FieldDensity} =    @p4,
-				{Text.FieldStrikeArea} = @p5,
-				{Text.FieldEdged} =      @p6
-				WHERE id = @p0;";
-		internal override string InsertSchema { get; set; } = $@"INSERT INTO components_physics (
-				id,
-				{Text.FieldLength},
-				{Text.FieldWidth},
-				{Text.FieldHeight},
-				{Text.FieldDensity},
-				{Text.FieldStrikeArea},
-				{Text.FieldEdged}
-				) VALUES (
-				@p0, 
-				@p1,
-				@p2,
-				@p3,
-				@p4,
-				@p5,
-				@p6
-				);";
 	}
 	class PhysicsComponent : GameComponent
 	{
-		internal long length = 10;      // cm
-		internal long width = 10;       // cm
-		internal long height = 10;      // cm
-		internal long volume = 1;      // cm^3
+		internal long length = 10;         // cm
+		internal long width = 10;          // cm
+		internal long height = 10;         // cm
+		internal long volume = 1;          // cm^3
 		internal double density = 1.0;     // multiplier for mass to weight calc.
 		internal double mass = 1.0;        // kg
 		internal double surfaceArea = 1.0; // cm^2
 		internal double contactArea = 1.0; // cm^2
 		internal double strikeArea = -1.0; // cm^2
-		internal bool edged = false;
-		internal override void InstantiateFromRecord(SQLiteDataReader reader) 
-		{
-			length =     (long)reader[Text.FieldLength];
-			width =      (long)reader[Text.FieldWidth];
-			height =     (long)reader[Text.FieldHeight];
-			density =    (double)reader[Text.FieldDensity];
-			strikeArea = (double)reader[Text.FieldStrikeArea];
-			edged =      ((long)reader[Text.FieldEdged] == 1);
-			UpdateValues();
-		}
-		internal override void ConfigureFromJson(JToken compData)
-		{
-			if(!JsonExtensions.IsNullOrEmpty(compData[Text.FieldLength]))
-			{
-				length =  (long)compData[Text.FieldLength];
-			}
-			if(!JsonExtensions.IsNullOrEmpty(compData[Text.FieldWidth]))
-			{
-				width =   (long)compData[Text.FieldWidth];
-			}
-			if(!JsonExtensions.IsNullOrEmpty(compData[Text.FieldHeight]))
-			{
-				height =  (long)compData[Text.FieldHeight];
-			}
-			if(!JsonExtensions.IsNullOrEmpty(compData[Text.FieldDensity]))
-			{
-				density = (double)compData[Text.FieldDensity];
-			}
-			if(!JsonExtensions.IsNullOrEmpty(compData[Text.FieldStrikeArea]))
-			{
-				density = (double)compData[Text.FieldStrikeArea];
-			}
-			if(!JsonExtensions.IsNullOrEmpty(compData[Text.FieldEdged]))
-			{
-				edged = (bool)compData[Text.FieldEdged];
-			}
-			UpdateValues();
-		}
-		internal override void AddCommandParameters(SQLiteCommand command) 
-		{
-			command.Parameters.AddWithValue("@p0", parent.id);
-			command.Parameters.AddWithValue("@p1", length);
-			command.Parameters.AddWithValue("@p2", width);
-			command.Parameters.AddWithValue("@p3", height);
-			command.Parameters.AddWithValue("@p4", density);
-			command.Parameters.AddWithValue("@p5", strikeArea);
-			command.Parameters.AddWithValue("@p6", edged);
-		}
+		internal int edged = 0;
 		internal void UpdateValues()
 		{
 			volume = length * width * height;
@@ -287,7 +210,7 @@ namespace inspiral
 				return $"{(double)(cm / 100000.0)} kilometers";
 			}
 		}
-		internal string GetExaminedSummary(GameEntity viewer)
+		internal string GetExaminedSummary(GameObject viewer)
 		{
 			string result = "";
 			string You;
@@ -319,6 +242,28 @@ namespace inspiral
 		internal double GetImpactPenetration(double velocity, double tensileResistance)
 		{
 			return (0.5 * mass * (velocity * velocity))/(tensileResistance * (strikeArea * 0.01));
+		}
+		internal override Dictionary<string, object> GetSaveData()
+		{
+			Dictionary<string, object> saveData = base.GetSaveData();
+			saveData.Add(Text.FieldLength,     length);
+			saveData.Add(Text.FieldWidth,      width);
+			saveData.Add(Text.FieldHeight,     height);
+			saveData.Add(Text.FieldDensity,    density);
+			saveData.Add(Text.FieldStrikeArea, strikeArea);
+			saveData.Add(Text.FieldEdged,      edged);
+			return saveData;
+		}
+		internal override void CopyFromRecord(DatabaseRecord record) 
+		{
+			base.CopyFromRecord(record);
+			length =     (long)record.fields[Text.FieldLength];
+			width =      (long)record.fields[Text.FieldWidth];
+			height =     (long)record.fields[Text.FieldHeight];
+			density =    (double)record.fields[Text.FieldDensity];
+			strikeArea = (double)record.fields[Text.FieldStrikeArea];
+			edged =      (int)record.fields[Text.FieldEdged];
+			UpdateValues();
 		}
 	}
 }

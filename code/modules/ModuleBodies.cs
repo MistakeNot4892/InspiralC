@@ -25,9 +25,9 @@ namespace inspiral
 				{
 					JObject r = JObject.Parse(File.ReadAllText(f.File));
 					Bodypart bp = new Bodypart(
-						(string)r["name"], 
-						(string)r["root"], 
-						 JsonConvert.DeserializeObject<List<string>>(r["slots"].ToString())
+						r["name"].ToString(), 
+						r["root"].ToString(), 
+						JsonConvert.DeserializeObject<List<string>>(r["slots"].ToString())
 					);
 					if(!JsonExtensions.IsNullOrEmpty(r["grasp"]))
 					{

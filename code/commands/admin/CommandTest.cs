@@ -8,7 +8,7 @@ namespace inspiral
 			description = "Test command, please ignore.";
 			usage = "test";
 		}
-		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			if(invoker.HasComponent<MobileComponent>())
 			{

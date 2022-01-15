@@ -2,7 +2,7 @@ using Newtonsoft.Json.Linq;
 
 namespace inspiral
 {
-	internal partial class GameEntity
+	internal partial class GameObject : GameEntity
 	{
 		internal GameComponent GetComponent<T>() 
 		{
@@ -28,25 +28,10 @@ namespace inspiral
 			}
 			return comp;
 		}
-		internal GameComponent AddComponent(System.Type compType, JProperty componentData)
-		{
-			GameComponent comp = AddComponent(compType);
-			if(comp != null && componentData != null)
-			{
-				comp.ConfigureFromJson(componentData.Value);
-			}
-			return comp;
-		}
-
 		internal GameComponent AddComponent<T>()
 		{
 			return AddComponent(typeof(T));
 		}
-		internal GameComponent AddComponent<T>(JProperty componentData)
-		{
-			return AddComponent(typeof(T), componentData);
-		}
-
 		internal void RemoveComponent<T>()
 		{
 			if(HasComponent<T>())

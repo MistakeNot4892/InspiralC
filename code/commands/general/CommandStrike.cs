@@ -9,10 +9,10 @@ namespace inspiral
 			description = "Attacks another entity.";
 			usage = "strike [target] <in bodypart> <with bodypart or object>";
 		}
-		internal override void InvokeCommand(GameEntity invoker, CommandData cmd)
+		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 
-			GameEntity targetObj = null;
+			GameObject targetObj = null;
 			if(cmd.objTarget != null && cmd.objTarget != "")
 			{
 				targetObj = invoker.FindGameObjectNearby(cmd.objTarget);
@@ -25,8 +25,8 @@ namespace inspiral
 			}
 
 			string usingItem = cmd.objWith;
-			GameEntity strikeWith = null;
-			GameEntity strikeAgainst = null;
+			GameObject strikeWith = null;
+			GameObject strikeAgainst = null;
 
 			if(invoker.HasComponent<InventoryComponent>())
 			{
@@ -63,7 +63,7 @@ namespace inspiral
 
 			if(strikeWith == null)
 			{
-				GameEntity prop = invoker.FindGameObjectInContents(usingItem);
+				GameObject prop = invoker.FindGameObjectInContents(usingItem);
 				if(prop != null && invoker.HasComponent<InventoryComponent>())
 				{
 					InventoryComponent inv = (InventoryComponent)invoker.GetComponent<InventoryComponent>();
