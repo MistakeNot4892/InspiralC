@@ -11,8 +11,8 @@ namespace inspiral
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			GameObject target = null;
-			string invocation = cmd.rawInput;
-			if(invocation.Length >= 3 && invocation.Substring(0,3) == "to " && invoker.location != null)
+			string invocation = cmd.RawInput;
+			if(invocation.Length >= 3 && invocation.Substring(0,3) == "to " && invoker.Location != null)
 			{
 				invocation = invocation.Substring(3);
 				string targetName = invocation.Substring(0, invocation.IndexOf(' '));
@@ -53,7 +53,8 @@ namespace inspiral
 
 			if(invocation.Length <= 0)
 			{
-				invoker.ShowNearby(invoker, $"You open your mouth but say nothing.", $"{invoker.GetShortDesc()} opens {invoker.gender.Their} mouth but says nothing.");
+				GenderObject genderObj = Modules.Gender.GetByTerm(invoker.GetValue<string>(Field.Gender));
+				invoker.ShowNearby(invoker, $"You open your mouth but say nothing.", $"{invoker.GetShortDesc()} opens {genderObj.Their} mouth but says nothing.");
 				return;
 			}
 			string prefix1p = $"You {speechVerb1p}";

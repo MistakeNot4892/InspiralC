@@ -10,9 +10,15 @@ namespace inspiral
 
 	internal static partial class Field
 	{
-		internal const string ShortDesc    = "short";
-		internal const string RoomDesc     =  "room";
-		internal const string ExaminedDesc = "examined";
+		internal static DatabaseField ShortDesc = new DatabaseField(
+			"short", "",
+			typeof(string), true, true);
+		internal static DatabaseField RoomDesc = new DatabaseField(
+			"room", "", 
+			typeof(string), true, true);
+		internal static DatabaseField ExaminedDesc = new DatabaseField(
+			"examined", "",
+			typeof(string), true, true);
 	}
 
 	internal class VisibleBuilder : GameComponentBuilder
@@ -20,11 +26,10 @@ namespace inspiral
 		internal override void Initialize()
 		{
 			ComponentType = typeof(VisibleComponent);
-			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
-			{
-				{ Field.ShortDesc,    (typeof(string), "''", true, true)},
-				{ Field.RoomDesc,     (typeof(string), "''", true, true)},
-				{ Field.ExaminedDesc, (typeof(string), "''", true, true)}
+			schemaFields = new List<DatabaseField>() { 
+				Field.ShortDesc,
+				Field.RoomDesc,
+				Field.ExaminedDesc
 			};
 			base.Initialize();
 		}
@@ -34,50 +39,7 @@ namespace inspiral
 		internal string shortDescription = "a generic object";
 		internal string roomDescription = "A generic object is here.";
 		internal string examinedDescription = "This is a generic object. Fascinating stuff.";
-		internal override bool SetValue(string field, string newValue)
-		{
-			bool success = false;
-			switch(field)
-			{
-				case Field.ShortDesc:
-					if(shortDescription != newValue)
-					{
-						shortDescription = newValue;
-						success = true;
-					}
-					break;
-				case Field.RoomDesc:
-					if(roomDescription != newValue)
-					{
-						roomDescription = newValue;
-						success = true;
-					}
-					break;
-				case Field.ExaminedDesc:
-					if(examinedDescription != newValue)
-					{
-						examinedDescription = newValue;
-						success = true;
-					}
-					break;
-			}
-			return success;
-		}
-		internal override string GetString(string field)
-		{
-			switch(field)
-			{
-				case Field.ShortDesc:
-					return shortDescription;
-				case Field.RoomDesc:
-					return roomDescription;
-				case Field.ExaminedDesc:
-					return examinedDescription;
-				default:
-					return null;
-			}
-		}
-		internal void ExaminedBy(GameObject viewer, bool fromInside)
+		internal override void ExaminedBy(GameObject viewer, bool fromInside)
 		{
 			string mainDesc = $"{Colours.Fg(parent.GetShortDesc(), viewer.GetColour(Text.ColourDefaultHighlight))}.";
 			if(parent.HasComponent<MobileComponent>())
@@ -85,6 +47,7 @@ namespace inspiral
 				string startingToken;
 				string theyAre;
 				string their;
+				GenderObject genderObj = Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 				if(parent == viewer)
 				{
 					startingToken = "You're";
@@ -94,15 +57,15 @@ namespace inspiral
 				else
 				{
 					startingToken = "That's";
-					theyAre = $"{Text.Capitalize(parent.gender.They)} {parent.gender.Is}";
-					their = Text.Capitalize(parent.gender.Their);
+					theyAre = $"{Text.Capitalize(genderObj.They)} {genderObj.Is}";
+					their = Text.Capitalize(genderObj.Their);
 				}
 
 				MobileComponent mob = (MobileComponent)parent.GetComponent<MobileComponent>();
 				mainDesc = $"{startingToken} {mainDesc}\n{theyAre} a {mob.species}";
 				if(viewer == parent)
 				{
-					mainDesc += $". When people look at you, they see:\n{Text.Capitalize(parent.gender.They)} {parent.gender.Is} a {mob.species}";
+					mainDesc += $". When people look at you, they see:\n{Text.Capitalize(genderObj.They)} {genderObj.Is} a {mob.species}";
 				}
 				if(examinedDescription == null || examinedDescription.Length <= 0)
 				{
@@ -146,7 +109,7 @@ namespace inspiral
 			else
 			{
 				mainDesc += $"\n{Colours.Fg(parent.ApplyStringTokens(examinedDescription), parent.GetColour(Text.ColourDefaultSubtle))}";
-				if(parent.contents.Count > 0)
+				if(parent.Contents.Count > 0)
 				{
 					List<string> roomAppearances = parent.GetVisibleContents(viewer, false);
 					if(roomAppearances.Count > 0)
@@ -168,21 +131,6 @@ namespace inspiral
 				mainDesc = $"{mainDesc}\n{phys.GetExaminedSummary(viewer)}";
 			}
 			viewer.WriteLine(mainDesc);
-		}
-		internal override Dictionary<string, object> GetSaveData()
-		{
-			Dictionary<string, object> saveData = new Dictionary<string, object>();
-			saveData.Add(Field.ShortDesc,    shortDescription);
-			saveData.Add(Field.RoomDesc,     roomDescription);
-			saveData.Add(Field.ExaminedDesc, examinedDescription);
-			return saveData;
-		}
-		internal override void CopyFromRecord(DatabaseRecord record) 
-		{
-			base.CopyFromRecord(record);
-			shortDescription =    record.fields[Field.ShortDesc].ToString();
-			roomDescription =     record.fields[Field.RoomDesc].ToString();
-			examinedDescription = record.fields[Field.ExaminedDesc].ToString();
 		}
 	}
 }

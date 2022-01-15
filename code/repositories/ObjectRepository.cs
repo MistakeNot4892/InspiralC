@@ -5,56 +5,70 @@ namespace inspiral
 {
 	internal static partial class Field
 	{
-		internal const string Name =       "name";
-		internal const string Gender =     "gender";
-		internal const string Aliases =    "aliases";
-		internal const string Components = "components";
-		internal const string Flags =      "flags";
-		internal const string Location =   "location";
+		internal static DatabaseField Name = new DatabaseField(
+			"name", "object",
+			typeof(string), true, true);
+		internal static DatabaseField Gender = new DatabaseField(
+			"gender", Text.GenderInanimate,
+			typeof(string), true, true);
+		internal static DatabaseField Aliases = new DatabaseField(
+			"aliases", "", 
+			typeof(string), true, true);
+		internal static DatabaseField Components = new DatabaseField(
+			"components", "",
+			typeof(string), true, true);
+		internal static DatabaseField Flags = new DatabaseField(
+			"flags", -1,
+			typeof(int), true, true);
+		internal static DatabaseField Location = new DatabaseField(
+			"location", 0,
+			typeof(long), true, false);
 	}
 	internal class ObjectRepository : GameRepository
 	{
-		private Dictionary<long, long> postInitLocations;
+		private Dictionary<long, long> _postInitLocations = new Dictionary<long, long>();
+		internal List<string> SelfReferenceTokens = new List<string>() { "me", "self", "myself" };
 		internal ObjectRepository()
 		{
-			postInitLocations = new Dictionary<long, long>();
 			repoName = "objects";
 			dbPath = "data/objects.sqlite";
-			schemaFields = new Dictionary<string, (System.Type, string)>() 
-			{
-				{Field.Name,       (typeof(string), "'object'")},
-				{Field.Gender,     (typeof(string), $"'{Text.GenderInanimate}'")}, 
-				{Field.Aliases,    (typeof(string), "''")},
-				{Field.Components, (typeof(string), "''")},
-				{Field.Flags,      (typeof(int),    "-1")},
-				{Field.Location,   (typeof(int),    "0")}
+			schemaFields = new List<DatabaseField>() 
+			{ 
+				Field.Name,
+				Field.Gender, 
+				Field.Aliases,
+				Field.Components,
+				Field.Flags,
+				Field.Location
 			};
 		}
-		internal override void InstantiateFromRecord(DatabaseRecord record) 
+		internal override void InstantiateFromRecord(Dictionary<string, object> record) 
 		{
-			GameObject gameObj = (GameObject)CreateRepositoryType((long)record.fields[Field.Id]);
-			gameObj.name =    record.fields[Field.Name].ToString();
-			gameObj.flags =   (long)record.fields[Field.Flags];
-			gameObj.gender =  Modules.Gender.GetByTerm(record.fields[Field.Gender].ToString());
-			gameObj.aliases = JsonConvert.DeserializeObject<List<string>>(record.fields[Field.Aliases].ToString());
+			GameObject gameObj = (GameObject)CreateRepositoryType((long)record[Field.Id.fieldName]);
+			gameObj.SetValue(Field.Name,    record[Field.Name.fieldName].ToString());
+			gameObj.SetValue(Field.Flags,   (long)record[Field.Flags.fieldName]);
+			gameObj.SetValue(Field.Gender,  record[Field.Gender.fieldName].ToString());
+			gameObj.SetValue(Field.Aliases, JsonConvert.DeserializeObject<List<string>>(record[Field.Aliases.fieldName].ToString()));
 
-			foreach(string comp in JsonConvert.DeserializeObject<List<string>>(record.fields[Field.Components].ToString()))
+			foreach(string comp in JsonConvert.DeserializeObject<List<string>>(record[Field.Components.fieldName].ToString()))
 			{
 				gameObj.AddComponent(Game.GetTypeFromString(comp));
 			}
-			records.Add(gameObj.GetLong(Field.Id), gameObj);
-			postInitLocations.Add(gameObj.GetLong(Field.Id), (long)record.fields[Field.Location]);
+			records.Add(gameObj.GetValue<long>(Field.Id), gameObj);
+			_postInitLocations.Add(gameObj.GetValue<long>(Field.Id), (long)record[Field.Location.fieldName]);
 		}
 		internal void LoadComponentData(GameObject gameObj)
 		{
 		}
-		internal override GameEntity CreateRepositoryType(long id) 
+		internal override GameObject CreateRepositoryType(long id) 
 		{
-			return new GameEntity(id);
+			GameObject newObj = new GameObject();
+			newObj.SetValue<long>(Field.Id, id);
+			return newObj;
 		}
 		internal override void PostInitialize() 
 		{
-			foreach(KeyValuePair<long, long> loc in postInitLocations)
+			foreach(KeyValuePair<long, long> loc in _postInitLocations)
 			{
 				if(loc.Value > 0)
 				{
@@ -66,18 +80,26 @@ namespace inspiral
 					}
 				}
 			}
-			foreach(KeyValuePair<long, GameEntity> obj in records)
+			foreach(KeyValuePair<long, IGameEntity> obj in records)
 			{
 				LoadComponentData((GameObject)obj.Value);
 			}
-			foreach(KeyValuePair<long, GameEntity> obj in records)
+			foreach(KeyValuePair<long, IGameEntity> obj in records)
 			{
 				GameObject gameObj = (GameObject)obj.Value;
-				foreach(KeyValuePair<System.Type, GameComponent> comp in gameObj.components)
+				foreach(KeyValuePair<System.Type, GameComponent> comp in gameObj.Components)
 				{
 					comp.Value.FinalizeObjectLoad();
 				}
 			}
+		}
+		internal GameObject CreateFromTemplate(string objString)
+		{
+			return CreateRepositoryType(0);
+		}
+		internal List<string> GetTemplateNames()
+		{
+			return new List<string>() { "none" };
 		}
 	}
 }

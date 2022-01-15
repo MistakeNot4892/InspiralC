@@ -5,16 +5,15 @@ namespace inspiral
 {
 	internal static class Game
 	{
-		internal static System.Random rand = new System.Random();
-		internal static Dictionary<string, System.Type> typesByString;
+		internal static System.Random Random = new System.Random();
+		internal static Dictionary<string, System.Type> TypesByString = new Dictionary<string, System.Type>();
 		internal static bool InitComplete = false;
 		internal static AccountRepository Accounts;
 		internal static ObjectRepository Objects;
 		static Game()
 		{
-			typesByString = new Dictionary<string, System.Type>();
-			Accounts =      new AccountRepository();
-			Objects =       new ObjectRepository();
+			Accounts = new AccountRepository();
+			Objects = new ObjectRepository();
 		}
 		internal static void Initialize() 
 		{
@@ -39,7 +38,7 @@ namespace inspiral
 		}
 		internal static void Exit()
 		{
-			foreach(GameClient client in Clients.clients)
+			foreach(GameClient client in Clients.Connected)
 			{
 				client.Farewell("The server is shutting down. Goodbye!");
 			}
@@ -50,11 +49,11 @@ namespace inspiral
 
 		internal static System.Type GetTypeFromString(string typeString)
 		{
-			if(!typesByString.ContainsKey(typeString))
+			if(!TypesByString.ContainsKey(typeString))
 			{
-				typesByString.Add(typeString, System.Type.GetType(typeString));
+				TypesByString.Add(typeString, System.Type.GetType(typeString));
 			}
-			return typesByString[typeString];
+			return TypesByString[typeString];
 		}
 		internal static void LogError(string error)
 		{

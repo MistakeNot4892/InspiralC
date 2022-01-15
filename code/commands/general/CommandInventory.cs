@@ -24,7 +24,7 @@ namespace inspiral
 			{
 				foreach(KeyValuePair<string, GameObject> gameObj in inv.carrying)
 				{
-					inventorySummary += $"\n- {gameObj.Value.GetShortDesc()} ({gameObj.Value.name}#{gameObj.Value.GetLong(Field.Id)}) - {gameObj.Key}.";
+					inventorySummary += $"\n- {gameObj.Value.GetShortDesc()} ({gameObj.Value.GetValue<string>(Field.Name)}#{gameObj.Value.GetValue<long>(Field.Id)}) - {gameObj.Key}.";
 				}
 			}
 			else

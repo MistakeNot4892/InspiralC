@@ -9,23 +9,23 @@ namespace inspiral
 
 		internal string repoName = "repository";
 		internal string dbPath = "data/gamedata.sqlite";
-		internal Dictionary<string, (System.Type, string)> schemaFields;
-		internal Dictionary<long, GameEntity> records = new Dictionary<long, GameEntity>();
-		private List<GameEntity> updateQueue = new List<GameEntity>();
+		internal List<DatabaseField> schemaFields;
+		internal Dictionary<long, IGameEntity> records = new Dictionary<long, IGameEntity>();
+		private List<IGameEntity> updateQueue = new List<IGameEntity>();
 		private bool killUpdateProcess = false;
 
-		internal virtual void QueueForUpdate(GameEntity obj)
+		internal virtual void QueueForUpdate(IGameEntity obj)
 		{
 			if(!updateQueue.Contains(obj) && Game.InitComplete)
 			{
 				updateQueue.Add(obj);
 			}
 		}
-		internal virtual void InstantiateFromRecord(DatabaseRecord record) {}
+		internal virtual void InstantiateFromRecord(Dictionary<string, object> record) {}
 
 		internal virtual void Load() {
 			Game.LogError($"Loading {repoName} from database.");
-			foreach(DatabaseRecord record in Database.GetAllRecords(dbPath, $"table_{repoName}", schemaFields))
+			foreach(Dictionary<string, object> record in Database.GetAllRecords(dbPath, $"table_{repoName}", schemaFields))
 			{
 				InstantiateFromRecord(record);
 			}
@@ -56,7 +56,7 @@ namespace inspiral
 		}
 
 		internal virtual void PostInitialize() {}
-		internal GameEntity GetByID(long id)
+		internal IGameEntity GetByID(long id)
 		{
 			if(records.ContainsKey(id))
 			{
@@ -69,13 +69,13 @@ namespace inspiral
 			// TODO scrape for unused indices
 			return (long)records.Count+1;
 		}
-		internal virtual GameEntity CreateNewInstance()
+		internal virtual IGameEntity CreateNewInstance()
 		{
 			return CreateNewInstance(GetUnusedIndex());
 		}
-		internal virtual GameEntity CreateNewInstance(long id)
+		internal virtual IGameEntity CreateNewInstance(long id)
 		{
-			GameEntity newInstance = CreateRepositoryType(id);
+			IGameEntity newInstance = CreateRepositoryType(id);
 			records.Add(id, newInstance);
 			return GetByID(id);
 		}
@@ -83,7 +83,7 @@ namespace inspiral
 		{
 			Game.LogError("Repo dump not implemented for this repo, sorry.");
 		}
-		internal virtual GameEntity CreateRepositoryType(long id) 
+		internal virtual IGameEntity CreateRepositoryType(long id) 
 		{
 			return null;
 		}

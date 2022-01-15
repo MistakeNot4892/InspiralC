@@ -8,19 +8,16 @@ namespace inspiral
 		internal override void Initialize()
 		{
 			ComponentType = typeof(BalanceComponent);
-			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
-			{
-				{ "placeholder", (typeof(string), "''", false, false) }
-			};
+			schemaFields = new List<DatabaseField>() { Field.Dummy };
 			base.Initialize();
 		}
 	}
 
-	class BalanceComponent : GameComponent 
+	internal class BalanceComponent : GameComponent 
 	{
 		private Dictionary<string, Timer> offBalanceTimers = new Dictionary<string, Timer>();
 
-		internal override void Initialize()
+		internal override void InitializeComponent()
 		{
 			AddBalanceTimer("poise");
 			AddBalanceTimer("concentration");

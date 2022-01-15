@@ -11,27 +11,27 @@ namespace inspiral
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			bool msgSent = false;
-			if(cmd.objTarget != null)
+			if(cmd.ObjTarget != null)
 			{
-				if(cmd.objTarget == "room")
+				if(cmd.ObjTarget == "room")
 				{
 					invoker.WriteLine("Rooms must be created only with the addroom command.");
 					msgSent = true;
 				}
 				else
 				{
-					GameObject hat = Modules.Templates.Instantiate(cmd.objTarget);
-					if(hat != null)
+					GameObject prop = Game.Objects.CreateFromTemplate(cmd.ObjTarget);
+					if(prop != null)
 					{
-						hat.Move(invoker.location);
-						invoker.WriteLine($"Created {hat.GetShortDesc()} ({hat.name}#{hat.GetLong(Field.Id)}).");
+						prop.Move(invoker.Location);
+						invoker.WriteLine($"Created {prop.GetShortDesc()} ({prop.GetValue<string>(Field.Name)}#{prop.GetValue<long>(Field.Id)}).");
 						msgSent = true;
 					}
 				}
 			}
 			if(!msgSent)
 			{
-				invoker.WriteLine($"You can create the following: {Text.EnglishList(Modules.Templates.GetTemplateNames())}");
+				invoker.WriteLine($"You can create the following: {Text.EnglishList(Game.Objects.GetTemplateNames())}");
 			}
 		}
 	}

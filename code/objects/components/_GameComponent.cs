@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
 
 namespace inspiral
 {
@@ -11,33 +10,34 @@ namespace inspiral
 			Initialize();
 		}
 		internal System.Type ComponentType;
-		internal List<string> editableFields = new List<string>();
-		internal List<string> viewableFields = new List<string>();
-		internal Dictionary<string, (System.Type, string, bool, bool)> schemaFields = null;
+		internal List<DatabaseField> editableFields = new List<DatabaseField>();
+		internal List<DatabaseField> viewableFields = new List<DatabaseField>();
+		internal List<DatabaseField> schemaFields = null;
 		internal virtual void Initialize()
 		{
 			if(schemaFields != null)
 			{
-				foreach(KeyValuePair<string, (System.Type, string, bool, bool)> schemaField in schemaFields)
+				foreach(DatabaseField schemaField in schemaFields)
 				{
-					if(schemaField.Value.Item3)
+					if(schemaField.fieldIsViewable)
 					{
-						viewableFields.Add(schemaField.Key);
+						viewableFields.Add(schemaField);
 					}
-					if(schemaField.Value.Item4)
+					if(schemaField.fieldIsEditable)
 					{
-						editableFields.Add(schemaField.Key);
+						editableFields.Add(schemaField);
 					}
 				}
 			}
 		}
 	}
 
-	internal class GameComponent : GameEntity
+	internal class GameComponent : GameObject
 	{
 		internal GameObject parent;
 		internal bool isPersistent = true;
-
+		internal GameComponent() { InitializeComponent(); }
+		internal virtual void InitializeComponent() {}
 		internal virtual void FinalizeObjectLoad() {}
 
 		internal virtual void Added(GameObject addedTo)
@@ -59,7 +59,6 @@ namespace inspiral
 				Game.Objects.QueueForUpdate(takenFrom);
 			}
 		}
-
 		internal string GetStringSummary() 
 		{
 			System.Type myType = this.GetType();
@@ -68,16 +67,16 @@ namespace inspiral
 				Modules.Components.builders[myType].viewableFields.Count > 0)
 			{
 				string result = "";
-				foreach(string field in Modules.Components.builders[myType].viewableFields)
+				foreach(DatabaseField field in Modules.Components.builders[myType].viewableFields)
 				{
 					if(Modules.Components.builders[myType].editableFields != null && 
 						Modules.Components.builders[myType].editableFields.Contains(field))
 					{
-						result = $"{result}\n{field}: {GetString(field)}";
+						result = $"{result}\n{field}: {GetValue<string>(field)}";
 					}
 					else
 					{
-						result = $"{result}\n{field} (read-only): {GetString(field)}";
+						result = $"{result}\n{field} (read-only): {GetValue<string>(field)}";
 					}
 				}
 				return result;
@@ -85,7 +84,7 @@ namespace inspiral
 			return null;
 		}
 
-		internal string SetValueOfEditableField(string field, string value) 
+		internal string SetValueOfEditableField(DatabaseField field, string value) 
 		{
 			System.Type myType = this.GetType();
 			if(Modules.Components.builders.ContainsKey(myType) && 

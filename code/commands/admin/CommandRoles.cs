@@ -12,16 +12,16 @@ namespace inspiral
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
-			if(cmd.objTarget == null)
+			if(cmd.ObjTarget == null)
 			{
 				invoker.WriteLine("Who do you wish to view the roles of?", true);
 				return;
 			}
 
-			PlayerAccount acct = Game.Accounts.FindAccount(cmd.objTarget);
+			PlayerAccount acct = Game.Accounts.FindAccount(cmd.ObjTarget);
 			if(acct == null)
 			{
-				invoker.WriteLine($"Cannot find account for '{cmd.objTarget}'.", true);
+				invoker.WriteLine($"Cannot find account for '{cmd.ObjTarget}'.", true);
 				return;
 			}
 

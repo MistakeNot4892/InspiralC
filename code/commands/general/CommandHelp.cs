@@ -10,9 +10,9 @@ namespace inspiral
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
-			if(cmd.rawInput != "" && cmd.rawInput != null)
+			if(cmd.RawInput != "" && cmd.RawInput != null)
 			{
-				invoker.WriteLine($"If the help system existed, you'd be searching for '{cmd.rawInput}'.");
+				invoker.WriteLine($"If the help system existed, you'd be searching for '{cmd.RawInput}'.");
 			}
 			else
 			{

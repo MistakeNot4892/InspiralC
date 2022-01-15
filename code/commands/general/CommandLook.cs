@@ -10,17 +10,17 @@ namespace inspiral
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
-			if(invoker.location == null)
+			if(invoker.Location == null)
 			{
 				invoker.WriteLine("You cannot see anything here."); 
 				return;
 			}
 
-			string examineKey = cmd.objAt;
+			string examineKey = cmd.ObjAt;
 			GameObject examining = null;
 			if(examineKey == null)
 			{
-				examineKey = cmd.objTarget;
+				examineKey = cmd.ObjTarget;
 			}
 			if(examineKey == null)
 			{

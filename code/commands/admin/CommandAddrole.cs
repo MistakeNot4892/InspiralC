@@ -10,28 +10,28 @@ namespace inspiral
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
-			if(cmd.objTarget == null)
+			if(cmd.ObjTarget == null)
 			{
 				invoker.WriteLine("Who do you wish to view the roles of?", true);
 				return;
 			}
-			else if(cmd.strArgs.Length < 1)
+			else if(cmd.StrArgs.Length < 1)
 			{
 				invoker.WriteLine("Which role do you wish to add?", true);
 				return;
 			}
 
-			PlayerAccount acct = Game.Accounts.FindAccount(cmd.objTarget);
+			PlayerAccount acct = Game.Accounts.FindAccount(cmd.ObjTarget);
 			if(acct == null)
 			{
-				invoker.WriteLine($"Cannot find account for '{cmd.objTarget}'.", true);
+				invoker.WriteLine($"Cannot find account for '{cmd.ObjTarget}'.", true);
 				return;
 			}
 
-			GameRole role = Modules.Roles.GetRole(cmd.strArgs[0].ToLower());
+			GameRole role = Modules.Roles.GetRole(cmd.StrArgs[0].ToLower());
 			if(role == null)
 			{
-				invoker.WriteLine($"Cannot find role for '{cmd.strArgs[0]}'.");
+				invoker.WriteLine($"Cannot find role for '{cmd.StrArgs[0]}'.");
 			}
 			else if(acct.roles.Contains(role))
 			{

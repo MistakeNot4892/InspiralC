@@ -5,20 +5,20 @@ namespace inspiral
 {
 	internal static class Clients
 	{
-		internal static List<GameClient> clients = new List<GameClient>();
+		internal static List<GameClient> Connected = new List<GameClient>();
 		internal static GameClient Create(TcpClient client, string id)
 		{
 			GameClient newClient = new GameClient(client, id);
-			clients.Add(newClient);
+			Connected.Add(newClient);
 			return newClient;
 		}
 		internal static void RemoveClient(GameClient client)
 		{
-			clients.Remove(client);
+			Connected.Remove(client);
 		}
 		internal static int CountClients()
 		{
-			return clients.Count;
+			return Connected.Count;
 		}
 	}
 }

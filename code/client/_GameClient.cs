@@ -143,7 +143,10 @@ namespace inspiral
 				{
 					clientComp.Logout();
 					shell.ShowNearby(shell, $"{shell.GetShortDesc()} falls asleep.");
-					shell.SetString<VisibleComponent>(Field.RoomDesc, "$Short is sound asleep here.");
+					if(shell.HasComponent<VisibleComponent>())
+					{
+						shell.SetValue<string>(Field.RoomDesc, "$Short is sound asleep here.");
+					}
 					shell.RemoveComponent<ClientComponent>();
 				}
 			}
@@ -254,7 +257,7 @@ namespace inspiral
 			Dictionary<string, List<string>> reply = new Dictionary<string, List<string>>();
 
 			reply.Add("Client Information", new List<string>());
-			reply["Client Information"].Add($"Logged in as: {shell?.name ?? "null"}");
+			reply["Client Information"].Add($"Logged in as: {shell?.GetValue<string>(Field.Name) ?? "null"}");
 			reply["Client Information"].Add($"Connecting from: {((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString()}");
 
 			if(!gmcpFlags.Contains("gmcpEnabled"))

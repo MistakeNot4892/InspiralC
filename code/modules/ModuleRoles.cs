@@ -16,34 +16,7 @@ namespace inspiral
 		{
 			Modules.Roles = this;
 			Game.LogError("Loading role definitions.");
-			foreach (var f in (from file in Directory.EnumerateFiles(@"data/definitions/roles", "*.json", SearchOption.AllDirectories) select new { File = file }))
-			{
-				Game.LogError($"- Loading role definition {f.File}.");
-				try
-				{
-					JObject r = JObject.Parse(File.ReadAllText(f.File));
-					string roleName = r["name"].ToString();
-					string roleDescription = r["description"].ToString();
-					List<GameCommand> roleCommands = new List<GameCommand>();
-					foreach(string cmd in r["commands"].Select(t => (string)t).ToList())
-					{
-						GameCommand _cmd = Modules.Commands.GetCommand(cmd);
-						if(_cmd != null)
-						{
-							if(!roleCommands.Contains(_cmd))
-							{
-								roleCommands.Add(_cmd);
-							}
-						}
-					}
-					GameRole role = new GameRole(roleName, roleDescription, roleCommands);
-					roles.Add(role.name.ToLower(), role);
-				}
-				catch(System.Exception e)
-				{
-					Game.LogError($"Exception when loading role from file {f.File} - {e.Message}");
-				}
-			}
+			// TODO readd role repo.
 			Game.LogError("Done.");
 		}
 		internal GameRole GetRole(string key)

@@ -14,10 +14,10 @@ namespace inspiral
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 			string emoteText = invoker.GetShortDesc();
-			if(cmd.rawInput[0] == '(' && cmd.rawInput.IndexOf(')') != -1)
+			if(cmd.RawInput[0] == '(' && cmd.RawInput.IndexOf(')') != -1)
 			{
-				int secondParen = cmd.rawInput.IndexOf(')')-1;
-				string rst = cmd.rawInput;
+				int secondParen = cmd.RawInput.IndexOf(')')-1;
+				string rst = cmd.RawInput;
 				if(rst.Length <= secondParen+3)
 				{
 					invoker.WriteLine("Please specify emote text after the preface."); 
@@ -28,9 +28,9 @@ namespace inspiral
 			}
 			else
 			{
-				emoteText = Text.FormatProse($"{emoteText} {cmd.rawInput}");
+				emoteText = Text.FormatProse($"{emoteText} {cmd.RawInput}");
 			}
-			if(invoker.location != null)
+			if(invoker.Location != null)
 			{
 				Dictionary<GameObject, string> showingMessages = new Dictionary<GameObject, string>();
 

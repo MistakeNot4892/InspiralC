@@ -1,69 +1,63 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace inspiral
 {
 	internal static partial class Field
 	{
-		internal const string Id = "id";
+		internal static DatabaseField Id = new DatabaseField(
+			"id", 0,
+			typeof(long), true, false);
 	}
-	internal partial class GameEntity : SharedBaseClass
-	{
-		private long id;
 
-		internal virtual bool SetValue(string key, string newValue) { return false; }
-		internal virtual bool SetValue(string key, long newValue) { return false; }
-		internal virtual bool SetValue(string key, bool newValue) { return false; }
-		internal virtual string GetString(string key) { return null; }
-		internal virtual long GetLong(string key) { return 0; }
-		internal virtual bool GetBool(string key) { return false; }
-		internal virtual List<string> GetStringList(string key) { return null; }
-		internal virtual void Initialize() {}
-		internal GameEntity() {}
-		internal GameEntity(long _id)
-		{
-			id = _id;
-			Initialize();
-		}
-		internal virtual void CopyFromRecord(DatabaseRecord record) 
-		{
-			id = (long)record.fields["id"];
-		}
-		internal virtual Dictionary<string, object> GetSaveData()
-		{
-			Dictionary<string, object> saveData = new Dictionary<string, object>();
-			saveData.Add("id", id);
-			return saveData;
-		}
-	}
-	internal partial class GameObject : GameEntity
+	internal partial class GameObject : IGameEntity
 	{
-		internal string name = "object";
-		internal GenderObject gender;
-		internal List<string> aliases = new List<string>();
-		internal GameObject location;
-		internal List<GameObject> contents;
-		internal long flags = 0;
-		internal Dictionary<System.Type, GameComponent> components;
-		internal static List<string> selfReferenceTokens = new List<string>() { "me", "self", "myself" };
-		internal override Dictionary<string, object> GetSaveData()
+		private Dictionary<string, object> _fields = new Dictionary<string, object>();
+		public Dictionary<string, object> Fields
 		{
-			Dictionary<string, object> saveData = base.GetSaveData();
-			saveData.Add(Field.Name,       name);
-			saveData.Add(Field.Gender,     gender.Term);
-			saveData.Add(Field.Aliases,    JsonConvert.SerializeObject(aliases));
-			saveData.Add(Field.Components, JsonConvert.SerializeObject(components.Keys));
-			saveData.Add(Field.Flags,      flags);
-			saveData.Add(Field.Location,   (location?.GetLong(Field.Id) ?? 0));
-			return saveData;
+			get { return _fields; }
+			set { _fields = value; }
 		}
-
-		internal override void Initialize()
+		private List<GameObject> _contents = new List<GameObject>();
+		public List<GameObject> Contents
 		{
-			base.Initialize();
-			contents = new List<GameObject>();
-			components = new Dictionary<System.Type, GameComponent>();
-			gender = Modules.Gender.GetByTerm(Text.GenderInanimate);
+			get { return _contents; }
+			set { _contents = value; }
+		}
+		public GameObject Location
+		{
+			get { return (GameObject)Game.Objects.GetByID(GetValue<long>(Field.Location)); }
+			set { SetValue<long>(Field.Location, (long)value.GetValue<long>(Field.Id)); }
+		}
+		private Dictionary<System.Type, GameComponent> _components = new Dictionary<System.Type, GameComponent>();
+		public Dictionary<System.Type, GameComponent> Components
+		{
+			get { return _components; }
+			set { _components = value; }
+		}
+		public Dictionary<string, object> GetSaveData()
+		{
+			return Fields;
+		}
+		public bool SetValue<T>(DatabaseField field, T newValue)
+		{
+			if(Fields.ContainsKey(field.fieldName))
+			{
+				Fields[field.fieldName] = newValue;
+				return true;
+			}
+			return false;
+		}
+		public T GetValue<T>(DatabaseField field)
+		{
+			if(Fields.ContainsKey(field.fieldName))
+			{
+				return (T)Fields[field.fieldName];
+			}
+			return default(T);
+		}
+		public void CopyFromRecord(Dictionary<string, object> record) 
+		{
+			Fields = record;
 		}
 		internal GameObject FindGameObjectNearby(string token)
 		{
@@ -72,17 +66,18 @@ namespace inspiral
 		internal GameObject FindGameObjectNearby(GameObject viewer, string token)
 		{
 			string checkToken = token.ToLower();
-			if(selfReferenceTokens.Contains(checkToken))
+			if(Game.Objects.SelfReferenceTokens.Contains(checkToken))
 			{
 				return viewer;
 			}
+			GameObject location = Location;
 			if(location != null)
 			{
 				if(checkToken == "here" || 
 					checkToken == "room" || 
-					"{location.GetLong(Field.Id)}" == checkToken || 
-					location.name.ToLower() == checkToken || 
-					location.aliases.Contains(checkToken)
+					$"{location.GetValue<long>(Field.Id)}" == checkToken || 
+					location.GetValue<string>(Field.Name).ToLower() == checkToken || 
+					location.GetValue<List<string>>(Field.Aliases).Contains(checkToken)
 					)
 				{
 					return location;
@@ -99,26 +94,26 @@ namespace inspiral
 		internal GameObject FindGameObjectInContents(string token, bool silent)
 		{
 			string checkToken = token.ToLower();
-			foreach(GameObject gameObj in contents)
+			foreach(GameObject gameObj in Contents)
 			{
-				if($"{gameObj.GetLong(Field.Id)}" == checkToken || 
-					gameObj.name.ToLower() == checkToken || 
-					gameObj.aliases.Contains(checkToken) || 
-					$"{gameObj.name}#{gameObj.GetLong(Field.Id)}" == checkToken
+				if($"{gameObj.GetValue<long>(Field.Id)}" == checkToken || 
+					gameObj.GetValue<string>(Field.Name).ToLower() == checkToken || 
+					gameObj.GetValue<List<string>>(Field.Aliases).Contains(checkToken) || 
+					$"{gameObj.GetValue<string>(Field.Name)}#{gameObj.GetValue<long>(Field.Id)}" == checkToken
 					)
 				{
 					return gameObj;
 				}
 			}
-			foreach(GameObject gameObj in contents)
+			foreach(GameObject gameObj in Contents)
 			{
-				if(gameObj.name.ToLower().Contains(checkToken))
+				if(gameObj.GetValue<string>(Field.Name).ToLower().Contains(checkToken))
 				{
 					return gameObj;
 				}
-				foreach(string alias in gameObj.aliases)
+				foreach(string alias in gameObj.GetValue<List<string>>(Field.Aliases))
 				{
-					if(alias.ToLower().Contains(checkToken) || $"{alias}#{gameObj.GetLong(Field.Id)}" == checkToken)
+					if(alias.ToLower().Contains(checkToken) || $"{alias}#{gameObj.GetValue<long>(Field.Id)}" == checkToken)
 					{
 						return gameObj;
 					}

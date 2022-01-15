@@ -10,13 +10,13 @@ namespace inspiral
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
-			if(cmd.rawInput.Length <= 0)
+			if(cmd.RawInput.Length <= 0)
 			{
 				invoker.WriteLine("Please supply a new description to use.");
 				return;
 			}
-			string lastDesc = invoker.GetString<VisibleComponent>(Field.ExaminedDesc);
-			invoker.SetString<VisibleComponent>(Field.ExaminedDesc, cmd.rawInput);
+			string lastDesc = invoker.GetValue<string>(Field.ExaminedDesc);
+			invoker.SetValue<string>(Field.ExaminedDesc, cmd.RawInput);
 			invoker.WriteLine($"Your appearance has been updated.\nFor reference, your last appearance was:\n{lastDesc}"); 
 		}
 	}

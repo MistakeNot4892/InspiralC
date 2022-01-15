@@ -3,10 +3,40 @@ using System.Data.SQLite;
 
 namespace inspiral
 {
-    internal partial class DatabaseRecord
+    internal static partial class Database
     {
-        internal void Populate(SQLiteDataReader record)
+        internal static Dictionary<string, object> GetDataFromRecord(SQLiteDataReader record)
         {
+            Dictionary<string, object> fields = new Dictionary<string, object>();
+            for(int i=0;i<record.FieldCount;i++)
+            {
+                DatabaseField field = Field.GetFieldFromName(record.GetName(i));
+                if(!field.IsField(Field.Dummy))
+                {
+                    if(field.fieldType == typeof(List<string>))
+                    {
+                        fields.Add(field.fieldName, Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(record[field.fieldName].ToString()));
+                    }
+                    else if(field.fieldType == typeof(string))
+                    {
+                        fields.Add(field.fieldName, record[field.fieldName].ToString());
+                    }
+                    else if(field.fieldType == typeof(double))
+                    {
+                        fields.Add(field.fieldName, (double)record[field.fieldName]);
+                    }
+                    else if(field.fieldType == typeof(bool))
+                    {
+                        int fieldVal = (int)record[field.fieldName];
+                        fields.Add(field.fieldName, fieldVal >= 1);
+                    }
+                    else
+                    {
+                        fields.Add(field.fieldName, (long)record[field.fieldName]);
+                    }
+                }
+            }
+            return fields;
         }
     }
     internal class SQLiteDatabaseHandler : DatabaseHandler
@@ -15,8 +45,18 @@ namespace inspiral
         {
             { typeof(string), "TEXT"    },
             { typeof(int),    "INTEGER" },
+            { typeof(long),   "INTEGER" },
+            { typeof(bool),   "INTEGER" },
             { typeof(double), "DOUBLE"  }
         };
+        private string GetFieldTypeString(System.Type fieldType)
+        {
+            if(fieldTypes.ContainsKey(fieldType))
+            {
+                return fieldTypes[fieldType];
+            }
+            return "BLOB";
+        }
 
         SQLiteConnection connection;
         internal SQLiteDatabaseHandler(string dbPath, string dbVersion) : base(dbPath, dbVersion)
@@ -29,16 +69,16 @@ namespace inspiral
             command.Parameters.AddWithValue($"@id", recordId);
             return command.ExecuteReader();
         }
-        internal override void CreateRecord(string tableName, GameEntity entity) 
+        internal override void CreateRecord(string tableName, IGameEntity entity) 
         {
             using(SQLiteCommand command = new SQLiteCommand($"INSERT INTO {tableName} ( id ) VALUES ( @id );", connection))
             {
-                command.Parameters.AddWithValue("@id", entity.GetLong(Field.Id));
+                command.Parameters.AddWithValue("@id", entity.GetValue<long>(Field.Id));
                 command.ExecuteNonQuery();
                 UpdateRecord(tableName, entity);
             }
         }
-        internal override void UpdateRecord(string tableName, GameEntity entity) 
+        internal override void UpdateRecord(string tableName, IGameEntity entity) 
         {
             Dictionary<string, object> entityFields = entity.GetSaveData();
             List<string> updateStrings = new List<string>();
@@ -55,23 +95,22 @@ namespace inspiral
                 command.ExecuteNonQuery();
             }
         }
-        internal string GetTypeString(System.Type fieldType)
-        {
-            if(fieldTypes.ContainsKey(fieldType))
-            {
-                return fieldTypes[fieldType];
-            }
-            return "BLOB";
-        }
-        internal override void InitializeTable(string tableName, Dictionary<string, (System.Type, string)> tableFields)
+        internal override void InitializeTable(string tableName, List<DatabaseField> tableFields)
         {
             List<string> tableFieldStrings = new List<string>() { "id INTEGER PRIMARY KEY UNIQUE"};
-            foreach(KeyValuePair<string, (System.Type, string)> field in tableFields)
+            foreach(DatabaseField field in tableFields)
             {
-                string tableFieldString = $"{field.Key} {GetTypeString(field.Value.Item1)}";
-                if(field.Value.Item2 != null)
+                string tableFieldString = $"{field.fieldName} {GetFieldTypeString(field.fieldType)}";
+                if(field.fieldDefault != null)
                 {
-                    tableFieldString = $"{tableFieldString} DEFAULT {field.Value.Item2}";
+                    if(field.fieldType == typeof(string))
+                    {
+                        tableFieldString = $"{tableFieldString} DEFAULT '{field.fieldDefault}'";
+                    }
+                    else
+                    {
+                        tableFieldString = $"{tableFieldString} DEFAULT {field.fieldDefault}";
+                    }
                 }
                 tableFieldStrings.Add(tableFieldString);
             }
@@ -81,25 +120,23 @@ namespace inspiral
                 command.ExecuteNonQuery();
             }            
         }
-        internal override List<DatabaseRecord> GetAllRecords(string tableName)
+        internal override List<Dictionary<string, object>> GetAllRecords(string tableName)
         { 
-            List<DatabaseRecord> records = new List<DatabaseRecord>();
+            List<Dictionary<string, object>> records = base.GetAllRecords(tableName);
             using(SQLiteCommand command = new SQLiteCommand($"SELECT * FROM {tableName};", connection))
             {
                 SQLiteDataReader reader = command.ExecuteReader();
                 while(reader.Read())
                 {
-                    DatabaseRecord record = new DatabaseRecord();
-                    record.Populate(reader);
-                    records.Add(record);
+                    records.Add(Database.GetDataFromRecord(reader));
                 }
             }
             return records;
         }
-        internal override void BatchUpdateRecords(string tableName, List<GameEntity> updateQueue) 
+        internal override void BatchUpdateRecords(string tableName, List<IGameEntity> updateQueue) 
         {
 			var saveTransaction = connection.BeginTransaction();
-			foreach(GameEntity objInstance in updateQueue)
+			foreach(IGameEntity objInstance in updateQueue)
 			{
                 UpdateRecord(tableName, objInstance);
                 updateQueue.Remove(objInstance);

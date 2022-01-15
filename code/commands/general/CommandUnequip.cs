@@ -18,7 +18,7 @@ namespace inspiral
 			if(invoker.TryUseBalance("poise"))
 			{
 				InventoryComponent inv = (InventoryComponent)invoker.GetComponent<InventoryComponent>();
-				if(inv.TryToUnequip(cmd.rawInput))
+				if(inv.TryToUnequip(cmd.RawInput))
 				{
 					invoker.UseBalance("poise", 500);
 				}

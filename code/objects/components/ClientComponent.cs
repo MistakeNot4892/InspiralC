@@ -4,7 +4,9 @@ namespace inspiral
 {
 	internal static partial class Field
 	{
-		internal const string ClientId = "clientId";
+		internal static DatabaseField ClientId = new DatabaseField(
+			"clientId", "",
+			typeof(string), false, false);
 	}
 	internal partial class ComponentModule : GameModule
 	{
@@ -15,17 +17,14 @@ namespace inspiral
 		internal override void Initialize()
 		{
 			ComponentType = typeof(ClientComponent);
-			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
-			{
-				{ Field.ClientId, (typeof(string), "''", true, false) }
-			};
+			schemaFields = new List<DatabaseField>() { Field.ClientId };
 			base.Initialize();
 		}
 	}
-	class ClientComponent : GameComponent 
+	internal class ClientComponent : GameComponent 
 	{
 		internal GameClient client;
-		internal override void Initialize()
+		internal override void InitializeComponent()
 		{
 			isPersistent = false;
 		}
@@ -43,21 +42,6 @@ namespace inspiral
 				}
 				client = null;
 			}
-		}
-		internal override string GetString(string field)
-		{
-			if(field == Field.ClientId)
-			{
-				if(client != null)
-				{
-					return $"#{client.clientId}";
-				}
-				else
-				{
-					return "null client";
-				}
-			}
-			return null;
 		}
 	}
 }

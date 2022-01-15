@@ -1,9 +1,15 @@
-using Newtonsoft.Json.Linq;
-
 namespace inspiral
 {
-	internal partial class GameObject : GameEntity
+	internal partial class GameObject : IGameEntity
 	{
+		internal bool HasComponent(System.Type compType)
+		{
+			return Components.ContainsKey(compType);
+		}
+		internal bool HasComponent<T>()
+		{
+			return HasComponent(typeof(T));
+		}
 		internal GameComponent GetComponent<T>() 
 		{
 			return GetComponent(typeof(T));
@@ -12,7 +18,7 @@ namespace inspiral
 		{
 			if(HasComponent(compType))
 			{
-				return components[compType];
+				return Components[compType];
 			}
 			return null;
 		}
@@ -23,7 +29,7 @@ namespace inspiral
 			if(comp == null)
 			{
 				comp = Modules.Components.MakeComponent(compType);
-				components.Add(compType, comp);
+				Components.Add(compType, comp);
 				comp.Added(this);
 			}
 			return comp;
@@ -36,18 +42,10 @@ namespace inspiral
 		{
 			if(HasComponent<T>())
 			{
-				GameComponent component = components[typeof(T)];
-				components.Remove(typeof(T));
+				GameComponent component = GetComponent<T>();
+				Components.Remove(typeof(T));
 				component.Removed(this);
 			}
-		}
-		internal bool HasComponent(System.Type compType)
-		{
-			return components.ContainsKey(compType);
-		}
-		internal bool HasComponent<T>()
-		{
-			return HasComponent(typeof(T));
 		}
 	}
 }

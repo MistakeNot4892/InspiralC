@@ -13,18 +13,18 @@ namespace inspiral
 		{
 
 			GameObject targetObj = null;
-			if(cmd.objTarget != null && cmd.objTarget != "")
+			if(cmd.ObjTarget != null && cmd.ObjTarget != "")
 			{
-				targetObj = invoker.FindGameObjectNearby(cmd.objTarget);
+				targetObj = invoker.FindGameObjectNearby(cmd.ObjTarget);
 			}
 			if(targetObj == null)
 			{
-				invoker.WriteLine($"You cannot find '{cmd.objTarget}' nearby.");
+				invoker.WriteLine($"You cannot find '{cmd.ObjTarget}' nearby.");
 
 				return;
 			}
 
-			string usingItem = cmd.objWith;
+			string usingItem = cmd.ObjWith;
 			GameObject strikeWith = null;
 			GameObject strikeAgainst = null;
 
@@ -37,14 +37,14 @@ namespace inspiral
 					{
 						if(inv.carrying.ContainsKey(slot))
 						{
-							usingItem = inv.carrying[slot].GetLong(Field.Id).ToString();
+							usingItem = $"{inv.carrying[slot].GetValue<long>(Field.Id)}";
 							break;
 						}
 					}
 				}
 				else if(inv.GetWieldableSlots().Contains(usingItem) && inv.carrying.ContainsKey(usingItem))
 				{
-					usingItem = inv.carrying[usingItem].GetLong(Field.Id).ToString();
+					usingItem = $"{inv.carrying[usingItem].GetValue<long>(Field.Id)}";
 				}
 			}
 
@@ -53,7 +53,7 @@ namespace inspiral
 				MobileComponent mob = (MobileComponent)invoker.GetComponent<MobileComponent>();
 				if(strikeWith == null && (usingItem == null || usingItem == "") && mob.strikers.Count > 0)
 				{
-					usingItem = mob.strikers[Game.rand.Next(0, mob.strikers.Count)];
+					usingItem = mob.strikers[Game.Random.Next(0, mob.strikers.Count)];
 				}
 				if(mob.strikers.Contains(usingItem))
 				{
@@ -88,7 +88,7 @@ namespace inspiral
 			if(targetObj.HasComponent<MobileComponent>())
 			{
 				MobileComponent mob = (MobileComponent)targetObj.GetComponent<MobileComponent>();
-				string checkBp = cmd.objIn;
+				string checkBp = cmd.ObjIn;
 				if(checkBp == null || checkBp == "")
 				{
 					checkBp = mob.GetWeightedRandomBodypart();
@@ -117,9 +117,10 @@ namespace inspiral
 			if(strikeWith.HasComponent<BodypartComponent>())
 			{
 				BodypartComponent body = (BodypartComponent)strikeWith.GetComponent<BodypartComponent>();
-				if(body.GetBool(Field.NaturalWeapon))
+				if(body.GetValue<bool>(Field.NaturalWeapon))
 				{
-					strikeString = $"{invoker.gender.Their} {strikeString}";
+					GenderObject genderObj = Modules.Gender.GetByTerm(invoker.GetValue<string>(Field.Gender));
+					strikeString = $"{genderObj.Their} {strikeString}";
 				}
 			}
 

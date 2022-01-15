@@ -14,12 +14,12 @@ namespace inspiral
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
-			if(cmd.objTarget == null || cmd.strArgs.Length < 3)
+			if(cmd.ObjTarget == null || cmd.StrArgs.Length < 3)
 			{
 				invoker.WriteLine("Usage: SET <target> <field> <value>");
 				return;
 			}
-			GameObject editing = invoker.FindGameObjectNearby(cmd.objTarget);
+			GameObject editing = invoker.FindGameObjectNearby(cmd.ObjTarget);
 			if(editing == null)
 			{
 				invoker.WriteLine("Cannot find object to modify.");
@@ -27,11 +27,11 @@ namespace inspiral
 			}
 
 			// Do the actual edit.
-			string field = cmd.strArgs[1].ToLower();
+			DatabaseField field = Field.GetFieldFromName(cmd.StrArgs[1].ToLower());
 			string value = "";
-			for(int i = 2;i<cmd.strArgs.Length;i++)
+			for(int i = 2;i<cmd.StrArgs.Length;i++)
 			{
-				value += $" {cmd.strArgs[i]}";
+				value += $" {cmd.StrArgs[i]}";
 			}
 			value = value.Trim();
 
@@ -40,61 +40,59 @@ namespace inspiral
 			string invalidValue = null;
 			bool unknownValue = false;
 	
-			switch(field)
+			if(field.IsField(Field.Name))
 			{
-				case "name":
-					lastVal = editing.name;
-					editing.name = value;
-					break;
-
-				case "gender":
-					lastVal = $"{editing.gender.Term}";
-					GenderObject newGender = Modules.Gender.GetByTerm(value);
-					if(newGender == null)
+				lastVal = editing.GetValue<string>(Field.Name);
+				editing.SetValue(Field.Name, value);
+			}
+			else if(field.IsField(Field.Gender))
+			{
+				lastVal = editing.GetValue<string>(Field.Gender);
+				GenderObject newGender = Modules.Gender.GetByTerm(value);
+				if(newGender == null)
+				{
+					invalidValue = "Non-existent gender.";
+				}
+				else
+				{
+					editing.SetValue(Field.Gender, newGender.Term);
+					newVal = editing.GetValue<string>(Field.Gender);
+				}
+			}
+			else
+			{
+				unknownValue = true;
+				foreach(KeyValuePair<System.Type, GameComponent> comp in editing.Components)
+				{
+					if(Modules.Components.builders[comp.Key].editableFields != null && 
+						Modules.Components.builders[comp.Key].editableFields.Contains(field))
 					{
-						invalidValue = "Non-existent gender.";
+						unknownValue = false;
+						lastVal = comp.Value.GetValue<string>(field);
+						invalidValue = comp.Value.SetValueOfEditableField(field, value);
+						newVal = comp.Value.GetValue<string>(field);
 					}
-					else
-					{
-						editing.gender = newGender;
-						newVal = $"{editing.gender.Term}";
-					}
-					break;
-
-				default:
-					unknownValue = true;
-					foreach(KeyValuePair<System.Type, GameComponent> comp in editing.components)
-					{
-						if(Modules.Components.builders[comp.Key].editableFields != null && 
-							Modules.Components.builders[comp.Key].editableFields.Contains(field))
-						{
-							unknownValue = false;
-							lastVal = comp.Value.GetString(field);
-							invalidValue = comp.Value.SetValueOfEditableField(field, value);
-							newVal = comp.Value.GetString(field);
-						}
-					}
-					break;
+				}
 			}
 
 			if(unknownValue)
 			{
-				invoker.WriteLine($"Unknown field '{field}' of object {editing.name}#{editing.GetLong(Field.Id)} ({editing.GetShortDesc()}). Check that the object has the component and field that you are trying to edit.");
+				invoker.WriteLine($"Unknown field '{field}' of object {editing.GetValue<string>(Field.Name)}#{editing.GetValue<long>(Field.Id)} ({editing.GetShortDesc()}). Check that the object has the component and field that you are trying to edit.");
 			}
 			else if(invalidValue != null)
 			{
 				if(invalidValue != "")
 				{
-					invoker.WriteLine($"Invalid value '{value}' for field '{field}' of object {editing.name}#{editing.GetLong(Field.Id)} ({editing.GetShortDesc()}). {invalidValue}");
+					invoker.WriteLine($"Invalid value '{value}' for field '{field}' of object {editing.GetValue<string>(Field.Name)}#{editing.GetValue<long>(Field.Id)} ({editing.GetShortDesc()}). {invalidValue}");
 				}
 				else
 				{
-					invoker.WriteLine($"Invalid value '{value}' for field '{field}' of object {editing.name}#{editing.GetLong(Field.Id)} ({editing.GetShortDesc()}).");
+					invoker.WriteLine($"Invalid value '{value}' for field '{field}' of object {editing.GetValue<string>(Field.Name)}#{editing.GetValue<long>(Field.Id)} ({editing.GetShortDesc()}).");
 				}
 			}
 			else
 			{
-				invoker.WriteLine($"Set field '{field}' of object {editing.name}#{editing.GetLong(Field.Id)} ({editing.GetShortDesc()}) to '{newVal}'.\nFor reference, previous value was '{lastVal}'.");
+				invoker.WriteLine($"Set field '{field}' of object {editing.GetValue<string>(Field.Name)}#{editing.GetValue<long>(Field.Id)} ({editing.GetShortDesc()}) to '{newVal}'.\nFor reference, previous value was '{lastVal}'.");
 			}
 		}
 	}

@@ -3,18 +3,55 @@ using Newtonsoft.Json;
 
 namespace inspiral
 {
-	internal class PlayerAccount : GameEntity
+	internal class PlayerAccount : IGameEntity
 	{
+		internal long id;
 		internal string userName;
 		internal long objectId;
 		internal string passwordHash;
 		internal List<GameRole> roles = new List<GameRole>();
-
-		internal PlayerAccount(long _id) : base(_id) {}
+		internal PlayerAccount(long _id)
+		{
+			id = _id;
+		}
 		internal bool CheckPassword(string pass)
 		{
 			return BCrypt.Net.BCrypt.Verify(pass, passwordHash);
 		}
+		public Dictionary<string, object> GetSaveData()
+		{
+			Dictionary<string, object> saveData = new Dictionary<string, object>();
+			// todo
+			return saveData;
+		}
+		public bool SetValue<T>(DatabaseField field, T newValue)
+		{
+			return false;
+		}
+		public T GetValue<T>(DatabaseField field)
+		{
+			return default(T);
+		}
+		public void CopyFromRecord(Dictionary<string, object> record) 
+		{
+			// todo
+		}
+
+	}
+	internal static partial class Field
+	{
+		internal static DatabaseField UserName = new DatabaseField(
+			"username", "",
+			typeof(string), false, false);
+		internal static DatabaseField PasswordHash = new DatabaseField(
+			"passwordhash", "",
+			typeof(string), false, false);
+		internal static DatabaseField Roles = new DatabaseField(
+			"roles", "",
+			typeof(string), false, false);
+		internal static DatabaseField ObjectId = new DatabaseField(
+			"objectid", 0,
+			typeof(long), false, false);
 	}
 	internal class AccountRepository : GameRepository
 	{
@@ -24,12 +61,11 @@ namespace inspiral
 			repoName = "accounts";
 			accounts = new Dictionary<string, PlayerAccount>();
 			dbPath = "data/accounts.sqlite";
-			schemaFields = new Dictionary<string, (System.Type, string)>() 
-			{
-				{"userName",     (typeof(string), "''")}, 
-				{"passwordHash", (typeof(string), "''")},
-				{"roles",        (typeof(string), "''")},
-				{"objectId",     (typeof(int),    "0")}
+			schemaFields = new List<DatabaseField>() { 
+				Field.UserName, 
+				Field.PasswordHash, 
+				Field.Roles, 
+				Field.ObjectId
 			};
 		}
 		internal PlayerAccount GetAccountByUser(string user)
@@ -40,13 +76,13 @@ namespace inspiral
 			}
 			return null;
 		}
-		internal override void InstantiateFromRecord(DatabaseRecord record)
+		internal override void InstantiateFromRecord(Dictionary<string, object> record)
 		{
-			PlayerAccount acct = (PlayerAccount)CreateRepositoryType((long)record.fields["id"]);
-			acct.userName =      record.fields["userName"].ToString();
-			acct.passwordHash =  record.fields["passwordHash"].ToString();
-			acct.objectId =      (long)record.fields["objectId"];
-			foreach(string role in JsonConvert.DeserializeObject<List<string>>(record.fields["roles"].ToString()))
+			PlayerAccount acct = (PlayerAccount)CreateRepositoryType((long)record[Field.Id.fieldName]);
+			acct.userName =      record[Field.UserName.fieldName].ToString();
+			acct.passwordHash =  record[Field.PasswordHash.fieldName].ToString();
+			acct.objectId =      (long)record[Field.ObjectId.fieldName];
+			foreach(string role in JsonConvert.DeserializeObject<List<string>>(record[Field.Roles.fieldName].ToString()))
 			{
 				GameRole foundRole = Modules.Roles.GetRole(role);
 				if(foundRole != null && !acct.roles.Contains(foundRole))
@@ -55,7 +91,7 @@ namespace inspiral
 				}
 			}
 			accounts.Add(acct.userName, acct);
-			records.Add(acct.GetLong(Field.Id), acct);
+			records.Add(acct.GetValue<long>(Field.Id), acct);
 		}
 		internal PlayerAccount CreateAccount(string userName, string passwordHash)
 		{
@@ -65,17 +101,19 @@ namespace inspiral
 			acct.passwordHash = passwordHash;
 
 			// Create the shell the client will be piloting around, saving data to, etc.
-			GameObject gameObj = Modules.Templates.Instantiate(GlobalConfig.DefaultShellTemplate);
-			gameObj.name = Text.Capitalize(acct.userName);
-			gameObj.gender = Modules.Gender.GetByTerm(GlobalConfig.DefaultPlayerGender);
-			gameObj.aliases = new List<string>() { gameObj.name.ToLower() };
+			string myName = Text.Capitalize(acct.userName);
+			GameObject gameObj = Game.Objects.CreateFromTemplate(GlobalConfig.DefaultShellTemplate);
+			gameObj.SetValue(Field.Name, myName);
+			gameObj.SetValue(Field.Gender, GlobalConfig.DefaultPlayerGender);
+			gameObj.SetValue(Field.Aliases, new List<string>() { myName.ToLower() });
 
+			GenderObject genderObj = Modules.Gender.GetByTerm(gameObj.GetValue<string>(Field.Gender));
 			VisibleComponent vis = (VisibleComponent)gameObj.GetComponent<VisibleComponent>(); 
-			vis.SetValue(Field.ShortDesc,    $"{gameObj.name}");
-			vis.SetValue(Field.ExaminedDesc, $"and {gameObj.gender.Is} completely uninteresting.");
+			vis.SetValue<string>(Field.ShortDesc,    $"{gameObj.GetValue<string>(Field.Name)}");
+			vis.SetValue<string>(Field.ExaminedDesc, $"and {genderObj.Is} completely uninteresting.");
 			Game.Objects.QueueForUpdate(gameObj);
 
-			acct.objectId = gameObj.GetLong(Field.Id);
+			acct.objectId = gameObj.GetValue<long>(Field.Id);
 			
 			// If the account DB is empty, give them admin roles.
 			if(accounts.Count <= 0)
@@ -90,7 +128,7 @@ namespace inspiral
 			Database.UpdateRecord(dbPath, $"table_{repoName}", acct);
 			return acct;
 		}
-		internal override GameEntity CreateRepositoryType(long id) 
+		internal override IGameEntity CreateRepositoryType(long id) 
 		{
 			PlayerAccount acct = new PlayerAccount(id);
 			acct.roles.Add(Modules.Roles.GetRole("player"));
@@ -102,7 +140,7 @@ namespace inspiral
 			foreach(KeyValuePair<string, PlayerAccount> account in accounts)
 			{
 				if(account.Value.userName.ToLower() == searchstring ||
-					$"{account.Value.GetLong(Field.Id)}" == searchstring)
+					$"{account.Value.GetValue<long>(Field.Id)}" == searchstring)
 				{
 					return account.Value;
 				}
@@ -123,7 +161,7 @@ namespace inspiral
 			List<string> roleKeys = new List<string>();
 			foreach(GameRole role in acct.roles)
 			{
-				roleKeys.Add(role.name);
+				roleKeys.Add(role.GetValue<string>(Field.Name));
 			}
 			command.Parameters.AddWithValue("@p4", JsonConvert.SerializeObject(roleKeys));
 		}

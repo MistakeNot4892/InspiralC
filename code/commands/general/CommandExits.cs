@@ -10,12 +10,12 @@ namespace inspiral
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
-			if(invoker.location == null || !invoker.location.HasComponent<RoomComponent>())
+			if(invoker.Location == null || !invoker.Location.HasComponent<RoomComponent>())
 			{
 				invoker.WriteLine("You cannot see any exits here."); 
 				return;
 			}
-			RoomComponent roomComp = (RoomComponent)invoker.location.GetComponent<RoomComponent>();
+			RoomComponent roomComp = (RoomComponent)invoker.Location.GetComponent<RoomComponent>();
 			invoker.WriteLine($"{Colours.Fg(roomComp.GetExitString(), invoker.GetColour(Text.ColourDefaultExits))}"); 
 		}
 	}

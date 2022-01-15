@@ -229,17 +229,18 @@ namespace inspiral
 			List<string> ids = new List<string>();
 			foreach(GameObject entry in input)
 			{
-				ids.Add($"{entry.name} (#{entry.GetLong(Field.Id)})");
+				ids.Add($"{entry.GetValue<string>(Field.Name)} (#{entry.GetValue<long>(Field.Id)})");
 			}
 			return EnglishList(ids);
 		}
 
 		internal static string ReplacePronouns(GameObject other, string message, bool thirdPerson = false)
 		{
-			string token = other.name.ToLower();
+			string token = other.GetValue<string>(Field.Name);
+			token = token.ToLower();
 			if(!message.ToLower().Contains($"${token}"))
 			{
-				token = $"{other.GetLong(Field.Id)}";
+				token = $"{other.GetValue<long>(Field.Id)}";
 			}
 			return ReplacePronouns(token, other, message, thirdPerson);
 		}
@@ -248,7 +249,16 @@ namespace inspiral
 			System.Console.WriteLine(message);
 			if(message.ToLower().Contains($"${token}"))
 			{
-				string replacementValue = thirdPerson ? other.gender.They : "you";
+				string replacementValue;
+				GenderObject genderObj = Modules.Gender.GetByTerm(other.GetValue<string>(Field.Gender));
+				if(thirdPerson)
+				{
+					replacementValue = genderObj.They;
+				}
+				else
+				{
+					replacementValue = "you";
+				}
 				message = Regex.Replace(
 					message,
 					$"\\${token}_(he|she|they|ey)\\$",
@@ -260,7 +270,7 @@ namespace inspiral
 					return message;
 				}
 
-				replacementValue = thirdPerson ? other.gender.Their : "your";
+				replacementValue = thirdPerson ? genderObj.Their : "your";
 				message = Regex.Replace(
 					message,
 					$"\\${token}_(his|her|their|eir)\\$",
@@ -272,7 +282,7 @@ namespace inspiral
 					return message;
 				}
 
-				replacementValue = thirdPerson ? other.gender.Them : "you";
+				replacementValue = thirdPerson ? genderObj.Them : "you";
 				message = Regex.Replace(
 					message,
 					$"\\${token}_(him|her|them|em)\\$",
@@ -284,7 +294,7 @@ namespace inspiral
 					return message;
 				}
 
-				replacementValue = thirdPerson ? other.gender.Is : "are";
+				replacementValue = thirdPerson ? genderObj.Is : "are";
 				message = Regex.Replace(
 					message,
 					$"\\${token}_(is|are)\\$",
@@ -296,7 +306,7 @@ namespace inspiral
 					return message;
 				}
 
-				replacementValue = thirdPerson ? other.gender.Self : "self";
+				replacementValue = thirdPerson ? genderObj.Self : "self";
 				message = Regex.Replace(
 					message,
 					$"\\${token}_sel(ves|f)\\$",

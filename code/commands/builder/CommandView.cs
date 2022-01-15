@@ -11,24 +11,24 @@ namespace inspiral
 
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
-			if(cmd.objTarget == null)
+			if(cmd.ObjTarget == null)
 			{
 				invoker.WriteLine("What do you wish to view?");
 			}
 			else
 			{
-				GameObject viewing = invoker.FindGameObjectNearby(cmd.objTarget);
+				GameObject viewing = invoker.FindGameObjectNearby(cmd.ObjTarget);
 				if(viewing == null)
 				{
 					try
 					{
-						viewing = (GameObject)Game.Objects.GetByID((long)System.Convert.ToInt64(cmd.objTarget));
+						viewing = (GameObject)Game.Objects.GetByID((long)System.Convert.ToInt64(cmd.ObjTarget));
 					}
 					catch(System.Exception e) 
 					{
 						Game.LogError($"Tried to look up a non-long var in the global db ({e.Message})");
 					}
-					invoker.WriteLine($"Cannot find '{cmd.objTarget}'.");
+					invoker.WriteLine($"Cannot find '{cmd.ObjTarget}'.");
 				}
 				else
 				{

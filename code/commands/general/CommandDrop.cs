@@ -18,7 +18,7 @@ namespace inspiral
 			if(invoker.TryUseBalance("poise"))
 			{
 				InventoryComponent inv = (InventoryComponent)invoker.GetComponent<InventoryComponent>();
-				inv.TryToDrop(cmd.rawInput);
+				inv.TryToDrop(cmd.RawInput);
 			}
 		}
 	}

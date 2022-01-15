@@ -18,7 +18,6 @@ namespace inspiral
 					CommandData cmdData = new CommandData(cmd, cmdStr, arguments);
 					cmd.InvokeCommand(invoker.shell, cmdData);
 					invoker.SendPrompt();
-					cmdData.ReturnToPool();
 					return true;
 				}
 			}

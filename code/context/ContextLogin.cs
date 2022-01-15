@@ -49,7 +49,7 @@ namespace inspiral
 		{
 			GameObject wakingShell = (GameObject)Game.Objects.GetByID(invoker.account.objectId);
 			wakingShell.ShowNearby(wakingShell, $"{wakingShell.GetShortDesc()} wakes up.");
-			wakingShell.SetString<VisibleComponent>(Field.RoomDesc, "$Short$ is here.");
+			wakingShell.SetValue<string>(Field.RoomDesc, "$Short$ is here.");
 
 			invoker.shell = wakingShell;
 			if(invoker.shell.HasComponent<ClientComponent>())

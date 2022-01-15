@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-    internal static class Database
+    internal static partial class Database
     {
         private static string dbVersion = "3"; 
         private static Dictionary<string, DatabaseHandler> connections = new Dictionary<string, DatabaseHandler>();
@@ -17,14 +17,14 @@ namespace inspiral
             }
             return connections[dbPath];
         }
-        internal static List<DatabaseRecord> GetAllRecords(string dbPath, string tableName, Dictionary<string, (System.Type, string)> tableFields)
+        internal static List<Dictionary<string, object>> GetAllRecords(string dbPath, string tableName, List<DatabaseField> tableFields)
         {
             DatabaseHandler handler = GetConnection(dbPath);
             handler.InitializeTable(tableName, tableFields);
             return handler.GetAllRecords(tableName);
         }
 
-        internal static void UpdateRecord(string dbPath, string tableName, GameEntity entity)
+        internal static void UpdateRecord(string dbPath, string tableName, IGameEntity entity)
         {
             DatabaseHandler handler = GetConnection(dbPath);
             handler.UpdateRecord(tableName, entity);
@@ -37,7 +37,7 @@ namespace inspiral
             DatabaseHandler handler = GetConnection(dbPath);
             return handler.GetRecord(tableName, recordId);
         }
-        internal static void BatchUpdateRecords(string dbPath, string tableName, List<GameEntity> updateQueue)
+        internal static void BatchUpdateRecords(string dbPath, string tableName, List<IGameEntity> updateQueue)
         {
             DatabaseHandler handler = GetConnection(dbPath);
             handler.BatchUpdateRecords(tableName, updateQueue);

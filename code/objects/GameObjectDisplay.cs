@@ -6,7 +6,7 @@ namespace inspiral
 	{
 		internal void ShowToContents(string message)
 		{
-			foreach(GameObject obj in contents)
+			foreach(GameObject obj in Contents)
 			{
 				obj.WriteLine(message, true);
 			}
@@ -26,7 +26,7 @@ namespace inspiral
 			{
 				source.WriteLine(message1p, sendPromptToSource);
 			}
-			foreach(GameObject obj in contents)
+			foreach(GameObject obj in Contents)
 			{
 				if(obj != source && obj.HasComponent<ClientComponent>())
 				{
@@ -62,9 +62,10 @@ namespace inspiral
 
 		internal virtual void ShowNearby(GameObject source, string message, List<GameObject> exceptions)
 		{
-			if(source.location != null)
+			GameObject sourceLocation = source.Location;
+			if(sourceLocation != null)
 			{
-				foreach(GameObject obj in source.location.contents)
+				foreach(GameObject obj in sourceLocation.Contents)
 				{
 					if(!exceptions.Contains(obj))
 					{
@@ -89,9 +90,10 @@ namespace inspiral
 
 		internal virtual void ShowNearby(GameObject source, string message1p, string message3p)
 		{
-			if(source.location != null)
+			GameObject sourceLocation = source.Location;
+			if(sourceLocation != null)
 			{
-				source.location.ShowToContents(this, message1p, message3p);
+				sourceLocation.ShowToContents(this, message1p, message3p);
 			}
 			else
 			{
@@ -103,9 +105,9 @@ namespace inspiral
 		}
 		internal void Probed(GameObject invoker)
 		{
-			string reply = $"{GetShortDesc()} ({GetString(Field.Name)}#{GetLong(Field.Id)})";
+			string reply = $"{GetShortDesc()} ({GetValue<string>(Field.Name)}#{GetValue<long>(Field.Id)})";
 			reply += "\nContents:";
-			if(contents.Count > 0)
+			if(Contents.Count > 0)
 			{
 				foreach(string visibleThing in GetVisibleContents(invoker, true))
 				{
@@ -126,7 +128,8 @@ namespace inspiral
 			{
 				if(HasComponent<InventoryComponent>())
 				{
-					string their = (this == viewer) ? "your" : gender.Their;
+					GenderObject genderObj = Modules.Gender.GetByTerm(GetValue<string>(Field.Gender));
+					string their = (this == viewer) ? "your" : genderObj.Their;
 					InventoryComponent equip = (InventoryComponent)GetComponent<InventoryComponent>();
 					foreach(KeyValuePair<string, GameObject> equ in equip.carrying)
 					{
@@ -134,11 +137,11 @@ namespace inspiral
 						{
 							if(equip.GetWieldableSlots().Contains(equ.Key))
 							{
-								result.Add($"{equ.Value.GetShortDesc()} ({equ.Value.name}#{equ.Value.GetLong(Field.Id)}) ({equ.Key}, wielded)");
+								result.Add($"{equ.Value.GetShortDesc()} ({equ.Value.GetValue<string>(Field.Name)}#{equ.Value.GetValue<long>(Field.Id)}) ({equ.Key}, wielded)");
 							}
 							else
 							{
-								result.Add($"{equ.Value.GetShortDesc()} ({equ.Value.name}#{equ.Value.GetLong(Field.Id)}) ({equ.Key}, worn)");
+								result.Add($"{equ.Value.GetShortDesc()} ({equ.Value.GetValue<string>(Field.Name)}#{equ.Value.GetValue<long>(Field.Id)}) ({equ.Key}, worn)");
 							}
 						}
 						else
@@ -157,11 +160,11 @@ namespace inspiral
 			}
 			else
 			{
-				foreach(GameObject gameObj in contents)
+				foreach(GameObject gameObj in Contents)
 				{
 					if(quickView)
 					{
-						result.Add($"{gameObj.GetShortDesc()} ({gameObj.name}#{gameObj.GetLong(Field.Id)})");
+						result.Add($"{gameObj.GetShortDesc()} ({gameObj.GetValue<string>(Field.Name)}#{gameObj.GetValue<long>(Field.Id)})");
 					}
 					else
 					{
@@ -174,7 +177,7 @@ namespace inspiral
 			}
 			return result;
 		}
-		internal void ExaminedBy(GameObject viewer, bool fromInside)
+		internal virtual void ExaminedBy(GameObject viewer, bool fromInside)
 		{
 			if(HasComponent<VisibleComponent>())
 			{
@@ -189,11 +192,11 @@ namespace inspiral
 		internal string GetShortDesc()
 		{
 			// Re-enable token replacement if relevant tokens are added
-			return GetString<VisibleComponent>(Field.ShortDesc);
+			return GetValue<string>(Field.ShortDesc);
 		}
 		internal string GetRoomDesc()
 		{
-			return ApplyStringTokens(GetString<VisibleComponent>(Field.RoomDesc));
+			return ApplyStringTokens(GetValue<string>(Field.RoomDesc));
 		}
 		internal string GetColour(string colourType)
 		{

@@ -11,17 +11,16 @@ namespace inspiral
 
 	internal static partial class Field
 	{
-		internal const string EquippedSlots = "equipped";
+		internal static DatabaseField EquippedSlots = new DatabaseField(
+			"equipped", "",
+			typeof(string), false, false);
 	}
 	internal class InventoryBuilder : GameComponentBuilder
 	{
 		internal override void Initialize()
 		{
 			ComponentType = typeof(InventoryComponent);
-			schemaFields = new Dictionary<string, (System.Type, string, bool, bool)>()
-			{
-				{ Field.EquippedSlots, (typeof(string), "''", false, false) }
-			};
+			schemaFields = new List<DatabaseField>() { Field.EquippedSlots };
 			base.Initialize();
 		}
 	}
@@ -62,7 +61,7 @@ namespace inspiral
 		}
 		internal bool Drop(GameObject dropping, bool silent)
 		{
-			if(parent.location == null)
+			if(parent.Location == null)
 			{
 				if(!silent)
 				{
@@ -105,7 +104,7 @@ namespace inspiral
 						$"{Text.Capitalize(parent.GetShortDesc())} {removeMessage3p} {dropping.GetShortDesc()}."
 						);
 				}
-				dropping.Move(parent.location);
+				dropping.Move(parent.Location);
 			}
 			return true;
 		}
@@ -228,8 +227,9 @@ namespace inspiral
 					string collectionMessage3p = $"{Text.Capitalize(parent.GetShortDesc())} picks up {equipping.GetShortDesc()}";
 					if(slot != null && slot != "default")
 					{
+						GenderObject genderObj = Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 						collectionMessage1p = $"{collectionMessage1p} with your {slot}";
-						collectionMessage3p = $"{collectionMessage1p} with {parent.gender.Their} {slot}";
+						collectionMessage3p = $"{collectionMessage1p} with {genderObj.Their} {slot}";
 					}
 					parent.ShowNearby(parent, $"{collectionMessage1p}.", $"{collectionMessage3p}.");
 					return true;
@@ -318,7 +318,7 @@ namespace inspiral
 		{
 			if(!carrying.ContainsKey(slot))
 			{
-				if(equipping.location != parent)
+				if(equipping.Location != parent)
 				{
 					equipping.Move(parent);
 				}
@@ -332,9 +332,10 @@ namespace inspiral
 				carrying.Add(slot, equipping);
 				if(!silent)
 				{
+					GenderObject genderObj = Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 					parent.ShowNearby(parent, 
 						$"You equip {equipping.GetShortDesc()} to your {slot}.",
-						$"{Text.Capitalize(parent.GetShortDesc())} equips {equipping.GetShortDesc()} to {parent.gender.Their} {slot}."
+						$"{Text.Capitalize(parent.GetShortDesc())} equips {equipping.GetShortDesc()} to {genderObj.Their} {slot}."
 					);
 				}
 				Game.Objects.QueueForUpdate(parent);
@@ -369,38 +370,16 @@ namespace inspiral
 							carrying.Remove(otherSlot);
 						}
 					}
+					GenderObject genderObj = Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 					parent.ShowNearby(parent, 
 						$"You remove {unequipping.GetShortDesc()} from your {removingSlot}.",
-						$"{Text.Capitalize(parent.GetShortDesc())} removes {unequipping.GetShortDesc()} from {parent.gender.Their} {removingSlot}."
+						$"{Text.Capitalize(parent.GetShortDesc())} removes {unequipping.GetShortDesc()} from {genderObj.Their} {removingSlot}."
 					);
 					Game.Objects.QueueForUpdate(parent);
 				}
 				return true;
 			}
 			return false;
-		}
-		internal override void CopyFromRecord(DatabaseRecord record) 
-		{
-			base.CopyFromRecord(record);
-			foreach(KeyValuePair<string, long> equippedId in JsonConvert.DeserializeObject<Dictionary<string, long>>(record.fields[Field.EquippedSlots].ToString()))
-			{
-				GameObject obj = (GameObject)Game.Objects.GetByID(equippedId.Value);
-				if(obj != null && obj.location == parent)
-				{
-					carrying.Add(equippedId.Key.ToLower(), obj);
-				}
-			}
-		}
-		internal override Dictionary<string, object> GetSaveData()
-		{
-			Dictionary<string, object> saveData = new Dictionary<string, object>();
-			Dictionary<string, long> equippedById = new Dictionary<string, long>();
-			foreach(KeyValuePair<string, GameObject> gameObj in carrying)
-			{
-				equippedById.Add(gameObj.Key, gameObj.Value.GetLong(Field.Id));
-			}
-			saveData.Add(Field.EquippedSlots, JsonConvert.SerializeObject(equippedById));
-			return saveData;
 		}
 	}
 }

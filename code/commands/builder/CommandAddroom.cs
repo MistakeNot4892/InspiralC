@@ -10,28 +10,28 @@ namespace inspiral
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
-			if(invoker.location == null || !invoker.location.HasComponent<RoomComponent>())
+			if(invoker.Location == null || !invoker.Location.HasComponent<RoomComponent>())
 			{
 				invoker.WriteLine("This command is only usable within a room.");
 			}
 			else
 			{
-				if(cmd.objTarget == null)
+				if(cmd.ObjTarget == null)
 				{
 					invoker.WriteLine("Which exit do you wish to add a room to?");
 				}
-				else if(cmd.strArgs.Length < 1)
+				else if(cmd.StrArgs.Length < 1)
 				{
 					invoker.WriteLine("Please specify a valid room ID to link to, or 'new' to use a new room.");
 				}
 				else
 				{
-					string exitToAdd = cmd.objTarget;
+					string exitToAdd = cmd.ObjTarget;
 					if(Text.shortExits.ContainsKey(exitToAdd))
 					{
 						exitToAdd = Text.shortExits[exitToAdd];
 					}
-					RoomComponent room = (RoomComponent)invoker.location.GetComponent<RoomComponent>();
+					RoomComponent room = (RoomComponent)invoker.Location.GetComponent<RoomComponent>();
 					if(room.exits.ContainsKey(exitToAdd))
 					{
 						invoker.WriteLine($"There is already an exit to the {exitToAdd} in this room.");
@@ -39,16 +39,16 @@ namespace inspiral
 					else
 					{
 						long roomId = -1;
-						System.Console.WriteLine(cmd.strArgs[1]);
-						if(cmd.strArgs[1].ToLower() == "new")
+						System.Console.WriteLine(cmd.StrArgs[1]);
+						if(cmd.StrArgs[1].ToLower() == "new")
 						{
-							roomId = Modules.Templates.Instantiate("room").GetLong(Field.Id);
+							roomId = Modules.Rooms.CreateEmpty().GetValue<long>(Field.Id);
 						}
 						else
 						{
 							try
 							{
-								roomId = System.Int32.Parse(cmd.strArgs[0].ToLower());
+								roomId = System.Int32.Parse(cmd.StrArgs[0].ToLower());
 							}
 							catch(System.Exception e)
 							{
@@ -63,11 +63,11 @@ namespace inspiral
 						{
 							bool saveEditedRoom = true;
 							GameObject linkingRoom = (GameObject)Game.Objects.GetByID(roomId);
-							if((cmd.strArgs.Length >= 2 && cmd.strArgs[1].ToLower() == "one-way") || !linkingRoom.HasComponent<RoomComponent>() || !Text.reversedExits.ContainsKey(exitToAdd))
+							if((cmd.StrArgs.Length >= 2 && cmd.StrArgs[1].ToLower() == "one-way") || !linkingRoom.HasComponent<RoomComponent>() || !Text.reversedExits.ContainsKey(exitToAdd))
 							{
 								room.exits.Add(exitToAdd, roomId);
 								saveEditedRoom = true;
-								invoker.WriteLine($"You have connected {room.parent.GetLong(Field.Id)} to {roomId} via a one-way exit to the {exitToAdd}.");
+								invoker.WriteLine($"You have connected {room.parent.GetValue<long>(Field.Id)} to {roomId} via a one-way exit to the {exitToAdd}.");
 							}
 							else
 							{
@@ -77,15 +77,15 @@ namespace inspiral
 								{
 									room.exits.Add(exitToAdd, roomId);
 									saveEditedRoom = true;
-									invoker.WriteLine($"Target room already has an exit to the {otherExit}.\nYou have connected {room.parent.GetLong(Field.Id)} to {roomId} via a one-way exit to the {exitToAdd}.");
+									invoker.WriteLine($"Target room already has an exit to the {otherExit}.\nYou have connected {room.parent.GetValue<long>(Field.Id)} to {roomId} via a one-way exit to the {exitToAdd}.");
 								}
 								else
 								{
 									room.exits.Add(exitToAdd, roomId);
 									saveEditedRoom = true;
-									otherRoom.exits.Add(otherExit, room.parent.GetLong(Field.Id));
+									otherRoom.exits.Add(otherExit, room.parent.GetValue<long>(Field.Id));
 									Game.Objects.QueueForUpdate(otherRoom.parent);
-									invoker.WriteLine($"You have connected {room.parent.GetLong(Field.Id)} to {roomId} via a bidirectional exit to the {exitToAdd}.");
+									invoker.WriteLine($"You have connected {room.parent.GetValue<long>(Field.Id)} to {roomId} via a bidirectional exit to the {exitToAdd}.");
 								}
 							}
 							if(saveEditedRoom)
