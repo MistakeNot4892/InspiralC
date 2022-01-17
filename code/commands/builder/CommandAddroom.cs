@@ -55,14 +55,14 @@ namespace inspiral
 								Game.LogError($"Room ID exception: {e.ToString()}.");
 							}
 						}
-						if(roomId == -1 || Game.Objects.GetByID(roomId) == null)
+						if(roomId == -1 || Repos.Objects.GetByID(roomId) == null)
 						{
 							invoker.WriteLine("Please specify a valid room ID to link to, or 'new' to use a new room.");
 						}
 						else
 						{
 							bool saveEditedRoom = true;
-							GameObject linkingRoom = (GameObject)Game.Objects.GetByID(roomId);
+							GameObject linkingRoom = (GameObject)Repos.Objects.GetByID(roomId);
 							if((cmd.StrArgs.Length >= 2 && cmd.StrArgs[1].ToLower() == "one-way") || !linkingRoom.HasComponent<RoomComponent>() || !Text.reversedExits.ContainsKey(exitToAdd))
 							{
 								room.exits.Add(exitToAdd, roomId);
@@ -84,13 +84,13 @@ namespace inspiral
 									room.exits.Add(exitToAdd, roomId);
 									saveEditedRoom = true;
 									otherRoom.exits.Add(otherExit, room.parent.GetValue<long>(Field.Id));
-									Game.Objects.QueueForUpdate(otherRoom.parent);
+									Repos.Objects.QueueForUpdate(otherRoom.parent);
 									invoker.WriteLine($"You have connected {room.parent.GetValue<long>(Field.Id)} to {roomId} via a bidirectional exit to the {exitToAdd}.");
 								}
 							}
 							if(saveEditedRoom)
 							{
-								Game.Objects.QueueForUpdate(room.parent);
+								Repos.Objects.QueueForUpdate(room.parent);
 							}
 						}
 					}

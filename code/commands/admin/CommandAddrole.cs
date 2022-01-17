@@ -21,7 +21,7 @@ namespace inspiral
 				return;
 			}
 
-			PlayerAccount acct = Game.Accounts.FindAccount(cmd.ObjTarget);
+			PlayerAccount acct = Repos.Accounts.FindAccount(cmd.ObjTarget);
 			if(acct == null)
 			{
 				invoker.WriteLine($"Cannot find account for '{cmd.ObjTarget}'.", true);
@@ -40,7 +40,7 @@ namespace inspiral
 			else
 			{
 				acct.roles.Add(role);
-				Game.Accounts.QueueForUpdate(acct);
+				Repos.Accounts.QueueForUpdate(acct);
 				invoker.WriteLine($"Added role '{role.name}' to '{acct.userName}'.");
 			}
 		}

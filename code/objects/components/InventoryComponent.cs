@@ -221,7 +221,7 @@ namespace inspiral
 				}
 				if(success)
 				{
-					Game.Objects.QueueForUpdate(parent);
+					Repos.Objects.QueueForUpdate(parent);
 					string collectionMessage1p = $"You pick up {equipping.GetShortDesc()}";
 					string collectionMessage3p = $"{Text.Capitalize(parent.GetShortDesc())} picks up {equipping.GetShortDesc()}";
 					if(slot != null && slot != "default")
@@ -337,7 +337,7 @@ namespace inspiral
 						$"{Text.Capitalize(parent.GetShortDesc())} equips {equipping.GetShortDesc()} to {genderObj.Their} {slot}."
 					);
 				}
-				Game.Objects.QueueForUpdate(parent);
+				Repos.Objects.QueueForUpdate(parent);
 				return true;
 			}
 			return false; 
@@ -374,7 +374,7 @@ namespace inspiral
 						$"You remove {unequipping.GetShortDesc()} from your {removingSlot}.",
 						$"{Text.Capitalize(parent.GetShortDesc())} removes {unequipping.GetShortDesc()} from {genderObj.Their} {removingSlot}."
 					);
-					Game.Objects.QueueForUpdate(parent);
+					Repos.Objects.QueueForUpdate(parent);
 				}
 				return true;
 			}

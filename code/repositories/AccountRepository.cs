@@ -3,6 +3,11 @@ using Newtonsoft.Json;
 
 namespace inspiral
 {
+
+	internal static partial class Repos
+	{
+		internal static AccountRepository Accounts;
+	}
 	internal class PlayerAccount : IGameEntity
 	{
 		internal long id;
@@ -56,8 +61,9 @@ namespace inspiral
 	internal class AccountRepository : GameRepository
 	{
 		private Dictionary<string, PlayerAccount> accounts;
-		internal AccountRepository()
+		internal override void Instantiate()
 		{
+			Repos.Accounts = this;
 			repoName = "accounts";
 			accounts = new Dictionary<string, PlayerAccount>();
 			dbPath = "data/accounts.sqlite";
@@ -102,7 +108,7 @@ namespace inspiral
 
 			// Create the shell the client will be piloting around, saving data to, etc.
 			string myName = Text.Capitalize(acct.userName);
-			GameObject gameObj = Game.Objects.CreateFromTemplate(GlobalConfig.DefaultShellTemplate);
+			GameObject gameObj = Repos.Objects.CreateFromTemplate(GlobalConfig.DefaultShellTemplate);
 			gameObj.SetValue(Field.Name, myName);
 			gameObj.SetValue(Field.Gender, GlobalConfig.DefaultPlayerGender);
 			gameObj.SetValue(Field.Aliases, new List<string>() { myName.ToLower() });
@@ -111,7 +117,7 @@ namespace inspiral
 			VisibleComponent vis = (VisibleComponent)gameObj.GetComponent<VisibleComponent>(); 
 			vis.SetValue<string>(Field.ShortDesc,    $"{gameObj.GetValue<string>(Field.Name)}");
 			vis.SetValue<string>(Field.ExaminedDesc, $"and {genderObj.Is} completely uninteresting.");
-			Game.Objects.QueueForUpdate(gameObj);
+			Repos.Objects.QueueForUpdate(gameObj);
 
 			acct.objectId = gameObj.GetValue<long>(Field.Id);
 			

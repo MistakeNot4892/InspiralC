@@ -32,7 +32,7 @@ namespace inspiral
 					RoomComponent room = (RoomComponent)invoker.shell.Location.GetComponent<RoomComponent>();
 					if(room.exits.ContainsKey(tmp))
 					{
-						GameObject destination = (GameObject)Game.Objects.GetByID(room.exits[tmp]);
+						GameObject destination = (GameObject)Repos.Objects.GetByID(room.exits[tmp]);
 						if(destination == null)
 						{
 							invoker.WriteLine($"Strangely, there is nothing to the {tmp}. You stay where you are.");

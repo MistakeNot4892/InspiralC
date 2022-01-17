@@ -45,7 +45,7 @@ namespace inspiral
 			parent = addedTo;
 			if(isPersistent)
 			{
-				Game.Objects.QueueForUpdate(parent);
+				Repos.Objects.QueueForUpdate(parent);
 			}
 		}
 		internal virtual void Removed(GameObject takenFrom)
@@ -56,7 +56,7 @@ namespace inspiral
 			}
 			if(isPersistent)
 			{
-				Game.Objects.QueueForUpdate(takenFrom);
+				Repos.Objects.QueueForUpdate(takenFrom);
 			}
 		}
 		internal string GetStringSummary() 
@@ -92,7 +92,7 @@ namespace inspiral
 				Modules.Components.builders[myType].editableFields.Count > 0)
 			{
 				SetValue(field, value);
-				Game.Objects.QueueForUpdate(parent);
+				Repos.Objects.QueueForUpdate(parent);
 				return null;	
 			}
 			return "Invalid field.";

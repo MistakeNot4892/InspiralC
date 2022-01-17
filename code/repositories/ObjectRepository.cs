@@ -3,6 +3,11 @@ using Newtonsoft.Json;
 
 namespace inspiral
 {
+	internal static partial class Repos
+	{
+		internal static ObjectRepository Objects;
+	}
+
 	internal static partial class Field
 	{
 		internal static DatabaseField Name = new DatabaseField(
@@ -13,7 +18,7 @@ namespace inspiral
 			typeof(string), true, true);
 		internal static DatabaseField Aliases = new DatabaseField(
 			"aliases", "", 
-			typeof(string), true, true);
+			typeof(List<string>), true, true);
 		internal static DatabaseField Components = new DatabaseField(
 			"components", "",
 			typeof(Dictionary<string, long>), true, true);
@@ -28,8 +33,9 @@ namespace inspiral
 	{
 		private Dictionary<long, long> _postInitLocations = new Dictionary<long, long>();
 		internal List<string> SelfReferenceTokens = new List<string>() { "me", "self", "myself" };
-		internal ObjectRepository()
+		internal override void Instantiate()
 		{
+			Repos.Objects = this;
 			repoName = "objects";
 			dbPath = "data/objects.sqlite";
 			schemaFields = new List<DatabaseField>() 

@@ -47,7 +47,7 @@ namespace inspiral
 		}
 		private void HandleLogin(GameClient invoker)
 		{
-			GameObject wakingShell = (GameObject)Game.Objects.GetByID(invoker.account.objectId);
+			GameObject wakingShell = (GameObject)Repos.Objects.GetByID(invoker.account.objectId);
 			wakingShell.ShowNearby(wakingShell, $"{wakingShell.GetShortDesc()} wakes up.");
 			wakingShell.SetValue<string>(Field.RoomDesc, "$Short$ is here.");
 
@@ -73,7 +73,7 @@ namespace inspiral
 				else
 				{
 					string newUser = tokens[0].ToLower();
-					if(Game.Accounts.GetAccountByUser(newUser) != null)
+					if(Repos.Accounts.GetAccountByUser(newUser) != null)
 					{
 						invoker.WriteLine($"An account already exists with that username.");
 					}
@@ -95,7 +95,7 @@ namespace inspiral
 				switch(loginState[invoker])
 				{
 					case "connected":
-						PlayerAccount acct = Game.Accounts.GetAccountByUser(command);
+						PlayerAccount acct = Repos.Accounts.GetAccountByUser(command);
 						if(acct == null)
 						{
 							invoker.WriteLine($"No account exists for '{command}'. Use {Colours.Fg("register [username]",  invoker.shell.GetColour(Text.ColourDefaultHighlight))} to create one.");
@@ -142,7 +142,7 @@ namespace inspiral
 					case "registering_confirming_password":
 						if(passwordConfirmations.ContainsKey(invoker) && BCrypt.Net.BCrypt.Verify(rawCommand, passwordConfirmations[invoker]))
 						{
-							invoker.account = Game.Accounts.CreateAccount(invoker.clientId, passwordConfirmations[invoker]);
+							invoker.account = Repos.Accounts.CreateAccount(invoker.clientId, passwordConfirmations[invoker]);
 							invoker.WriteLine("Account created.");
 							HandleLogin(invoker);
 						}

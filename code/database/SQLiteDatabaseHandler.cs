@@ -7,7 +7,16 @@ namespace inspiral
     {
         internal static object ConvertDataForSave(KeyValuePair<DatabaseField, object> recordField)
         {
-            return recordField.Value; // todo: list conversion
+            if(recordField.Key.fieldType == typeof(List<string>) || recordField.Key.fieldType == typeof(Dictionary<string, long>))
+            {
+                return Newtonsoft.Json.JsonConvert.SerializeObject((string)recordField.Value);
+            }
+            else if(recordField.Key.fieldType == typeof(bool))
+            {
+                return (bool)recordField.Value ? 1 : 0;
+            }
+            return recordField.Value;
+
         }
         internal static Dictionary<DatabaseField, object> GetDataFromRecord(SQLiteDataReader record)
         {
@@ -107,7 +116,7 @@ namespace inspiral
                 string tableFieldString = $"{field.fieldName} {GetFieldTypeString(field.fieldType)}";
                 if(field.fieldDefault != null)
                 {
-                    if(field.fieldType == typeof(string))
+                    if(field.fieldType == typeof(string) || field.fieldType == typeof(List<string>) || field.fieldType == typeof(Dictionary<string, long>))
                     {
                         tableFieldString = $"{tableFieldString} DEFAULT '{field.fieldDefault}'";
                     }

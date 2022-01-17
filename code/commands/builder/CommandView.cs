@@ -22,7 +22,7 @@ namespace inspiral
 				{
 					try
 					{
-						viewing = (GameObject)Game.Objects.GetByID((long)System.Convert.ToInt64(cmd.ObjTarget));
+						viewing = (GameObject)Repos.Objects.GetByID((long)System.Convert.ToInt64(cmd.ObjTarget));
 					}
 					catch(System.Exception e) 
 					{

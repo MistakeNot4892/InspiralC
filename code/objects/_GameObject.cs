@@ -25,7 +25,7 @@ namespace inspiral
 		}
 		public GameObject Location
 		{
-			get { return (GameObject)Game.Objects.GetByID(GetValue<long>(Field.Location)); }
+			get { return (GameObject)Repos.Objects.GetByID(GetValue<long>(Field.Location)); }
 			set { SetValue<long>(Field.Location, (long)value.GetValue<long>(Field.Id)); }
 		}
 		private Dictionary<System.Type, GameComponent> _components = new Dictionary<System.Type, GameComponent>();
@@ -66,7 +66,7 @@ namespace inspiral
 		internal GameObject FindGameObjectNearby(GameObject viewer, string token)
 		{
 			string checkToken = token.ToLower();
-			if(Game.Objects.SelfReferenceTokens.Contains(checkToken))
+			if(Repos.Objects.SelfReferenceTokens.Contains(checkToken))
 			{
 				return viewer;
 			}
@@ -129,7 +129,7 @@ namespace inspiral
 				}
 				if(room.exits.ContainsKey(lookingFor))
 				{
-					GameObject otherRoom = (GameObject)Game.Objects.GetByID(room.exits[lookingFor]);
+					GameObject otherRoom = (GameObject)Repos.Objects.GetByID(room.exits[lookingFor]);
 					if(otherRoom != null)
 					{
 						return otherRoom;

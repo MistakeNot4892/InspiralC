@@ -27,38 +27,25 @@ namespace inspiral
 			get { return s_initComplete; }
 			set { s_initComplete = value; }
 		}
-
-		internal static AccountRepository Accounts
-		{ 
-			get { return s_accounts; }
-			set { s_accounts = value; }
-		}
-		internal static ObjectRepository Objects
-		{ 
-			get { return s_objects; }
-			set { s_objects = value; }
-		}
-
 		internal static void Initialize() 
 		{
+			// Populate modules.
 			Modules.Initialize();
-			Accounts.Load();
-			Objects.Load();
 
+			// Populate repos.
+			Repos.InstantiateRepos();
+			Repos.LoadRepos();
+			Repos.InitializeRepos();
+			Repos.PostInitializeRepos();	
+
+			// Start listening for client connections.
 			List<int> ports = new List<int>() {9090, 2323};
 			foreach(int port in ports)
 			{
 				PortListener portListener = new PortListener(port);
 				Task.Run(() => portListener.Begin());
-			}
-
-			Accounts.Initialize();
-			Objects.Initialize();
-
-			Accounts.PostInitialize();
-			Objects.PostInitialize();
-			
-			InitComplete = true;
+			}		
+			InitComplete = true; // We're done!
 		}
 		internal static void Exit()
 		{
@@ -66,8 +53,7 @@ namespace inspiral
 			{
 				client.Farewell("The server is shutting down. Goodbye!");
 			}
-			Objects.Exit();
-			Accounts.Exit();
+			Repos.ExitRepos();
 			Database.Exit();
 		}
 
