@@ -4,9 +4,9 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			aliases = new System.Collections.Generic.List<string>() { "unequip", "remove" };
-			description = "Unequips an object.";
-			usage = "unequip [object name or id]";
+			Aliases = new System.Collections.Generic.List<string>() { "unequip", "remove" };
+			Description = "Unequips an object.";
+			Usage = "unequip [object name or id]";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{

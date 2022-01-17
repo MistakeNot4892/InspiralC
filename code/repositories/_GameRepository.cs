@@ -21,11 +21,11 @@ namespace inspiral
 				updateQueue.Add(obj);
 			}
 		}
-		internal virtual void InstantiateFromRecord(Dictionary<string, object> record) {}
+		internal virtual void InstantiateFromRecord(Dictionary<DatabaseField, object> record) {}
 
 		internal virtual void Load() {
 			Game.LogError($"Loading {repoName} from database.");
-			foreach(Dictionary<string, object> record in Database.GetAllRecords(dbPath, $"table_{repoName}", schemaFields))
+			foreach(Dictionary<DatabaseField, object> record in Database.GetAllRecords(dbPath, $"table_{repoName}", schemaFields))
 			{
 				InstantiateFromRecord(record);
 			}

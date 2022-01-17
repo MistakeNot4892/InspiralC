@@ -22,7 +22,7 @@ namespace inspiral
 			{
 				Game.LogError($"- Creating command instance {t}.");
 				GameCommand command = (GameCommand)System.Activator.CreateInstance(t);
-				if(command != null && command.aliases != null && command.aliases.Count > 0)
+				if(command != null && command.Aliases != null && command.Aliases.Count > 0)
 				{
 					RegisterCommand(command);
 				}

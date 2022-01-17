@@ -4,9 +4,9 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			aliases = new System.Collections.Generic.List<string>() { "drop" };
-			description = "Drops an object.";
-			usage = "drop [object name or id]";
+			Aliases = new System.Collections.Generic.List<string>() { "drop" };
+			Description = "Drops an object.";
+			Usage = "drop [object name or id]";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{

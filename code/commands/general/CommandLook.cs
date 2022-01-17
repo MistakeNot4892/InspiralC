@@ -4,9 +4,9 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			aliases = new System.Collections.Generic.List<string>() { "look", "l", "ql" };
-			description = "Examines a creature, object or location.";
-			usage = "look <at> <target>";
+			Aliases = new System.Collections.Generic.List<string>() { "look", "l", "ql" };
+			Description = "Examines a creature, object or location.";
+			Usage = "look <at> <target>";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{

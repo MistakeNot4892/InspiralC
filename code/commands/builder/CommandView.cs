@@ -4,9 +4,9 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			aliases = new System.Collections.Generic.List<string>() { "view", "vv" };
-			description = "Views the components and fields of an object.";
-			usage = "view [object name or id]";
+			Aliases = new System.Collections.Generic.List<string>() { "view", "vv" };
+			Description = "Views the components and fields of an object.";
+			Usage = "view [object name or id]";
 		}
 
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)

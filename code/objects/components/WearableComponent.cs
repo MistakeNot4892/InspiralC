@@ -11,7 +11,7 @@ namespace inspiral
 	{
 		internal static DatabaseField WearableSlots = new DatabaseField(
 			"wearable_slots", "",
-			typeof(string), true, true);
+			typeof(List<string>), true, true);
 	}
 	internal class WearableBuilder : GameComponentBuilder
 	{

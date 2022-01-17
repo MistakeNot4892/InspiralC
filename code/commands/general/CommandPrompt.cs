@@ -4,9 +4,9 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			aliases = new System.Collections.Generic.List<string>() { "prompt" };
-			description = "Shows your full prompt.";
-			usage = "prompt";
+			Aliases = new System.Collections.Generic.List<string>() { "prompt" };
+			Description = "Shows your full prompt.";
+			Usage = "prompt";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{

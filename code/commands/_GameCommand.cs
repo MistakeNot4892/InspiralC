@@ -76,7 +76,7 @@ namespace inspiral
 							case "an":
 							case "the":
 							case "my":
-								if(!command.skipArticles)
+								if(!command.SkipArticles)
 								{
 									lastSubstring += $" {s}";
 								}
@@ -86,7 +86,7 @@ namespace inspiral
 							case "at":
 							case "to":
 							case "from":
-								if(command.skipTokenQualifiers)
+								if(command.SkipTokenQualifiers)
 								{
 									lastSubstring += $" {s}";
 									break;
@@ -117,18 +117,18 @@ namespace inspiral
 
 	internal class GameCommand
 	{
-		internal List<string> aliases = null;
-		internal string usage;
-		internal string description;
-		internal bool skipArticles = true;         // Parse 'a' 'an' and 'the' as part of substrings instead of skipping.
-		internal bool skipTokenQualifiers = false; // Do not parse 'with' 'from' etc. as special tokens.
+		internal List<string> Aliases = null;
+		internal string Usage;
+		internal string Description;
+		internal bool SkipArticles = true;         // Parse 'a' 'an' and 'the' as part of substrings instead of skipping.
+		internal bool SkipTokenQualifiers = false; // Do not parse 'with' 'from' etc. as special tokens.
 		internal GameCommand() { Initialize(); }
 		internal virtual void Initialize() {}
 		internal virtual void InvokeCommand(GameObject invoker, CommandData cmd) {}
 
 		internal string GetSummary()
 		{
-			return $"[{Text.EnglishList(aliases)}]";
+			return $"[{Text.EnglishList(Aliases)}]";
 		}
 	}
 }

@@ -5,9 +5,9 @@ namespace inspiral
 
 		internal override void Initialize()
 		{
-			aliases = new System.Collections.Generic.List<string>() { "strike", "attack", "hit", "bash" };
-			description = "Attacks another entity.";
-			usage = "strike [target] <in bodypart> <with bodypart or object>";
+			Aliases = new System.Collections.Generic.List<string>() { "strike", "attack", "hit", "bash" };
+			Description = "Attacks another entity.";
+			Usage = "strike [target] <in bodypart> <with bodypart or object>";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{

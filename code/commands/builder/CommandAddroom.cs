@@ -4,9 +4,9 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			aliases = new System.Collections.Generic.List<string>() { "addroom", "connect" };
-			description = "Adds a new exit to a room.";
-			usage = "addroom [direction] [room id or 'new'] <one-way>";
+			Aliases = new System.Collections.Generic.List<string>() { "addroom", "connect" };
+			Description = "Adds a new exit to a room.";
+			Usage = "addroom [direction] [room id or 'new'] <one-way>";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{

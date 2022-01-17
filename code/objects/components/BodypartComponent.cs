@@ -17,7 +17,7 @@ namespace inspiral
 			typeof(bool), false, false);
 		internal static DatabaseField EquipmentSlots = new DatabaseField(
 			"equipmentslots", "", 
-			typeof(string), false, false);
+			typeof(List<string>), false, false);
 	}
 	internal class BodypartBuilder : GameComponentBuilder
 	{

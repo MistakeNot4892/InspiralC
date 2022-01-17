@@ -17,7 +17,7 @@ namespace inspiral
             }
             return connections[dbPath];
         }
-        internal static List<Dictionary<string, object>> GetAllRecords(string dbPath, string tableName, List<DatabaseField> tableFields)
+        internal static List<Dictionary<DatabaseField, object>> GetAllRecords(string dbPath, string tableName, List<DatabaseField> tableFields)
         {
             DatabaseHandler handler = GetConnection(dbPath);
             handler.InitializeTable(tableName, tableFields);
@@ -31,11 +31,6 @@ namespace inspiral
         }
         internal static void DeleteRecord(string tableName, long recordId)
         {
-        }
-        internal static object GetRecord(string dbPath, string tableName, long recordId)
-        {
-            DatabaseHandler handler = GetConnection(dbPath);
-            return handler.GetRecord(tableName, recordId);
         }
         internal static void BatchUpdateRecords(string dbPath, string tableName, List<IGameEntity> updateQueue)
         {

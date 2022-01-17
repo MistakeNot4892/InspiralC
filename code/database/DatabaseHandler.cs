@@ -47,13 +47,12 @@ namespace inspiral
     internal class DatabaseHandler
     {
         internal DatabaseHandler(string dbPath, string dbVersion) {}
-        internal virtual List<Dictionary<string, object>> GetAllRecords(string tableName) 
+        internal virtual List<Dictionary<DatabaseField, object>> GetAllRecords(string tableName) 
         {
-            return new List<Dictionary<string, object>>();
+            return new List<Dictionary<DatabaseField, object>>();
         }
         internal virtual void Open() {}
         internal virtual void Close() {}
-        internal virtual object GetRecord(string tableName, long recordId) { return null; }
         internal virtual void InitializeTable(string tableName, List<DatabaseField> tableFields) {}
         internal virtual void UpdateRecord(string tableName, IGameEntity entity) {}
         internal virtual void CreateRecord(string tableName, IGameEntity entity) {}

@@ -28,7 +28,7 @@ namespace inspiral
 			typeof(string), true, true);
 		internal static DatabaseField BodypartList = new DatabaseField(
 			"bodyparts", "",
-			typeof(string), true, true);
+			typeof(List<string>), true, true);
 	}
 
 	internal class MobileBuilder : GameComponentBuilder

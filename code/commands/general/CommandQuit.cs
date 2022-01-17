@@ -4,9 +4,9 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			aliases = new System.Collections.Generic.List<string>() { "quit", "qq" };
-			description = "Quits the game, leaving your character asleep where they were.";
-			usage = "quit";
+			Aliases = new System.Collections.Generic.List<string>() { "quit", "qq" };
+			Description = "Quits the game, leaving your character asleep where they were.";
+			Usage = "quit";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{

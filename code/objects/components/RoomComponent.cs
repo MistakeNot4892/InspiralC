@@ -14,7 +14,7 @@ namespace inspiral
 	{
 		internal static DatabaseField Exits = new DatabaseField(
 			"exits", "", 
-			typeof(string), true, false);
+			typeof(List<string>), true, false);
 	}
 
 	internal class RoomBuilder : GameComponentBuilder

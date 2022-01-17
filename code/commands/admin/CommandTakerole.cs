@@ -4,9 +4,9 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			aliases = new System.Collections.Generic.List<string>() { "takerole" };
-			description = "Removes a role from an account.";
-			usage = "takerole [account name or id] [role name or id]";
+			Aliases = new System.Collections.Generic.List<string>() { "takerole" };
+			Description = "Removes a role from an account.";
+			Usage = "takerole [account name or id] [role name or id]";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{

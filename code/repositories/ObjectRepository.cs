@@ -16,7 +16,7 @@ namespace inspiral
 			typeof(string), true, true);
 		internal static DatabaseField Components = new DatabaseField(
 			"components", "",
-			typeof(string), true, true);
+			typeof(Dictionary<string, long>), true, true);
 		internal static DatabaseField Flags = new DatabaseField(
 			"flags", -1,
 			typeof(int), true, true);
@@ -42,20 +42,20 @@ namespace inspiral
 				Field.Location
 			};
 		}
-		internal override void InstantiateFromRecord(Dictionary<string, object> record) 
+		internal override void InstantiateFromRecord(Dictionary<DatabaseField, object> record) 
 		{
-			GameObject gameObj = (GameObject)CreateRepositoryType((long)record[Field.Id.fieldName]);
-			gameObj.SetValue(Field.Name,    record[Field.Name.fieldName].ToString());
-			gameObj.SetValue(Field.Flags,   (long)record[Field.Flags.fieldName]);
-			gameObj.SetValue(Field.Gender,  record[Field.Gender.fieldName].ToString());
-			gameObj.SetValue(Field.Aliases, JsonConvert.DeserializeObject<List<string>>(record[Field.Aliases.fieldName].ToString()));
+			GameObject gameObj = (GameObject)CreateRepositoryType((long)record[Field.Id]);
+			gameObj.SetValue(Field.Name,    record[Field.Name].ToString());
+			gameObj.SetValue(Field.Flags,   (long)record[Field.Flags]);
+			gameObj.SetValue(Field.Gender,  record[Field.Gender].ToString());
+			gameObj.SetValue(Field.Aliases, JsonConvert.DeserializeObject<List<string>>(record[Field.Aliases].ToString()));
 
-			foreach(string comp in JsonConvert.DeserializeObject<List<string>>(record[Field.Components.fieldName].ToString()))
+			foreach(string comp in JsonConvert.DeserializeObject<List<string>>(record[Field.Components].ToString()))
 			{
 				gameObj.AddComponent(Game.GetTypeFromString(comp));
 			}
 			records.Add(gameObj.GetValue<long>(Field.Id), gameObj);
-			_postInitLocations.Add(gameObj.GetValue<long>(Field.Id), (long)record[Field.Location.fieldName]);
+			_postInitLocations.Add(gameObj.GetValue<long>(Field.Id), (long)record[Field.Location]);
 		}
 		internal void LoadComponentData(GameObject gameObj)
 		{

@@ -18,9 +18,9 @@ namespace inspiral
 		{
 			return BCrypt.Net.BCrypt.Verify(pass, passwordHash);
 		}
-		public Dictionary<string, object> GetSaveData()
+		public Dictionary<DatabaseField, object> GetSaveData()
 		{
-			Dictionary<string, object> saveData = new Dictionary<string, object>();
+			Dictionary<DatabaseField, object> saveData = new Dictionary<DatabaseField, object>();
 			// todo
 			return saveData;
 		}
@@ -32,7 +32,7 @@ namespace inspiral
 		{
 			return default(T);
 		}
-		public void CopyFromRecord(Dictionary<string, object> record) 
+		public void CopyFromRecord(Dictionary<DatabaseField, object> record) 
 		{
 			// todo
 		}
@@ -76,13 +76,13 @@ namespace inspiral
 			}
 			return null;
 		}
-		internal override void InstantiateFromRecord(Dictionary<string, object> record)
+		internal override void InstantiateFromRecord(Dictionary<DatabaseField, object> record)
 		{
-			PlayerAccount acct = (PlayerAccount)CreateRepositoryType((long)record[Field.Id.fieldName]);
-			acct.userName =      record[Field.UserName.fieldName].ToString();
-			acct.passwordHash =  record[Field.PasswordHash.fieldName].ToString();
-			acct.objectId =      (long)record[Field.ObjectId.fieldName];
-			foreach(string role in JsonConvert.DeserializeObject<List<string>>(record[Field.Roles.fieldName].ToString()))
+			PlayerAccount acct = (PlayerAccount)CreateRepositoryType((long)record[Field.Id]);
+			acct.userName =      record[Field.UserName].ToString();
+			acct.passwordHash =  record[Field.PasswordHash].ToString();
+			acct.objectId =      (long)record[Field.ObjectId];
+			foreach(string role in JsonConvert.DeserializeObject<List<string>>(record[Field.Roles].ToString()))
 			{
 				GameRole foundRole = Modules.Roles.GetRole(role);
 				if(foundRole != null && !acct.roles.Contains(foundRole))

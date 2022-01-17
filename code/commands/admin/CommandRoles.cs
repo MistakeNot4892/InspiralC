@@ -6,9 +6,9 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			aliases = new List<string>() { "roles" };
-			description = "Shows the details of roles attached to an account.";
-			usage = "roles [account name or id]";
+			Aliases = new List<string>() { "roles" };
+			Description = "Shows the details of roles attached to an account.";
+			Usage = "roles [account name or id]";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{

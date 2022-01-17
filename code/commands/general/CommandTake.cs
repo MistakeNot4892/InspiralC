@@ -4,9 +4,9 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			aliases = new System.Collections.Generic.List<string>() { "take", "get", "g", "pickup" };
-			description = "Picks up an object.";
-			usage = "take [object name or id]";
+			Aliases = new System.Collections.Generic.List<string>() { "take", "get", "g", "pickup" };
+			Description = "Picks up an object.";
+			Usage = "take [object name or id]";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{

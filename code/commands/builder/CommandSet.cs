@@ -6,11 +6,11 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			aliases = new List<string>() { "set", "vs" };
-			description = "Modifies the editable fields of an object.";
-			usage = "set [object name or id] [object field] [new value]";
-			skipArticles = false;
-			skipTokenQualifiers = true;
+			Aliases = new List<string>() { "set", "vs" };
+			Description = "Modifies the editable fields of an object.";
+			Usage = "set [object name or id] [object field] [new value]";
+			SkipArticles = false;
+			SkipTokenQualifiers = true;
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{

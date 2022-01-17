@@ -11,8 +11,8 @@ namespace inspiral
 
 	internal partial class GameObject : IGameEntity
 	{
-		private Dictionary<string, object> _fields = new Dictionary<string, object>();
-		public Dictionary<string, object> Fields
+		private Dictionary<DatabaseField, object> _fields = new Dictionary<DatabaseField, object>();
+		public Dictionary<DatabaseField, object> Fields
 		{
 			get { return _fields; }
 			set { _fields = value; }
@@ -34,28 +34,28 @@ namespace inspiral
 			get { return _components; }
 			set { _components = value; }
 		}
-		public Dictionary<string, object> GetSaveData()
+		public Dictionary<DatabaseField, object> GetSaveData()
 		{
 			return Fields;
 		}
 		public bool SetValue<T>(DatabaseField field, T newValue)
 		{
-			if(Fields.ContainsKey(field.fieldName))
+			if(Fields.ContainsKey(field))
 			{
-				Fields[field.fieldName] = newValue;
+				Fields[field] = newValue;
 				return true;
 			}
 			return false;
 		}
 		public T GetValue<T>(DatabaseField field)
 		{
-			if(Fields.ContainsKey(field.fieldName))
+			if(Fields.ContainsKey(field))
 			{
-				return (T)Fields[field.fieldName];
+				return (T)Fields[field];
 			}
 			return default(T);
 		}
-		public void CopyFromRecord(Dictionary<string, object> record) 
+		public void CopyFromRecord(Dictionary<DatabaseField, object> record) 
 		{
 			Fields = record;
 		}

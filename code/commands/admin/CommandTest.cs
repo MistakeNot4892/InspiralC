@@ -4,9 +4,9 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			aliases = new System.Collections.Generic.List<string>() { "test" };
-			description = "Test command, please ignore.";
-			usage = "test";
+			Aliases = new System.Collections.Generic.List<string>() { "test" };
+			Description = "Test command, please ignore.";
+			Usage = "test";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 
 namespace inspiral
 {
@@ -13,7 +12,7 @@ namespace inspiral
 	{
 		internal static DatabaseField EquippedSlots = new DatabaseField(
 			"equipped", "",
-			typeof(string), false, false);
+			typeof(List<string>), false, false);
 	}
 	internal class InventoryBuilder : GameComponentBuilder
 	{

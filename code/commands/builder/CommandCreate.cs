@@ -4,9 +4,9 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			aliases = new System.Collections.Generic.List<string>() { "create" };
-			description = "Creates a new database entry for an object or room.";
-			usage = "create [object]";
+			Aliases = new System.Collections.Generic.List<string>() { "create" };
+			Description = "Creates a new database entry for an object or room.";
+			Usage = "create [object]";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{

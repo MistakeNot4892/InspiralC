@@ -32,18 +32,18 @@ namespace inspiral
 	internal class GameRole
 	{
 		internal string name = "unnamed";
-		internal string description = "No description supplied.";
+		internal string Description = "No description supplied.";
 		internal List<GameCommand> UniqueCommands = new List<GameCommand>();
 		internal Dictionary<string, GameCommand> AllCommands = new Dictionary<string, GameCommand>();
 
 		internal GameRole(string _name, string _description, List<GameCommand> _cmds)
 		{
 			name = _name;
-			description = _description;
+			Description = _description;
 			UniqueCommands = _cmds;
 			foreach(GameCommand command in UniqueCommands)
 			{
-				foreach(string alias in command.aliases)
+				foreach(string alias in command.Aliases)
 				{
 					if(!AllCommands.ContainsKey(alias))
 					{
@@ -54,7 +54,7 @@ namespace inspiral
 		}
 		internal string GetSummary() 
 		{ 
-			string result = $"{description}\n";
+			string result = $"{Description}\n";
 			if(AllCommands.Count <= 0)
 			{
 				return $"{result}\nThis role has no associated commands.";
@@ -71,8 +71,8 @@ namespace inspiral
 			string result = $"{name}:";
 			foreach(GameCommand command in UniqueCommands)
 			{
-				result += $"\n   [{Text.EnglishList(command.aliases)}]:\n";
-				result += $"\n     Usage: {command.usage}\n     {command.description}";
+				result += $"\n   [{Text.EnglishList(command.Aliases)}]:\n";
+				result += $"\n     Usage: {command.Usage}\n     {command.Description}";
 			}
 			return result;
 		}

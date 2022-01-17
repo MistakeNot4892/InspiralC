@@ -2,29 +2,29 @@ namespace inspiral
 {
     internal static class GlobalConfig
     {
-        internal static string DefaultPlayerGender = Text.GenderInanimate;
-        internal static string DefaultShellTemplate = "mob";
+        internal const string DefaultPlayerGender = Text.GenderInanimate;
+        internal const string DefaultShellTemplate = "mob";
 
         // String replacement tokens
         // TODO maybe use $(FOO$) like Aet and use a regex/switch?
-        internal static string StringTokenDir = "$dir$";
-        internal static string StringTokenShort = "$short$";
-        internal static string StringTokenShortCaps = "$Short$";
+        internal const string StringTokenDir = "$dir$";
+        internal const string StringTokenShort = "$short$";
+        internal const string StringTokenShortCaps = "$Short$";
 
         // Default colours
-        internal static string DefaultColour =                  Colours.White;
-        internal static string DefaultColourSubtle =            Colours.BoldBlack;
-        internal static string DefaultColourHighlight =         Colours.BoldWhite;
-		internal static string DefaultColourExits =             Colours.BoldCyan;
-		internal static string DefaultColourFrameHighlight =    Colours.BoldCyan;
-		internal static string DefaultColourFramePrimary =      Colours.Cyan;
-		internal static string DefaultColourFrameSecondary =    Colours.Blue;
-        internal static string DefaultColourBleeding =          Colours.Red;
-        internal static string DefaultColourBleedingHighlight = Colours.BoldRed;
-        internal static string DefaultColourPrompt =            Colours.Yellow;
-        internal static string DefaultColourPromptHighlight =   Colours.BoldYellow;
-        internal static string DefaultColourPain =              Colours.Yellow;
-        internal static string DefaultColourPainHighlight =     Colours.BoldYellow;
+        internal const string DefaultColour =                  Colours.White;
+        internal const string DefaultColourSubtle =            Colours.BoldBlack;
+        internal const string DefaultColourHighlight =         Colours.BoldWhite;
+		internal const string DefaultColourExits =             Colours.BoldCyan;
+		internal const string DefaultColourFrameHighlight =    Colours.BoldCyan;
+		internal const string DefaultColourFramePrimary =      Colours.Cyan;
+		internal const string DefaultColourFrameSecondary =    Colours.Blue;
+        internal const string DefaultColourBleeding =          Colours.Red;
+        internal const string DefaultColourBleedingHighlight = Colours.BoldRed;
+        internal const string DefaultColourPrompt =            Colours.Yellow;
+        internal const string DefaultColourPromptHighlight =   Colours.BoldYellow;
+        internal const string DefaultColourPain =              Colours.Yellow;
+        internal const string DefaultColourPainHighlight =     Colours.BoldYellow;
 		internal static string GetColour(string colourType)
 		{
 			switch(colourType)

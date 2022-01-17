@@ -7,9 +7,9 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			aliases = new System.Collections.Generic.List<string>() { "emote", "em", "me" };
-			description = "Performs a complex narration or action.";
-			usage = "emote <(preceeding text)> [following text]";
+			Aliases = new System.Collections.Generic.List<string>() { "emote", "em", "me" };
+			Description = "Performs a complex narration or action.";
+			Usage = "emote <(preceeding text)> [following text]";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{

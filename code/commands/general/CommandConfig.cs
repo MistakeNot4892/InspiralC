@@ -4,9 +4,9 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			aliases = new System.Collections.Generic.List<string>() { "config" };
-			description = "Configures various options related to gameplay and presentation. WIP.";
-			usage = "config [option] <value>";
+			Aliases = new System.Collections.Generic.List<string>() { "config" };
+			Description = "Configures various options related to gameplay and presentation. WIP.";
+			Usage = "config [option] <value>";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
