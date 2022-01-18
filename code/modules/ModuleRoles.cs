@@ -5,16 +5,15 @@ using Newtonsoft.Json.Linq;
 
 namespace inspiral
 {
-	internal static partial class Modules
+	internal partial class Modules
 	{
-		internal static RolesModule Roles = new RolesModule();
+		internal RolesModule Roles = new RolesModule();
 	}
 	internal class RolesModule : GameModule
 	{
 		private Dictionary<string, GameRole> roles = new Dictionary<string, GameRole>();
 		internal override void PostInitialize()
 		{
-			Modules.Roles = this;
 			Game.LogError("Loading role definitions.");
 			// TODO readd role repo.
 			Game.LogError("Done.");

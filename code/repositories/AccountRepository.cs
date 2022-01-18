@@ -94,7 +94,7 @@ namespace inspiral
 				{
 					foreach(string role in roleJson)
 					{
-						var getRole = Modules.Roles.GetRole(role);
+						var getRole = Game.Modules.Roles.GetRole(role);
 						if(getRole != null)
 						{
 							GameRole foundRole = (GameRole)getRole;
@@ -126,7 +126,7 @@ namespace inspiral
 				gameObj.SetValue(Field.Gender, GlobalConfig.DefaultPlayerGender);
 				gameObj.SetValue(Field.Aliases, new List<string>() { myName.ToLower() });
 
-				GenderObject genderObj = Modules.Gender.GetByTerm(gameObj.GetValue<string>(Field.Gender));
+				GenderObject genderObj = Game.Modules.Gender.GetByTerm(gameObj.GetValue<string>(Field.Gender));
 				var visComp = gameObj.GetComponent<VisibleComponent>();
 				if(visComp != null)
 				{
@@ -142,12 +142,12 @@ namespace inspiral
 				if(accounts.Count <= 0)
 				{
 					Game.LogError($"No accounts found, giving admin roles to {acct.userName}.");
-					GameRole? role = Modules.Roles.GetRole("builder"); 
+					GameRole? role = Game.Modules.Roles.GetRole("builder"); 
 					if(role != null)
 					{
 						acct.roles.Add(role);
 					}
-					role = Modules.Roles.GetRole("administrator");
+					role = Game.Modules.Roles.GetRole("administrator");
 					if(role != null)
 					{
 						acct.roles.Add(role);
@@ -164,7 +164,7 @@ namespace inspiral
 		internal override IGameEntity? CreateRepositoryType(long id) 
 		{
 			PlayerAccount acct = new PlayerAccount(id);
-			GameRole? role = Modules.Roles.GetRole("player");
+			GameRole? role = Game.Modules.Roles.GetRole("player");
 			if(role != null)
 			{
 				acct.roles.Add(role);

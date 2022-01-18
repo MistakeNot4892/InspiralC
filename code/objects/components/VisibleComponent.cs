@@ -53,7 +53,7 @@ namespace inspiral
 				string startingToken;
 				string theyAre;
 				string their;
-				GenderObject genderObj = Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
+				GenderObject genderObj = Game.Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 				if(parent == viewer)
 				{
 					startingToken = "You're";

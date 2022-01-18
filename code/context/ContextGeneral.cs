@@ -9,7 +9,7 @@ namespace inspiral
 			viewer.WriteLine($"Welcome, {viewer.shell.GetValue<string>(Field.Name)}.");
 			if(viewer.shell.Location == null)
 			{
-				viewer.shell.Move(Modules.Rooms.GetSpawnRoom());
+				viewer.shell.Move(Game.Modules.Rooms.GetSpawnRoom());
 			}
 			else
 			{

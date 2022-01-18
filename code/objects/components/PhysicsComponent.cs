@@ -149,7 +149,7 @@ namespace inspiral
 			}
 			else
 			{
-				GenderObject genderObj = Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
+				GenderObject genderObj = Game.Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 				You = Text.Capitalize(genderObj.They);
 				are = genderObj.Is;
 				if(are == "is")

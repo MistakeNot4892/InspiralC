@@ -68,15 +68,15 @@ namespace inspiral
 		internal string GetStringSummary() 
 		{
 			System.Type myType = this.GetType();
-			if(Modules.Components.builders.ContainsKey(myType) && 
-				Modules.Components.builders[myType].viewableFields != null && 
-				Modules.Components.builders[myType].viewableFields.Count > 0)
+			if(Game.Modules.Components.builders.ContainsKey(myType) && 
+				Game.Modules.Components.builders[myType].viewableFields != null && 
+				Game.Modules.Components.builders[myType].viewableFields.Count > 0)
 			{
 				string result = "";
-				foreach(DatabaseField field in Modules.Components.builders[myType].viewableFields)
+				foreach(DatabaseField field in Game.Modules.Components.builders[myType].viewableFields)
 				{
-					if(Modules.Components.builders[myType].editableFields != null && 
-						Modules.Components.builders[myType].editableFields.Contains(field))
+					if(Game.Modules.Components.builders[myType].editableFields != null && 
+						Game.Modules.Components.builders[myType].editableFields.Contains(field))
 					{
 						result = $"{result}\n{field}: {GetValue<string>(field)}";
 					}
@@ -92,9 +92,9 @@ namespace inspiral
 		internal bool SetValueOfEditableField<T>(DatabaseField field, T value) 
 		{
 			System.Type myType = this.GetType();
-			if(Modules.Components.builders.ContainsKey(myType) && 
-				Modules.Components.builders[myType].editableFields != null && 
-				Modules.Components.builders[myType].editableFields.Count > 0)
+			if(Game.Modules.Components.builders.ContainsKey(myType) && 
+				Game.Modules.Components.builders[myType].editableFields != null && 
+				Game.Modules.Components.builders[myType].editableFields.Count > 0)
 			{
 				SetValue<T>(field, value);
 				Game.Repositories.Objects.QueueForUpdate(this);

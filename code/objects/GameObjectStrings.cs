@@ -23,7 +23,7 @@ namespace inspiral
 		internal string GetStringSummary(GameObject viewer, int wrapWidth)
 		{
 			Dictionary<string, List<string>> summary = new Dictionary<string, List<string>>();
-			GenderObject genderObj = Modules.Gender.GetByTerm(GetValue<string>(Field.Gender));
+			GenderObject genderObj = Game.Modules.Gender.GetByTerm(GetValue<string>(Field.Gender));
 			string fieldKey = $"Object summary for {GetValue<string>(Field.Name)} (#{GetValue<long>(Field.Id)})";
 			summary.Add(fieldKey, new List<string>());
 			List<string>? aliases = GetValue<List<string>>(Field.Aliases);

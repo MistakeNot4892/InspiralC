@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal static partial class Modules
+	internal partial class Modules
 	{
-		internal static BodyModule Bodies = new BodyModule();
+		internal BodyModule Bodies = new BodyModule();
 	}
 	internal class BodyModule : GameModule
 	{
@@ -12,7 +12,6 @@ namespace inspiral
 		internal Dictionary<string, Bodypart> parts = new Dictionary<string, Bodypart>();
 		internal override void Initialize() 
 		{
-			Modules.Bodies = this;
 			Game.LogError("Done.\nLoading bodyplan definitions.");
 			// TODO bodyplan/bodypart repo
 			Game.LogError("Done.");

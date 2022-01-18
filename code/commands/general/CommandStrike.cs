@@ -135,7 +135,7 @@ namespace inspiral
 				BodypartComponent body = (BodypartComponent)bpComp;
 				if(body.GetValue<bool>(Field.NaturalWeapon))
 				{
-					GenderObject genderObj = Modules.Gender.GetByTerm(invoker.GetValue<string>(Field.Gender));
+					GenderObject genderObj = Game.Modules.Gender.GetByTerm(invoker.GetValue<string>(Field.Gender));
 					strikeString = $"{genderObj.Their} {strikeString}";
 				}
 			}

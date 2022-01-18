@@ -4,16 +4,15 @@ using System.Linq;
 namespace inspiral
 {
 
-	internal static partial class Modules
+	internal partial class Modules
 	{
-		internal static CommandModule Commands = new CommandModule();
+		internal CommandModule Commands = new CommandModule();
 	}
 	internal partial class CommandModule : GameModule
 	{
 		private Dictionary<System.Type, GameCommand> commands = new Dictionary<System.Type, GameCommand>();
 		internal override void Initialize()
 		{
-			Modules.Commands = this;
 			Game.LogError($"Building command dictionary.");
 			foreach(var t in (from domainAssembly in System.AppDomain.CurrentDomain.GetAssemblies()
 				from assemblyType in domainAssembly.GetTypes()

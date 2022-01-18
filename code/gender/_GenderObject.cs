@@ -26,12 +26,12 @@ namespace inspiral
 		}
 		internal void Initialize()
 		{
-            Modules.Gender.genders.Add(Term, this);
+            Game.Modules.Gender.genders.Add(Term, this);
 			foreach(string token in new System.Collections.Generic.List<string>() {They, Them, Their, Theirs, Is, Self})
 			{
-				if(!Modules.Gender.Tokens.Contains(token))
+				if(!Game.Modules.Gender.Tokens.Contains(token))
 				{
-					Modules.Gender.Tokens.Add(token);
+					Game.Modules.Gender.Tokens.Add(token);
 				}
 			}
 		}

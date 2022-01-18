@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace inspiral
 {
@@ -11,7 +10,6 @@ namespace inspiral
 	{
 		internal override void Instantiate()
 		{
-			Repos.Templates = this;
 			repoName = "templates";
 			dbPath = "data/templates.sqlite";
 			schemaFields = new List<DatabaseField>() 

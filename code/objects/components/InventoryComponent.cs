@@ -228,7 +228,7 @@ namespace inspiral
 					string collectionMessage3p = $"{Text.Capitalize(parent.GetShortDesc())} picks up {equipping.GetShortDesc()}";
 					if(slot != null && slot != "default")
 					{
-						GenderObject genderObj = Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
+						GenderObject genderObj = Game.Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 						collectionMessage1p = $"{collectionMessage1p} with your {slot}";
 						collectionMessage3p = $"{collectionMessage1p} with {genderObj.Their} {slot}";
 					}
@@ -339,7 +339,7 @@ namespace inspiral
 				carrying.Add(slot, equipping);
 				if(!silent)
 				{
-					GenderObject genderObj = Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
+					GenderObject genderObj = Game.Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 					parent.ShowNearby(parent, 
 						$"You equip {equipping.GetShortDesc()} to your {slot}.",
 						$"{Text.Capitalize(parent.GetShortDesc())} equips {equipping.GetShortDesc()} to {genderObj.Their} {slot}."
@@ -377,7 +377,7 @@ namespace inspiral
 							carrying.Remove(otherSlot);
 						}
 					}
-					GenderObject genderObj = Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
+					GenderObject genderObj = Game.Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 					parent.ShowNearby(parent, 
 						$"You remove {unequipping.GetShortDesc()} from your {removingSlot}.",
 						$"{Text.Capitalize(parent.GetShortDesc())} removes {unequipping.GetShortDesc()} from {genderObj.Their} {removingSlot}."

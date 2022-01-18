@@ -44,7 +44,7 @@ namespace inspiral
 						System.Console.WriteLine(cmd.StrArgs[1]);
 						if(cmd.StrArgs[1].ToLower() == "new")
 						{
-							roomId = Modules.Rooms.CreateEmpty().GetValue<long>(Field.Id);
+							roomId = Game.Modules.Rooms.CreateEmpty().GetValue<long>(Field.Id);
 						}
 						else
 						{

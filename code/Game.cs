@@ -11,6 +11,12 @@ namespace inspiral
 			get { return s_repos; }
 			set { s_repos = value; }
 		}
+		private static Modules s_modules = new Modules();
+		internal static Modules Modules
+		{
+			get { return s_modules; }
+			set { s_modules = value; }
+		}
 		private static System.Random s_random = new System.Random();
 		private static Dictionary<string, System.Type> s_typesByString = new Dictionary<string, System.Type>();
 		private static bool s_initComplete = false;
@@ -36,7 +42,7 @@ namespace inspiral
 		internal static void Initialize() 
 		{
 			// Populate modules.
-			Modules.Initialize();
+			Game.Modules.PostInitializeModules();
 
 			// Populate repos.
 			Repos.LoadRepos();

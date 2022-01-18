@@ -10,9 +10,9 @@ namespace inspiral
 	{
 		internal const string GenderInanimate = "inanimate";
 	}
-	internal static partial class Modules
+	internal partial class Modules
 	{
-		internal static GenderModule Gender = new GenderModule();
+		internal GenderModule Gender = new GenderModule();
 	}
 	internal class GenderModule : GameModule
 	{
@@ -22,7 +22,6 @@ namespace inspiral
 
 		internal override void Initialize() 
 		{
-			Modules.Gender = this;
 			Game.LogError("Creating default gender definition.");
 			new GenderObject();
 			Game.LogError("Loading additional gender definitions.");

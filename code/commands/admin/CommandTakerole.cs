@@ -28,7 +28,7 @@ namespace inspiral
 				return;
 			}
 
-			GameRole? role = Modules.Roles.GetRole(cmd.StrArgs[0]);
+			GameRole? role = Game.Modules.Roles.GetRole(cmd.StrArgs[0]);
 			if(role == null)
 			{
 				invoker.WriteLine($"Cannot find role for '{cmd.StrArgs[0]}'.");

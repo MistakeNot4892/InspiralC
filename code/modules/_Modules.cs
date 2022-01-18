@@ -6,36 +6,34 @@ namespace inspiral
 
 	internal class GameModule
 	{
+		internal GameModule()
+		{
+			Game.Modules.AllModules.Add(this);
+		}
 		internal virtual void Initialize() {}
 		internal virtual void PostInitialize() {}
 	}
-	internal static partial class Modules
+	internal partial class Modules
 	{
-		private static List<GameModule> modules = new List<GameModule>();
-		internal static void Initialize()
+		private List<GameModule> s_modules = new List<GameModule>();
+		public List<GameModule> AllModules
+		{
+			get { return s_modules; }
+			set { s_modules = value; }
+		}
+		internal void InitializeModules()
 		{
 			Game.LogError($"Initializing modules.");
-			foreach(var t in (from domainAssembly in System.AppDomain.CurrentDomain.GetAssemblies()
-				from assemblyType in domainAssembly.GetTypes()
-				where assemblyType.IsSubclassOf(typeof(GameModule))
-				select assemblyType))
+			foreach(GameModule module in AllModules)
 			{
-				Game.LogError($"Initializing module {t}.");
-				var module = System.Activator.CreateInstance(t);
-				if(module != null)
-				{
-					GameModule gameMod = (GameModule)module;
-					gameMod.Initialize();
-					modules.Add(gameMod);
-				}
+				module.Initialize();
 			}
-			PostInitialize();
+			Game.LogError($"Done.");
 		}
-
-		internal static void PostInitialize()
+		internal void PostInitializeModules()
 		{
 			Game.LogError($"Post-initializing modules.");
-			foreach(GameModule module in modules)
+			foreach(GameModule module in AllModules)
 			{
 				module.PostInitialize();
 			}

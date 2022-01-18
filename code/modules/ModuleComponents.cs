@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace inspiral
 {
-	internal static partial class Modules
+	internal partial class Modules
 	{
-		internal static ComponentModule Components = new ComponentModule();
+		internal ComponentModule Components = new ComponentModule();
 	}
 	internal partial class ComponentModule : GameModule
 	{
@@ -13,7 +13,6 @@ namespace inspiral
 		internal Dictionary<System.Type, GameComponentBuilder> builders = new Dictionary<System.Type, GameComponentBuilder>();
 		internal override void Initialize()
 		{
-			Modules.Components = this;
 			Game.LogError($"Initializing component builders.");
 			foreach(var t in (from domainAssembly in System.AppDomain.CurrentDomain.GetAssemblies()
 				from assemblyType in domainAssembly.GetTypes()
