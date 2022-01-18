@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace inspiral
 {
 	internal class CommandTakeRole : GameCommand
@@ -21,27 +23,36 @@ namespace inspiral
 				return;
 			}
 
-			PlayerAccount? acct = Game.Repositories.Accounts.FindAccount(cmd.ObjTarget);
+			PlayerAccount? acct = Program.Game.Repos.Accounts.FindAccount(cmd.ObjTarget);
 			if(acct == null)
 			{
 				invoker.WriteLine($"Cannot find account for '{cmd.ObjTarget}'.");
 				return;
 			}
 
-			GameRole? role = Game.Modules.Roles.GetRole(cmd.StrArgs[0]);
+			GameRole? role = Program.Game.Mods.Roles.GetRole(cmd.StrArgs[0]);
 			if(role == null)
 			{
 				invoker.WriteLine($"Cannot find role for '{cmd.StrArgs[0]}'.");
 			}
-			else if(!acct.roles.Contains(role))
-			{
-				invoker.WriteLine($"They do not have that role.", true);
-			}
 			else
 			{
-				acct.roles.Remove(role);
-				Game.Repositories.Accounts.QueueForUpdate(acct);
-				invoker.WriteLine($"Removed role '{role.name}' from '{acct.userName}'.");
+				List<GameRole>? roles = acct.GetValue<List<GameRole>>(Field.Roles);
+				if(roles == null)
+				{
+					roles = new List<GameRole>();
+					acct.SetValue<List<GameRole>>(Field.Roles, roles);
+				}
+				if(!roles.Contains(role))
+				{
+					invoker.WriteLine($"They do not have that role.", true);
+				}
+				else
+				{
+					roles.Remove(role);
+					Program.Game.Repos.Accounts.QueueForUpdate(acct);
+					invoker.WriteLine($"Removed role '{role.name}' from '{acct.GetValue<string>(Field.Name)}'.");
+				}
 			}
 		}
 	}

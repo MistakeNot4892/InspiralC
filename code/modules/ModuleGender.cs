@@ -16,49 +16,22 @@ namespace inspiral
 	}
 	internal class GenderModule : GameModule
 	{
-		public Dictionary<string, GenderObject> genders = new Dictionary<string, GenderObject>();
-		public GenderObject DefaultGender = new GenderObject();
+		public Dictionary<string, GenderObject> AllGenders = new Dictionary<string, GenderObject>();
 		public List<string> Tokens = new List<string>();
 
+		internal GenderObject DefaultGender;
+		internal GenderModule()
+		{
+			DefaultGender = new GenderObject(this);
+		} 
 		internal override void Initialize() 
 		{
-			Game.LogError("Creating default gender definition.");
-			new GenderObject();
-			Game.LogError("Loading additional gender definitions.");
-			foreach (var f in (from file in Directory.EnumerateFiles(@"data/definitions/genders", "*.json", SearchOption.AllDirectories) select new { File = file }))
-			{
-				Game.LogError($"- Loading gender definition {f.File}.");
-				try
-				{
-					var textToConvert = File.ReadAllText(f.File);
-					if(textToConvert != null)
-					{
-						Dictionary<string, string>? genderStrings = JsonConvert.DeserializeObject<Dictionary<string, string>>(textToConvert);
-						if(genderStrings != null)
-						{
-							new GenderObject(
-								genderStrings["Term"], 
-								genderStrings["They"], 
-								genderStrings["Them"], 
-								genderStrings["Their"], 
-								genderStrings["Theirs"], 
-								genderStrings["Is"], 
-								genderStrings["Self"]
-							);
-						}
-					}
-				}
-				catch(System.Exception e)
-				{
-					Game.LogError($"Exception when loading gender from file {f.File} - {e.Message}");
-				}
-			}
-			// 'it' is useless as it is ambiguous, just get rid of it.
+			Program.Game.LogError("Loading gender definitions.");
 			if(Tokens.Contains("it"))
 			{
 				Tokens.Remove("it");
 			}
-			Game.LogError($"Done.");
+			Program.Game.LogError($"Done.");
 		}
 		internal GenderObject GetByTerm(string? term)
 		{
@@ -67,9 +40,9 @@ namespace inspiral
 				return DefaultGender;
 			}
 			term = term.ToLower();
-			if(genders.ContainsKey(term))
+			if(AllGenders.ContainsKey(term))
 			{
-				return genders[term];
+				return AllGenders[term];
 			}
 			return DefaultGender;
 		}

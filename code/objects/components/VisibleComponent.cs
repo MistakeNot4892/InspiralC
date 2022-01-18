@@ -26,7 +26,9 @@ namespace inspiral
 		internal override void Initialize()
 		{
 			ComponentType = typeof(VisibleComponent);
-			schemaFields = new List<DatabaseField>() { 
+			schemaFields = new List<DatabaseField>()
+			{ 
+				Field.Parent,
 				Field.ShortDesc,
 				Field.RoomDesc,
 				Field.ExaminedDesc
@@ -41,6 +43,7 @@ namespace inspiral
 		internal string examinedDescription = "This is a generic object. Fascinating stuff.";
 		internal void ExaminedBy(GameObject viewer, bool fromInside)
 		{
+			GameObject? parent = GetParent();
 			if(parent == null)
 			{
 				return;
@@ -53,7 +56,7 @@ namespace inspiral
 				string startingToken;
 				string theyAre;
 				string their;
-				GenderObject genderObj = Game.Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
+				GenderObject genderObj = Program.Game.Mods.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 				if(parent == viewer)
 				{
 					startingToken = "You're";

@@ -132,7 +132,7 @@ namespace inspiral
 				var invComp = GetComponent<InventoryComponent>();
 				if(invComp != null)
 				{
-					GenderObject genderObj = Game.Modules.Gender.GetByTerm(GetValue<string>(Field.Gender));
+					GenderObject genderObj = Program.Game.Mods.Gender.GetByTerm(GetValue<string>(Field.Gender));
 					string their = (this == viewer) ? "your" : genderObj.Their;
 					InventoryComponent equip = (InventoryComponent)invComp;
 					foreach(KeyValuePair<string, GameObject> equ in equip.carrying)

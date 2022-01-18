@@ -58,7 +58,7 @@ namespace inspiral
 				MobileComponent mob = (MobileComponent)mobComp;
 				if(strikeWith == null && (usingItem == null || usingItem == "") && mob.strikers.Count > 0)
 				{
-					usingItem = mob.strikers[Game.Random.Next(0, mob.strikers.Count)];
+					usingItem = mob.strikers[Program.Game.Random.Next(0, mob.strikers.Count)];
 				}
 				if(usingItem != null && mob.strikers.Contains(usingItem))
 				{
@@ -135,7 +135,7 @@ namespace inspiral
 				BodypartComponent body = (BodypartComponent)bpComp;
 				if(body.GetValue<bool>(Field.NaturalWeapon))
 				{
-					GenderObject genderObj = Game.Modules.Gender.GetByTerm(invoker.GetValue<string>(Field.Gender));
+					GenderObject genderObj = Program.Game.Mods.Gender.GetByTerm(invoker.GetValue<string>(Field.Gender));
 					strikeString = $"{genderObj.Their} {strikeString}";
 				}
 			}

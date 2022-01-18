@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace inspiral
 {
 	internal class CommandHelp : GameCommand
@@ -20,7 +22,7 @@ namespace inspiral
 				PlayerAccount? account = invoker.GetAccount();
 				if(account != null)
 				{
-					System.Collections.Generic.List<GameRole> roles = account.roles;
+					List<GameRole>? roles = account.GetValue<List<GameRole>>(Field.Roles);
 					if(roles != null)
 					{
 						foreach(GameRole role in roles)

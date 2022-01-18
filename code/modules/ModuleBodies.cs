@@ -12,9 +12,9 @@ namespace inspiral
 		internal Dictionary<string, Bodypart> parts = new Dictionary<string, Bodypart>();
 		internal override void Initialize() 
 		{
-			Game.LogError("Done.\nLoading bodyplan definitions.");
+			Program.Game.LogError("Done.\nLoading bodyplan definitions.");
 			// TODO bodyplan/bodypart repo
-			Game.LogError("Done.");
+			Program.Game.LogError("Done.");
 		}
 		internal Bodyplan? GetPlan(string name)
 		{

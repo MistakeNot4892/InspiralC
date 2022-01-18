@@ -3,6 +3,7 @@
 
 	class Program
 	{
+		internal static Game Game = new Game();
 		private const string VERSION = "0.0.1b";
 		static void Main(string[] args)
 		{

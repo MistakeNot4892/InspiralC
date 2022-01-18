@@ -257,7 +257,7 @@ namespace inspiral
 			if(message.ToLower().Contains($"${token}"))
 			{
 				string replacementValue;
-				GenderObject genderObj = Game.Modules.Gender.GetByTerm(other.GetValue<string>(Field.Gender));
+				GenderObject genderObj = Program.Game.Mods.Gender.GetByTerm(other.GetValue<string>(Field.Gender));
 				if(thirdPerson)
 				{
 					replacementValue = genderObj.They;

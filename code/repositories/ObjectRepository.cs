@@ -3,31 +3,9 @@ using Newtonsoft.Json;
 
 namespace inspiral
 {
-	internal partial class Repos
+	internal partial class Repositories
 	{
 		internal ObjectRepository Objects = new ObjectRepository();
-	}
-
-	internal static partial class Field
-	{
-		internal static DatabaseField Name = new DatabaseField(
-			"name", "object",
-			typeof(string), true, true);
-		internal static DatabaseField Gender = new DatabaseField(
-			"gender", Text.GenderInanimate,
-			typeof(string), true, true);
-		internal static DatabaseField Aliases = new DatabaseField(
-			"aliases", "", 
-			typeof(List<string>), true, true);
-		internal static DatabaseField Components = new DatabaseField(
-			"components", "",
-			typeof(Dictionary<string, long>), true, true);
-		internal static DatabaseField Flags = new DatabaseField(
-			"flags", -1,
-			typeof(int), true, true);
-		internal static DatabaseField Location = new DatabaseField(
-			"location", 0,
-			typeof(long), true, false);
 	}
 	internal class ObjectRepository : GameRepository
 	{
@@ -47,42 +25,6 @@ namespace inspiral
 				Field.Location
 			};
 		}
-		internal override void InstantiateFromRecord(Dictionary<DatabaseField, object> record) 
-		{
-			var newObj = CreateRepositoryType((long)record[Field.Id]);
-			if(newObj != null)
-			{
-				GameObject gameObj = (GameObject)newObj;
-				gameObj.SetValue(Field.Name,    record[Field.Name].ToString());
-				gameObj.SetValue(Field.Flags,   (long)record[Field.Flags]);
-				gameObj.SetValue(Field.Gender,  record[Field.Gender].ToString());
-				gameObj.SetValue(Field.Aliases, JsonConvert.DeserializeObject<List<string>>((string)record[Field.Aliases]));
-
-				List<string>? compList = JsonConvert.DeserializeObject<List<string>>((string)record[Field.Components]);
-				if(compList != null)
-				{
-					foreach(string comp in compList)
-					{
-						System.Type? compType = Game.GetTypeFromString(comp);
-						if(compType != null)
-						{
-							gameObj.AddComponent(compType);
-						}
-					}
-				}
-				records.Add(gameObj.GetValue<long>(Field.Id), gameObj);
-				_postInitLocations.Add(gameObj.GetValue<long>(Field.Id), (long)record[Field.Location]);
-			}
-		}
-		internal void LoadComponentData(GameObject gameObj)
-		{
-		}
-		internal override GameObject? CreateRepositoryType(long id) 
-		{
-			GameObject newObj = new GameObject();
-			newObj.SetValue<long>(Field.Id, id);
-			return newObj;
-		}
 		internal override void PostInitialize() 
 		{
 			foreach(KeyValuePair<long, long> loc in _postInitLocations)
@@ -95,18 +37,6 @@ namespace inspiral
 					{
 						((GameObject)obj).Move((GameObject)other);
 					}
-				}
-			}
-			foreach(KeyValuePair<long, IGameEntity> obj in records)
-			{
-				LoadComponentData((GameObject)obj.Value);
-			}
-			foreach(KeyValuePair<long, IGameEntity> obj in records)
-			{
-				GameObject gameObj = (GameObject)obj.Value;
-				foreach(KeyValuePair<System.Type, GameComponent> comp in gameObj.Components)
-				{
-					comp.Value.FinalizeObjectLoad();
 				}
 			}
 		}

@@ -33,7 +33,7 @@ namespace inspiral
 			}
 			catch (SocketException e)
 			{
-				Game.LogError($"SocketException: {e}");
+				Program.Game.LogError($"SocketException: {e}");
 			}
 			finally
 			{

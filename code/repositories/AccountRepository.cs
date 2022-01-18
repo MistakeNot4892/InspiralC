@@ -4,24 +4,35 @@ using Newtonsoft.Json;
 namespace inspiral
 {
 
-	internal partial class Repos
+	internal partial class Repositories
 	{
 		internal AccountRepository Accounts = new AccountRepository();
 	}
+	internal static partial class Field
+	{
+	internal static DatabaseField PasswordHash = new DatabaseField(
+			"passwordhash", "",
+			typeof(string), false, false);
+		internal static DatabaseField Roles = new DatabaseField(
+			"roles", "[]",
+			typeof(string), false, false);
+		internal static DatabaseField ShellId = new DatabaseField(
+			"shellid", 0,
+			typeof(long), false, false);
+	}
 	internal class PlayerAccount : IGameEntity
 	{
-		internal long id = 0;
-		internal string userName = "unset";
-		internal long objectId = 0;
-		internal string passwordHash = "unset";
-		internal List<GameRole> roles = new List<GameRole>();
-		internal PlayerAccount(long _id)
+		internal Dictionary<DatabaseField, object> fields = new Dictionary<DatabaseField, object>()
 		{
-			id = _id;
-		}
+			{ Field.Id,           Field.Id.fieldDefault },
+			{ Field.Name,         Field.Name.fieldDefault },
+			{ Field.PasswordHash, Field.PasswordHash.fieldDefault },
+			{ Field.Roles,        Field.Roles.fieldDefault },
+			{ Field.ShellId,      Field.ShellId.fieldDefault }
+		};
 		internal bool CheckPassword(string pass)
 		{
-			return BCrypt.Net.BCrypt.Verify(pass, passwordHash);
+			return BCrypt.Net.BCrypt.Verify(pass, GetValue<string>(Field.PasswordHash));
 		}
 		public Dictionary<DatabaseField, object> GetSaveData()
 		{
@@ -43,21 +54,6 @@ namespace inspiral
 		}
 
 	}
-	internal static partial class Field
-	{
-		internal static DatabaseField UserName = new DatabaseField(
-			"username", "",
-			typeof(string), false, false);
-		internal static DatabaseField PasswordHash = new DatabaseField(
-			"passwordhash", "",
-			typeof(string), false, false);
-		internal static DatabaseField Roles = new DatabaseField(
-			"roles", "",
-			typeof(string), false, false);
-		internal static DatabaseField ObjectId = new DatabaseField(
-			"objectid", 0,
-			typeof(long), false, false);
-	}
 	internal class AccountRepository : GameRepository
 	{
 		private Dictionary<string, PlayerAccount> accounts = new Dictionary<string, PlayerAccount>();
@@ -66,10 +62,11 @@ namespace inspiral
 			repoName = "accounts";
 			dbPath = "data/accounts.sqlite";
 			schemaFields = new List<DatabaseField>() { 
-				Field.UserName, 
+				Field.Id, 
+				Field.Name, 
 				Field.PasswordHash, 
 				Field.Roles, 
-				Field.ObjectId
+				Field.ShellId
 			};
 		}
 		internal PlayerAccount? GetAccountByUser(string user)
@@ -80,35 +77,6 @@ namespace inspiral
 			}
 			return null;
 		}
-		internal override void InstantiateFromRecord(Dictionary<DatabaseField, object> record)
-		{	
-			var newAcct = CreateRepositoryType((long)record[Field.Id]);
-			if(newAcct != null)
-			{
-				PlayerAccount acct = (PlayerAccount)newAcct;
-				acct.userName =      (string)record[Field.UserName];
-				acct.passwordHash =  (string)record[Field.PasswordHash];
-				acct.objectId =      (long)record[Field.ObjectId];
-				List<string>? roleJson = JsonConvert.DeserializeObject<List<string>>((string)record[Field.Roles]);
-				if(roleJson != null)
-				{
-					foreach(string role in roleJson)
-					{
-						var getRole = Game.Modules.Roles.GetRole(role);
-						if(getRole != null)
-						{
-							GameRole foundRole = (GameRole)getRole;
-							if(foundRole != null && !acct.roles.Contains(foundRole))
-							{
-								acct.roles.Add(foundRole);
-							}
-						}
-					}
-				}
-				accounts.Add(acct.userName, acct);
-				records.Add(acct.GetValue<long>(Field.Id), acct);
-			}
-		}
 		internal PlayerAccount? CreateAccount(string userName, string passwordHash)
 		{
 			// Create the new, blank account.
@@ -116,17 +84,16 @@ namespace inspiral
 			if(newAcct != null)
 			{
 				PlayerAccount acct = (PlayerAccount)newAcct;
-				acct.userName = userName;
-				acct.passwordHash = passwordHash;
+				acct.SetValue<string>(Field.Name, userName);
+				acct.SetValue<string>(Field.PasswordHash, passwordHash);
 
 				// Create the shell the client will be piloting around, saving data to, etc.
-				string myName = Text.Capitalize(acct.userName);
-				GameObject gameObj = Game.Repositories.Objects.CreateFromTemplate(GlobalConfig.DefaultShellTemplate);
-				gameObj.SetValue(Field.Name, myName);
+				string myName = Text.Capitalize(userName);
+				GameObject gameObj = Program.Game.Repos.Objects.CreateFromTemplate(GlobalConfig.DefaultShellTemplate);
 				gameObj.SetValue(Field.Gender, GlobalConfig.DefaultPlayerGender);
 				gameObj.SetValue(Field.Aliases, new List<string>() { myName.ToLower() });
 
-				GenderObject genderObj = Game.Modules.Gender.GetByTerm(gameObj.GetValue<string>(Field.Gender));
+				GenderObject genderObj = Program.Game.Mods.Gender.GetByTerm(gameObj.GetValue<string>(Field.Gender));
 				var visComp = gameObj.GetComponent<VisibleComponent>();
 				if(visComp != null)
 				{
@@ -134,50 +101,59 @@ namespace inspiral
 					vis.SetValue<string>(Field.ShortDesc,    $"{gameObj.GetValue<string>(Field.Name)}");
 					vis.SetValue<string>(Field.ExaminedDesc, $"and {genderObj.Is} completely uninteresting.");
 				}
-				Game.Repositories.Objects.QueueForUpdate(gameObj);
+				Program.Game.Repos.Objects.QueueForUpdate(gameObj);
 
-				acct.objectId = gameObj.GetValue<long>(Field.Id);
+				acct.SetValue<long>(Field.ShellId, gameObj.GetValue<long>(Field.Id));
 				
 				// If the account DB is empty, give them admin roles.
 				if(accounts.Count <= 0)
 				{
-					Game.LogError($"No accounts found, giving admin roles to {acct.userName}.");
-					GameRole? role = Game.Modules.Roles.GetRole("builder"); 
+					Program.Game.LogError($"No accounts found, giving admin roles to {userName}.");
+					
+					List<GameRole> acctRoles = new List<GameRole>();
+					GameRole? role = Program.Game.Mods.Roles.GetRole("builder"); 
 					if(role != null)
 					{
-						acct.roles.Add(role);
+						acctRoles.Add(role);
 					}
-					role = Game.Modules.Roles.GetRole("administrator");
+					role = Program.Game.Mods.Roles.GetRole("administrator");
 					if(role != null)
 					{
-						acct.roles.Add(role);
+						acctRoles.Add(role);
 					}
+					acct.SetValue<List<GameRole>>(Field.Roles, acctRoles);
 				}
 
 				// Finalize everything.
-				accounts.Add(acct.userName, acct);
+				accounts.Add(userName, acct);
 				Database.UpdateRecord(dbPath, $"table_{repoName}", acct);
 				return acct;
 			}
 			return null;
 		}
-		internal override IGameEntity? CreateRepositoryType(long id) 
+		internal override IGameEntity CreateNewInstance(long id)
 		{
-			PlayerAccount acct = new PlayerAccount(id);
-			GameRole? role = Game.Modules.Roles.GetRole("player");
+			PlayerAccount acct = (PlayerAccount)CreateRepositoryType();
+			acct.SetValue<long>(Field.Id, id);
+			GameRole? role = Program.Game.Mods.Roles.GetRole("player");
 			if(role != null)
 			{
-				acct.roles.Add(role);
+				acct.SetValue<List<GameRole>>(Field.Roles, new List<GameRole>() { role });
 			}
 			return acct;
+		}
+		internal override IGameEntity CreateRepositoryType() 
+		{
+			return new PlayerAccount();
 		}
 
 		internal PlayerAccount? FindAccount(string searchstring)
 		{
 			foreach(KeyValuePair<string, PlayerAccount> account in accounts)
 			{
-				if(account.Value.userName.ToLower() == searchstring ||
-					$"{account.Value.GetValue<long>(Field.Id)}" == searchstring)
+				string? myName = account.Value.GetValue<string>(Field.Name);
+				if(myName != null && (myName.ToLower() == searchstring ||
+					$"{account.Value.GetValue<long>(Field.Id)}" == searchstring))
 				{
 					return account.Value;
 				}

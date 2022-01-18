@@ -51,9 +51,10 @@ namespace inspiral
 						return;
 					}
 					string pronounToken = m.Groups[2].Value.ToString().ToLower();
-					if(pronounToken != null && pronounToken != "" && !Game.Modules.Gender.Tokens.Contains(pronounToken))
+
+					if(pronounToken != null && pronounToken != "" && !Program.Game.Mods.Gender.Tokens.Contains(pronounToken))
 					{
-						invoker.WriteLine($"Unknown token '{pronounToken}'. Valid tokens for emotes are: {Text.EnglishList(Game.Modules.Gender.Tokens)}."); 
+						invoker.WriteLine($"Unknown token '{pronounToken}'. Valid tokens for emotes are: {Text.EnglishList(Program.Game.Mods.Gender.Tokens)}."); 
 						return;
 					}
 					if(finding != null && !showingMessages.ContainsKey(mentioned))

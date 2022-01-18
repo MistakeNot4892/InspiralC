@@ -6,38 +6,33 @@ namespace inspiral
 
 	internal class GameModule
 	{
+		internal static List<GameModule> AllModules = new List<GameModule>();
 		internal GameModule()
 		{
-			Game.Modules.AllModules.Add(this);
+			AllModules.Add(this);
 		}
 		internal virtual void Initialize() {}
 		internal virtual void PostInitialize() {}
 	}
 	internal partial class Modules
 	{
-		private List<GameModule> s_modules = new List<GameModule>();
-		public List<GameModule> AllModules
-		{
-			get { return s_modules; }
-			set { s_modules = value; }
-		}
 		internal void InitializeModules()
 		{
-			Game.LogError($"Initializing modules.");
-			foreach(GameModule module in AllModules)
+			Program.Game.LogError($"Initializing modules.");
+			foreach(GameModule module in GameModule.AllModules)
 			{
 				module.Initialize();
 			}
-			Game.LogError($"Done.");
+			Program.Game.LogError($"Done.");
 		}
 		internal void PostInitializeModules()
 		{
-			Game.LogError($"Post-initializing modules.");
-			foreach(GameModule module in AllModules)
+			Program.Game.LogError($"Post-initializing modules.");
+			foreach(GameModule module in GameModule.AllModules)
 			{
 				module.PostInitialize();
 			}
-			Game.LogError($"Done.");
+			Program.Game.LogError($"Done.");
 		}
 	}
 }

@@ -18,14 +18,14 @@ namespace inspiral
 				return;
 			}
 
-			PlayerAccount? acct = Game.Repositories.Accounts.FindAccount(cmd.ObjTarget);
+			PlayerAccount? acct = Program.Game.Repos.Accounts.FindAccount(cmd.ObjTarget);
 			if(acct == null)
 			{
 				invoker.WriteLine($"Cannot find account for '{cmd.ObjTarget}'.", true);
 				return;
 			}
 
-			string header = $"Roles for {acct.userName}";
+			string header = $"Roles for {acct.GetValue<string>(Field.Name)}";
 			Dictionary<string, List<string>> roleDetails = new Dictionary<string, List<string>>();
 			roleDetails.Add(header, new List<string>());
 
@@ -40,9 +40,13 @@ namespace inspiral
 				}
 			}
 
-			foreach(GameRole role in acct.roles)
+			List<GameRole>? roles = acct.GetValue<List<GameRole>>(Field.Roles);
+			if(roles != null)
 			{
-				roleDetails[header].Add(Text.FormatPopup(invoker, role.name, role.GetSummary(), wrap + Text.NestedWrapwidthModifier));
+				foreach(GameRole role in roles)
+				{
+					roleDetails[header].Add(Text.FormatPopup(invoker, role.name, role.GetSummary(), wrap + Text.NestedWrapwidthModifier));
+				}
 			}
 			invoker.WriteLine(Text.FormatBlock(invoker, roleDetails, wrap), true);
 		}

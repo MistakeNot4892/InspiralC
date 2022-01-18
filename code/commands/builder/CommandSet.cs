@@ -49,7 +49,7 @@ namespace inspiral
 			else if(field.IsField(Field.Gender))
 			{
 				lastVal = editing.GetValue<string>(Field.Gender);
-				GenderObject? newGender = Game.Modules.Gender.GetByTerm(value);
+				GenderObject? newGender = Program.Game.Mods.Gender.GetByTerm(value);
 				if(newGender == null)
 				{
 					invalidValue = "Non-existent gender.";
@@ -65,8 +65,8 @@ namespace inspiral
 				unknownValue = true;
 				foreach(KeyValuePair<System.Type, GameComponent> comp in editing.Components)
 				{
-					if(Game.Modules.Components.builders[comp.Key].editableFields != null && 
-						Game.Modules.Components.builders[comp.Key].editableFields.Contains(field))
+					if(Program.Game.Mods.Components.builders[comp.Key].editableFields != null && 
+						Program.Game.Mods.Components.builders[comp.Key].editableFields.Contains(field))
 					{
 						unknownValue = false;
 						lastVal = comp.Value.GetValue<string>(field);

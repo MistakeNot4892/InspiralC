@@ -7,11 +7,7 @@ namespace inspiral
     {
         internal static object ConvertDataForSave(KeyValuePair<DatabaseField, object> recordField)
         {
-            if(recordField.Key.fieldType == typeof(List<string>) || recordField.Key.fieldType == typeof(Dictionary<string, long>))
-            {
-                return Newtonsoft.Json.JsonConvert.SerializeObject((string)recordField.Value);
-            }
-            else if(recordField.Key.fieldType == typeof(bool))
+            if(recordField.Key.fieldType == typeof(bool))
             {
                 return (bool)recordField.Value ? 1 : 0;
             }
@@ -26,38 +22,13 @@ namespace inspiral
                 DatabaseField field = Field.GetFieldFromName(record.GetName(i));
                 if(!field.IsField(Field.Dummy))
                 {
-
                     // No value to load somehow.
                     object fieldVal = record[field.fieldName];
                     if(fieldVal == null)
                     {
                         continue;
                     }
-
-                    // String name to id dictionary.
-                    if(field.fieldType == typeof(Dictionary<string, long>))
-                    {
-                        string stringVal = (string)fieldVal;
-                        Dictionary<string, long>? deserializedObj = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, long>>(stringVal);
-                        if(deserializedObj != null)
-                        {
-                            fields.Add(field, deserializedObj);
-                        }
-                    }
-
-                    // Stringlist.
-                    else if(field.fieldType == typeof(List<string>))
-                    {
-                        string stringVal = (string)fieldVal;
-                        List<string>? deserializedObj = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(stringVal);
-                        if(deserializedObj != null)
-                        {
-                            fields.Add(field, deserializedObj);
-                        }
-                    }
-
-                    // Primitive values
-                    else if(field.fieldType == typeof(string))
+                    if(field.fieldType == typeof(string))
                     {
                         string stringVal = (string)fieldVal;
                         fields.Add(field, stringVal);
@@ -86,8 +57,6 @@ namespace inspiral
     {
         private static Dictionary<System.Type, string> fieldTypes = new Dictionary<System.Type, string>()
         {
-            { typeof(List<long>),               "TEXT"    },
-            { typeof(Dictionary<string, long>), "TEXT"    },
             { typeof(string),                   "TEXT"    },
             { typeof(int),                      "INTEGER" },
             { typeof(long),                     "INTEGER" },
@@ -142,7 +111,7 @@ namespace inspiral
                 string tableFieldString = $"{field.fieldName} {GetFieldTypeString(field.fieldType)}";
                 if(field.fieldDefault != null)
                 {
-                    if(field.fieldType == typeof(string) || field.fieldType == typeof(List<string>) || field.fieldType == typeof(Dictionary<string, long>))
+                    if(field.fieldType == typeof(string))
                     {
                         tableFieldString = $"{tableFieldString} DEFAULT '{field.fieldDefault}'";
                     }

@@ -7,11 +7,38 @@ namespace inspiral
 		internal static DatabaseField Id = new DatabaseField(
 			"id", 0,
 			typeof(long), true, false);
+		internal static DatabaseField Name = new DatabaseField(
+			"name", "object",
+			typeof(string), true, true);
+		internal static DatabaseField Gender = new DatabaseField(
+			"gender", Text.GenderInanimate,
+			typeof(string), true, true);
+		internal static DatabaseField Aliases = new DatabaseField(
+			"aliases", "", 
+			typeof(string), true, true);
+		internal static DatabaseField Components = new DatabaseField(
+			"components", "{}",
+			typeof(string), true, true);
+		internal static DatabaseField Flags = new DatabaseField(
+			"flags", -1,
+			typeof(int), true, true);
+		internal static DatabaseField Location = new DatabaseField(
+			"location", 0,
+			typeof(long), true, false);
 	}
 
 	internal partial class GameObject : IGameEntity
 	{
-		private Dictionary<DatabaseField, object> _fields = new Dictionary<DatabaseField, object>();
+		private Dictionary<DatabaseField, object> _fields = new Dictionary<DatabaseField, object>()
+		{
+			{ Field.Id,         Field.Id.fieldDefault },
+			{ Field.Name,       Field.Name.fieldDefault },
+			{ Field.Gender,     Field.Gender.fieldDefault },
+			{ Field.Aliases,    Field.Aliases.fieldDefault },
+			{ Field.Components, Field.Components.fieldDefault },
+			{ Field.Flags,      Field.Flags.fieldDefault },
+			{ Field.Location,   Field.Location.fieldDefault },
+		};
 		public Dictionary<DatabaseField, object> Fields
 		{
 			get { return _fields; }
@@ -27,7 +54,7 @@ namespace inspiral
 		{
 			get
 			{ 
-				var loc = Game.Repositories.Objects.GetById(GetValue<long>(Field.Location));
+				var loc = Program.Game.Repos.Objects.GetById(GetValue<long>(Field.Location));
 				if(loc != null)
 				{
 					return (GameObject)loc;
@@ -47,10 +74,6 @@ namespace inspiral
 		{
 			get { return _components; }
 			set { _components = value; }
-		}
-		public Dictionary<DatabaseField, object> GetSaveData()
-		{
-			return Fields;
 		}
 		public bool SetValue<T>(System.Type componentType, DatabaseField field, T newValue)
 		{
@@ -90,7 +113,77 @@ namespace inspiral
 		}
 		public void CopyFromRecord(Dictionary<DatabaseField, object> record) 
 		{
-			Fields = record;
+			foreach(DatabaseField field in Fields.Keys)
+			{
+				object? newVal = null;
+				if(field == Field.Aliases)
+				{
+					newVal = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>((string)record[field]);
+				}
+				else if(field == Field.Components)
+				{
+					List<long>? components = Newtonsoft.Json.JsonConvert.DeserializeObject<List<long>>((string)record[field]);
+					if(components != null)
+					{
+						Dictionary<System.Type, GameComponent> foundComps = new Dictionary<System.Type, GameComponent>();
+						foreach(long compId in components)
+						{
+							var findComp = Program.Game.Repos.Components.GetById(compId);
+							if(findComp != null)
+							{
+								GameComponent compInstance = (GameComponent)findComp;
+								foundComps.Add(compInstance.GetType(), compInstance);
+							}
+						}
+					}
+				}
+				if(newVal != null)
+				{
+					Fields[field] = newVal; 
+				}
+			}
+		}
+		public Dictionary<DatabaseField, object> GetSaveData()
+		{
+			Dictionary<DatabaseField, object> record = new Dictionary<DatabaseField, object>();
+			foreach(DatabaseField field in Fields.Keys)
+			{
+				object? saveVal = null;
+				if(field == Field.Aliases)
+				{
+					saveVal = Newtonsoft.Json.JsonConvert.SerializeObject(Fields[Field.Aliases]);
+				}
+				else if(field == Field.Components)
+				{
+					Dictionary<System.Type, GameComponent>? components = GetValue<Dictionary<System.Type, GameComponent>>(Field.Components);
+					List<long> compIds = new List<long>();
+					if(components != null)
+					{
+						foreach(KeyValuePair<System.Type, GameComponent> compRecord in components)
+						{
+							long compId = compRecord.Value.GetValue<long>(Field.Id);
+							compIds.Add(compId);
+						}
+						if(compIds.Count > 0)
+						{
+							saveVal = Newtonsoft.Json.JsonConvert.SerializeObject(compIds);
+						}
+						else
+						{
+							saveVal = "[]";
+						}
+					}
+				}
+				else
+				{
+					saveVal = Fields[field];
+				}
+				if(saveVal != null)
+				{
+					record[field] = saveVal; 
+				}
+			}
+			return record;
 		}
 		internal GameObject? FindGameObjectNearby(string token)
 		{
@@ -99,7 +192,7 @@ namespace inspiral
 		internal GameObject? FindGameObjectNearby(GameObject viewer, string token)
 		{
 			string checkToken = token.ToLower();
-			if(Game.Repositories.Objects.SelfReferenceTokens.Contains(checkToken))
+			if(Program.Game.Repos.Objects.SelfReferenceTokens.Contains(checkToken))
 			{
 				return viewer;
 			}
@@ -162,7 +255,7 @@ namespace inspiral
 				}
 				if(room.exits.ContainsKey(lookingFor))
 				{
-					var otherRoom = Game.Repositories.Objects.GetById(room.exits[lookingFor]);
+					var otherRoom = Program.Game.Repos.Objects.GetById(room.exits[lookingFor]);
 					if(otherRoom != null)
 					{
 						return (GameObject)otherRoom;

@@ -3,6 +3,12 @@ using System.Collections.Generic;
 namespace inspiral
 {
 
+	internal static partial class Field
+	{
+		internal static DatabaseField Parent = new DatabaseField(
+			"parent", 0,
+			typeof(long), true, false);
+	}
 	internal class GameComponentBuilder
 	{
 		internal GameComponentBuilder()
@@ -41,42 +47,41 @@ namespace inspiral
 			get { return _fields; }
 			set { _fields = value; }
 		}
-		internal GameObject? parent;
 		internal bool isPersistent = true;
 		internal GameComponent() { InitializeComponent(); }
 		internal virtual void InitializeComponent() {}
 		internal virtual void FinalizeObjectLoad() {}
 		internal virtual void Added(GameObject addedTo)
 		{
-			parent = addedTo;
+			SetValue<long>(Field.Parent, addedTo.GetValue<long>(Field.Id));
 			if(isPersistent)
 			{
-				Game.Repositories.Objects.QueueForUpdate(parent);
+				Program.Game.Repos.Objects.QueueForUpdate(addedTo);
 			}
 		}
 		internal virtual void Removed(GameObject takenFrom)
 		{
-			if(takenFrom == parent)
+			if(takenFrom == GetParent())
 			{
-				parent = null;
+				SetValue<long>(Field.Parent, 0);
 			}
 			if(isPersistent)
 			{
-				Game.Repositories.Objects.QueueForUpdate(takenFrom);
+				Program.Game.Repos.Objects.QueueForUpdate(takenFrom);
 			}
 		}
 		internal string GetStringSummary() 
 		{
 			System.Type myType = this.GetType();
-			if(Game.Modules.Components.builders.ContainsKey(myType) && 
-				Game.Modules.Components.builders[myType].viewableFields != null && 
-				Game.Modules.Components.builders[myType].viewableFields.Count > 0)
+			if(Program.Game.Mods.Components.builders.ContainsKey(myType) && 
+				Program.Game.Mods.Components.builders[myType].viewableFields != null && 
+				Program.Game.Mods.Components.builders[myType].viewableFields.Count > 0)
 			{
 				string result = "";
-				foreach(DatabaseField field in Game.Modules.Components.builders[myType].viewableFields)
+				foreach(DatabaseField field in Program.Game.Mods.Components.builders[myType].viewableFields)
 				{
-					if(Game.Modules.Components.builders[myType].editableFields != null && 
-						Game.Modules.Components.builders[myType].editableFields.Contains(field))
+					if(Program.Game.Mods.Components.builders[myType].editableFields != null && 
+						Program.Game.Mods.Components.builders[myType].editableFields.Contains(field))
 					{
 						result = $"{result}\n{field}: {GetValue<string>(field)}";
 					}
@@ -92,12 +97,12 @@ namespace inspiral
 		internal bool SetValueOfEditableField<T>(DatabaseField field, T value) 
 		{
 			System.Type myType = this.GetType();
-			if(Game.Modules.Components.builders.ContainsKey(myType) && 
-				Game.Modules.Components.builders[myType].editableFields != null && 
-				Game.Modules.Components.builders[myType].editableFields.Count > 0)
+			if(Program.Game.Mods.Components.builders.ContainsKey(myType) && 
+				Program.Game.Mods.Components.builders[myType].editableFields != null && 
+				Program.Game.Mods.Components.builders[myType].editableFields.Count > 0)
 			{
 				SetValue<T>(field, value);
-				Game.Repositories.Objects.QueueForUpdate(this);
+				Program.Game.Repos.Objects.QueueForUpdate(this);
 				return true;	
 			}
 			return false;
@@ -131,8 +136,18 @@ namespace inspiral
 		{
 			return Fields;
 		}
+		internal GameObject? GetParent()
+		{
+			var parent = Program.Game.Repos.Objects.GetById(GetValue<long>(Field.Parent));
+			if(parent != null)
+			{
+				return (GameObject)parent;
+			} 
+			return null;
+		}
 		internal void WriteLine(string message)
 		{
+			GameObject? parent = GetParent();
 			if(parent != null)
 			{
 				parent.WriteLine(message);
@@ -140,6 +155,7 @@ namespace inspiral
 		}
 		internal void WriteLine(string message, bool sendPrompt)
 		{
+			GameObject? parent = GetParent();
 			if(parent != null)
 			{
 				parent.WriteLine(message, sendPrompt);
@@ -147,6 +163,7 @@ namespace inspiral
 		}
 		internal string GetColour(string colourType)
 		{
+			GameObject? parent = GetParent();
 			if(parent != null)
 			{
 				return parent.GetColour(colourType);

@@ -25,7 +25,13 @@ namespace inspiral
 		internal override void Initialize()
 		{
 			ComponentType = typeof(ContainerComponent);
-			schemaFields = new List<DatabaseField>() { Field.IsOpen, Field.HasLid, Field.MaxCapacity };
+			schemaFields = new List<DatabaseField>() 
+			{
+				Field.Parent,
+				Field.IsOpen,
+				Field.HasLid,
+				Field.MaxCapacity
+			};
 			base.Initialize();
 		}
 	}

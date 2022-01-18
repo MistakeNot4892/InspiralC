@@ -42,7 +42,7 @@ namespace inspiral
 			stream =   _client.GetStream();
 			shell =    DummyShell;
 			clientId = _id;
-			Game.LogError($"{clientId}: client created.");
+			Program.Game.LogError($"{clientId}: client created.");
 			context = Contexts.Login;
 			context.OnContextSet(this);
 		}
@@ -122,7 +122,7 @@ namespace inspiral
 			}
 			catch (System.Exception e)
 			{
-				Game.LogError($"{clientId}: disconnected ({e.Message}).");
+				Program.Game.LogError($"{clientId}: disconnected ({e.Message}).");
 			}
 			finally
 			{

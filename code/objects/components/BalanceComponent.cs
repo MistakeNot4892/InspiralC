@@ -8,7 +8,11 @@ namespace inspiral
 		internal override void Initialize()
 		{
 			ComponentType = typeof(BalanceComponent);
-			schemaFields = new List<DatabaseField>() { Field.Dummy };
+			schemaFields = new List<DatabaseField>()
+			{
+				Field.Parent,
+				Field.Dummy
+			};
 			base.Initialize();
 		}
 	}

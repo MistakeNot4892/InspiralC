@@ -20,7 +20,7 @@ namespace inspiral
 				}
 				else
 				{
-					GameObject prop = Game.Repositories.Objects.CreateFromTemplate(cmd.ObjTarget);
+					GameObject prop = Program.Game.Repos.Objects.CreateFromTemplate(cmd.ObjTarget);
 					if(prop != null && invoker.Location != null)
 					{
 						prop.Move(invoker.Location);
@@ -31,7 +31,7 @@ namespace inspiral
 			}
 			if(!msgSent)
 			{
-				invoker.WriteLine($"You can create the following: {Text.EnglishList(Game.Repositories.Objects.GetTemplateNames())}");
+				invoker.WriteLine($"You can create the following: {Text.EnglishList(Program.Game.Repos.Objects.GetTemplateNames())}");
 			}
 		}
 	}

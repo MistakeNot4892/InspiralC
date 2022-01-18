@@ -23,7 +23,7 @@ namespace inspiral
 				{
 					try
 					{	long getId = (long)System.Convert.ToInt64(cmd.ObjTarget);
-						var viewObj = Game.Repositories.Objects.GetById(getId);
+						var viewObj = Program.Game.Repos.Objects.GetById(getId);
 						if(viewObj != null)
 						{
 							viewing =(GameObject)viewObj;
@@ -31,7 +31,7 @@ namespace inspiral
 					}
 					catch(System.Exception e) 
 					{
-						Game.LogError($"Tried to look up a non-long var in the global db ({e.Message})");
+						Program.Game.LogError($"Tried to look up a non-long var in the global db ({e.Message})");
 					}
 					invoker.WriteLine($"Cannot find '{cmd.ObjTarget}'.");
 				}

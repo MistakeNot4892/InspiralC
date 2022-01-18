@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal partial class Repos
+	internal partial class Repositories
 	{
-		internal static TemplateRepository Templates = new TemplateRepository();
+		internal TemplateRepository Templates = new TemplateRepository();
 	}
 	internal class TemplateRepository : GameRepository
 	{
@@ -21,19 +21,6 @@ namespace inspiral
 				Field.Flags,
 				Field.Location
 			};
-		}
-		internal override void InstantiateFromRecord(Dictionary<DatabaseField, object> record) 
-		{
-		}
-		internal void LoadComponentData(GameObject gameObj)
-		{
-		}
-		internal override GameObject? CreateRepositoryType(long id) 
-		{
-			return null;
-		}
-		internal override void PostInitialize() 
-		{
 		}
 	}
 }

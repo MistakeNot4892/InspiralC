@@ -12,14 +12,18 @@ namespace inspiral
 	{
 		internal static DatabaseField EquippedSlots = new DatabaseField(
 			"equipped", "",
-			typeof(List<string>), false, false);
+			typeof(string), false, false);
 	}
 	internal class InventoryBuilder : GameComponentBuilder
 	{
 		internal override void Initialize()
 		{
 			ComponentType = typeof(InventoryComponent);
-			schemaFields = new List<DatabaseField>() { Field.EquippedSlots };
+			schemaFields = new List<DatabaseField>()
+			{
+				Field.Parent,
+				Field.EquippedSlots
+			};
 			base.Initialize();
 		}
 	}
@@ -35,7 +39,7 @@ namespace inspiral
 				WriteLine($"What do you wish to {action}?");
 				return null;
 			}
-			GameObject? returning = parent?.FindGameObjectInContents(input);
+			GameObject? returning = GetParent()?.FindGameObjectInContents(input);
 			if(returning == null)
 			{
 				if(carrying.ContainsKey(input))
@@ -60,6 +64,7 @@ namespace inspiral
 		}
 		internal bool Drop(GameObject dropping, bool silent)
 		{
+			GameObject? parent = GetParent();
 			if(parent?.Location == null)
 			{
 				if(!silent)
@@ -109,7 +114,7 @@ namespace inspiral
 		}
 		internal List<string> GetWieldableSlots()
 		{
-			var mobComp = parent?.GetComponent<MobileComponent>();
+			var mobComp = GetParent()?.GetComponent<MobileComponent>();
 			if(mobComp != null)
 			{
 				MobileComponent mob = (MobileComponent)mobComp;
@@ -119,7 +124,7 @@ namespace inspiral
 		}
 		internal List<string> GetEquippableSlots()
 		{
-			var mobComp = parent?.GetComponent<MobileComponent>();
+			var mobComp = GetParent()?.GetComponent<MobileComponent>();
 			if(mobComp != null)
 			{
 				MobileComponent mob = (MobileComponent)mobComp;
@@ -208,6 +213,7 @@ namespace inspiral
 				WriteLine("What do you wish to pick up?");
 				return false;
 			}
+			GameObject? parent = GetParent();
 			GameObject? equipping = parent?.FindGameObjectNearby(tokens.Item1);
 			if(equipping != null)
 			{
@@ -223,12 +229,12 @@ namespace inspiral
 				}
 				if(success && parent != null)
 				{
-					Game.Repositories.Objects.QueueForUpdate(parent);
+					Program.Game.Repos.Objects.QueueForUpdate(parent);
 					string collectionMessage1p = $"You pick up {equipping.GetShortDesc()}";
 					string collectionMessage3p = $"{Text.Capitalize(parent.GetShortDesc())} picks up {equipping.GetShortDesc()}";
 					if(slot != null && slot != "default")
 					{
-						GenderObject genderObj = Game.Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
+						GenderObject genderObj = Program.Game.Mods.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 						collectionMessage1p = $"{collectionMessage1p} with your {slot}";
 						collectionMessage3p = $"{collectionMessage1p} with {genderObj.Their} {slot}";
 					}
@@ -323,6 +329,7 @@ namespace inspiral
 		}
 		internal bool Equip(GameObject equipping, string slot, bool silent) 
 		{
+			GameObject? parent = GetParent();
 			if(parent != null && !carrying.ContainsKey(slot))
 			{
 				if(equipping.Location != parent)
@@ -339,13 +346,13 @@ namespace inspiral
 				carrying.Add(slot, equipping);
 				if(!silent)
 				{
-					GenderObject genderObj = Game.Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
+					GenderObject genderObj = Program.Game.Mods.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 					parent.ShowNearby(parent, 
 						$"You equip {equipping.GetShortDesc()} to your {slot}.",
 						$"{Text.Capitalize(parent.GetShortDesc())} equips {equipping.GetShortDesc()} to {genderObj.Their} {slot}."
 					);
 				}
-				Game.Repositories.Objects.QueueForUpdate(parent);
+				Program.Game.Repos.Objects.QueueForUpdate(parent);
 				return true;
 			}
 			return false; 
@@ -368,6 +375,7 @@ namespace inspiral
 			}
 			if(removingSlot != null && carrying.ContainsKey(removingSlot))
 			{
+				GameObject? parent = GetParent();
 				if(parent != null && CanUnequip(unequipping) && PutInHands(unequipping))
 				{
 					foreach(string otherSlot in GetEquippableSlots())
@@ -377,12 +385,12 @@ namespace inspiral
 							carrying.Remove(otherSlot);
 						}
 					}
-					GenderObject genderObj = Game.Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
+					GenderObject genderObj = Program.Game.Mods.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 					parent.ShowNearby(parent, 
 						$"You remove {unequipping.GetShortDesc()} from your {removingSlot}.",
 						$"{Text.Capitalize(parent.GetShortDesc())} removes {unequipping.GetShortDesc()} from {genderObj.Their} {removingSlot}."
 					);
-					Game.Repositories.Objects.QueueForUpdate(parent);
+					Program.Game.Repos.Objects.QueueForUpdate(parent);
 				}
 				return true;
 			}

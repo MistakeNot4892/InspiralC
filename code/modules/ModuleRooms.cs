@@ -17,7 +17,7 @@ namespace inspiral
         }
         internal GameObject CreateEmpty()
         {
-            return Game.Repositories.Objects.CreateFromTemplate("room");
+            return Program.Game.Repos.Objects.CreateFromTemplate("room");
         }
     }
 }

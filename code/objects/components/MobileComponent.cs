@@ -27,8 +27,8 @@ namespace inspiral
 			"species", "",
 			typeof(string), true, true);
 		internal static DatabaseField BodypartList = new DatabaseField(
-			"bodyparts", "",
-			typeof(List<string>), true, true);
+			"bodyparts", "[]",
+			typeof(string), true, true);
 	}
 
 	internal class MobileBuilder : GameComponentBuilder
@@ -38,6 +38,7 @@ namespace inspiral
 			ComponentType = typeof(MobileComponent);
 			schemaFields = new List<DatabaseField>()
 			{
+				Field.Parent,
 				Field.EnterMessage,
 				Field.LeaveMessage,
 				Field.DeathMessage,
@@ -114,7 +115,7 @@ namespace inspiral
 		}
 		internal string GetWeightedRandomBodypart()
 		{
-			return limbs.ElementAt(Game.Random.Next(0, limbs.Count)).Key;
+			return limbs.ElementAt(Program.Game.Random.Next(0, limbs.Count)).Key;
 		}
 	}
 	internal class BodypartData

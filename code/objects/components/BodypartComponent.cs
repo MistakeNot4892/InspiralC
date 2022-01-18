@@ -17,14 +17,16 @@ namespace inspiral
 			typeof(bool), false, false);
 		internal static DatabaseField EquipmentSlots = new DatabaseField(
 			"equipmentslots", "", 
-			typeof(List<string>), false, false);
+			typeof(string), false, false);
 	}
 	internal class BodypartBuilder : GameComponentBuilder
 	{
 		internal override void Initialize()
 		{
 			ComponentType = typeof(BodypartComponent);
-			schemaFields = new List<DatabaseField>() {
+			schemaFields = new List<DatabaseField>()
+			{
+				Field.Parent,
 				Field.CanGrasp,
 				Field.CanStand,
 				Field.NaturalWeapon,

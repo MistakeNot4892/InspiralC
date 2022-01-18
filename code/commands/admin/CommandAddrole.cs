@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace inspiral
 {
 	internal class CommandAddRole : GameCommand
@@ -21,27 +23,36 @@ namespace inspiral
 				return;
 			}
 
-			PlayerAccount? acct = Game.Repositories.Accounts.FindAccount(cmd.ObjTarget);
+			PlayerAccount? acct = Program.Game.Repos.Accounts.FindAccount(cmd.ObjTarget);
 			if(acct == null)
 			{
 				invoker.WriteLine($"Cannot find account for '{cmd.ObjTarget}'.", true);
 				return;
 			}
 
-			GameRole? role = Game.Modules.Roles.GetRole(cmd.StrArgs[0].ToLower());
+			GameRole? role = Program.Game.Mods.Roles.GetRole(cmd.StrArgs[0].ToLower());
 			if(role == null)
 			{
 				invoker.WriteLine($"Cannot find role for '{cmd.StrArgs[0]}'.");
 			}
-			else if(acct.roles.Contains(role))
+			else 
 			{
-				invoker.WriteLine($"They already have that role.");
-			}
-			else
-			{
-				acct.roles.Add(role);
-				Game.Repositories.Accounts.QueueForUpdate(acct);
-				invoker.WriteLine($"Added role '{role.name}' to '{acct.userName}'.");
+				List<GameRole>? roles = acct.GetValue<List<GameRole>>(Field.Roles);
+				if(roles == null)
+				{
+					roles = new List<GameRole>();
+					acct.SetValue<List<GameRole>>(Field.Roles, roles);
+				}
+				if(roles.Contains(role))
+				{
+					invoker.WriteLine($"They already have that role.");
+				}
+				else
+				{
+					roles.Add(role);
+					Program.Game.Repos.Accounts.QueueForUpdate(acct);
+					invoker.WriteLine($"Added role '{role.name}' to '{acct.GetValue<string>(Field.Name)}'.");
+				}
 			}
 		}
 	}

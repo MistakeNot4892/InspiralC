@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace inspiral
 {
 	internal class GenderObject
@@ -9,11 +11,11 @@ namespace inspiral
 		internal string Is     = "is";
         internal string Self   = "self";
         internal string Term   = Text.GenderInanimate;
-		internal GenderObject()
+		internal GenderObject(GenderModule genderMod)
 		{
-			Initialize();
+			Initialize(genderMod);
 		}
-		internal GenderObject(string _term, string _they, string _them, string _their, string _theirs, string _is, string _self)
+		internal GenderObject(GenderModule genderMod, string _term, string _they, string _them, string _their, string _theirs, string _is, string _self)
 		{
 			Term = _term;
 			They = _they;
@@ -22,16 +24,16 @@ namespace inspiral
 			Theirs = _theirs;
 			Is = _is;
 			Self = _self;
-			Initialize();
+			Initialize(genderMod);
 		}
-		internal void Initialize()
+		internal void Initialize(GenderModule genMod)
 		{
-            Game.Modules.Gender.genders.Add(Term, this);
+			genMod.AllGenders.Add(Term, this);
 			foreach(string token in new System.Collections.Generic.List<string>() {They, Them, Their, Theirs, Is, Self})
 			{
-				if(!Game.Modules.Gender.Tokens.Contains(token))
+				if(!genMod.Tokens.Contains(token))
 				{
-					Game.Modules.Gender.Tokens.Add(token);
+					genMod.Tokens.Add(token);
 				}
 			}
 		}

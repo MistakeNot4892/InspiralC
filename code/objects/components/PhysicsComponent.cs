@@ -36,6 +36,7 @@ namespace inspiral
 			ComponentType = typeof(PhysicsComponent);
 			schemaFields = new List<DatabaseField>() 
 			{ 
+				Field.Parent,
 				Field.Length, 
 				Field.Width, 
 				Field.Height, 
@@ -132,6 +133,7 @@ namespace inspiral
 		}
 		internal string GetExaminedSummary(GameObject viewer)
 		{
+			GameObject? parent = GetParent();
 			if(parent == null)
 			{
 				return "";
@@ -149,7 +151,7 @@ namespace inspiral
 			}
 			else
 			{
-				GenderObject genderObj = Game.Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
+				GenderObject genderObj = Program.Game.Mods.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 				You = Text.Capitalize(genderObj.They);
 				are = genderObj.Is;
 				if(are == "is")

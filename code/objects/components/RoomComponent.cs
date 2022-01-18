@@ -13,8 +13,8 @@ namespace inspiral
 	internal static partial class Field
 	{
 		internal static DatabaseField Exits = new DatabaseField(
-			"exits", "", 
-			typeof(List<string>), true, false);
+			"exits", "[]", 
+			typeof(string), true, false);
 	}
 
 	internal class RoomBuilder : GameComponentBuilder
@@ -22,7 +22,11 @@ namespace inspiral
 		internal override void Initialize()
 		{
 			ComponentType = typeof(RoomComponent);
-			schemaFields = new List<DatabaseField>() { Field.Exits };
+			schemaFields = new List<DatabaseField>()
+			{
+				Field.Parent,
+				Field.Exits
+			};
 			base.Initialize();
 		}
 	}

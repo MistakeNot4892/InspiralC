@@ -14,9 +14,9 @@ namespace inspiral
 		private Dictionary<string, GameRole> roles = new Dictionary<string, GameRole>();
 		internal override void PostInitialize()
 		{
-			Game.LogError("Loading role definitions.");
+			Program.Game.LogError("Loading role definitions.");
 			// TODO readd role repo.
-			Game.LogError("Done.");
+			Program.Game.LogError("Done.");
 		}
 		internal GameRole? GetRole(string key)
 		{

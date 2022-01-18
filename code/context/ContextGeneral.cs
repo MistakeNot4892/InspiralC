@@ -9,7 +9,7 @@ namespace inspiral
 			viewer.WriteLine($"Welcome, {viewer.shell.GetValue<string>(Field.Name)}.");
 			if(viewer.shell.Location == null)
 			{
-				viewer.shell.Move(Game.Modules.Rooms.GetSpawnRoom());
+				viewer.shell.Move(Program.Game.Mods.Rooms.GetSpawnRoom());
 			}
 			else
 			{
@@ -36,7 +36,7 @@ namespace inspiral
 					RoomComponent room = (RoomComponent)roomComp;
 					if(room.exits.ContainsKey(tmp))
 					{
-						var destObj = Game.Repositories.Objects.GetById(room.exits[tmp]);
+						var destObj = Program.Game.Repos.Objects.GetById(room.exits[tmp]);
 						if(destObj == null)
 						{
 							invoker.WriteLine($"Strangely, there is nothing to the {tmp}. You stay where you are.");
