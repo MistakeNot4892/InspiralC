@@ -19,7 +19,6 @@ namespace inspiral
 				where assemblyType.IsSubclassOf(typeof(GameCommand))
 				select assemblyType))
 			{
-				Program.Game.LogError($"- Creating command instance {t}.");
 				var command = System.Activator.CreateInstance(t);
 				if(command != null)
 				{

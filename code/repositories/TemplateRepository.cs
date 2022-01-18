@@ -8,7 +8,7 @@ namespace inspiral
 	}
 	internal class TemplateRepository : GameRepository
 	{
-		internal override void Instantiate()
+		internal override bool Instantiate()
 		{
 			repoName = "templates";
 			dbPath = "data/templates.sqlite";
@@ -21,6 +21,7 @@ namespace inspiral
 				Field.Flags,
 				Field.Location
 			};
+			return true;
 		}
 	}
 }

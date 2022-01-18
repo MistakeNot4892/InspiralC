@@ -34,12 +34,6 @@ namespace inspiral
 		{
 			return BCrypt.Net.BCrypt.Verify(pass, GetValue<string>(Field.PasswordHash));
 		}
-		public Dictionary<DatabaseField, object> GetSaveData()
-		{
-			Dictionary<DatabaseField, object> saveData = new Dictionary<DatabaseField, object>();
-			// todo
-			return saveData;
-		}
 		public bool SetValue<T>(DatabaseField field, T newValue)
 		{
 			return false;
@@ -50,14 +44,63 @@ namespace inspiral
 		}
 		public void CopyFromRecord(Dictionary<DatabaseField, object> record) 
 		{
-			// todo
+			if(record.ContainsKey(Field.Roles))
+			{
+				List<GameRole> loadRoles = new List<GameRole>(); 
+				List<string>? roleNames = JsonConvert.DeserializeObject<List<string>>((string)record[Field.Roles]);
+				if(roleNames != null)
+				{
+					foreach(string roleName in roleNames)
+					{
+						GameRole? role = Program.Game.Mods.Roles.GetRole(roleName);
+						if(role != null)
+						{
+							loadRoles.Add(role);
+						}
+					}
+				}
+				fields[Field.Roles] = loadRoles;
+				record.Remove(Field.Roles);
+			}
+			foreach(KeyValuePair<DatabaseField, object> field in record)
+			{
+				fields[field.Key] = field.Value;
+			}
+		}
+		public Dictionary<DatabaseField, object> GetSaveData()
+		{
+			Dictionary<DatabaseField, object> saveData = new Dictionary<DatabaseField, object>();
+			foreach(KeyValuePair<DatabaseField, object> field in fields)
+			{
+				if(field.Key == Field.Roles)
+				{
+					List<string> roleNames = new List<string>();
+					foreach(GameRole role in (List<GameRole>)field.Value)
+					{
+						roleNames.Add(role.name);
+					}
+					if(roleNames.Count > 0)
+					{
+						saveData.Add(field.Key, JsonConvert.SerializeObject(roleNames));
+					}
+					else
+					{
+						saveData.Add(field.Key, "[]");
+					}
+				}
+				else
+				{
+					saveData.Add(field.Key, field.Value);
+				};
+			}
+			return saveData;
 		}
 
 	}
 	internal class AccountRepository : GameRepository
 	{
 		private Dictionary<string, PlayerAccount> accounts = new Dictionary<string, PlayerAccount>();
-		internal override void Instantiate()
+		internal override bool  Instantiate()
 		{
 			repoName = "accounts";
 			dbPath = "data/accounts.sqlite";
@@ -68,6 +111,7 @@ namespace inspiral
 				Field.Roles, 
 				Field.ShellId
 			};
+			return true;
 		}
 		internal PlayerAccount? GetAccountByUser(string user)
 		{
@@ -106,12 +150,17 @@ namespace inspiral
 				acct.SetValue<long>(Field.ShellId, gameObj.GetValue<long>(Field.Id));
 				
 				// If the account DB is empty, give them admin roles.
+				List<GameRole> acctRoles = new List<GameRole>();
+				GameRole? role = Program.Game.Mods.Roles.GetRole("player");
+				if(role != null)
+				{
+					acctRoles.Add(role);
+				}
 				if(accounts.Count <= 0)
 				{
 					Program.Game.LogError($"No accounts found, giving admin roles to {userName}.");
 					
-					List<GameRole> acctRoles = new List<GameRole>();
-					GameRole? role = Program.Game.Mods.Roles.GetRole("builder"); 
+					role = Program.Game.Mods.Roles.GetRole("builder"); 
 					if(role != null)
 					{
 						acctRoles.Add(role);
@@ -130,17 +179,6 @@ namespace inspiral
 				return acct;
 			}
 			return null;
-		}
-		internal override IGameEntity CreateNewInstance(long id)
-		{
-			PlayerAccount acct = (PlayerAccount)CreateRepositoryType();
-			acct.SetValue<long>(Field.Id, id);
-			GameRole? role = Program.Game.Mods.Roles.GetRole("player");
-			if(role != null)
-			{
-				acct.SetValue<List<GameRole>>(Field.Roles, new List<GameRole>() { role });
-			}
-			return acct;
 		}
 		internal override IGameEntity CreateRepositoryType() 
 		{
@@ -162,20 +200,3 @@ namespace inspiral
 		}
 	}
 }
-
-/*
-		internal override void AddCommandParameters(SQLiteCommand command, System.Object instance)
-		{
-			PlayerAccount acct = (PlayerAccount)instance;
-			command.Parameters.AddWithValue("@p0", acct.GetLong(Field.Id));
-			command.Parameters.AddWithValue("@p1", acct.userName);
-			command.Parameters.AddWithValue("@p2", acct.passwordHash);
-			command.Parameters.AddWithValue("@p3", acct.objectId);
-			List<string> roleKeys = new List<string>();
-			foreach(GameRole role in acct.roles)
-			{
-				roleKeys.Add(role.GetValue<string>(Field.Name));
-			}
-			command.Parameters.AddWithValue("@p4", JsonConvert.SerializeObject(roleKeys));
-		}
-*/

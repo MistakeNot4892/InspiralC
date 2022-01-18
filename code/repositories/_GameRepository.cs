@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -6,36 +7,62 @@ namespace inspiral
 {
 	internal partial class Repositories
 	{
-		private List<GameRepository> s_repos = new List<GameRepository>(); 
-		public List<GameRepository> AllRepositories {
-			get { return s_repos; }
-			set { s_repos = value; }
-		}
+		internal List<GameRepository> AllRepositories = new List<GameRepository>(); 
+
 		internal void Populate()
 		{
-			foreach(GameRepository repo in s_repos)
+			Program.Game.LogError($"Creating repositories.");
+			foreach(var t in (from domainAssembly in System.AppDomain.CurrentDomain.GetAssemblies()
+				from assemblyType in domainAssembly.GetTypes()
+				where assemblyType.IsSubclassOf(typeof(GameRepository))
+				select assemblyType))
 			{
+				var repo = System.Activator.CreateInstance(t);
+				if(repo != null)
+				{
+					GameRepository repoInstance = (GameRepository)repo;
+					if(repoInstance.Instantiate())
+					{
+						AllRepositories.Add(repoInstance);
+					}
+				}
+			}
+
+			Program.Game.LogError($"Populating repositories.");
+			foreach(GameRepository repo in AllRepositories)
+			{
+				Program.Game.LogError($"Populating {repo.repoName}.");
 				repo.Populate();
+				Program.Game.LogError($"Finished initial load of {repo.loadingEntities.Count} record(s) from {repo.repoName}.");
+				Task.Delay(1000);
 			}
 		}
 		internal void Initialize()
 		{
-			// TODOL sort repositories by priority value for init ordering
-			foreach(GameRepository repo in s_repos)
+			// TODO sort repositories by priority value for init ordering
+			Program.Game.LogError($"Initializing repositories.");
+			foreach(GameRepository repo in AllRepositories)
 			{
+				Program.Game.LogError($"Initializing {repo.repoName}.");
 				repo.Initialize();
+				Program.Game.LogError($"Finished initialization of {repo.loadingEntities.Count} record(s) from {repo.repoName}.");
+				Task.Delay(1000);
 			}
 		}
 		internal void PostInitialize()
 		{
-			foreach(GameRepository repo in s_repos)
+			Program.Game.LogError($"Post-initializing repositories.");
+			foreach(GameRepository repo in AllRepositories)
 			{
+				Program.Game.LogError($"Post-initializing {repo.repoName}.");
 				repo.PostInitialize();
+				Program.Game.LogError($"Finished post-initialization of {repo.loadingEntities.Count} record(s) from {repo.repoName}.");
+				Task.Delay(1000);
 			}
 		}
 		internal void ExitRepos()
 		{
-			foreach(GameRepository repo in s_repos)
+			foreach(GameRepository repo in AllRepositories)
 			{
 				repo.Exit();
 			}
@@ -48,11 +75,14 @@ namespace inspiral
 		internal string repoName = "repository";
 		internal string dbPath = "data/gamedata.sqlite";
 		internal List<DatabaseField>? schemaFields;
+		internal Dictionary<IGameEntity, Dictionary<DatabaseField, object>> loadingEntities = new Dictionary<IGameEntity, Dictionary<DatabaseField, object>>();
 		internal Dictionary<long, IGameEntity> records = new Dictionary<long, IGameEntity>();
 		private List<IGameEntity> updateQueue = new List<IGameEntity>();
 		private bool killUpdateProcess = false;
-		internal GameRepository() { Instantiate(); }
-		internal virtual void Instantiate() {}
+		internal virtual bool Instantiate()
+		{
+			return false;
+		}
 
 		internal void QueueForUpdate(GameComponent comp)
 		{
@@ -72,7 +102,6 @@ namespace inspiral
 		}
 		internal virtual void Populate()
 		{
-			Program.Game.LogError($"- Populating {repoName}.");
 			if(schemaFields != null)
 			{
 				foreach(Dictionary<DatabaseField, object> record in Database.GetAllRecords(dbPath, $"table_{repoName}", schemaFields))
@@ -83,18 +112,23 @@ namespace inspiral
 						continue;
 					}
 					IGameEntity newEntity = CreateNewInstance((long)eId);
+					loadingEntities.Add(newEntity, record);
 				}
 			}
-			Program.Game.LogError($"- Finished loading {repoName}.");
 		}
 		internal virtual void Initialize() 
 		{
-			Program.Game.LogError($"- Initializing {repoName}.");
+			Program.Game.LogError($"- Initializing {loadingEntities.Count} record(s) in {repoName}.");
+			foreach(KeyValuePair<IGameEntity, Dictionary<DatabaseField, object>> loadingEntity in loadingEntities)
+			{
+				loadingEntity.Key.CopyFromRecord(loadingEntity.Value);
+			}
 			Program.Game.LogError($"- Finished initializing {repoName}.");
 		}
 		internal virtual void PostInitialize()
 		{
 			Task.Run(() => DoPeriodicDatabaseUpdate() );
+			loadingEntities.Clear();
 		}
 		internal virtual void Exit()
 		{

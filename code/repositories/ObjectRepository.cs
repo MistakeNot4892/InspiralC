@@ -9,9 +9,8 @@ namespace inspiral
 	}
 	internal class ObjectRepository : GameRepository
 	{
-		private Dictionary<long, long> _postInitLocations = new Dictionary<long, long>();
 		internal List<string> SelfReferenceTokens = new List<string>() { "me", "self", "myself" };
-		internal override void Instantiate()
+		internal override bool Instantiate()
 		{
 			repoName = "objects";
 			dbPath = "data/objects.sqlite";
@@ -24,19 +23,17 @@ namespace inspiral
 				Field.Flags,
 				Field.Location
 			};
+			return true;
 		}
-		internal override void PostInitialize() 
+		internal override void Initialize() 
 		{
-			foreach(KeyValuePair<long, long> loc in _postInitLocations)
+			base.Initialize();
+			foreach(KeyValuePair<IGameEntity, Dictionary<DatabaseField, object>> loadingEntity in loadingEntities)
 			{
-				if(loc.Value > 0)
+				var moveToLoc = Program.Game.Repos.Objects.GetById((long)loadingEntity.Value[Field.Location]);
+				if(moveToLoc != null)
 				{
-					var obj =   GetById(loc.Key);
-					var other = GetById(loc.Value);
-					if(obj != null && other != null)
-					{
-						((GameObject)obj).Move((GameObject)other);
-					}
+					((GameObject)loadingEntity.Key).Move((GameObject)moveToLoc);
 				}
 			}
 		}

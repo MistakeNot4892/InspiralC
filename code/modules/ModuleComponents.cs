@@ -19,7 +19,6 @@ namespace inspiral
 				where assemblyType.IsSubclassOf(typeof(GameComponentBuilder))
 				select assemblyType))
 			{
-				Program.Game.LogError($"- Creating component builder {t}.");
 				var builder = System.Activator.CreateInstance(t);
 				if(builder != null)
 				{

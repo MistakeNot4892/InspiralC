@@ -105,13 +105,17 @@ namespace inspiral
         }
         internal override void InitializeTable(string tableName, List<DatabaseField> tableFields)
         {
-            List<string> tableFieldStrings = new List<string>() { "id INTEGER PRIMARY KEY UNIQUE"};
+            List<string> tableFieldStrings = new List<string>();
             foreach(DatabaseField field in tableFields)
             {
                 string tableFieldString = $"{field.fieldName} {GetFieldTypeString(field.fieldType)}";
                 if(field.fieldDefault != null)
                 {
-                    if(field.fieldType == typeof(string))
+                    if(field == Field.Id)
+                    {
+                        tableFieldString = "id INTEGER PRIMARY KEY UNIQUE";
+                    }
+                    else if(field.fieldType == typeof(string))
                     {
                         tableFieldString = $"{tableFieldString} DEFAULT '{field.fieldDefault}'";
                     }
