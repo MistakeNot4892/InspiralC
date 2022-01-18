@@ -84,8 +84,8 @@ namespace inspiral
 		{
 			int i;
 			byte[] socketBuffer = new byte[Telnet.MaxBufferSize];
-			try
-			{
+			//try
+			//{
 				// Prod them to check if they support GMCP first.
 				SendTelnetCommand(new byte[] {Telnet.IAC, Telnet.WILL, Telnet.GMCP});
 
@@ -120,6 +120,7 @@ namespace inspiral
 						}
 					}
 				}
+			/*
 			}
 			catch (System.Exception e)
 			{
@@ -127,12 +128,13 @@ namespace inspiral
 			}
 			finally
 			{
+			*/
 				Disconnect();
 				if(client != null)
 				{
 					client.Close();
 				}
-			}
+			//}
 		}
 		internal void Disconnect()
 		{

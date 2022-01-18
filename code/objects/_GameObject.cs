@@ -38,6 +38,15 @@ namespace inspiral
 		{
 			return Fields;
 		}
+		public bool SetValue<T>(System.Type componentType, DatabaseField field, T newValue)
+		{
+			GameComponent comp = GetComponent(componentType);
+			if(comp != null)
+			{
+				return comp.SetValue<T>(field, newValue);
+			}
+			return false;
+		}
 		public bool SetValue<T>(DatabaseField field, T newValue)
 		{
 			if(Fields.ContainsKey(field))
@@ -47,6 +56,16 @@ namespace inspiral
 			}
 			return false;
 		}
+		public T GetValue<T>(System.Type componentType, DatabaseField field)
+		{
+			GameComponent comp = GetComponent(componentType);
+			if(comp != null)
+			{
+				return comp.GetValue<T>(field);
+			}
+			return default(T);
+		}
+
 		public T GetValue<T>(DatabaseField field)
 		{
 			if(Fields.ContainsKey(field))

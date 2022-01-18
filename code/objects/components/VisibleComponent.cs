@@ -39,7 +39,7 @@ namespace inspiral
 		internal string shortDescription = "a generic object";
 		internal string roomDescription = "A generic object is here.";
 		internal string examinedDescription = "This is a generic object. Fascinating stuff.";
-		internal override void ExaminedBy(GameObject viewer, bool fromInside)
+		internal void ExaminedBy(GameObject viewer, bool fromInside)
 		{
 			string mainDesc = $"{Colours.Fg(parent.GetShortDesc(), viewer.GetColour(Text.ColourDefaultHighlight))}.";
 			if(parent.HasComponent<MobileComponent>())

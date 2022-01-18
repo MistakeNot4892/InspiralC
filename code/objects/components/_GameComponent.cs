@@ -32,14 +32,20 @@ namespace inspiral
 		}
 	}
 
-	internal class GameComponent : GameObject
+	internal class GameComponent : IGameEntity
 	{
+
+		private Dictionary<DatabaseField, object> _fields = new Dictionary<DatabaseField, object>();
+		public Dictionary<DatabaseField, object> Fields
+		{
+			get { return _fields; }
+			set { _fields = value; }
+		}
 		internal GameObject parent;
 		internal bool isPersistent = true;
 		internal GameComponent() { InitializeComponent(); }
 		internal virtual void InitializeComponent() {}
 		internal virtual void FinalizeObjectLoad() {}
-
 		internal virtual void Added(GameObject addedTo)
 		{
 			parent = addedTo;
@@ -83,15 +89,14 @@ namespace inspiral
 			}
 			return null;
 		}
-
-		internal string SetValueOfEditableField(DatabaseField field, string value) 
+		internal string SetValueOfEditableField<T>(DatabaseField field, T value) 
 		{
 			System.Type myType = this.GetType();
 			if(Modules.Components.builders.ContainsKey(myType) && 
 				Modules.Components.builders[myType].editableFields != null && 
 				Modules.Components.builders[myType].editableFields.Count > 0)
 			{
-				SetValue(field, value);
+				SetValue<T>(field, value);
 				Repos.Objects.QueueForUpdate(parent);
 				return null;	
 			}
@@ -100,6 +105,31 @@ namespace inspiral
 		internal virtual string GetPrompt()
 		{
 			return "";
+		}
+		public bool SetValue<T>(DatabaseField field, T newValue)
+		{
+			if(Fields.ContainsKey(field))
+			{
+				Fields[field] = newValue;
+				return true;
+			}
+			return false;
+		}
+		public T GetValue<T>(DatabaseField field)
+		{
+			if(Fields.ContainsKey(field))
+			{
+				return (T)Fields[field];
+			}
+			return default(T);
+		}
+		public void CopyFromRecord(Dictionary<DatabaseField, object> record) 
+		{
+			Fields = record;
+		}
+		public Dictionary<DatabaseField, object> GetSaveData()
+		{
+			return Fields;
 		}
 	}
 }
