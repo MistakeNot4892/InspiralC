@@ -4,7 +4,8 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "unequip", "remove" };
+			Aliases.Add("unequip");
+			Aliases.Add("remove");
 			Description = "Unequips an object.";
 			Usage = "unequip [object name or id]";
 		}
@@ -17,10 +18,14 @@ namespace inspiral
 			}
 			if(invoker.TryUseBalance("poise"))
 			{
-				InventoryComponent inv = (InventoryComponent)invoker.GetComponent<InventoryComponent>();
-				if(inv.TryToUnequip(cmd.RawInput))
+				var invComp = invoker.GetComponent<InventoryComponent>();
+				if(invComp != null)
 				{
-					invoker.UseBalance("poise", 500);
+					InventoryComponent inv = (InventoryComponent)invComp;
+					if(inv.TryToUnequip(cmd.RawInput))
+					{
+						invoker.UseBalance("poise", 500);
+					}
 				}
 			}
 		}

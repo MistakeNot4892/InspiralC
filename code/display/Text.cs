@@ -236,8 +236,15 @@ namespace inspiral
 
 		internal static string ReplacePronouns(GameObject other, string message, bool thirdPerson = false)
 		{
-			string token = other.GetValue<string>(Field.Name);
-			token = token.ToLower();
+			string? token = other.GetValue<string>(Field.Name);
+			if(token == null)
+			{
+				token = "unknown";
+			}
+			else
+			{
+				token = token.ToLower();
+			}
 			if(!message.ToLower().Contains($"${token}"))
 			{
 				token = $"{other.GetValue<long>(Field.Id)}";

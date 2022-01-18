@@ -76,7 +76,12 @@ namespace inspiral
 			{
 				if(limb.Value != null)
 				{
-					BodypartComponent bp = (BodypartComponent)limb.Value.GetComponent<BodypartComponent>();
+					var bpComp = limb.Value.GetComponent<BodypartComponent>();
+					if(bpComp == null)
+					{
+						continue;
+					}
+					BodypartComponent bp = (BodypartComponent)bpComp;
 					if(bp.GetValue<bool>(Field.CanGrasp) && !graspers.Contains(limb.Key))
 					{
 						graspers.Add(limb.Key);
@@ -89,11 +94,15 @@ namespace inspiral
 					{
 						strikers.Add(limb.Key);
 					}
-					foreach(string slot in bp.GetValue<List<string>>(Field.EquipmentSlots))
+					List<string>? slots = bp.GetValue<List<string>>(Field.EquipmentSlots);
+					if(slots != null)
 					{
-						if(!equipmentSlots.Contains(slot))
+						foreach(string slot in slots)
 						{
-							equipmentSlots.Add(slot);
+							if(!equipmentSlots.Contains(slot))
+							{
+								equipmentSlots.Add(slot);
+							}
 						}
 					}
 				}
@@ -101,7 +110,7 @@ namespace inspiral
 		}
 		internal override string GetPrompt()
 		{
-			return $"{Colours.Fg("Pain:",parent.GetColour(Text.ColourDefaultPain))}{Colours.Fg("0%",parent.GetColour(Text.ColourDefaultPainHighlight))} {Colours.Fg("Bleed:",parent.GetColour(Text.ColourDefaultBleeding))}{Colours.Fg("0%",parent.GetColour(Text.ColourDefaultBleedingHighlight))}";
+			return $"{Colours.Fg("Pain:", GetColour(Text.ColourDefaultPain))}{Colours.Fg("0%", GetColour(Text.ColourDefaultPainHighlight))} {Colours.Fg("Bleed:", GetColour(Text.ColourDefaultBleeding))}{Colours.Fg("0%", GetColour(Text.ColourDefaultBleedingHighlight))}";
 		}
 		internal string GetWeightedRandomBodypart()
 		{

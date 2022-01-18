@@ -7,7 +7,9 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "emote", "em", "me" };
+			Aliases.Add("emote");
+			Aliases.Add("em");
+			Aliases.Add("me");
 			Description = "Performs a complex narration or action.";
 			Usage = "emote <(preceeding text)> [following text]";
 		}
@@ -36,8 +38,8 @@ namespace inspiral
 
 				foreach(Match m in Text.mentionRegex.Matches(emoteText))
 				{
-					GameObject mentioned = null;
-					string findingRaw = m.Groups[1]?.Value.ToString();
+					GameObject? mentioned = null;
+					string findingRaw = m.Groups[1].Value.ToString();
 					string finding = findingRaw.ToLower();
 					if(finding != null)
 					{
@@ -48,13 +50,13 @@ namespace inspiral
 						invoker.WriteLine($"You cannot see '{findingRaw}' here."); 
 						return;
 					}
-					string pronounToken = m.Groups[2]?.Value.ToString().ToLower();
+					string pronounToken = m.Groups[2].Value.ToString().ToLower();
 					if(pronounToken != null && pronounToken != "" && !Modules.Gender.Tokens.Contains(pronounToken))
 					{
 						invoker.WriteLine($"Unknown token '{pronounToken}'. Valid tokens for emotes are: {Text.EnglishList(Modules.Gender.Tokens)}."); 
 						return;
 					}
-					if(!showingMessages.ContainsKey(mentioned))
+					if(finding != null && !showingMessages.ContainsKey(mentioned))
 					{
 						showingMessages.Add(mentioned, finding);
 					}

@@ -26,7 +26,11 @@ namespace inspiral
 			GenderObject genderObj = Modules.Gender.GetByTerm(GetValue<string>(Field.Gender));
 			string fieldKey = $"Object summary for {GetValue<string>(Field.Name)} (#{GetValue<long>(Field.Id)})";
 			summary.Add(fieldKey, new List<string>());
-			summary[fieldKey].Add($"aliases:  {Text.EnglishList(GetValue<List<string>>(Field.Aliases))}");
+			List<string>? aliases = GetValue<List<string>>(Field.Aliases);
+			if(aliases != null)
+			{
+				summary[fieldKey].Add($"aliases:  {Text.EnglishList(aliases)}");
+			}
 			summary[fieldKey].Add($"gender:   {genderObj.Term}");
 
 			if(Location != null)
@@ -40,7 +44,7 @@ namespace inspiral
 			foreach(KeyValuePair<System.Type, GameComponent> comp in Components)
 			{
 				string compSummary = comp.Value.GetStringSummary();
-				if(compSummary != null)
+				if(compSummary != "")
 				{
 					summary[fieldKey].Add($"\n{Text.FormatPopup(this, comp.Value.GetType().ToString(), compSummary, wrapWidth+Text.NestedWrapwidthModifier)}");
 				}

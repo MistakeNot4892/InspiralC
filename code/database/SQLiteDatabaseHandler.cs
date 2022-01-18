@@ -26,30 +26,56 @@ namespace inspiral
                 DatabaseField field = Field.GetFieldFromName(record.GetName(i));
                 if(!field.IsField(Field.Dummy))
                 {
+
+                    // No value to load somehow.
+                    object fieldVal = record[field.fieldName];
+                    if(fieldVal == null)
+                    {
+                        continue;
+                    }
+
+                    // String name to id dictionary.
                     if(field.fieldType == typeof(Dictionary<string, long>))
                     {
-                        fields.Add(field, Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, long>>(record[field.fieldName].ToString()));
+                        string stringVal = (string)fieldVal;
+                        Dictionary<string, long>? deserializedObj = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, long>>(stringVal);
+                        if(deserializedObj != null)
+                        {
+                            fields.Add(field, deserializedObj);
+                        }
                     }
-                    if(field.fieldType == typeof(List<string>))
+
+                    // Stringlist.
+                    else if(field.fieldType == typeof(List<string>))
                     {
-                        fields.Add(field, Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(record[field.fieldName].ToString()));
+                        string stringVal = (string)fieldVal;
+                        List<string>? deserializedObj = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(stringVal);
+                        if(deserializedObj != null)
+                        {
+                            fields.Add(field, deserializedObj);
+                        }
                     }
+
+                    // Primitive values
                     else if(field.fieldType == typeof(string))
                     {
-                        fields.Add(field, record[field.fieldName].ToString());
+                        string stringVal = (string)fieldVal;
+                        fields.Add(field, stringVal);
                     }
                     else if(field.fieldType == typeof(double))
                     {
-                        fields.Add(field, (double)record[field.fieldName]);
+                        double doubleVal = (double)fieldVal;
+                        fields.Add(field, doubleVal);
                     }
                     else if(field.fieldType == typeof(bool))
                     {
-                        int fieldVal = (int)record[field.fieldName];
-                        fields.Add(field, fieldVal >= 1);
+                        bool boolVal = ((int)fieldVal >= 1);
+                        fields.Add(field, boolVal);
                     }
                     else
                     {
-                        fields.Add(field, (long)record[field.fieldName]);
+                        long longVal = (long)fieldVal;
+                        fields.Add(field, longVal);
                     }
                 }
             }

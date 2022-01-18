@@ -6,7 +6,7 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new List<string>() { "roles" };
+			Aliases.Add("roles");
 			Description = "Shows the details of roles attached to an account.";
 			Usage = "roles [account name or id]";
 		}
@@ -18,7 +18,7 @@ namespace inspiral
 				return;
 			}
 
-			PlayerAccount acct = Repos.Accounts.FindAccount(cmd.ObjTarget);
+			PlayerAccount? acct = Game.Repositories.Accounts.FindAccount(cmd.ObjTarget);
 			if(acct == null)
 			{
 				invoker.WriteLine($"Cannot find account for '{cmd.ObjTarget}'.", true);
@@ -30,10 +30,14 @@ namespace inspiral
 			roleDetails.Add(header, new List<string>());
 
 			int wrap = 80;
-			if(invoker.HasComponent<ClientComponent>())
+			var getClientComp = invoker.GetComponent<ClientComponent>();
+			if(getClientComp != null)
 			{
-				ClientComponent client = (ClientComponent)invoker.GetComponent<ClientComponent>();
-				wrap = client.client.config.wrapwidth;
+				ClientComponent client = (ClientComponent)getClientComp;
+				if(client.client != null)
+				{
+					wrap = client.client.config.wrapwidth;
+				}
 			}
 
 			foreach(GameRole role in acct.roles)

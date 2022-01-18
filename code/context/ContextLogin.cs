@@ -47,18 +47,36 @@ namespace inspiral
 		}
 		private void HandleLogin(GameClient invoker)
 		{
-			GameObject wakingShell = (GameObject)Repos.Objects.GetByID(invoker.account.objectId);
+			GameObject? wakeShell = null;
+			if(invoker.account != null)
+			{
+				var getShell = Game.Repositories.Objects.GetById(invoker.account.objectId);
+				if(getShell != null)
+				{
+					wakeShell = (GameObject)getShell;
+				}
+			}
+			if(wakeShell == null)
+			{
+				wakeShell = new GameObject();
+			}
+			GameObject wakingShell = (GameObject)wakeShell;
 			wakingShell.ShowNearby(wakingShell, $"{wakingShell.GetShortDesc()} wakes up.");
 			wakingShell.SetValue<string>(Field.RoomDesc, "$Short$ is here.");
 
 			invoker.shell = wakingShell;
-			if(invoker.shell.HasComponent<ClientComponent>())
+			var clientComp = invoker.shell.GetComponent<ClientComponent>();
+			if(clientComp != null)
 			{
-				ClientComponent oldClient = (ClientComponent)invoker.shell.GetComponent<ClientComponent>();
+				ClientComponent oldClient = (ClientComponent)clientComp;
 				oldClient.client?.Farewell("Another connection has been made with this account, so you are being logged out. Goodbye!");
 			}
-			ClientComponent clientComp = (ClientComponent)invoker.shell.AddComponent<ClientComponent>();
-			clientComp.Login(invoker);
+			clientComp = invoker.shell.AddComponent<ClientComponent>();
+			if(clientComp != null)
+			{
+				ClientComponent newClient = (ClientComponent)clientComp;
+				newClient.Login(invoker);
+			}
 			invoker.SetContext(Contexts.General);
 		}
 		internal override bool TakeInput(GameClient invoker, string command, string rawCommand, string arguments)
@@ -73,7 +91,7 @@ namespace inspiral
 				else
 				{
 					string newUser = tokens[0].ToLower();
-					if(Repos.Accounts.GetAccountByUser(newUser) != null)
+					if(Game.Repositories.Accounts.GetAccountByUser(newUser) != null)
 					{
 						invoker.WriteLine($"An account already exists with that username.");
 					}
@@ -95,13 +113,14 @@ namespace inspiral
 				switch(loginState[invoker])
 				{
 					case "connected":
-						PlayerAccount acct = Repos.Accounts.GetAccountByUser(command);
-						if(acct == null)
+						var userAcct = Game.Repositories.Accounts.GetAccountByUser(command);
+						if(userAcct == null)
 						{
 							invoker.WriteLine($"No account exists for '{command}'. Use {Colours.Fg("register [username]",  invoker.shell.GetColour(Text.ColourDefaultHighlight))} to create one.");
 						}
 						else
 						{
+							PlayerAccount acct = (PlayerAccount)userAcct;
 							invoker.account = acct;
 							invoker.WriteLine("Enter your password.");
 							loginState.Remove(invoker);
@@ -109,6 +128,10 @@ namespace inspiral
 						}
 						break;
 					case "entering_password":
+						if(invoker.account == null)
+						{
+							return false; // This is weird and shouldn't happen.
+						}
 						bool correctPass = invoker.account.CheckPassword(rawCommand);
 						if(correctPass)
 						{
@@ -142,7 +165,7 @@ namespace inspiral
 					case "registering_confirming_password":
 						if(passwordConfirmations.ContainsKey(invoker) && BCrypt.Net.BCrypt.Verify(rawCommand, passwordConfirmations[invoker]))
 						{
-							invoker.account = Repos.Accounts.CreateAccount(invoker.clientId, passwordConfirmations[invoker]);
+							invoker.account = Game.Repositories.Accounts.CreateAccount(invoker.clientId, passwordConfirmations[invoker]);
 							invoker.WriteLine("Account created.");
 							HandleLogin(invoker);
 						}

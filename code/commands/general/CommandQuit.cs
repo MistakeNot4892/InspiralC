@@ -4,7 +4,8 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "quit", "qq" };
+			Aliases.Add("quit");
+			Aliases.Add("qq");
 			Description = "Quits the game, leaving your character asleep where they were.";
 			Usage = "quit";
 		}

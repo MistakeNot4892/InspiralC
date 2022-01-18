@@ -4,16 +4,20 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "client" };
+			Aliases.Add("client");
 			Description = "Shows your client details.";
 			Usage = "client";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
-			if(invoker.HasComponent<ClientComponent>())
+			var clientComp = invoker.GetComponent<ClientComponent>();
+			if(clientComp != null)
 			{
-				ClientComponent client = (ClientComponent)invoker.GetComponent<ClientComponent>();
-				invoker.WriteLine(client.client.GetClientSummary());
+				ClientComponent client = (ClientComponent)clientComp;
+				if(client.client != null)
+				{
+					invoker.WriteLine(client.client.GetClientSummary());
+				}
 			}
 		}
 	}

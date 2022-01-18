@@ -23,7 +23,7 @@ namespace inspiral
 	}
 	internal class ClientComponent : GameComponent 
 	{
-		internal GameClient client;
+		internal GameClient? client;
 		internal override void InitializeComponent()
 		{
 			isPersistent = false;

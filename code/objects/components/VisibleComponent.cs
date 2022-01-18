@@ -41,9 +41,15 @@ namespace inspiral
 		internal string examinedDescription = "This is a generic object. Fascinating stuff.";
 		internal void ExaminedBy(GameObject viewer, bool fromInside)
 		{
-			string mainDesc = $"{Colours.Fg(parent.GetShortDesc(), viewer.GetColour(Text.ColourDefaultHighlight))}.";
-			if(parent.HasComponent<MobileComponent>())
+			if(parent == null)
 			{
+				return;
+			}
+			string mainDesc = $"{Colours.Fg(parent.GetShortDesc(), viewer.GetColour(Text.ColourDefaultHighlight))}.";
+			var getMobComp = parent.GetComponent<MobileComponent>();
+			if(getMobComp != null)
+			{
+				MobileComponent mob = (MobileComponent)getMobComp;
 				string startingToken;
 				string theyAre;
 				string their;
@@ -61,7 +67,6 @@ namespace inspiral
 					their = Text.Capitalize(genderObj.Their);
 				}
 
-				MobileComponent mob = (MobileComponent)parent.GetComponent<MobileComponent>();
 				mainDesc = $"{startingToken} {mainDesc}\n{theyAre} a {mob.species}";
 				if(viewer == parent)
 				{
@@ -119,15 +124,17 @@ namespace inspiral
 				}
 			}
 
-			if(parent.HasComponent<RoomComponent>())
+			var getRoomComp = parent.GetComponent<RoomComponent>();
+			if(getRoomComp != null)
 			{
-				RoomComponent roomComp = (RoomComponent)parent.GetComponent<RoomComponent>();
+				RoomComponent roomComp = (RoomComponent)getRoomComp;
 				mainDesc = $"{mainDesc}\n{Colours.Fg(roomComp.GetExitString(), viewer.GetColour(Text.ColourDefaultExits))}";
 			}
 
-			if(parent.HasComponent<PhysicsComponent>())
+			var getPhysComp = parent.GetComponent<PhysicsComponent>();
+			if(getPhysComp != null)
 			{
-				PhysicsComponent phys = (PhysicsComponent)parent.GetComponent<PhysicsComponent>();
+				PhysicsComponent phys = (PhysicsComponent)getPhysComp;
 				mainDesc = $"{mainDesc}\n{phys.GetExaminedSummary(viewer)}";
 			}
 			viewer.WriteLine(mainDesc);

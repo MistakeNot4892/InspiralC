@@ -4,7 +4,7 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "config" };
+			Aliases.Add("config");
 			Description = "Configures various options related to gameplay and presentation. WIP.";
 			Usage = "config [option] <value>";
 		}

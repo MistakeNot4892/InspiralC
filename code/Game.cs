@@ -5,6 +5,12 @@ namespace inspiral
 {
 	internal static class Game
 	{
+		private static Repos s_repos = new Repos();
+		internal static Repos Repositories
+		{
+			get { return s_repos; }
+			set { s_repos = value; }
+		}
 		private static System.Random s_random = new System.Random();
 		private static Dictionary<string, System.Type> s_typesByString = new Dictionary<string, System.Type>();
 		private static bool s_initComplete = false;
@@ -33,7 +39,6 @@ namespace inspiral
 			Modules.Initialize();
 
 			// Populate repos.
-			Repos.InstantiateRepos();
 			Repos.LoadRepos();
 			Repos.InitializeRepos();
 			Repos.PostInitializeRepos();	
@@ -57,11 +62,15 @@ namespace inspiral
 			Database.Exit();
 		}
 
-		internal static System.Type GetTypeFromString(string typeString)
+		internal static System.Type? GetTypeFromString(string typeString)
 		{
 			if(!TypesByString.ContainsKey(typeString))
 			{
-				TypesByString.Add(typeString, System.Type.GetType(typeString));
+				System.Type? typeFromString = System.Type.GetType(typeString);
+				if(typeFromString != null)
+				{
+					TypesByString.Add(typeString, typeFromString);
+				}
 			}
 			return TypesByString[typeString];
 		}

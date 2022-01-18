@@ -6,7 +6,7 @@ namespace inspiral
 
 	internal static partial class Modules
 	{
-		internal static CommandModule Commands;
+		internal static CommandModule Commands = new CommandModule();
 	}
 	internal partial class CommandModule : GameModule
 	{
@@ -21,10 +21,14 @@ namespace inspiral
 				select assemblyType))
 			{
 				Game.LogError($"- Creating command instance {t}.");
-				GameCommand command = (GameCommand)System.Activator.CreateInstance(t);
-				if(command != null && command.Aliases != null && command.Aliases.Count > 0)
+				var command = System.Activator.CreateInstance(t);
+				if(command != null)
 				{
-					RegisterCommand(command);
+					GameCommand gameComm = (GameCommand)command;
+					if(gameComm.Aliases != null && gameComm.Aliases.Count > 0)
+					{
+						RegisterCommand(gameComm);
+					}
 				}
 			}
 			Game.LogError($"Done.");
@@ -33,7 +37,7 @@ namespace inspiral
 		{
 			commands.Add(command.GetType(), command);
 		}
-		internal GameCommand GetCommand(System.Type cmdType)
+		internal GameCommand? GetCommand(System.Type cmdType)
 		{
 			if(commands.ContainsKey(cmdType))
 			{
@@ -42,9 +46,9 @@ namespace inspiral
 			return null;
 
 		}
-		internal GameCommand GetCommand(string cmdClass)
+		internal GameCommand? GetCommand(string cmdClass)
 		{
-			System.Type cmdType = System.Type.GetType(cmdClass);
+			System.Type? cmdType = System.Type.GetType(cmdClass);
 			if(cmdType == null)
 			{
 				Game.LogError($"Could not determine a valid command type from '{cmdClass}'.");
@@ -52,7 +56,7 @@ namespace inspiral
 			}
 			return GetCommand(cmdType);
 		}
-		internal GameCommand GetCommand<T>()
+		internal GameCommand? GetCommand<T>()
 		{
 			return GetCommand(typeof(T));
 		}

@@ -4,7 +4,7 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "addrole" };
+			Aliases.Add("addrole");
 			Description = "Adds a role to an account.";
 			Usage = "addrole [account name or id] [role name or id]";			
 		}
@@ -15,20 +15,20 @@ namespace inspiral
 				invoker.WriteLine("Who do you wish to view the roles of?", true);
 				return;
 			}
-			else if(cmd.StrArgs.Length < 1)
+			else if(!cmd.HasArgs(1))
 			{
 				invoker.WriteLine("Which role do you wish to add?", true);
 				return;
 			}
 
-			PlayerAccount acct = Repos.Accounts.FindAccount(cmd.ObjTarget);
+			PlayerAccount? acct = Game.Repositories.Accounts.FindAccount(cmd.ObjTarget);
 			if(acct == null)
 			{
 				invoker.WriteLine($"Cannot find account for '{cmd.ObjTarget}'.", true);
 				return;
 			}
 
-			GameRole role = Modules.Roles.GetRole(cmd.StrArgs[0].ToLower());
+			GameRole? role = Modules.Roles.GetRole(cmd.StrArgs[0].ToLower());
 			if(role == null)
 			{
 				invoker.WriteLine($"Cannot find role for '{cmd.StrArgs[0]}'.");
@@ -40,7 +40,7 @@ namespace inspiral
 			else
 			{
 				acct.roles.Add(role);
-				Repos.Accounts.QueueForUpdate(acct);
+				Game.Repositories.Accounts.QueueForUpdate(acct);
 				invoker.WriteLine($"Added role '{role.name}' to '{acct.userName}'.");
 			}
 		}

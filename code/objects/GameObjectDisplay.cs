@@ -34,25 +34,28 @@ namespace inspiral
 				}
 			}
 		}
-
-		internal virtual void WriteLine(string message)
+		internal void WriteLine(string message)
 		{
 			WriteLine(message, false);
 		}
-		internal virtual void WriteLine(string message, bool sendPrompt)
+		internal void WriteLine(string message, bool sendPrompt)
 		{
-			ClientComponent client = (ClientComponent)GetComponent<ClientComponent>();
-			if(client != null && client.client != null)
+			var clientComp = GetComponent<ClientComponent>();
+			if(clientComp != null)
 			{
-				client.client.WriteLine(message);
-				if(sendPrompt)
+				ClientComponent client = (ClientComponent)clientComp;
+				if(client.client != null)
 				{
-					SendPrompt();
+					client.client.WriteLine(message);
+					if(sendPrompt)
+					{
+						SendPrompt();
+					}
 				}
 			}
 		}
 
-		internal virtual void ShowNearby(GameObject source, GameObject other,
+		internal void ShowNearby(GameObject source, GameObject other,
 			string message1p, string message2p, string message3p)
 		{
 			source.WriteLine(message1p);
@@ -60,9 +63,9 @@ namespace inspiral
 			ShowNearby(source, message3p, new List<GameObject>() { source, other });
 		}
 
-		internal virtual void ShowNearby(GameObject source, string message, List<GameObject> exceptions)
+		internal void ShowNearby(GameObject source, string message, List<GameObject> exceptions)
 		{
-			GameObject sourceLocation = source.Location;
+			GameObject? sourceLocation = source.Location;
 			if(sourceLocation != null)
 			{
 				foreach(GameObject obj in sourceLocation.Contents)
@@ -83,14 +86,14 @@ namespace inspiral
 			}
 		}
 
-		internal virtual void ShowNearby(GameObject source, string message)
+		internal void ShowNearby(GameObject source, string message)
 		{
 			ShowNearby(source, message, message);
 		}
 
-		internal virtual void ShowNearby(GameObject source, string message1p, string message3p)
+		internal void ShowNearby(GameObject source, string message1p, string message3p)
 		{
-			GameObject sourceLocation = source.Location;
+			GameObject? sourceLocation = source.Location;
 			if(sourceLocation != null)
 			{
 				sourceLocation.ShowToContents(this, message1p, message3p);
@@ -126,11 +129,12 @@ namespace inspiral
 			List<string> result = new List<string>();
 			if(HasComponent<MobileComponent>())
 			{
-				if(HasComponent<InventoryComponent>())
+				var invComp = GetComponent<InventoryComponent>();
+				if(invComp != null)
 				{
 					GenderObject genderObj = Modules.Gender.GetByTerm(GetValue<string>(Field.Gender));
 					string their = (this == viewer) ? "your" : genderObj.Their;
-					InventoryComponent equip = (InventoryComponent)GetComponent<InventoryComponent>();
+					InventoryComponent equip = (InventoryComponent)invComp;
 					foreach(KeyValuePair<string, GameObject> equ in equip.carrying)
 					{
 						if(quickView)
@@ -170,18 +174,23 @@ namespace inspiral
 					{
 						if(gameObj != viewer)
 						{
-							result.Add(gameObj.GetRoomDesc());
+							string? roomDesc = gameObj.GetRoomDesc();
+							if(roomDesc != null)
+							{
+								result.Add(roomDesc);
+							}
 						}
 					}
 				}
 			}
 			return result;
 		}
-		internal virtual void ExaminedBy(GameObject viewer, bool fromInside)
+		internal void ExaminedBy(GameObject viewer, bool fromInside)
 		{
-			if(HasComponent<VisibleComponent>())
+			var visComp = GetComponent<VisibleComponent>();
+			if(visComp != null)
 			{
-				VisibleComponent comp = (VisibleComponent)GetComponent<VisibleComponent>();
+				VisibleComponent comp = (VisibleComponent)visComp;
 				comp.ExaminedBy(viewer, fromInside);
 			}
 			else
@@ -192,11 +201,21 @@ namespace inspiral
 		internal string GetShortDesc()
 		{
 			// Re-enable token replacement if relevant tokens are added
-			return GetValue<string>(Field.ShortDesc);
+			string? ret = GetValue<string>(Field.ShortDesc);
+			if(ret == null)
+			{
+				return "unknown";
+			}
+			return ret;
 		}
-		internal string GetRoomDesc()
+		internal string? GetRoomDesc()
 		{
-			return ApplyStringTokens(GetValue<string>(Field.RoomDesc));
+			string? roomDesc = GetValue<string>(Field.RoomDesc);
+			if(roomDesc != null)
+			{
+				return ApplyStringTokens(roomDesc);
+			}
+			return null;
 		}
 		internal string GetColour(string colourType)
 		{

@@ -21,9 +21,13 @@ namespace inspiral
 				select assemblyType))
 			{
 				Game.LogError($"Initializing module {t}.");
-				GameModule module = (GameModule)System.Activator.CreateInstance(t);
-				module.Initialize();
-				modules.Add(module);
+				var module = System.Activator.CreateInstance(t);
+				if(module != null)
+				{
+					GameModule gameMod = (GameModule)module;
+					gameMod.Initialize();
+					modules.Add(gameMod);
+				}
 			}
 			PostInitialize();
 		}

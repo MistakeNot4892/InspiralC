@@ -12,11 +12,12 @@ namespace inspiral
 	}
 	internal static partial class Modules
 	{
-		internal static GenderModule Gender = null;
+		internal static GenderModule Gender = new GenderModule();
 	}
 	internal class GenderModule : GameModule
 	{
 		public Dictionary<string, GenderObject> genders = new Dictionary<string, GenderObject>();
+		public GenderObject DefaultGender = new GenderObject();
 		public List<string> Tokens = new List<string>();
 
 		internal override void Initialize() 
@@ -30,16 +31,23 @@ namespace inspiral
 				Game.LogError($"- Loading gender definition {f.File}.");
 				try
 				{
-					Dictionary<string, string> genderStrings = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(f.File));
-                    new GenderObject(
-						genderStrings["Term"], 
-						genderStrings["They"], 
-						genderStrings["Them"], 
-						genderStrings["Their"], 
-						genderStrings["Theirs"], 
-						genderStrings["Is"], 
-						genderStrings["Self"]
-					);
+					var textToConvert = File.ReadAllText(f.File);
+					if(textToConvert != null)
+					{
+						Dictionary<string, string>? genderStrings = JsonConvert.DeserializeObject<Dictionary<string, string>>(textToConvert);
+						if(genderStrings != null)
+						{
+							new GenderObject(
+								genderStrings["Term"], 
+								genderStrings["They"], 
+								genderStrings["Them"], 
+								genderStrings["Their"], 
+								genderStrings["Theirs"], 
+								genderStrings["Is"], 
+								genderStrings["Self"]
+							);
+						}
+					}
 				}
 				catch(System.Exception e)
 				{
@@ -53,14 +61,18 @@ namespace inspiral
 			}
 			Game.LogError($"Done.");
 		}
-		internal GenderObject GetByTerm(string term)
+		internal GenderObject GetByTerm(string? term)
 		{
+			if(term == null)
+			{
+				return DefaultGender;
+			}
 			term = term.ToLower();
 			if(genders.ContainsKey(term))
 			{
 				return genders[term];
 			}
-			return null;
+			return DefaultGender;
 		}
 	}
 }

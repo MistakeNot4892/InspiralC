@@ -5,22 +5,12 @@ using System.Threading.Tasks;
 
 namespace inspiral
 {
-	internal static partial class Repos
+	internal partial class Repos
 	{
-		internal static List<GameRepository> s_repos = new List<GameRepository>(); 
-		internal static void InstantiateRepos()
-		{
-			Game.LogError($"Instantiating repositories.");
-			foreach(var t in (from domainAssembly in System.AppDomain.CurrentDomain.GetAssemblies()
-				from assemblyType in domainAssembly.GetTypes()
-				where assemblyType.IsSubclassOf(typeof(GameRepository))
-				select assemblyType))
-			{
-				Game.LogError($"- Creating repository {t}.");
-				GameRepository repo = (GameRepository)System.Activator.CreateInstance(t);
-				s_repos.Add(repo);
-			}
-			// sort repositories by priority value for init ordering
+		private static List<GameRepository> s_repos = new List<GameRepository>(); 
+		public static List<GameRepository> AllRepositories {
+			get { return s_repos; }
+			set { s_repos = value; }
 		}
 		internal static void LoadRepos()
 		{
@@ -31,6 +21,7 @@ namespace inspiral
 		}
 		internal static void InitializeRepos()
 		{
+			// TODOL sort repositories by priority value for init ordering
 			foreach(GameRepository repo in s_repos)
 			{
 				repo.Initialize();
@@ -57,14 +48,22 @@ namespace inspiral
 
 		internal string repoName = "repository";
 		internal string dbPath = "data/gamedata.sqlite";
-		internal List<DatabaseField> schemaFields;
+		internal List<DatabaseField>? schemaFields;
 		internal Dictionary<long, IGameEntity> records = new Dictionary<long, IGameEntity>();
 		private List<IGameEntity> updateQueue = new List<IGameEntity>();
 		private bool killUpdateProcess = false;
 		internal GameRepository() { Instantiate(); }
 		internal virtual void Instantiate() {}
 
-		internal virtual void QueueForUpdate(IGameEntity obj)
+		internal void QueueForUpdate(GameComponent comp)
+		{
+			if(comp.parent != null)
+			{
+				QueueForUpdate(comp.parent);
+			}
+		}
+
+		internal void QueueForUpdate(IGameEntity obj)
 		{
 			if(!updateQueue.Contains(obj) && Game.InitComplete)
 			{
@@ -75,9 +74,12 @@ namespace inspiral
 
 		internal virtual void Load() {
 			Game.LogError($"- Loading {repoName}.");
-			foreach(Dictionary<DatabaseField, object> record in Database.GetAllRecords(dbPath, $"table_{repoName}", schemaFields))
+			if(schemaFields != null)
 			{
-				InstantiateFromRecord(record);
+				foreach(Dictionary<DatabaseField, object> record in Database.GetAllRecords(dbPath, $"table_{repoName}", schemaFields))
+				{
+					InstantiateFromRecord(record);
+				}
 			}
 			Game.LogError($"- Finished loading {repoName}.");
 		}
@@ -106,7 +108,7 @@ namespace inspiral
 		}
 
 		internal virtual void PostInitialize() {}
-		internal IGameEntity GetByID(long id)
+		internal IGameEntity? GetById(long id)
 		{
 			if(records.ContainsKey(id))
 			{
@@ -119,21 +121,25 @@ namespace inspiral
 			// TODO scrape for unused indices
 			return (long)records.Count+1;
 		}
-		internal virtual IGameEntity CreateNewInstance()
+		internal virtual IGameEntity? CreateNewInstance()
 		{
 			return CreateNewInstance(GetUnusedIndex());
 		}
-		internal virtual IGameEntity CreateNewInstance(long id)
+		internal virtual IGameEntity? CreateNewInstance(long id)
 		{
-			IGameEntity newInstance = CreateRepositoryType(id);
-			records.Add(id, newInstance);
-			return GetByID(id);
+			IGameEntity? newInstance = CreateRepositoryType(id);
+			if(newInstance != null)
+			{
+				records.Add(id, newInstance);
+				return newInstance;
+			}
+			return GetById(id);
 		}
 		public virtual void DumpToConsole() 
 		{
 			Game.LogError("Repo dump not implemented for this repo, sorry.");
 		}
-		internal virtual IGameEntity CreateRepositoryType(long id) 
+		internal virtual IGameEntity? CreateRepositoryType(long id) 
 		{
 			return null;
 		}

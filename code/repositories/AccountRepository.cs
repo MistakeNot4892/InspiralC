@@ -4,16 +4,16 @@ using Newtonsoft.Json;
 namespace inspiral
 {
 
-	internal static partial class Repos
+	internal partial class Repos
 	{
-		internal static AccountRepository Accounts;
+		internal AccountRepository Accounts = new AccountRepository();
 	}
 	internal class PlayerAccount : IGameEntity
 	{
-		internal long id;
-		internal string userName;
-		internal long objectId;
-		internal string passwordHash;
+		internal long id = 0;
+		internal string userName = "unset";
+		internal long objectId = 0;
+		internal string passwordHash = "unset";
 		internal List<GameRole> roles = new List<GameRole>();
 		internal PlayerAccount(long _id)
 		{
@@ -33,7 +33,7 @@ namespace inspiral
 		{
 			return false;
 		}
-		public T GetValue<T>(DatabaseField field)
+		public T? GetValue<T>(DatabaseField field)
 		{
 			return default(T);
 		}
@@ -60,12 +60,10 @@ namespace inspiral
 	}
 	internal class AccountRepository : GameRepository
 	{
-		private Dictionary<string, PlayerAccount> accounts;
+		private Dictionary<string, PlayerAccount> accounts = new Dictionary<string, PlayerAccount>();
 		internal override void Instantiate()
 		{
-			Repos.Accounts = this;
 			repoName = "accounts";
-			accounts = new Dictionary<string, PlayerAccount>();
 			dbPath = "data/accounts.sqlite";
 			schemaFields = new List<DatabaseField>() { 
 				Field.UserName, 
@@ -74,7 +72,7 @@ namespace inspiral
 				Field.ObjectId
 			};
 		}
-		internal PlayerAccount GetAccountByUser(string user)
+		internal PlayerAccount? GetAccountByUser(string user)
 		{
 			if(accounts.ContainsKey(user))
 			{
@@ -83,65 +81,98 @@ namespace inspiral
 			return null;
 		}
 		internal override void InstantiateFromRecord(Dictionary<DatabaseField, object> record)
-		{
-			PlayerAccount acct = (PlayerAccount)CreateRepositoryType((long)record[Field.Id]);
-			acct.userName =      record[Field.UserName].ToString();
-			acct.passwordHash =  record[Field.PasswordHash].ToString();
-			acct.objectId =      (long)record[Field.ObjectId];
-			foreach(string role in JsonConvert.DeserializeObject<List<string>>(record[Field.Roles].ToString()))
+		{	
+			var newAcct = CreateRepositoryType((long)record[Field.Id]);
+			if(newAcct != null)
 			{
-				GameRole foundRole = Modules.Roles.GetRole(role);
-				if(foundRole != null && !acct.roles.Contains(foundRole))
+				PlayerAccount acct = (PlayerAccount)newAcct;
+				acct.userName =      (string)record[Field.UserName];
+				acct.passwordHash =  (string)record[Field.PasswordHash];
+				acct.objectId =      (long)record[Field.ObjectId];
+				List<string>? roleJson = JsonConvert.DeserializeObject<List<string>>((string)record[Field.Roles]);
+				if(roleJson != null)
 				{
-					acct.roles.Add(foundRole);
+					foreach(string role in roleJson)
+					{
+						var getRole = Modules.Roles.GetRole(role);
+						if(getRole != null)
+						{
+							GameRole foundRole = (GameRole)getRole;
+							if(foundRole != null && !acct.roles.Contains(foundRole))
+							{
+								acct.roles.Add(foundRole);
+							}
+						}
+					}
 				}
+				accounts.Add(acct.userName, acct);
+				records.Add(acct.GetValue<long>(Field.Id), acct);
 			}
-			accounts.Add(acct.userName, acct);
-			records.Add(acct.GetValue<long>(Field.Id), acct);
 		}
-		internal PlayerAccount CreateAccount(string userName, string passwordHash)
+		internal PlayerAccount? CreateAccount(string userName, string passwordHash)
 		{
 			// Create the new, blank account.
-			PlayerAccount acct = (PlayerAccount)CreateNewInstance();
-			acct.userName = userName;
-			acct.passwordHash = passwordHash;
-
-			// Create the shell the client will be piloting around, saving data to, etc.
-			string myName = Text.Capitalize(acct.userName);
-			GameObject gameObj = Repos.Objects.CreateFromTemplate(GlobalConfig.DefaultShellTemplate);
-			gameObj.SetValue(Field.Name, myName);
-			gameObj.SetValue(Field.Gender, GlobalConfig.DefaultPlayerGender);
-			gameObj.SetValue(Field.Aliases, new List<string>() { myName.ToLower() });
-
-			GenderObject genderObj = Modules.Gender.GetByTerm(gameObj.GetValue<string>(Field.Gender));
-			VisibleComponent vis = (VisibleComponent)gameObj.GetComponent<VisibleComponent>(); 
-			vis.SetValue<string>(Field.ShortDesc,    $"{gameObj.GetValue<string>(Field.Name)}");
-			vis.SetValue<string>(Field.ExaminedDesc, $"and {genderObj.Is} completely uninteresting.");
-			Repos.Objects.QueueForUpdate(gameObj);
-
-			acct.objectId = gameObj.GetValue<long>(Field.Id);
-			
-			// If the account DB is empty, give them admin roles.
-			if(accounts.Count <= 0)
+			var newAcct = CreateNewInstance();
+			if(newAcct != null)
 			{
-				Game.LogError($"No accounts found, giving admin roles to {acct.userName}.");
-				acct.roles.Add(Modules.Roles.GetRole("builder"));
-				acct.roles.Add(Modules.Roles.GetRole("administrator"));
-			}
+				PlayerAccount acct = (PlayerAccount)newAcct;
+				acct.userName = userName;
+				acct.passwordHash = passwordHash;
 
-			// Finalize everything.
-			accounts.Add(acct.userName, acct);
-			Database.UpdateRecord(dbPath, $"table_{repoName}", acct);
-			return acct;
+				// Create the shell the client will be piloting around, saving data to, etc.
+				string myName = Text.Capitalize(acct.userName);
+				GameObject gameObj = Game.Repositories.Objects.CreateFromTemplate(GlobalConfig.DefaultShellTemplate);
+				gameObj.SetValue(Field.Name, myName);
+				gameObj.SetValue(Field.Gender, GlobalConfig.DefaultPlayerGender);
+				gameObj.SetValue(Field.Aliases, new List<string>() { myName.ToLower() });
+
+				GenderObject genderObj = Modules.Gender.GetByTerm(gameObj.GetValue<string>(Field.Gender));
+				var visComp = gameObj.GetComponent<VisibleComponent>();
+				if(visComp != null)
+				{
+					VisibleComponent vis = (VisibleComponent)visComp;
+					vis.SetValue<string>(Field.ShortDesc,    $"{gameObj.GetValue<string>(Field.Name)}");
+					vis.SetValue<string>(Field.ExaminedDesc, $"and {genderObj.Is} completely uninteresting.");
+				}
+				Game.Repositories.Objects.QueueForUpdate(gameObj);
+
+				acct.objectId = gameObj.GetValue<long>(Field.Id);
+				
+				// If the account DB is empty, give them admin roles.
+				if(accounts.Count <= 0)
+				{
+					Game.LogError($"No accounts found, giving admin roles to {acct.userName}.");
+					GameRole? role = Modules.Roles.GetRole("builder"); 
+					if(role != null)
+					{
+						acct.roles.Add(role);
+					}
+					role = Modules.Roles.GetRole("administrator");
+					if(role != null)
+					{
+						acct.roles.Add(role);
+					}
+				}
+
+				// Finalize everything.
+				accounts.Add(acct.userName, acct);
+				Database.UpdateRecord(dbPath, $"table_{repoName}", acct);
+				return acct;
+			}
+			return null;
 		}
-		internal override IGameEntity CreateRepositoryType(long id) 
+		internal override IGameEntity? CreateRepositoryType(long id) 
 		{
 			PlayerAccount acct = new PlayerAccount(id);
-			acct.roles.Add(Modules.Roles.GetRole("player"));
+			GameRole? role = Modules.Roles.GetRole("player");
+			if(role != null)
+			{
+				acct.roles.Add(role);
+			}
 			return acct;
 		}
 
-		internal PlayerAccount FindAccount(string searchstring)
+		internal PlayerAccount? FindAccount(string searchstring)
 		{
 			foreach(KeyValuePair<string, PlayerAccount> account in accounts)
 			{

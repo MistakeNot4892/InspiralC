@@ -26,16 +26,16 @@ namespace inspiral
 	class InventoryComponent : GameComponent
 	{
 		internal Dictionary<string, GameObject> carrying = new Dictionary<string, GameObject>();
-		internal GameObject GetObjectFromInput(string input, string action)
+		internal GameObject? GetObjectFromInput(string input, string action)
 		{
 			string inputRaw = input;
 			input = input.ToLower().Trim();
 			if(input == "")
 			{
-				parent.WriteLine($"What do you wish to {action}?");
+				WriteLine($"What do you wish to {action}?");
 				return null;
 			}
-			GameObject returning = parent.FindGameObjectInContents(input);
+			GameObject? returning = parent?.FindGameObjectInContents(input);
 			if(returning == null)
 			{
 				if(carrying.ContainsKey(input))
@@ -45,13 +45,13 @@ namespace inspiral
 			}
 			if(returning == null)
 			{
-				parent.WriteLine($"You cannot find '{inputRaw}' amongst your possessions.");
+				WriteLine($"You cannot find '{inputRaw}' amongst your possessions.");
 			}
 			return returning;
 		}
 		internal bool TryToDrop(string input) 
 		{
-			GameObject tryingToDrop = GetObjectFromInput(input, "drop");
+			GameObject? tryingToDrop = GetObjectFromInput(input, "drop");
 			if(tryingToDrop != null)
 			{
 				return Drop(tryingToDrop, false);
@@ -60,11 +60,11 @@ namespace inspiral
 		}
 		internal bool Drop(GameObject dropping, bool silent)
 		{
-			if(parent.Location == null)
+			if(parent?.Location == null)
 			{
 				if(!silent)
 				{
-					parent.WriteLine("There is nowhere to drop that.");
+					WriteLine("There is nowhere to drop that.");
 				}
 				return false;
 			}
@@ -77,14 +77,14 @@ namespace inspiral
 				{
 					if(!silent)
 					{
-						parent.WriteLine("You cannot drop that.");
+						WriteLine("You cannot drop that.");
 					}
 					return false;
 				}
 				removeMessage1p = "remove and drop";
 				removeMessage3p = "removes and drops";
 			}
-			string removingSlot = null;
+			string? removingSlot = null;
 			foreach(KeyValuePair<string, GameObject> thing in carrying)
 			{
 				if(thing.Value == dropping)
@@ -109,18 +109,20 @@ namespace inspiral
 		}
 		internal List<string> GetWieldableSlots()
 		{
-			if(parent.HasComponent<MobileComponent>())
+			var mobComp = parent?.GetComponent<MobileComponent>();
+			if(mobComp != null)
 			{
-				MobileComponent mob = (MobileComponent)parent.GetComponent<MobileComponent>();
+				MobileComponent mob = (MobileComponent)mobComp;
 				return mob.graspers;
 			}
 			return new List<string>() { "hands" };
 		}
 		internal List<string> GetEquippableSlots()
 		{
-			if(parent.HasComponent<MobileComponent>())
+			var mobComp = parent?.GetComponent<MobileComponent>();
+			if(mobComp != null)
 			{
-				MobileComponent mob = (MobileComponent)parent.GetComponent<MobileComponent>();
+				MobileComponent mob = (MobileComponent)mobComp;
 				return mob.equipmentSlots;
 			}
 			return new List<string>() { "body" };
@@ -129,7 +131,7 @@ namespace inspiral
 		{
 			string objKey = input.ToLower().Trim();
 			string objSlot = "default";
-			string[] tokens = null;
+			string[]? tokens = null;
 			foreach(string splitpoint in new List<string>() { "on", "to", "in", "from", "as", "with"})
 			{
 				string splittoken = $" {splitpoint} ";
@@ -203,10 +205,10 @@ namespace inspiral
 			System.Tuple<string, string> tokens = GetSlotAndTokenFromInput(input);
 			if(tokens.Item1 == "")
 			{
-				parent.WriteLine("What do you wish to pick up?");
+				WriteLine("What do you wish to pick up?");
 				return false;
 			}
-			GameObject equipping = parent.FindGameObjectNearby(tokens.Item1);
+			GameObject? equipping = parent?.FindGameObjectNearby(tokens.Item1);
 			if(equipping != null)
 			{
 				bool success = false;
@@ -219,9 +221,9 @@ namespace inspiral
 				{
 					success = PutInHands(equipping, slot);
 				}
-				if(success)
+				if(success && parent != null)
 				{
-					Repos.Objects.QueueForUpdate(parent);
+					Game.Repositories.Objects.QueueForUpdate(parent);
 					string collectionMessage1p = $"You pick up {equipping.GetShortDesc()}";
 					string collectionMessage3p = $"{Text.Capitalize(parent.GetShortDesc())} picks up {equipping.GetShortDesc()}";
 					if(slot != null && slot != "default")
@@ -236,46 +238,52 @@ namespace inspiral
 			}
 			else
 			{
-				parent.WriteLine($"You cannot see '{tokens.Item1}' here.");
+				WriteLine($"You cannot see '{tokens.Item1}' here.");
 			}
 			return false;
 		}
 		internal bool TryToEquip(string input) 
 		{
 			System.Tuple<string, string> tokens = GetSlotAndTokenFromInput(input);
-			string slot = tokens.Item2;
+			string? slot = tokens.Item2;
 
-			GameObject equipping = GetObjectFromInput(tokens.Item1, "equip");
+			GameObject? equipping = GetObjectFromInput(tokens.Item1, "equip");
 			if(equipping != null)
 			{
-				if(!equipping.HasComponent<WearableComponent>())
+				var wornComp = equipping.GetComponent<WearableComponent>();
+				if(wornComp == null)
 				{
-					parent.WriteLine("You cannot wear that.");
+					WriteLine("You cannot wear that.");
 					return false;
 				}
-				WearableComponent worn = (WearableComponent)equipping.GetComponent<WearableComponent>();
+				WearableComponent worn = (WearableComponent)wornComp;
 				if(slot == null || slot == "default")
 				{
 					slot = worn.wearableSlots.FirstOrDefault();
 				}
+				if(slot == null)
+				{
+					WriteLine($"You cannot work out where to wear that.");
+					return false;
+				}
 				if(!worn.wearableSlots.Contains(slot))
 				{
-					parent.WriteLine($"You cannot wear that on your {slot}.");
+					WriteLine($"You cannot wear that on your {slot}.");
 					return false;
 				}
 				if(!GetEquippableSlots().Contains(slot))
 				{
-					parent.WriteLine($"You cannot equip anything to your {slot}.");
+					WriteLine($"You cannot equip anything to your {slot}.");
 					return false;
 				}
 				if(carrying.ContainsKey(slot))
 				{
-					parent.WriteLine($"You are already wearing something on your {slot}.");
+					WriteLine($"You are already wearing something on your {slot}.");
 					return false;
 				}
 				if(IsEquipped(equipping))
 				{
-					parent.WriteLine("You are already wearing that.");
+					WriteLine("You are already wearing that.");
 					return false;
 				}
 				return Equip(equipping, slot, false);
@@ -285,12 +293,12 @@ namespace inspiral
 		// TODO make it prioritize actually equipped items before held items.
 		internal bool TryToUnequip(string input)
 		{
-			GameObject unequipping = GetObjectFromInput(input, "remove");
+			GameObject? unequipping = GetObjectFromInput(input, "remove");
 			if(unequipping != null)
 			{
 				if(!IsEquipped(unequipping))
 				{
-					parent.WriteLine($"You are not currently wearing that.");
+					WriteLine($"You are not currently wearing that.");
 					return false;
 				}
 				return Unequip(unequipping);
@@ -310,12 +318,12 @@ namespace inspiral
 					return true;
 				}
 			}
-			parent.WriteLine("Your hands are full.");
+			WriteLine("Your hands are full.");
 			return false;
 		}
 		internal bool Equip(GameObject equipping, string slot, bool silent) 
 		{
-			if(!carrying.ContainsKey(slot))
+			if(parent != null && !carrying.ContainsKey(slot))
 			{
 				if(equipping.Location != parent)
 				{
@@ -337,7 +345,7 @@ namespace inspiral
 						$"{Text.Capitalize(parent.GetShortDesc())} equips {equipping.GetShortDesc()} to {genderObj.Their} {slot}."
 					);
 				}
-				Repos.Objects.QueueForUpdate(parent);
+				Game.Repositories.Objects.QueueForUpdate(parent);
 				return true;
 			}
 			return false; 
@@ -349,7 +357,7 @@ namespace inspiral
 		}
 		internal bool Unequip(GameObject unequipping) 
 		{
-			string removingSlot = null;
+			string? removingSlot = null;
 			foreach(KeyValuePair<string, GameObject> thing in carrying)
 			{
 				if(thing.Value == unequipping)
@@ -360,7 +368,7 @@ namespace inspiral
 			}
 			if(removingSlot != null && carrying.ContainsKey(removingSlot))
 			{
-				if(CanUnequip(unequipping) && PutInHands(unequipping))
+				if(parent != null && CanUnequip(unequipping) && PutInHands(unequipping))
 				{
 					foreach(string otherSlot in GetEquippableSlots())
 					{
@@ -374,7 +382,7 @@ namespace inspiral
 						$"You remove {unequipping.GetShortDesc()} from your {removingSlot}.",
 						$"{Text.Capitalize(parent.GetShortDesc())} removes {unequipping.GetShortDesc()} from {genderObj.Their} {removingSlot}."
 					);
-					Repos.Objects.QueueForUpdate(parent);
+					Game.Repositories.Objects.QueueForUpdate(parent);
 				}
 				return true;
 			}

@@ -4,7 +4,7 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "takerole" };
+			Aliases.Add("takerole");
 			Description = "Removes a role from an account.";
 			Usage = "takerole [account name or id] [role name or id]";
 		}
@@ -15,20 +15,20 @@ namespace inspiral
 				invoker.WriteLine("Who do you wish to view the roles of?");
 				return;
 			}
-			else if(cmd.StrArgs.Length < 1)
+			else if(!cmd.HasArgs(1))
 			{
 				invoker.WriteLine("Which role do you wish to add?");
 				return;
 			}
 
-			PlayerAccount acct = Repos.Accounts.FindAccount(cmd.ObjTarget);
+			PlayerAccount? acct = Game.Repositories.Accounts.FindAccount(cmd.ObjTarget);
 			if(acct == null)
 			{
 				invoker.WriteLine($"Cannot find account for '{cmd.ObjTarget}'.");
 				return;
 			}
 
-			GameRole role = Modules.Roles.GetRole(cmd.StrArgs[0]);
+			GameRole? role = Modules.Roles.GetRole(cmd.StrArgs[0]);
 			if(role == null)
 			{
 				invoker.WriteLine($"Cannot find role for '{cmd.StrArgs[0]}'.");
@@ -40,7 +40,7 @@ namespace inspiral
 			else
 			{
 				acct.roles.Remove(role);
-				Repos.Accounts.QueueForUpdate(acct);
+				Game.Repositories.Accounts.QueueForUpdate(acct);
 				invoker.WriteLine($"Removed role '{role.name}' from '{acct.userName}'.");
 			}
 		}

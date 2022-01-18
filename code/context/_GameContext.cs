@@ -10,6 +10,10 @@ namespace inspiral
 		internal virtual void OnContextUnset(GameClient viewer) {}
 		internal virtual bool InvokeCommand(GameClient invoker, string cmdStr, string arguments) 
 		{
+			if(invoker.shell == null || invoker.account == null)
+			{
+				return false;
+			}
 			foreach(GameRole role in invoker.account.roles)
 			{
 				if(role.AllCommands.ContainsKey(cmdStr))
@@ -23,7 +27,7 @@ namespace inspiral
 			}
 			return false;
 		}
-		internal virtual string GetPrompt(GameClient viewer) 
+		internal virtual string? GetPrompt(GameClient viewer) 
 		{
 			return null;
 		}

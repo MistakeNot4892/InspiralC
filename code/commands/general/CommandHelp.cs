@@ -4,7 +4,7 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "help" };
+			Aliases.Add("help");
 			Description = "Shows details on commands. WIP.";
 			Usage = "help <term>";
 		}
@@ -17,9 +17,17 @@ namespace inspiral
 			else
 			{
 				invoker.WriteLine("Available commands:");
-				foreach(GameRole role in invoker.GetAccount()?.roles)
+				PlayerAccount? account = invoker.GetAccount();
+				if(account != null)
 				{
-					invoker.WriteLine(role.GetHelp());
+					System.Collections.Generic.List<GameRole> roles = account.roles;
+					if(roles != null)
+					{
+						foreach(GameRole role in roles)
+						{
+							invoker.WriteLine(role.GetHelp());
+						}
+					}
 				}
 				invoker.WriteLine("\nEnd of command list.");
 			}

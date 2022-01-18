@@ -4,7 +4,7 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "prompt" };
+			Aliases.Add("prompt");
 			Description = "Shows your full prompt.";
 			Usage = "prompt";
 		}

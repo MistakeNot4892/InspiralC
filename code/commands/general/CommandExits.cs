@@ -4,18 +4,19 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "exits" };
+			Aliases.Add("exits");
 			Description = "Shows the exits of the current location.";
 			Usage = "exits";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
-			if(invoker.Location == null || !invoker.Location.HasComponent<RoomComponent>())
+			var getRoomComp = invoker.Location?.GetComponent<RoomComponent>();
+			if(getRoomComp == null)
 			{
 				invoker.WriteLine("You cannot see any exits here."); 
 				return;
 			}
-			RoomComponent roomComp = (RoomComponent)invoker.Location.GetComponent<RoomComponent>();
+			RoomComponent roomComp = (RoomComponent)getRoomComp;
 			invoker.WriteLine($"{Colours.Fg(roomComp.GetExitString(), invoker.GetColour(Text.ColourDefaultExits))}"); 
 		}
 	}

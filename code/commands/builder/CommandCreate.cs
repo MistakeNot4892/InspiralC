@@ -4,7 +4,7 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "create" };
+			Aliases.Add("create");
 			Description = "Creates a new database entry for an object or room.";
 			Usage = "create [object]";
 		}
@@ -20,8 +20,8 @@ namespace inspiral
 				}
 				else
 				{
-					GameObject prop = Repos.Objects.CreateFromTemplate(cmd.ObjTarget);
-					if(prop != null)
+					GameObject prop = Game.Repositories.Objects.CreateFromTemplate(cmd.ObjTarget);
+					if(prop != null && invoker.Location != null)
 					{
 						prop.Move(invoker.Location);
 						invoker.WriteLine($"Created {prop.GetShortDesc()} ({prop.GetValue<string>(Field.Name)}#{prop.GetValue<long>(Field.Id)}).");
@@ -31,7 +31,7 @@ namespace inspiral
 			}
 			if(!msgSent)
 			{
-				invoker.WriteLine($"You can create the following: {Text.EnglishList(Repos.Objects.GetTemplateNames())}");
+				invoker.WriteLine($"You can create the following: {Text.EnglishList(Game.Repositories.Objects.GetTemplateNames())}");
 			}
 		}
 	}

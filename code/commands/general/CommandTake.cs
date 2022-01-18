@@ -4,7 +4,10 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "take", "get", "g", "pickup" };
+			Aliases.Add("take");
+			Aliases.Add("get");
+			Aliases.Add("g");
+			Aliases.Add("pickup");
 			Description = "Picks up an object.";
 			Usage = "take [object name or id]";
 		}
@@ -17,10 +20,14 @@ namespace inspiral
 			}
 			if(invoker.TryUseBalance("poise"))
 			{
-				InventoryComponent inv = (InventoryComponent)invoker.GetComponent<InventoryComponent>();
-				if(inv.TryToCollect(cmd.RawInput))
+				var invComp = invoker.GetComponent<InventoryComponent>();
+				if(invComp != null)
 				{
-					invoker.UseBalance("poise", 500);
+					InventoryComponent inv = (InventoryComponent)invComp;
+					if(inv.TryToCollect(cmd.RawInput))
+					{
+						invoker.UseBalance("poise", 500);
+					}
 				}
 			}
 		}

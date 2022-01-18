@@ -4,7 +4,8 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "view", "vv" };
+			Aliases.Add("view");
+			Aliases.Add("vv");
 			Description = "Views the components and fields of an object.";
 			Usage = "view [object name or id]";
 		}
@@ -17,12 +18,16 @@ namespace inspiral
 			}
 			else
 			{
-				GameObject viewing = invoker.FindGameObjectNearby(cmd.ObjTarget);
+				GameObject? viewing = invoker.FindGameObjectNearby(cmd.ObjTarget);
 				if(viewing == null)
 				{
 					try
-					{
-						viewing = (GameObject)Repos.Objects.GetByID((long)System.Convert.ToInt64(cmd.ObjTarget));
+					{	long getId = (long)System.Convert.ToInt64(cmd.ObjTarget);
+						var viewObj = Game.Repositories.Objects.GetById(getId);
+						if(viewObj != null)
+						{
+							viewing =(GameObject)viewObj;
+						}
 					}
 					catch(System.Exception e) 
 					{
@@ -33,13 +38,17 @@ namespace inspiral
 				else
 				{
 					int wrap = 80;
-					if(invoker.HasComponent<ClientComponent>())
+					var clientComp = invoker.GetComponent<ClientComponent>();
+					if(clientComp != null)
 					{
-						ClientComponent client = (ClientComponent)invoker.GetComponent<ClientComponent>();
-						wrap = client.client.config.wrapwidth;
+						ClientComponent client = (ClientComponent)clientComp;
+						if(client.client != null)
+						{
+							wrap = client.client.config.wrapwidth;
+						}
 					}
 					string viewSummary = viewing.GetStringSummary(invoker, wrap);
-					if(viewSummary != null)
+					if(viewSummary != "")
 					{
 						invoker.WriteLine(viewSummary);
 					}

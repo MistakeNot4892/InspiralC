@@ -5,7 +5,7 @@ namespace inspiral
 		internal bool Move(GameObject destination)
 		{
 			bool canMove = true;
-			GameObject lastLocation = Location;
+			GameObject? lastLocation = Location;
 			if(lastLocation != null)
 			{
 				canMove = lastLocation.Exited(this);
@@ -20,7 +20,7 @@ namespace inspiral
 			}
 			if(Location != lastLocation)
 			{
-				Repos.Objects.QueueForUpdate(this);
+				Game.Repositories.Objects.QueueForUpdate(this);
 			}
 			return canMove;
 		}

@@ -9,10 +9,10 @@ namespace inspiral
 		{
 			Initialize();
 		}
-		internal System.Type ComponentType;
+		internal System.Type? ComponentType;
 		internal List<DatabaseField> editableFields = new List<DatabaseField>();
 		internal List<DatabaseField> viewableFields = new List<DatabaseField>();
-		internal List<DatabaseField> schemaFields = null;
+		internal List<DatabaseField> schemaFields = new List<DatabaseField>();
 		internal virtual void Initialize()
 		{
 			if(schemaFields != null)
@@ -41,7 +41,7 @@ namespace inspiral
 			get { return _fields; }
 			set { _fields = value; }
 		}
-		internal GameObject parent;
+		internal GameObject? parent;
 		internal bool isPersistent = true;
 		internal GameComponent() { InitializeComponent(); }
 		internal virtual void InitializeComponent() {}
@@ -51,7 +51,7 @@ namespace inspiral
 			parent = addedTo;
 			if(isPersistent)
 			{
-				Repos.Objects.QueueForUpdate(parent);
+				Game.Repositories.Objects.QueueForUpdate(parent);
 			}
 		}
 		internal virtual void Removed(GameObject takenFrom)
@@ -62,7 +62,7 @@ namespace inspiral
 			}
 			if(isPersistent)
 			{
-				Repos.Objects.QueueForUpdate(takenFrom);
+				Game.Repositories.Objects.QueueForUpdate(takenFrom);
 			}
 		}
 		internal string GetStringSummary() 
@@ -87,9 +87,9 @@ namespace inspiral
 				}
 				return result;
 			}
-			return null;
+			return "";
 		}
-		internal string SetValueOfEditableField<T>(DatabaseField field, T value) 
+		internal bool SetValueOfEditableField<T>(DatabaseField field, T value) 
 		{
 			System.Type myType = this.GetType();
 			if(Modules.Components.builders.ContainsKey(myType) && 
@@ -97,10 +97,10 @@ namespace inspiral
 				Modules.Components.builders[myType].editableFields.Count > 0)
 			{
 				SetValue<T>(field, value);
-				Repos.Objects.QueueForUpdate(parent);
-				return null;	
+				Game.Repositories.Objects.QueueForUpdate(this);
+				return true;	
 			}
-			return "Invalid field.";
+			return false;
 		}
 		internal virtual string GetPrompt()
 		{
@@ -108,14 +108,14 @@ namespace inspiral
 		}
 		public bool SetValue<T>(DatabaseField field, T newValue)
 		{
-			if(Fields.ContainsKey(field))
+			if(Fields.ContainsKey(field) && newValue != null)
 			{
 				Fields[field] = newValue;
 				return true;
 			}
 			return false;
 		}
-		public T GetValue<T>(DatabaseField field)
+		public T? GetValue<T>(DatabaseField field)
 		{
 			if(Fields.ContainsKey(field))
 			{
@@ -130,6 +130,28 @@ namespace inspiral
 		public Dictionary<DatabaseField, object> GetSaveData()
 		{
 			return Fields;
+		}
+		internal void WriteLine(string message)
+		{
+			if(parent != null)
+			{
+				parent.WriteLine(message);
+			}
+		}
+		internal void WriteLine(string message, bool sendPrompt)
+		{
+			if(parent != null)
+			{
+				parent.WriteLine(message, sendPrompt);
+			}
+		}
+		internal string GetColour(string colourType)
+		{
+			if(parent != null)
+			{
+				return parent.GetColour(colourType);
+			}
+			return GlobalConfig.GetColour(colourType);
 		}
 	}
 }

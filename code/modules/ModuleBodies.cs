@@ -4,7 +4,7 @@ namespace inspiral
 {
 	internal static partial class Modules
 	{
-		internal static BodyModule Bodies;
+		internal static BodyModule Bodies = new BodyModule();
 	}
 	internal class BodyModule : GameModule
 	{
@@ -17,15 +17,23 @@ namespace inspiral
 			// TODO bodyplan/bodypart repo
 			Game.LogError("Done.");
 		}
-		internal Bodyplan GetPlan(string name)
+		internal Bodyplan? GetPlan(string name)
 		{
 			name = name.ToLower();
-			return plans.ContainsKey(name) ? plans[name] : null;
+			if(plans.ContainsKey(name))
+			{
+				return plans[name];
+			 }
+			 return null;
 		}
-		internal Bodypart GetPart(string name)
+		internal Bodypart? GetPart(string name)
 		{
 			name = name.ToLower();
-			return parts.ContainsKey(name) ? parts[name] : null;
+			if(parts.ContainsKey(name))
+			{
+				return parts[name];
+			 }
+			 return null;
 		}
 	}
 	internal class Bodyplan

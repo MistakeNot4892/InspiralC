@@ -4,15 +4,16 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "test" };
+			Aliases.Add("test");
 			Description = "Test command, please ignore.";
 			Usage = "test";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
-			if(invoker.HasComponent<MobileComponent>())
+			var mobComp = invoker.GetComponent<MobileComponent>();
+			if(mobComp != null)
 			{
-				MobileComponent mob = (MobileComponent)invoker.GetComponent<MobileComponent>();
+				MobileComponent mob = (MobileComponent)mobComp;
 				invoker.WriteLine($"Grasp:  {string.Join(", ", mob.graspers.ToArray())}");
 				invoker.WriteLine($"Stance: {string.Join(", ", mob.stance.ToArray())}");
 				invoker.WriteLine($"Strike: {string.Join(", ", mob.strikers.ToArray())}");

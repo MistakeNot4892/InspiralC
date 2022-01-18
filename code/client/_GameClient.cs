@@ -16,12 +16,12 @@ namespace inspiral
 	class GameClient
 	{
 		internal string clientId;
-		internal GameObject shell;
-		internal TcpClient client;
+		internal TcpClient? client;
 		internal NetworkStream stream;
+		internal GameObject shell;
 		internal GameContext context;
-		internal string lastPrompt = null;
-		internal PlayerAccount account = null;
+		internal string? lastPrompt = null;
+		internal PlayerAccount? account = null;
 		internal bool sentPrompt = false;
 
 		internal List<string> gmcpFlags = new List<string>();
@@ -43,16 +43,14 @@ namespace inspiral
 			shell =    DummyShell;
 			clientId = _id;
 			Game.LogError($"{clientId}: client created.");
-			SetContext(Contexts.Login);
+			context = Contexts.Login;
+			context.OnContextSet(this);
 		}
 		internal void SetContext(GameContext new_context)
 		{
 			if(context != new_context)
 			{
-				if(context != null)
-				{
-					context.OnContextUnset(this);
-				}
+				context.OnContextUnset(this);
 				context = new_context;
 				context.OnContextSet(this);
 			}
@@ -138,9 +136,10 @@ namespace inspiral
 		}
 		internal void Disconnect()
 		{
-			if(shell != null && shell.HasComponent<ClientComponent>())
+			var getClientComp = shell.GetComponent<ClientComponent>();
+			if(getClientComp != null)
 			{
-				ClientComponent clientComp = (ClientComponent)shell.GetComponent<ClientComponent>();
+				ClientComponent clientComp = (ClientComponent)getClientComp;
 				if(clientComp.client == this)
 				{
 					clientComp.Logout();
@@ -152,10 +151,7 @@ namespace inspiral
 					shell.RemoveComponent<ClientComponent>();
 				}
 			}
-			if(shell != null)
-			{
-				shell = null;
-			}
+			shell = DummyShell;
 			Clients.RemoveClient(this);
 		}
 		internal void ReceiveInput(string inputMessage)
@@ -170,7 +166,7 @@ namespace inspiral
 			{
 				inputMessage = "";
 			}
-			if(!context.TakeInput(this, cmd, rawCmd, inputMessage.Trim()))
+			if(context != null && !context.TakeInput(this, cmd, rawCmd, inputMessage.Trim()))
 			{
 				if(Text.exits.Contains(cmd))
 				{
@@ -197,7 +193,7 @@ namespace inspiral
 				return;
 			}
 			sentPrompt = true;
-			string p = context.GetPrompt(this);
+			string? p = context.GetPrompt(this);
 			if(p != null && p.Length > 0)
 			{
 				WriteToStream(p);
@@ -238,7 +234,10 @@ namespace inspiral
 		}
 		internal void Quit()
 		{
-			client.Close();
+			if(client != null)
+			{
+				client.Close();
+			}
 		}
 		internal void Farewell(string farewell)
 		{
@@ -253,6 +252,17 @@ namespace inspiral
 		{
 			return; // todo when timeout is added
 		}
+
+		internal string GetClientEndpointString()
+		{
+			if(client != null && client.Client != null && client.Client.RemoteEndPoint != null)
+			{
+				IPEndPoint? clientEndPoint = (IPEndPoint)client.Client.RemoteEndPoint;
+				return clientEndPoint.Address.ToString();
+			}
+			return "unknown endpoint";
+		}
+
 		internal string GetClientSummary()
 		{
 
@@ -260,7 +270,8 @@ namespace inspiral
 
 			reply.Add("Client Information", new List<string>());
 			reply["Client Information"].Add($"Logged in as: {shell?.GetValue<string>(Field.Name) ?? "null"}");
-			reply["Client Information"].Add($"Connecting from: {((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString()}");
+			reply["Client Information"].Add($"Connecting from: {GetClientEndpointString()}");
+
 
 			if(!gmcpFlags.Contains("gmcpEnabled"))
 			{
@@ -279,7 +290,11 @@ namespace inspiral
 					reply["GMCP Values"].Add($"- {gmcpValue.Key}: {gmcpValue.Value}");
 				}
 			}
-			return Text.FormatBlock(shell, reply, config.wrapwidth);
+			if(shell != null)
+			{
+				return Text.FormatBlock(shell, reply, config.wrapwidth);
+			}
+			return Text.FormatBlock(DummyShell, reply, config.wrapwidth);
 		}
 	}
 }

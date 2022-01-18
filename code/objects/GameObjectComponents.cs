@@ -10,11 +10,11 @@ namespace inspiral
 		{
 			return HasComponent(typeof(T));
 		}
-		internal GameComponent GetComponent<T>() 
+		internal GameComponent? GetComponent<T>() 
 		{
 			return GetComponent(typeof(T));
 		}
-		internal GameComponent GetComponent(System.Type compType) 
+		internal GameComponent? GetComponent(System.Type compType) 
 		{
 			if(HasComponent(compType))
 			{
@@ -23,18 +23,21 @@ namespace inspiral
 			return null;
 		}
 
-		internal GameComponent AddComponent(System.Type compType)
+		internal GameComponent? AddComponent(System.Type compType)
 		{
-			GameComponent comp = GetComponent(compType);
+			GameComponent? comp = GetComponent(compType);
 			if(comp == null)
 			{
 				comp = Modules.Components.MakeComponent(compType);
-				Components.Add(compType, comp);
-				comp.Added(this);
+				if(comp != null)
+				{
+					Components.Add(compType, comp);
+					comp.Added(this);
+				}
 			}
 			return comp;
 		}
-		internal GameComponent AddComponent<T>()
+		internal GameComponent? AddComponent<T>()
 		{
 			return AddComponent(typeof(T));
 		}
@@ -42,9 +45,12 @@ namespace inspiral
 		{
 			if(HasComponent<T>())
 			{
-				GameComponent component = GetComponent<T>();
+				GameComponent? component = GetComponent<T>();
 				Components.Remove(typeof(T));
-				component.Removed(this);
+				if(component != null)
+				{
+					component.Removed(this);
+				}
 			}
 		}
 	}

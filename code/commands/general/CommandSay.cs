@@ -4,13 +4,14 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "say", "ask" };
+			Aliases.Add("say");
+			Aliases.Add("ask");
 			Description = "Vocally communicates with the people and things around you.";
 			Usage = "say <(emote text)> [speech text] <emoticon>";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
-			GameObject target = null;
+			GameObject? target = null;
 			string invocation = cmd.RawInput;
 			if(invocation.Length >= 3 && invocation.Substring(0,3) == "to " && invoker.Location != null)
 			{

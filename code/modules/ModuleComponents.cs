@@ -5,17 +5,15 @@ namespace inspiral
 {
 	internal static partial class Modules
 	{
-		internal static ComponentModule Components;
+		internal static ComponentModule Components = new ComponentModule();
 	}
 	internal partial class ComponentModule : GameModule
 	{
-		private Dictionary<System.Type, List<GameComponent>> allComponents;
-		internal Dictionary<System.Type, GameComponentBuilder> builders;
+		private Dictionary<System.Type, List<GameComponent>> allComponents = new Dictionary<System.Type, List<GameComponent>>();
+		internal Dictionary<System.Type, GameComponentBuilder> builders = new Dictionary<System.Type, GameComponentBuilder>();
 		internal override void Initialize()
 		{
 			Modules.Components = this;
-			builders = new Dictionary<System.Type, GameComponentBuilder>();
-			allComponents = new Dictionary<System.Type, List<GameComponent>>();
 			Game.LogError($"Initializing component builders.");
 			foreach(var t in (from domainAssembly in System.AppDomain.CurrentDomain.GetAssemblies()
 				from assemblyType in domainAssembly.GetTypes()
@@ -23,22 +21,38 @@ namespace inspiral
 				select assemblyType))
 			{
 				Game.LogError($"- Creating component builder {t}.");
-				GameComponentBuilder builder = (GameComponentBuilder)System.Activator.CreateInstance(t);
-				builders.Add(builder.ComponentType, builder);
-				allComponents.Add(builder.ComponentType, new List<GameComponent>());
+				var builder = System.Activator.CreateInstance(t);
+				if(builder != null)
+				{
+					GameComponentBuilder gameCompBuild = (GameComponentBuilder)builder;
+					if(gameCompBuild.ComponentType != null)
+					{
+						builders.Add(gameCompBuild.ComponentType, gameCompBuild);
+						allComponents.Add(gameCompBuild.ComponentType, new List<GameComponent>());
+					}
+				}
 			}
 			Game.LogError($"Done.");
 		}
 
-		internal GameComponent MakeComponent<T>()
+		internal GameComponent? MakeComponent<T>()
 		{
 			return MakeComponent(typeof(T));
 		}
-		internal GameComponent MakeComponent(System.Type compType)
+		internal GameComponent? MakeComponent(System.Type compType)
 		{
-			GameComponent returning = (GameComponent)System.Activator.CreateInstance(builders[compType].ComponentType);
-			allComponents[compType].Add(returning);
-			return returning;
+			GameComponentBuilder builder = builders[compType];
+			if(builder.ComponentType != null)
+			{
+				var returning = System.Activator.CreateInstance(builder.ComponentType);
+				if(returning != null)
+				{
+					GameComponent gameCompMade = (GameComponent)returning;
+					allComponents[compType].Add(gameCompMade);
+					return gameCompMade;
+				}
+			}
+			return null;
 		}
 		internal List<GameComponent> GetComponents<T>()
 		{

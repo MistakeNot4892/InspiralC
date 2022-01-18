@@ -4,7 +4,7 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "drop" };
+			Aliases.Add("drop");
 			Description = "Drops an object.";
 			Usage = "drop [object name or id]";
 		}
@@ -17,8 +17,12 @@ namespace inspiral
 			}
 			if(invoker.TryUseBalance("poise"))
 			{
-				InventoryComponent inv = (InventoryComponent)invoker.GetComponent<InventoryComponent>();
-				inv.TryToDrop(cmd.RawInput);
+				var invComp = invoker.GetComponent<InventoryComponent>();
+				if(invComp != null)
+				{
+					InventoryComponent inv = (InventoryComponent)invComp;
+					inv.TryToDrop(cmd.RawInput);
+				}
 			}
 		}
 	}

@@ -19,9 +19,13 @@ namespace inspiral
 		}
 		internal override bool TakeInput(GameClient invoker, string command, string rawCommand, string arguments)
 		{
-			if(invoker.shell != null && invoker.shell.Location != null && invoker.shell.Location.HasComponent<RoomComponent>() && invoker.shell.HasComponent<MobileComponent>())
+
+			var mobComp = invoker.shell.GetComponent<MobileComponent>();
+			var roomComp = invoker.shell.Location?.GetComponent<RoomComponent>();
+
+			if(invoker.shell != null && invoker.shell.Location != null && roomComp != null && mobComp != null)
 			{
-				MobileComponent mob = (MobileComponent)invoker.shell.GetComponent<MobileComponent>();
+				MobileComponent mob = (MobileComponent)mobComp;
 				if(mob.CanMove())
 				{
 					string tmp = command;
@@ -29,21 +33,30 @@ namespace inspiral
 					{
 						tmp = Text.shortExits[tmp];
 					}
-					RoomComponent room = (RoomComponent)invoker.shell.Location.GetComponent<RoomComponent>();
+					RoomComponent room = (RoomComponent)roomComp;
 					if(room.exits.ContainsKey(tmp))
 					{
-						GameObject destination = (GameObject)Repos.Objects.GetByID(room.exits[tmp]);
-						if(destination == null)
+						var destObj = Game.Repositories.Objects.GetById(room.exits[tmp]);
+						if(destObj == null)
 						{
 							invoker.WriteLine($"Strangely, there is nothing to the {tmp}. You stay where you are.");
 						}
 						else
 						{
+							GameObject destination = (GameObject)destObj;
 							GameObject loc = invoker.shell.Location;
 							invoker.WriteLine($"You depart to the {tmp}.");
-							destination.ShowToContents(invoker.shell.ApplyStringTokens(mob.GetValue<string>(Field.EnterMessage), tmp));
+							string? enterMsg = mob.GetValue<string>(Field.EnterMessage);
+							if(enterMsg != null)
+							{
+								destination.ShowToContents(invoker.shell.ApplyStringTokens(enterMsg, tmp));
+							}
 							invoker.shell.Move(destination);
-							loc.ShowToContents(invoker.shell.ApplyStringTokens(mob.GetValue<string>(Field.LeaveMessage), tmp));
+							string? leaveMsg = mob.GetValue<string>(Field.LeaveMessage);
+							if(leaveMsg != null)
+							{
+								loc.ShowToContents(invoker.shell.ApplyStringTokens(leaveMsg, tmp));
+							}
 						}
 						invoker.SendPrompt();
 						return true;
@@ -52,8 +65,12 @@ namespace inspiral
 			}
 			return InvokeCommand(invoker, command, arguments);
 		}
-		internal override string GetPrompt(GameClient viewer) 
+		internal override string? GetPrompt(GameClient viewer) 
 		{
+			if(viewer.shell == null)
+			{
+				return null;
+			}
 			string p = "";
 			foreach(KeyValuePair<System.Type, GameComponent> comp in viewer.shell.Components)
 			{

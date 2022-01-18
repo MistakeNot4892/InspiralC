@@ -132,6 +132,11 @@ namespace inspiral
 		}
 		internal string GetExaminedSummary(GameObject viewer)
 		{
+			if(parent == null)
+			{
+				return "";
+			}
+
 			string result = "";
 			string You;
 			string weigh;

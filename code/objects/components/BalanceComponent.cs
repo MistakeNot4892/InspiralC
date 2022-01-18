@@ -39,7 +39,7 @@ namespace inspiral
 		}
 		internal void KnockBalance(string balance, int msKnock)
 		{
-			Timer balTimer = null;
+			Timer balTimer;
 			if(offBalanceTimers.ContainsKey(balance))
 			{
 				balTimer = offBalanceTimers[balance];
@@ -52,13 +52,13 @@ namespace inspiral
 			balTimer.Enabled = true;
 			double secondsLeft = System.Math.Truncate(10 * balTimer.Interval) / 10000; // ms to s, truncating to 2 places
 			string secondsString = secondsLeft == 1 ? "second" : "seconds";
-			parent.WriteLine($"Your {balance} is lost for {secondsLeft} {secondsString}!");
+			WriteLine($"Your {balance} is lost for {secondsLeft} {secondsString}!");
 		}
-		private void ResetBalance(object sender, ElapsedEventArgs e, string balance)
+		private void ResetBalance(object? sender, ElapsedEventArgs e, string balance)
 		{
 			offBalanceTimers[balance].Enabled = false;
 			offBalanceTimers[balance].Interval = 1;
-			parent.WriteLine($"You have recovered your {balance}.", true);
+			WriteLine($"You have recovered your {balance}.", true);
 		}
 		internal override string GetPrompt()
 		{
@@ -67,7 +67,7 @@ namespace inspiral
 			{
 				p += bal.Value.Enabled ? '-' : bal.Key[0];
 			}
-			return $"{Colours.Fg("[", parent.GetColour(Text.ColourDefaultPrompt))}{Colours.Fg(p, parent.GetColour(Text.ColourDefaultHighlight))}{Colours.Fg("]", parent.GetColour(Text.ColourDefaultPrompt))}";
+			return $"{Colours.Fg("[", GetColour(Text.ColourDefaultPrompt))}{Colours.Fg(p, GetColour(Text.ColourDefaultHighlight))}{Colours.Fg("]", GetColour(Text.ColourDefaultPrompt))}";
 		}
 	}
 }

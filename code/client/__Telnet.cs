@@ -104,42 +104,50 @@ namespace inspiral
 						{
 							sender.gmcpFlags.Add("gmcpEnabled");
 						}
-						foreach(KeyValuePair<string, string> token in JsonConvert.DeserializeObject<Dictionary<string, string>>(gmcpContents))
+						Dictionary<string, string>? gmcpDictTokens = JsonConvert.DeserializeObject<Dictionary<string, string>>(gmcpContents);
+						if(gmcpDictTokens != null)
 						{
-							string tokenKey = token.Key.ToLower();
-							if(sender.gmcpValues.ContainsKey(tokenKey))
+							foreach(KeyValuePair<string, string> token in gmcpDictTokens)
 							{
-								sender.gmcpValues.Remove(tokenKey);
-							}
-							sender.gmcpValues.Add(tokenKey, token.Value);
-						}
-						break;
-					case "core.supports.set":
-						foreach(string token in JsonConvert.DeserializeObject<List<string>>(gmcpContents))
-						{
-							string[] tokenSplit = token.Split(" ");
-							string tokenKey = tokenSplit[0].ToLower();
-							if(tokenSplit[1] == "1")
-							{
-								if(!sender.gmcpFlags.Contains(tokenKey))
-								{
-									sender.gmcpFlags.Add(tokenKey);
-								}
-							}
-							else if(tokenSplit[1] == "0")
-							{
-								if(sender.gmcpFlags.Contains(tokenKey))
-								{
-									sender.gmcpFlags.Remove(tokenKey);
-								}
-							}
-							else
-							{
+								string tokenKey = token.Key.ToLower();
 								if(sender.gmcpValues.ContainsKey(tokenKey))
 								{
 									sender.gmcpValues.Remove(tokenKey);
 								}
-								sender.gmcpValues.Add(tokenKey, tokenSplit[1]);
+								sender.gmcpValues.Add(tokenKey, token.Value);
+							}
+						}
+						break;
+					case "core.supports.set":
+						List<string>? gmcpListTokens = JsonConvert.DeserializeObject<List<string>>(gmcpContents);
+						if(gmcpListTokens != null)
+						{
+							foreach(string token in gmcpListTokens)
+							{
+								string[] tokenSplit = token.Split(" ");
+								string tokenKey = tokenSplit[0].ToLower();
+								if(tokenSplit[1] == "1")
+								{
+									if(!sender.gmcpFlags.Contains(tokenKey))
+									{
+										sender.gmcpFlags.Add(tokenKey);
+									}
+								}
+								else if(tokenSplit[1] == "0")
+								{
+									if(sender.gmcpFlags.Contains(tokenKey))
+									{
+										sender.gmcpFlags.Remove(tokenKey);
+									}
+								}
+								else
+								{
+									if(sender.gmcpValues.ContainsKey(tokenKey))
+									{
+										sender.gmcpValues.Remove(tokenKey);
+									}
+									sender.gmcpValues.Add(tokenKey, tokenSplit[1]);
+								}
 							}
 						}
 						break;
@@ -153,7 +161,7 @@ namespace inspiral
 		{
 			List<byte> sequence = new List<byte>();
 			List<List<byte>> allSequences = new List<List<byte>>();
-			List<byte> gmcpSequence = null;
+			List<byte>? gmcpSequence = null;
 			for(int j = 0;j < i;j++)
 			{
 				byte b = bytes[j];

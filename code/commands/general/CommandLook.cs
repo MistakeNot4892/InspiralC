@@ -4,7 +4,9 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "look", "l", "ql" };
+			Aliases.Add("look");
+			Aliases.Add("l");
+			Aliases.Add("ql");
 			Description = "Examines a creature, object or location.";
 			Usage = "look <at> <target>";
 		}
@@ -16,8 +18,8 @@ namespace inspiral
 				return;
 			}
 
-			string examineKey = cmd.ObjAt;
-			GameObject examining = null;
+			string? examineKey = cmd.ObjAt;
+			GameObject? examining = null;
 			if(examineKey == null)
 			{
 				examineKey = cmd.ObjTarget;

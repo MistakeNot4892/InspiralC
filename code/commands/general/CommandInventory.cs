@@ -6,18 +6,22 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "inventory", "inv", "ii", "i" };
+			Aliases.Add("inventory");
+			Aliases.Add("inv");
+			Aliases.Add("ii");
+			Aliases.Add("i");
 			Description = "Shows your inventory.";
 			Usage = "inventory";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
-			if(!invoker.HasComponent<InventoryComponent>())
+			var invComp = invoker.GetComponent<InventoryComponent>();
+			if(invComp == null)
 			{
 				invoker.WriteLine("You cannot hold objects."); 
 				return;
 			}
-			InventoryComponent inv = (InventoryComponent)invoker.GetComponent<InventoryComponent>();
+			InventoryComponent inv = (InventoryComponent)invComp;
 
 			string inventorySummary = "You are carrying:";
 			if(inv.carrying.Count > 0)

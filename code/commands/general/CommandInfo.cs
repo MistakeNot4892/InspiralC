@@ -4,7 +4,10 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "info", "ih", "p", "probe" };
+			Aliases.Add("info");
+			Aliases.Add("ih");
+			Aliases.Add("p");
+			Aliases.Add("probe");
 			Description = "Examines a nearby object or room.";
 			Usage = "info [object name or id]";
 		}
@@ -15,7 +18,7 @@ namespace inspiral
 				invoker.WriteLine("You cannot see anything here."); 
 				return;
 			}
-			GameObject examining = null;
+			GameObject? examining = null;
 			if(cmd.ObjTarget != null)
 			{
 				examining = invoker.FindGameObjectNearby(cmd.ObjTarget);

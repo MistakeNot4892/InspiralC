@@ -5,14 +5,17 @@ namespace inspiral
 
 		internal override void Initialize()
 		{
-			Aliases = new System.Collections.Generic.List<string>() { "strike", "attack", "hit", "bash" };
+			Aliases.Add("strike");
+			Aliases.Add("attack");
+			Aliases.Add("hit");
+			Aliases.Add("bash");
 			Description = "Attacks another entity.";
 			Usage = "strike [target] <in bodypart> <with bodypart or object>";
 		}
 		internal override void InvokeCommand(GameObject invoker, CommandData cmd)
 		{
 
-			GameObject targetObj = null;
+			GameObject? targetObj = null;
 			if(cmd.ObjTarget != null && cmd.ObjTarget != "")
 			{
 				targetObj = invoker.FindGameObjectNearby(cmd.ObjTarget);
@@ -24,13 +27,14 @@ namespace inspiral
 				return;
 			}
 
-			string usingItem = cmd.ObjWith;
-			GameObject strikeWith = null;
-			GameObject strikeAgainst = null;
+			string? usingItem = cmd.ObjWith;
+			GameObject? strikeWith = null;
+			GameObject? strikeAgainst = null;
 
-			if(invoker.HasComponent<InventoryComponent>())
+			var invComp = invoker.GetComponent<InventoryComponent>();
+			if(invComp != null)
 			{
-				InventoryComponent inv = (InventoryComponent)invoker.GetComponent<InventoryComponent>();
+				InventoryComponent inv = (InventoryComponent)invComp;
 				if(usingItem == null || usingItem == "")
 				{
 					foreach(string slot in inv.GetWieldableSlots())
@@ -48,14 +52,15 @@ namespace inspiral
 				}
 			}
 
-			if(invoker.HasComponent<MobileComponent>())
+			var mobComp = invoker.GetComponent<MobileComponent>();
+			if(mobComp != null)
 			{
-				MobileComponent mob = (MobileComponent)invoker.GetComponent<MobileComponent>();
+				MobileComponent mob = (MobileComponent)mobComp;
 				if(strikeWith == null && (usingItem == null || usingItem == "") && mob.strikers.Count > 0)
 				{
 					usingItem = mob.strikers[Game.Random.Next(0, mob.strikers.Count)];
 				}
-				if(mob.strikers.Contains(usingItem))
+				if(usingItem != null && mob.strikers.Contains(usingItem))
 				{
 					strikeWith = mob.limbs[usingItem];
 				}
@@ -63,10 +68,15 @@ namespace inspiral
 
 			if(strikeWith == null)
 			{
-				GameObject prop = invoker.FindGameObjectInContents(usingItem);
-				if(prop != null && invoker.HasComponent<InventoryComponent>())
+
+				GameObject? prop = null;
+				if(usingItem != null)
 				{
-					InventoryComponent inv = (InventoryComponent)invoker.GetComponent<InventoryComponent>();
+					prop = invoker.FindGameObjectInContents(usingItem);
+				}
+				if(prop != null && invComp != null)
+				{
+					InventoryComponent inv = (InventoryComponent)invComp;
 					if(inv.IsWielded(prop))
 					{
 						if(!prop.HasComponent<PhysicsComponent>())
@@ -85,10 +95,12 @@ namespace inspiral
 				return;
 			}
 
-			if(targetObj.HasComponent<MobileComponent>())
+			string strikeString = $"{strikeWith.GetShortDesc()}";
+			var tarMobComp = targetObj.GetComponent<MobileComponent>();
+			if(tarMobComp != null)
 			{
-				MobileComponent mob = (MobileComponent)targetObj.GetComponent<MobileComponent>();
-				string checkBp = cmd.ObjIn;
+				MobileComponent mob = (MobileComponent)tarMobComp;
+				string? checkBp = cmd.ObjIn;
 				if(checkBp == null || checkBp == "")
 				{
 					checkBp = mob.GetWeightedRandomBodypart();
@@ -104,7 +116,10 @@ namespace inspiral
 				}
 			}
 
-			string strikeString = $"{strikeWith.GetShortDesc()}, {strikeAgainst.HandleImpact(invoker, strikeWith, 3.0)}";
+			if(strikeAgainst != null)
+			{
+				strikeString = $"{strikeString}, {strikeAgainst.HandleImpact(invoker, strikeWith, 3.0)}";
+			}
 			string firstPersonStrikeWith = strikeString;
 			if(firstPersonStrikeWith.Substring(0,2) == "a ")
 			{
@@ -114,9 +129,10 @@ namespace inspiral
 			{
 				firstPersonStrikeWith = firstPersonStrikeWith.Substring(3);
 			}
-			if(strikeWith.HasComponent<BodypartComponent>())
+			var bpComp = strikeWith.GetComponent<BodypartComponent>();
+			if(bpComp != null)
 			{
-				BodypartComponent body = (BodypartComponent)strikeWith.GetComponent<BodypartComponent>();
+				BodypartComponent body = (BodypartComponent)bpComp;
 				if(body.GetValue<bool>(Field.NaturalWeapon))
 				{
 					GenderObject genderObj = Modules.Gender.GetByTerm(invoker.GetValue<string>(Field.Gender));
@@ -124,7 +140,11 @@ namespace inspiral
 				}
 			}
 
-			string bpString = $" in the {strikeAgainst.GetShortDesc()}";
+			string bpString = "";
+			if(strikeAgainst != null)
+			{
+				bpString = $" in the {strikeAgainst.GetShortDesc()}";
+			}
 			invoker.ShowNearby(invoker, targetObj,
 				$"You strike {targetObj.GetShortDesc()}{bpString} with your {firstPersonStrikeWith}!",
 				$"{Text.Capitalize(invoker.GetShortDesc())} strikes you{bpString} with {strikeString}!",

@@ -5,15 +5,15 @@ namespace inspiral
 
 	internal class CommandData
 	{
-		internal string StrCmd =    null;
-		internal string[] StrArgs = null;
-		internal string ObjTarget = null;
-		internal string ObjWith =   null;
-		internal string ObjIn =     null;
-		internal string ObjAt =     null;
-		internal string ObjTo =     null;
-		internal string ObjFrom =   null;
-		internal string RawInput =  null;
+		internal string? StrCmd =    null;
+		internal string? ObjTarget = null;
+		internal string? ObjWith =   null;
+		internal string? ObjIn =     null;
+		internal string? ObjAt =     null;
+		internal string? ObjTo =     null;
+		internal string? ObjFrom =   null;
+		internal string RawInput = "";
+		internal string[] StrArgs = new string[0];
 		private void SaveSubstringAsToken(string token, string substring)
 		{
 			switch(token)
@@ -37,6 +37,14 @@ namespace inspiral
 					ObjFrom = substring;
 					break;
 			}
+		}
+		internal bool HasArgs(int argCount)
+		{
+			if(argCount == 0)
+			{
+				return true;
+			}
+			return StrArgs.Length >= argCount;
 		}
 		internal string GetSummary()
 		{
@@ -117,9 +125,9 @@ namespace inspiral
 
 	internal class GameCommand
 	{
-		internal List<string> Aliases = null;
-		internal string Usage;
-		internal string Description;
+		internal List<string> Aliases = new List<string>();
+		internal string Usage = "undefined";
+		internal string Description = "unset";
 		internal bool SkipArticles = true;         // Parse 'a' 'an' and 'the' as part of substrings instead of skipping.
 		internal bool SkipTokenQualifiers = false; // Do not parse 'with' 'from' etc. as special tokens.
 		internal GameCommand() { Initialize(); }

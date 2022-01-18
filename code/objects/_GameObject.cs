@@ -23,10 +23,24 @@ namespace inspiral
 			get { return _contents; }
 			set { _contents = value; }
 		}
-		public GameObject Location
+		public GameObject? Location
 		{
-			get { return (GameObject)Repos.Objects.GetByID(GetValue<long>(Field.Location)); }
-			set { SetValue<long>(Field.Location, (long)value.GetValue<long>(Field.Id)); }
+			get
+			{ 
+				var loc = Game.Repositories.Objects.GetById(GetValue<long>(Field.Location));
+				if(loc != null)
+				{
+					return (GameObject)loc;
+				}
+				return null; 
+			}
+			set
+			{ 
+				if(value != null)
+				{
+					SetValue<long>(Field.Location, (long)value.GetValue<long>(Field.Id));
+				}
+			}
 		}
 		private Dictionary<System.Type, GameComponent> _components = new Dictionary<System.Type, GameComponent>();
 		public Dictionary<System.Type, GameComponent> Components
@@ -40,25 +54,25 @@ namespace inspiral
 		}
 		public bool SetValue<T>(System.Type componentType, DatabaseField field, T newValue)
 		{
-			GameComponent comp = GetComponent(componentType);
+			GameComponent? comp = GetComponent(componentType);
 			if(comp != null)
 			{
 				return comp.SetValue<T>(field, newValue);
 			}
 			return false;
 		}
-		public bool SetValue<T>(DatabaseField field, T newValue)
+		public bool SetValue<T>(DatabaseField field, T? newValue)
 		{
-			if(Fields.ContainsKey(field))
+			if(newValue != null && Fields.ContainsKey(field))
 			{
 				Fields[field] = newValue;
 				return true;
 			}
 			return false;
 		}
-		public T GetValue<T>(System.Type componentType, DatabaseField field)
+		public T? GetValue<T>(System.Type componentType, DatabaseField field)
 		{
-			GameComponent comp = GetComponent(componentType);
+			GameComponent? comp = GetComponent(componentType);
 			if(comp != null)
 			{
 				return comp.GetValue<T>(field);
@@ -66,7 +80,7 @@ namespace inspiral
 			return default(T);
 		}
 
-		public T GetValue<T>(DatabaseField field)
+		public T? GetValue<T>(DatabaseField field)
 		{
 			if(Fields.ContainsKey(field))
 			{
@@ -78,26 +92,32 @@ namespace inspiral
 		{
 			Fields = record;
 		}
-		internal GameObject FindGameObjectNearby(string token)
+		internal GameObject? FindGameObjectNearby(string token)
 		{
 			return FindGameObjectNearby(this, token);
 		}
-		internal GameObject FindGameObjectNearby(GameObject viewer, string token)
+		internal GameObject? FindGameObjectNearby(GameObject viewer, string token)
 		{
 			string checkToken = token.ToLower();
-			if(Repos.Objects.SelfReferenceTokens.Contains(checkToken))
+			if(Game.Repositories.Objects.SelfReferenceTokens.Contains(checkToken))
 			{
 				return viewer;
 			}
-			GameObject location = Location;
+			GameObject? location = Location;
 			if(location != null)
 			{
-				if(checkToken == "here" || 
-					checkToken == "room" || 
-					$"{location.GetValue<long>(Field.Id)}" == checkToken || 
-					location.GetValue<string>(Field.Name).ToLower() == checkToken || 
-					location.GetValue<List<string>>(Field.Aliases).Contains(checkToken)
-					)
+				if(checkToken == "here" || checkToken == "room" || $"{location.GetValue<long>(Field.Id)}" == checkToken)
+				{
+					return location;
+				}
+
+				string? checkingToken = location.GetValue<string>(Field.Name);
+				if(checkingToken != null && checkToken == checkingToken.ToLower())
+				{
+					return location;
+				}
+				List<string>? checkingTokens = location.GetValue<List<string>>(Field.Aliases);
+				if(checkingTokens != null && checkingTokens.Contains(checkToken))
 				{
 					return location;
 				}
@@ -105,42 +125,36 @@ namespace inspiral
 			}
 			return null;
 		}
-		internal GameObject FindGameObjectInContents(string token)
+		internal GameObject? FindGameObjectInContents(string token)
 		{
 			return FindGameObjectInContents(token, true);
 		}
 
-		internal GameObject FindGameObjectInContents(string token, bool silent)
+		internal GameObject? FindGameObjectInContents(string token, bool silent)
 		{
 			string checkToken = token.ToLower();
 			foreach(GameObject gameObj in Contents)
 			{
-				if($"{gameObj.GetValue<long>(Field.Id)}" == checkToken || 
-					gameObj.GetValue<string>(Field.Name).ToLower() == checkToken || 
-					gameObj.GetValue<List<string>>(Field.Aliases).Contains(checkToken) || 
-					$"{gameObj.GetValue<string>(Field.Name)}#{gameObj.GetValue<long>(Field.Id)}" == checkToken
-					)
+				if($"{gameObj.GetValue<long>(Field.Id)}" == checkToken || $"{gameObj.GetValue<string>(Field.Name)}#{gameObj.GetValue<long>(Field.Id)}" == checkToken)
+				{
+					return gameObj;
+				}
+
+				string? checkingToken = gameObj.GetValue<string>(Field.Name);
+				if(checkingToken != null && checkToken == checkingToken.ToLower())
+				{
+					return gameObj;
+				}
+				List<string>? checkingTokens = gameObj.GetValue<List<string>>(Field.Aliases);
+				if(checkingTokens != null && checkingTokens.Contains(checkToken))
 				{
 					return gameObj;
 				}
 			}
-			foreach(GameObject gameObj in Contents)
+			var roomComp = GetComponent<RoomComponent>();
+			if(roomComp != null)
 			{
-				if(gameObj.GetValue<string>(Field.Name).ToLower().Contains(checkToken))
-				{
-					return gameObj;
-				}
-				foreach(string alias in gameObj.GetValue<List<string>>(Field.Aliases))
-				{
-					if(alias.ToLower().Contains(checkToken) || $"{alias}#{gameObj.GetValue<long>(Field.Id)}" == checkToken)
-					{
-						return gameObj;
-					}
-				}
-			}
-			if(HasComponent<RoomComponent>())
-			{
-				RoomComponent room = (RoomComponent)GetComponent<RoomComponent>();
+				RoomComponent room = (RoomComponent)roomComp;
 				string lookingFor = checkToken;
 				if(Text.shortExits.ContainsKey(lookingFor))
 				{
@@ -148,10 +162,10 @@ namespace inspiral
 				}
 				if(room.exits.ContainsKey(lookingFor))
 				{
-					GameObject otherRoom = (GameObject)Repos.Objects.GetByID(room.exits[lookingFor]);
+					var otherRoom = Game.Repositories.Objects.GetById(room.exits[lookingFor]);
 					if(otherRoom != null)
 					{
-						return otherRoom;
+						return (GameObject)otherRoom;
 					}
 				}
 			}
@@ -163,9 +177,10 @@ namespace inspiral
 		}
 		internal bool CanUseBalance(string balance)
 		{
-			if(HasComponent<BalanceComponent>())
+			var balComp = GetComponent<BalanceComponent>();
+			if(balComp != null)
 			{
-				BalanceComponent bal = (BalanceComponent)GetComponent<BalanceComponent>();
+				BalanceComponent bal = (BalanceComponent)balComp;
 				return bal.OnBalance(balance);
 			}
 			return false;
@@ -202,9 +217,10 @@ namespace inspiral
 		}
 		internal bool UseBalance(string balance, int msKnock)
 		{
-			if(HasComponent<BalanceComponent>())
+			var balComp = GetComponent<BalanceComponent>();
+			if(balComp != null)
 			{
-				BalanceComponent bal = (BalanceComponent)GetComponent<BalanceComponent>();
+				BalanceComponent bal = (BalanceComponent)balComp;
 				bal.KnockBalance(balance, msKnock);
 				return true;
 			}
@@ -212,17 +228,22 @@ namespace inspiral
 		}
 		internal void SendPrompt()
 		{
-			if(HasComponent<ClientComponent>())
+			var clientComp = GetComponent<ClientComponent>();
+			if(clientComp != null)
 			{
-				ClientComponent client = (ClientComponent)GetComponent<ClientComponent>();
-				client.client.SendPrompt();
+				ClientComponent client = (ClientComponent)clientComp;
+				if(client.client != null)
+				{
+					client.client.SendPrompt();
+				}
 			}
 		}
 		internal void Farewell(string farewell)
 		{
-			if(HasComponent<ClientComponent>())
+			var clientComp = GetComponent<ClientComponent>();
+			if(clientComp != null)
 			{
-				ClientComponent client = (ClientComponent)GetComponent<ClientComponent>();
+				ClientComponent client = (ClientComponent)clientComp;
 				if(client.client != null)
 				{
 					client.client.Farewell(farewell);
@@ -233,9 +254,10 @@ namespace inspiral
 
 		internal void SendPrompt(bool forceClear)
 		{
-			if(HasComponent<ClientComponent>())
+			var clientComp = GetComponent<ClientComponent>();
+			if(clientComp != null)
 			{
-				ClientComponent client = (ClientComponent)GetComponent<ClientComponent>();
+				ClientComponent client = (ClientComponent)clientComp;
 				if(client.client != null)
 				{
 					if(forceClear)
@@ -248,20 +270,25 @@ namespace inspiral
 			}
 		}
 
-		internal PlayerAccount GetAccount()
+		internal PlayerAccount? GetAccount()
 		{
-			if(HasComponent<ClientComponent>())
+			var clientComp = GetComponent<ClientComponent>();
+			if(clientComp != null)
 			{
-				ClientComponent client = (ClientComponent)GetComponent<ClientComponent>();
-				return client.client.account;
+				ClientComponent client = (ClientComponent)clientComp;
+				if(client.client != null)
+				{
+					return client.client.account;
+				}
 			}
 			return null;
 		}
 		internal string HandleImpact(GameObject wielder, GameObject impacting, double force)
 		{
-			if(impacting.HasComponent<PhysicsComponent>())
+			var physComp = impacting.GetComponent<PhysicsComponent>();
+			if(physComp != null)
 			{
-				PhysicsComponent phys = (PhysicsComponent)impacting.GetComponent<PhysicsComponent>();
+				PhysicsComponent phys = (PhysicsComponent)physComp;
 				double strikePenetration = phys.GetImpactPenetration(force, 1.0);
 				if(strikePenetration > 0)
 				{

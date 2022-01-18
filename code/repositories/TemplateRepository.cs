@@ -3,9 +3,9 @@ using Newtonsoft.Json;
 
 namespace inspiral
 {
-	internal static partial class Repos
+	internal partial class Repos
 	{
-		internal static TemplateRepository Templates;
+		internal static TemplateRepository Templates = new TemplateRepository();
 	}
 	internal class TemplateRepository : GameRepository
 	{
@@ -30,7 +30,7 @@ namespace inspiral
 		internal void LoadComponentData(GameObject gameObj)
 		{
 		}
-		internal override GameObject CreateRepositoryType(long id) 
+		internal override GameObject? CreateRepositoryType(long id) 
 		{
 			return null;
 		}

@@ -6,7 +6,7 @@ namespace inspiral
 {
 	class PortListener
 	{
-		private TcpListener server = null;
+		private TcpListener? server = null;
 		private int port;
 		private string portId;
 		internal PortListener(int _port)
@@ -26,8 +26,8 @@ namespace inspiral
 				{
 					System.Console.WriteLine("{0}: waiting for a connection...", portId);
 					TcpClient client = server.AcceptTcpClient();
-					System.Console.WriteLine("{0}: new connection from {1}", portId, ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString());
 					GameClient joiner = Clients.Create(client, $"{portId}-{Clients.CountClients()+1}");
+					System.Console.WriteLine("{0}: new connection from {1}", portId, joiner.GetClientEndpointString());
 					Task.Run(() => joiner.Begin());
 				}
 			}
@@ -37,7 +37,10 @@ namespace inspiral
 			}
 			finally
 			{
-				server.Stop();
+				if(server != null)
+				{
+					server.Stop();
+				}
 			}
 		}
 	}

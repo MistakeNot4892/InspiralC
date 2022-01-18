@@ -6,7 +6,8 @@ namespace inspiral
 	{
 		internal override void Initialize()
 		{
-			Aliases = new List<string>() { "set", "vs" };
+			Aliases.Add("set");
+			Aliases.Add("vs");
 			Description = "Modifies the editable fields of an object.";
 			Usage = "set [object name or id] [object field] [new value]";
 			SkipArticles = false;
@@ -19,7 +20,7 @@ namespace inspiral
 				invoker.WriteLine("Usage: SET <target> <field> <value>");
 				return;
 			}
-			GameObject editing = invoker.FindGameObjectNearby(cmd.ObjTarget);
+			GameObject? editing = invoker.FindGameObjectNearby(cmd.ObjTarget);
 			if(editing == null)
 			{
 				invoker.WriteLine("Cannot find object to modify.");
@@ -35,9 +36,9 @@ namespace inspiral
 			}
 			value = value.Trim();
 
-			string lastVal = "";
-			string newVal = value;
-			string invalidValue = null;
+			string? newVal = value;
+			string? lastVal = "";
+			string? invalidValue = null;
 			bool unknownValue = false;
 	
 			if(field.IsField(Field.Name))
@@ -48,7 +49,7 @@ namespace inspiral
 			else if(field.IsField(Field.Gender))
 			{
 				lastVal = editing.GetValue<string>(Field.Gender);
-				GenderObject newGender = Modules.Gender.GetByTerm(value);
+				GenderObject? newGender = Modules.Gender.GetByTerm(value);
 				if(newGender == null)
 				{
 					invalidValue = "Non-existent gender.";
@@ -69,7 +70,10 @@ namespace inspiral
 					{
 						unknownValue = false;
 						lastVal = comp.Value.GetValue<string>(field);
-						invalidValue = comp.Value.SetValueOfEditableField(field, value);
+						if(!comp.Value.SetValueOfEditableField(field, value))
+						{
+							invalidValue = "Invalid field.";
+						}
 						newVal = comp.Value.GetValue<string>(field);
 					}
 				}

@@ -7,7 +7,7 @@ namespace inspiral
 {
 	internal static partial class Modules
 	{
-		internal static RolesModule Roles;
+		internal static RolesModule Roles = new RolesModule();
 	}
 	internal class RolesModule : GameModule
 	{
@@ -19,7 +19,7 @@ namespace inspiral
 			// TODO readd role repo.
 			Game.LogError("Done.");
 		}
-		internal GameRole GetRole(string key)
+		internal GameRole? GetRole(string key)
 		{
 			key = key.ToLower();
 			if(roles.ContainsKey(key))
