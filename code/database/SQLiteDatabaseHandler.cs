@@ -154,8 +154,9 @@ namespace inspiral
         internal override void BatchUpdateRecords(string tableName, List<IGameEntity> updateQueue) 
         {
 			var saveTransaction = connection.BeginTransaction();
-			foreach(IGameEntity objInstance in updateQueue)
+			while(updateQueue.Count > 0)
 			{
+                IGameEntity objInstance = updateQueue[0];
                 UpdateRecord(tableName, objInstance);
                 updateQueue.Remove(objInstance);
 			}

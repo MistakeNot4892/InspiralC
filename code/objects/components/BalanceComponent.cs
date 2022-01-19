@@ -10,16 +10,20 @@ namespace inspiral
 			ComponentType = typeof(BalanceComponent);
 			schemaFields = new List<DatabaseField>()
 			{
+				Field.Id,
 				Field.Parent,
 				Field.Dummy
 			};
+		}
+		internal override GameComponent MakeComponent()
+		{
+			return new BalanceComponent();
 		}
 	}
 
 	internal class BalanceComponent : GameComponent 
 	{
 		private Dictionary<string, Timer> offBalanceTimers = new Dictionary<string, Timer>();
-
 		internal override void InitializeComponent()
 		{
 			AddBalanceTimer("poise");

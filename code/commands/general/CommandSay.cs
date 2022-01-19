@@ -54,7 +54,7 @@ namespace inspiral
 
 			if(invocation.Length <= 0)
 			{
-				GenderObject genderObj = Program.Game.Mods.Gender.GetByTerm(invoker.GetValue<string>(Field.Gender));
+				GenderObject genderObj = Modules.Gender.GetByTerm(invoker.GetValue<string>(Field.Gender));
 				invoker.ShowNearby(invoker, $"You open your mouth but say nothing.", $"{invoker.GetShortDesc()} opens {genderObj.Their} mouth but says nothing.");
 				return;
 			}

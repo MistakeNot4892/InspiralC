@@ -23,7 +23,7 @@ namespace inspiral
 				{
 					try
 					{	ulong getId = (ulong)System.Convert.ToUInt64(cmd.ObjTarget);
-						var viewObj = Program.Game.Repos.Objects.GetById(getId);
+						var viewObj = Repositories.Objects.GetById(getId);
 						if(viewObj != null)
 						{
 							viewing =(GameObject)viewObj;
@@ -31,7 +31,7 @@ namespace inspiral
 					}
 					catch(System.Exception e) 
 					{
-						Program.Game.LogError($"Tried to look up a non-int var in the global db ({e.Message})");
+						Game.LogError($"Tried to look up a non-int var in the global db ({e.Message})");
 					}
 					invoker.WriteLine($"Cannot find '{cmd.ObjTarget}'.");
 				}

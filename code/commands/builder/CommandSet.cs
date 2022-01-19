@@ -49,7 +49,7 @@ namespace inspiral
 			else if(field.IsField(Field.Gender))
 			{
 				lastVal = editing.GetValue<string>(Field.Gender);
-				GenderObject? newGender = Program.Game.Mods.Gender.GetByTerm(value);
+				GenderObject? newGender = Modules.Gender.GetByTerm(value);
 				if(newGender == null)
 				{
 					invalidValue = "Non-existent gender.";

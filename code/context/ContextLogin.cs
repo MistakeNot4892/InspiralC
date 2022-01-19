@@ -50,7 +50,7 @@ namespace inspiral
 			GameObject? wakeShell = null;
 			if(invoker.account != null)
 			{
-				var getShell = Program.Game.Repos.Objects.GetById(invoker.account.GetValue<ulong>(Field.ShellId));
+				var getShell = Repositories.Objects.GetById(invoker.account.GetValue<ulong>(Field.ShellId));
 				if(getShell != null)
 				{
 					wakeShell = (GameObject)getShell;
@@ -58,7 +58,7 @@ namespace inspiral
 			}
 			if(wakeShell == null)
 			{
-				wakeShell = Program.Game.Repos.Objects.CreateFromTemplate(GlobalConfig.DefaultShellTemplate);
+				wakeShell = Repositories.Objects.CreateFromTemplate(GlobalConfig.DefaultShellTemplate);
 			}
 			GameObject wakingShell = (GameObject)wakeShell;
 			wakingShell.ShowNearby(wakingShell, $"{wakingShell.GetShortDesc()} wakes up.");
@@ -91,7 +91,7 @@ namespace inspiral
 				else
 				{
 					string newUser = tokens[0].ToLower();
-					if(Program.Game.Repos.Accounts.GetAccountByUser(newUser) != null)
+					if(Repositories.Accounts.GetAccountByUser(newUser) != null)
 					{
 						invoker.WriteLine($"An account already exists with that username.");
 					}
@@ -113,7 +113,7 @@ namespace inspiral
 				switch(loginState[invoker])
 				{
 					case "connected":
-						var userAcct = Program.Game.Repos.Accounts.GetAccountByUser(command);
+						var userAcct = Repositories.Accounts.GetAccountByUser(command);
 						if(userAcct == null)
 						{
 							invoker.WriteLine($"No account exists for '{command}'. Use {Colours.Fg("register [username]",  invoker.shell.GetColour(Text.ColourDefaultHighlight))} to create one.");
@@ -165,7 +165,7 @@ namespace inspiral
 					case "registering_confirming_password":
 						if(passwordConfirmations.ContainsKey(invoker) && BCrypt.Net.BCrypt.Verify(rawCommand, passwordConfirmations[invoker]))
 						{
-							invoker.account = Program.Game.Repos.Accounts.CreateAccount(invoker.clientId, passwordConfirmations[invoker]);
+							invoker.account = Repositories.Accounts.CreateAccount(invoker.clientId, passwordConfirmations[invoker]);
 							invoker.WriteLine("Account created.");
 							HandleLogin(invoker);
 						}

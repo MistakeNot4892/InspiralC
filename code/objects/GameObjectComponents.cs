@@ -28,7 +28,7 @@ namespace inspiral
 			GameComponent? comp = GetComponent(compType);
 			if(comp == null)
 			{
-				comp = Program.Game.Mods.Components.MakeComponent(compType);
+				comp = Modules.Components.MakeComponent(compType);
 				if(comp != null)
 				{
 					Components.Add(compType, comp);

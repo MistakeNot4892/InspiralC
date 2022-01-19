@@ -38,12 +38,17 @@ namespace inspiral
 			ComponentType = typeof(MobileComponent);
 			schemaFields = new List<DatabaseField>()
 			{
+				Field.Id,
 				Field.Parent,
 				Field.EnterMessage,
 				Field.LeaveMessage,
 				Field.DeathMessage,
 				Field.BodypartList
 			};
+		}
+		internal override GameComponent MakeComponent()
+		{
+			return new MobileComponent();
 		}
 	}
 
@@ -110,7 +115,7 @@ namespace inspiral
 		}
 		internal string GetWeightedRandomBodypart()
 		{
-			return limbs.ElementAt(Program.Game.Random.Next(0, limbs.Count)).Key;
+			return limbs.ElementAt(Game.Random.Next(0, limbs.Count)).Key;
 		}
 	}
 	internal class BodypartData

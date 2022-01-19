@@ -44,7 +44,7 @@ namespace inspiral
 						System.Console.WriteLine(cmd.StrArgs[1]);
 						if(cmd.StrArgs[1].ToLower() == "new")
 						{
-							roomId = Program.Game.Mods.Rooms.CreateEmpty().GetValue<ulong>(Field.Id);
+							roomId = Modules.Rooms.CreateEmpty().GetValue<ulong>(Field.Id);
 						}
 						else
 						{
@@ -54,12 +54,12 @@ namespace inspiral
 							}
 							catch(System.Exception e)
 							{
-								Program.Game.LogError($"Room ID exception: {e.ToString()}.");
+								Game.LogError($"Room ID exception: {e.ToString()}.");
 							}
 						}
 
 						GameObject? roomParent = room.GetParent();
-						var getRoom = Program.Game.Repos.Objects.GetById(roomId);
+						var getRoom = Repositories.Objects.GetById(roomId);
 						if(roomId == 0 || getRoom == null || roomParent == null)
 						{
 							invoker.WriteLine("Please specify a valid room ID to link to, or 'new' to use a new room.");
@@ -95,7 +95,7 @@ namespace inspiral
 										GameObject? otherRoomParent = otherRoom.GetParent();
 										if(otherRoomParent != null)
 										{
-											Program.Game.Repos.Objects.QueueForUpdate(otherRoomParent);
+											Repositories.Objects.QueueForUpdate(otherRoomParent);
 										}
 										invoker.WriteLine($"You have connected {roomParent.GetValue<ulong>(Field.Id)} to {roomId} via a bidirectional exit to the {exitToAdd}.");
 									}
@@ -103,7 +103,7 @@ namespace inspiral
 							}
 							if(saveEditedRoom)
 							{
-								Program.Game.Repos.Objects.QueueForUpdate(roomParent);
+								Repositories.Objects.QueueForUpdate(roomParent);
 							}
 						}
 					}

@@ -1,8 +1,8 @@
 namespace inspiral
 {
-	internal partial class Modules
+	internal static partial class Modules
 	{
-		internal RoomsModule Rooms = new RoomsModule();
+		internal static RoomsModule Rooms { get { return (RoomsModule)GetModule<RoomsModule>(); } }
 	}
 	internal class RoomsModule : GameModule
 	{
@@ -17,7 +17,7 @@ namespace inspiral
         }
         internal GameObject CreateEmpty()
         {
-            return Program.Game.Repos.Objects.CreateFromTemplate("room");
+            return Repositories.Objects.CreateFromTemplate("room");
         }
     }
 }

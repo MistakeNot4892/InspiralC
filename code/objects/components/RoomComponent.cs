@@ -24,9 +24,14 @@ namespace inspiral
 			ComponentType = typeof(RoomComponent);
 			schemaFields = new List<DatabaseField>()
 			{
+				Field.Id,
 				Field.Parent,
 				Field.Exits
 			};
+		}
+		internal override GameComponent MakeComponent()
+		{
+			return new RoomComponent();
 		}
 	}
 

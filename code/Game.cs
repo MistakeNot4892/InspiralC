@@ -1,44 +1,24 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace inspiral
 {
-	internal class Game
+	internal static class Game
 	{
-		internal Repositories Repos = new Repositories();
-		internal Modules Mods = new Modules();
-		private System.Random s_random = new System.Random();
-		private Dictionary<string, System.Type> s_typesByString = new Dictionary<string, System.Type>();
-		private bool s_initComplete = false;
-		private AccountRepository s_accounts = new AccountRepository();
-		private ObjectRepository s_objects = new ObjectRepository();
-		internal System.Random Random
-		{ 
-			get { return s_random; }
-			set { s_random = value; }
-		}
-
-		internal Dictionary<string, System.Type> TypesByString
-		{ 
-			get { return s_typesByString; }
-			set { s_typesByString = value; }
-		}
-
-		internal bool InitComplete
-		{ 
-			get { return s_initComplete; }
-			set { s_initComplete = value; }
-		}
-		internal void Initialize() 
+		public static System.Random Random = new System.Random();
+		public static Dictionary<string, System.Type> TypesByString = new Dictionary<string, System.Type>();
+		public static bool InitComplete = false;
+		internal static void Initialize() 
 		{
 			// Populate modules.
-			Mods.InitializeModules();
-			Mods.PostInitializeModules();
+			Modules.InitializeModules();
+			Modules.PostInitializeModules();
 
 			// Populate repos.
-			Repos.Populate();
-			Repos.Initialize();
-			Repos.PostInitialize();	
+			Repositories.Populate();
+			Repositories.Initialize();
+			Repositories.PostInitialize();	
 
 			// Start listening for client connections.
 			List<int> ports = new List<int>() {9090, 2323};
@@ -49,17 +29,17 @@ namespace inspiral
 			}		
 			InitComplete = true; // We're done!
 		}
-		internal void Exit()
+		internal static void Exit()
 		{
 			foreach(GameClient client in Clients.Connected)
 			{
 				client.Farewell("The server is shutting down. Goodbye!");
 			}
-			Repos.ExitRepos();
+			Repositories.ExitRepos();
 			Database.Exit();
 		}
 
-		internal System.Type? GetTypeFromString(string typeString)
+		internal static System.Type? GetTypeFromString(string typeString)
 		{
 			if(!TypesByString.ContainsKey(typeString))
 			{
@@ -71,10 +51,26 @@ namespace inspiral
 			}
 			return TypesByString[typeString];
 		}
-		internal void LogError(string error)
+		internal static void LogError(string error)
 		{
-			// todo: errors command
+			// todo: logging framework
 			System.Diagnostics.Debug.WriteLine(error);
+		}
+		internal static List<T> InstantiateSubclasses<T>()
+		{
+			List<T> subclasses = new List<T>();
+			foreach(var t in (from domainAssembly in System.AppDomain.CurrentDomain.GetAssemblies()
+				from assemblyType in domainAssembly.GetTypes()
+				where assemblyType.IsSubclassOf(typeof(T))
+				select assemblyType))
+			{
+				var newInstance = System.Activator.CreateInstance(t);
+				if(newInstance != null)
+				{
+					subclasses.Add((T)newInstance);
+				}
+			}
+			return subclasses;
 		}
 	}
 }

@@ -1,30 +1,26 @@
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Newtonsoft.Json.Linq;
-
 namespace inspiral
 {
-	internal partial class Modules
+	internal static partial class Modules
 	{
-		internal RolesModule Roles = new RolesModule();
+		internal static RolesModule Roles { get { return (RolesModule)GetModule<RolesModule>(); } }
 	}
 	internal class RolesModule : GameModule
 	{
 		private Dictionary<string, GameRole> roles = new Dictionary<string, GameRole>();
 		internal override void PostInitialize()
 		{
-			Program.Game.LogError("Loading role definitions.");
+			Game.LogError("Loading role definitions.");
 			
 			roles.Add("administrator", new GameRole(
 				"Administrator", 
 				"Contains role and game administration functions.", 
 				new List<GameCommand>
 				{
-					Program.Game.Mods.Commands.GetCommand<CommandTest>(), 
-					Program.Game.Mods.Commands.GetCommand<CommandViewRoles>(),
-					Program.Game.Mods.Commands.GetCommand<CommandAddRole>(),
-					Program.Game.Mods.Commands.GetCommand<CommandTakeRole>()
+					Modules.Commands.GetCommand<CommandTest>(), 
+					Modules.Commands.GetCommand<CommandViewRoles>(),
+					Modules.Commands.GetCommand<CommandAddRole>(),
+					Modules.Commands.GetCommand<CommandTakeRole>()
 				}));
 
 			roles.Add("builder", new GameRole(
@@ -32,10 +28,10 @@ namespace inspiral
 				"Grants room and object viewing/modification functions.", 
 				new List<GameCommand>
 				{
-					Program.Game.Mods.Commands.GetCommand<CommandCreate>(),
-					Program.Game.Mods.Commands.GetCommand<CommandAddRoom>(),
-					Program.Game.Mods.Commands.GetCommand<CommandSet>(),
-					Program.Game.Mods.Commands.GetCommand<CommandView>()
+					Modules.Commands.GetCommand<CommandCreate>(),
+					Modules.Commands.GetCommand<CommandAddRoom>(),
+					Modules.Commands.GetCommand<CommandSet>(),
+					Modules.Commands.GetCommand<CommandView>()
 				}));
 
 			roles.Add("player", new GameRole(
@@ -43,26 +39,26 @@ namespace inspiral
 				"Grants general world interaction and communication commands.", 
 				new List<GameCommand>
 				{
-					Program.Game.Mods.Commands.GetCommand<CommandSay>(),
-					Program.Game.Mods.Commands.GetCommand<CommandEmote>(),
-					Program.Game.Mods.Commands.GetCommand<CommandTake>(),
-					Program.Game.Mods.Commands.GetCommand<CommandDrop>(),
-					Program.Game.Mods.Commands.GetCommand<CommandInventory>(),
-					Program.Game.Mods.Commands.GetCommand<CommandQuit>(),
-					Program.Game.Mods.Commands.GetCommand<CommandLook>(),
-					Program.Game.Mods.Commands.GetCommand<CommandExits>(),
-					Program.Game.Mods.Commands.GetCommand<CommandClient>(),
-					Program.Game.Mods.Commands.GetCommand<CommandHelp>(),
-					Program.Game.Mods.Commands.GetCommand<CommandConfig>(),
-					Program.Game.Mods.Commands.GetCommand<CommandEquip>(),
-					Program.Game.Mods.Commands.GetCommand<CommandUnequip>(),
-					Program.Game.Mods.Commands.GetCommand<CommandDescribe>(),
-					Program.Game.Mods.Commands.GetCommand<CommandInfo>(),
-					Program.Game.Mods.Commands.GetCommand<CommandPrompt>(),
-					Program.Game.Mods.Commands.GetCommand<CommandStrike>()
+					Modules.Commands.GetCommand<CommandSay>(),
+					Modules.Commands.GetCommand<CommandEmote>(),
+					Modules.Commands.GetCommand<CommandTake>(),
+					Modules.Commands.GetCommand<CommandDrop>(),
+					Modules.Commands.GetCommand<CommandInventory>(),
+					Modules.Commands.GetCommand<CommandQuit>(),
+					Modules.Commands.GetCommand<CommandLook>(),
+					Modules.Commands.GetCommand<CommandExits>(),
+					Modules.Commands.GetCommand<CommandClient>(),
+					Modules.Commands.GetCommand<CommandHelp>(),
+					Modules.Commands.GetCommand<CommandConfig>(),
+					Modules.Commands.GetCommand<CommandEquip>(),
+					Modules.Commands.GetCommand<CommandUnequip>(),
+					Modules.Commands.GetCommand<CommandDescribe>(),
+					Modules.Commands.GetCommand<CommandInfo>(),
+					Modules.Commands.GetCommand<CommandPrompt>(),
+					Modules.Commands.GetCommand<CommandStrike>()
 				}));
 
-			Program.Game.LogError("Done.");
+			Game.LogError("Done.");
 		}
 		internal GameRole? GetRole(string key)
 		{

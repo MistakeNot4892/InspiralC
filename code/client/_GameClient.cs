@@ -46,7 +46,7 @@ namespace inspiral
 			client =   _client;
 			stream =   _client.GetStream();
 			clientId = _id;
-			Program.Game.LogError($"{clientId}: client created.");
+			Game.LogError($"{clientId}: client created.");
 			context = Contexts.Login;
 			context.OnContextSet(this);
 		}
@@ -125,7 +125,7 @@ namespace inspiral
 			}
 			catch(ObjectDisposedException)
 			{
-				Program.Game.LogError($"Ending client loop for {clientId}, stream has been disposed.");
+				Game.LogError($"Ending client loop for {clientId}, stream has been disposed.");
 			}
 			finally
 			{
@@ -237,7 +237,7 @@ namespace inspiral
 			}
 			catch(ObjectDisposedException)
 			{
-				Program.Game.LogError($"{clientId} cannot flush, stream has been disposed.");
+				Game.LogError($"{clientId} cannot flush, stream has been disposed.");
 			}
 			outputBufferIndex = 0;
 		}

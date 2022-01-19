@@ -20,7 +20,7 @@ namespace inspiral
 			}
 			if(Location != lastLocation)
 			{
-				Program.Game.Repos.Objects.QueueForUpdate(this);
+				Repositories.Objects.QueueForUpdate(this);
 			}
 			return canMove;
 		}

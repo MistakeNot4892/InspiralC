@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace inspiral
 {
@@ -20,9 +19,14 @@ namespace inspiral
 			ComponentType = typeof(WearableComponent);
 			schemaFields = new List<DatabaseField>()
 			{
+				Field.Id,
 				Field.Parent,
 				Field.WearableSlots
 			};
+		}
+		internal override GameComponent MakeComponent()
+		{
+			return new WearableComponent();
 		}
 	}
 	class WearableComponent : GameComponent 

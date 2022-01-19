@@ -3,9 +3,9 @@ using Newtonsoft.Json;
 
 namespace inspiral
 {
-	internal partial class Repositories
+	internal static partial class Repositories
 	{
-		internal ObjectRepository Objects = new ObjectRepository();
+		internal static ObjectRepository Objects { get { return (ObjectRepository)Repositories.GetRepository<ObjectRepository>(); } }
 	}
 	internal class ObjectRepository : GameRepository
 	{
@@ -16,6 +16,7 @@ namespace inspiral
 			dbPath = "data/objects.sqlite";
 			schemaFields = new List<DatabaseField>() 
 			{ 
+				Field.Id,
 				Field.Name,
 				Field.Gender, 
 				Field.Aliases,
@@ -29,7 +30,7 @@ namespace inspiral
 			base.Initialize();
 			foreach(KeyValuePair<IGameEntity, Dictionary<DatabaseField, object>> loadingEntity in loadingEntities)
 			{
-				var moveToLoc = Program.Game.Repos.Objects.GetById((ulong)loadingEntity.Value[Field.Location]);
+				var moveToLoc = Repositories.Objects.GetById((ulong)loadingEntity.Value[Field.Location]);
 				if(moveToLoc != null)
 				{
 					((GameObject)loadingEntity.Key).Move((GameObject)moveToLoc);

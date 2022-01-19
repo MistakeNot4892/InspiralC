@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace inspiral
 {
-	internal partial class Repositories
+	internal static partial class Repositories
 	{
-		internal TemplateRepository Templates = new TemplateRepository();
+		internal static TemplateRepository Templates { get { return (TemplateRepository)Repositories.GetRepository<TemplateRepository>(); } }
 	}
 	internal class TemplateRepository : GameRepository
 	{
@@ -14,6 +14,7 @@ namespace inspiral
 			dbPath = "data/templates.sqlite";
 			schemaFields = new List<DatabaseField>() 
 			{ 
+				Field.Id,
 				Field.Name,
 				Field.Gender, 
 				Field.Aliases,

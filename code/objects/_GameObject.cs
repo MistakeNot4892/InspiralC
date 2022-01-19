@@ -56,7 +56,7 @@ namespace inspiral
 		{
 			get
 			{ 
-				var loc = Program.Game.Repos.Objects.GetById(GetValue<ulong>(Field.Location));
+				var loc = Repositories.Objects.GetById(GetValue<ulong>(Field.Location));
 				if(loc != null)
 				{
 					return (GameObject)loc;
@@ -126,7 +126,7 @@ namespace inspiral
 			{
 				foreach(ulong compId in componentIds)
 				{
-					var compInstance = Program.Game.Repos.Components.GetById(compId);
+					var compInstance = Repositories.Components.GetById(compId);
 					if(compInstance != null)
 					{
 						Components.Add(compInstance.GetType(), (GameComponent)compInstance);
@@ -156,7 +156,7 @@ namespace inspiral
 		internal GameObject? FindGameObjectNearby(GameObject viewer, string token)
 		{
 			string checkToken = token.ToLower();
-			if(Program.Game.Repos.Objects.SelfReferenceTokens.Contains(checkToken))
+			if(Repositories.Objects.SelfReferenceTokens.Contains(checkToken))
 			{
 				return viewer;
 			}
@@ -217,7 +217,7 @@ namespace inspiral
 				}
 				if(room.exits.ContainsKey(lookingFor))
 				{
-					var otherRoom = Program.Game.Repos.Objects.GetById(room.exits[lookingFor]);
+					var otherRoom = Repositories.Objects.GetById(room.exits[lookingFor]);
 					if(otherRoom != null)
 					{
 						return (GameObject)otherRoom;

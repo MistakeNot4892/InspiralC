@@ -1,66 +1,61 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace inspiral
 {
-	internal partial class Repositories
+	internal static partial class Repositories
 	{
-		internal List<GameRepository> AllRepositories = new List<GameRepository>(); 
-
-		internal void Populate()
+		internal static Dictionary<System.Type, GameRepository> AllRepositories = new Dictionary<System.Type, GameRepository>(); 
+		internal static GameRepository GetRepository<T>()
 		{
-			Program.Game.LogError($"Creating repositories.");
-			foreach(var t in (from domainAssembly in System.AppDomain.CurrentDomain.GetAssemblies()
-				from assemblyType in domainAssembly.GetTypes()
-				where assemblyType.IsSubclassOf(typeof(GameRepository))
-				select assemblyType))
+			return AllRepositories[typeof(T)];
+		}
+		internal static void Populate()
+		{
+			Game.LogError($"Creating repositories.");
+			foreach(GameRepository repo in Game.InstantiateSubclasses<GameRepository>())
 			{
-				var repo = System.Activator.CreateInstance(t);
-				if(repo != null)
-				{
-					AllRepositories.Add((GameRepository)repo);
-				}
+				AllRepositories.Add(repo.GetType(), repo);
 			}
 
-			Program.Game.LogError($"Populating repositories.");
-			foreach(GameRepository repo in AllRepositories)
+			Game.LogError($"Populating repositories.");
+			foreach(KeyValuePair<System.Type, GameRepository> repo in AllRepositories)
 			{
-				Program.Game.LogError($"Populating {repo.repoName}.");
-				repo.Populate();
-				Program.Game.LogError($"Finished initial load of {repo.loadingEntities.Count} record(s) from {repo.repoName}.");
+				Game.LogError($"Populating {repo.Value.repoName}.");
+				repo.Value.Populate();
+				Game.LogError($"Finished initial load of {repo.Value.loadingEntities.Count} record(s) from {repo.Value.repoName}.");
 				Task.Delay(1000);
 			}
 		}
-		internal void Initialize()
+		internal static void Initialize()
 		{
 			// TODO sort repositories by priority value for init ordering
-			Program.Game.LogError($"Initializing repositories.");
-			foreach(GameRepository repo in AllRepositories)
+			Game.LogError($"Initializing repositories.");
+			foreach(KeyValuePair<System.Type, GameRepository> repo in AllRepositories)
 			{
-				Program.Game.LogError($"Initializing {repo.repoName}.");
-				repo.Initialize();
-				Program.Game.LogError($"Finished initialization of {repo.loadingEntities.Count} record(s) from {repo.repoName}.");
+				Game.LogError($"Initializing {repo.Value.repoName}.");
+				repo.Value.Initialize();
+				Game.LogError($"Finished initialization of {repo.Value.loadingEntities.Count} record(s) from {repo.Value.repoName}.");
 				Task.Delay(1000);
 			}
 		}
-		internal void PostInitialize()
+		internal static void PostInitialize()
 		{
-			Program.Game.LogError($"Post-initializing repositories.");
-			foreach(GameRepository repo in AllRepositories)
+			Game.LogError($"Post-initializing repositories.");
+			foreach(KeyValuePair<System.Type, GameRepository> repo in AllRepositories)
 			{
-				Program.Game.LogError($"Post-initializing {repo.repoName}.");
-				repo.PostInitialize();
-				Program.Game.LogError($"Finished post-initialization of {repo.loadingEntities.Count} record(s) from {repo.repoName}.");
+				Game.LogError($"Post-initializing {repo.Value.repoName}.");
+				repo.Value.PostInitialize();
+				Game.LogError($"Finished post-initialization of {repo.Value.loadingEntities.Count} record(s) from {repo.Value.repoName}.");
 				Task.Delay(1000);
 			}
 		}
-		internal void ExitRepos()
+		internal static void ExitRepos()
 		{
-			foreach(GameRepository repo in AllRepositories)
+			foreach(KeyValuePair<System.Type, GameRepository> repo in AllRepositories)
 			{
-				repo.Exit();
+				repo.Value.Exit();
 			}
 		}
 
@@ -88,10 +83,14 @@ namespace inspiral
 
 		internal void QueueForUpdate(IGameEntity obj)
 		{
-			if(!updateQueue.Contains(obj) && Program.Game.InitComplete)
+			if(!updateQueue.Contains(obj) && Game.InitComplete)
 			{
 				updateQueue.Add(obj);
 			}
+		}
+		internal virtual string? GetAdditionalClassInfo(Dictionary<DatabaseField, object> record)
+		{
+			return null;
 		}
 		internal virtual void Populate()
 		{
@@ -99,24 +98,24 @@ namespace inspiral
 			{
 				foreach(Dictionary<DatabaseField, object> record in Database.GetAllRecords(dbPath, $"table_{repoName}", schemaFields))
 				{
-					int? eId = (int)record[Field.Id];
+					ulong? eId = (ulong)record[Field.Id];
 					if(eId == null)
 					{
 						continue;
 					}
-					IGameEntity newEntity = CreateNewInstance((ulong)eId);
+					IGameEntity newEntity = CreateNewInstance((ulong)eId, GetAdditionalClassInfo(record));
 					loadingEntities.Add(newEntity, record);
 				}
 			}
 		}
 		internal virtual void Initialize() 
 		{
-			Program.Game.LogError($"- Initializing {loadingEntities.Count} record(s) in {repoName}.");
+			Game.LogError($"- Initializing {loadingEntities.Count} record(s) in {repoName}.");
 			foreach(KeyValuePair<IGameEntity, Dictionary<DatabaseField, object>> loadingEntity in loadingEntities)
 			{
 				loadingEntity.Key.CopyFromRecord(loadingEntity.Value);
 			}
-			Program.Game.LogError($"- Finished initializing {repoName}.");
+			Game.LogError($"- Finished initializing {repoName}.");
 		}
 		internal virtual void PostInitialize()
 		{
@@ -129,7 +128,7 @@ namespace inspiral
 		}
 		internal void DoPeriodicDatabaseUpdate()
 		{
-			Program.Game.LogError($"- Starting periodic save thread for {repoName}.");
+			Game.LogError($"- Starting periodic save thread for {repoName}.");
 			while(!killUpdateProcess)
 			{
 				if(updateQueue.Count > 0)
@@ -138,7 +137,7 @@ namespace inspiral
 				}
 				Thread.Sleep(5000);
 			}
-			Program.Game.LogError($"- Terminating periodic save thread for {repoName}.");
+			Game.LogError($"- Terminating periodic save thread for {repoName}.");
 		}
 
 		internal IGameEntity? GetById(ulong? id)
@@ -156,19 +155,27 @@ namespace inspiral
 		}
 		internal virtual IGameEntity CreateNewInstance()
 		{
-			return CreateNewInstance(GetUnusedIndex());
+			return CreateNewInstance(GetUnusedIndex(), null);
 		}
 		internal virtual IGameEntity CreateNewInstance(ulong id)
 		{
-			IGameEntity newInstance = CreateRepositoryType();
+			return CreateNewInstance(id, null);
+		}
+		internal virtual IGameEntity CreateNewInstance(string? additionalClassInfo)
+		{
+			return CreateNewInstance(GetUnusedIndex(), additionalClassInfo);
+		}
+		internal virtual IGameEntity CreateNewInstance(ulong id, string? additionalClassInfo)
+		{
+			IGameEntity newInstance = CreateRepositoryType(additionalClassInfo);
 			newInstance.SetValue<ulong>(Field.Id, id);
 			return newInstance;
 		}
 		public virtual void DumpToConsole() 
 		{
-			Program.Game.LogError("Repo dump not implemented for this repo, sorry.");
+			Game.LogError("Repo dump not implemented for this repo, sorry.");
 		}
-		internal virtual IGameEntity CreateRepositoryType() 
+		internal virtual IGameEntity CreateRepositoryType(string? additionalClassInfo)
 		{
 			return new GameObject();
 		}

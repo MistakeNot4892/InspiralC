@@ -1,38 +1,46 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace inspiral
 {
 
 	internal class GameModule
 	{
-		internal static List<GameModule> AllModules = new List<GameModule>();
-		internal GameModule()
-		{
-			AllModules.Add(this);
+		internal virtual void Initialize()
+		{ 
+			Game.LogError($"Initializing module {GetType().ToString()}.");
 		}
-		internal virtual void Initialize() {}
 		internal virtual void PostInitialize() {}
 	}
-	internal partial class Modules
+	internal static partial class Modules
 	{
-		internal void InitializeModules()
+		internal static Dictionary<System.Type, GameModule> AllModules = new Dictionary<System.Type, GameModule>();
+		internal static GameModule GetModule<T>()
 		{
-			Program.Game.LogError($"Initializing modules.");
-			foreach(GameModule module in GameModule.AllModules)
-			{
-				module.Initialize();
-			}
-			Program.Game.LogError($"Done.");
+			return AllModules[typeof(T)];
 		}
-		internal void PostInitializeModules()
+		internal static void InitializeModules()
 		{
-			Program.Game.LogError($"Post-initializing modules.");
-			foreach(GameModule module in GameModule.AllModules)
+
+			Game.LogError($"Instantiating modules.");
+			foreach(GameModule mod in Game.InstantiateSubclasses<GameModule>())
 			{
-				module.PostInitialize();
+				AllModules.Add(mod.GetType(), mod);
 			}
-			Program.Game.LogError($"Done.");
+			Game.LogError($"Initializing modules.");
+			foreach(KeyValuePair<System.Type, GameModule> module in AllModules)
+			{
+				module.Value.Initialize();
+			}
+			Game.LogError($"Done.");
+		}
+		internal static void PostInitializeModules()
+		{
+			Game.LogError($"Post-initializing modules.");
+			foreach(KeyValuePair<System.Type, GameModule> module in AllModules)
+			{
+				module.Value.PostInitialize();
+			}
+			Game.LogError($"Done.");
 		}
 	}
 }

@@ -23,14 +23,14 @@ namespace inspiral
 				return;
 			}
 
-			PlayerAccount? acct = Program.Game.Repos.Accounts.FindAccount(cmd.ObjTarget);
+			PlayerAccount? acct = Repositories.Accounts.FindAccount(cmd.ObjTarget);
 			if(acct == null)
 			{
 				invoker.WriteLine($"Cannot find account for '{cmd.ObjTarget}'.");
 				return;
 			}
 
-			GameRole? role = Program.Game.Mods.Roles.GetRole(cmd.StrArgs[0]);
+			GameRole? role = Modules.Roles.GetRole(cmd.StrArgs[0]);
 			if(role == null)
 			{
 				invoker.WriteLine($"Cannot find role for '{cmd.StrArgs[0]}'.");
@@ -44,7 +44,7 @@ namespace inspiral
 				else
 				{
 					acct.roles.Remove(role);
-					Program.Game.Repos.Accounts.QueueForUpdate(acct);
+					Repositories.Accounts.QueueForUpdate(acct);
 					invoker.WriteLine($"Removed role '{role.name}' from '{acct.GetValue<string>(Field.Name)}'.");
 				}
 			}

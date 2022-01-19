@@ -4,6 +4,9 @@ namespace inspiral
 {
 	internal class GenderObject
 	{
+		internal static Dictionary<string, GenderObject> AllGenders = new Dictionary<string, GenderObject>();
+		internal static List<string> Tokens = new List<string>();
+
         internal string They   = "it";
         internal string Them   = "it";
         internal string Their  = "its";
@@ -11,11 +14,11 @@ namespace inspiral
 		internal string Is     = "is";
         internal string Self   = "self";
         internal string Term   = Text.GenderInanimate;
-		internal GenderObject(GenderModule genderMod)
+		internal GenderObject()
 		{
-			Initialize(genderMod);
+			Initialize();
 		}
-		internal GenderObject(GenderModule genderMod, string _term, string _they, string _them, string _their, string _theirs, string _is, string _self)
+		internal GenderObject(string _term, string _they, string _them, string _their, string _theirs, string _is, string _self)
 		{
 			Term = _term;
 			They = _they;
@@ -24,16 +27,16 @@ namespace inspiral
 			Theirs = _theirs;
 			Is = _is;
 			Self = _self;
-			Initialize(genderMod);
+			Initialize();
 		}
-		internal void Initialize(GenderModule genMod)
+		internal void Initialize()
 		{
-			genMod.AllGenders.Add(Term, this);
+			AllGenders.Add(Term, this);
 			foreach(string token in new System.Collections.Generic.List<string>() {They, Them, Their, Theirs, Is, Self})
 			{
-				if(!genMod.Tokens.Contains(token))
+				if(!Tokens.Contains(token))
 				{
-					genMod.Tokens.Add(token);
+					Tokens.Add(token);
 				}
 			}
 		}

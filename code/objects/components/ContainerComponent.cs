@@ -27,12 +27,18 @@ namespace inspiral
 			ComponentType = typeof(ContainerComponent);
 			schemaFields = new List<DatabaseField>() 
 			{
+				Field.Id,
 				Field.Parent,
 				Field.IsOpen,
 				Field.HasLid,
 				Field.MaxCapacity
 			};
 		}
+		internal override GameComponent MakeComponent()
+		{
+			return new ContainerComponent();
+		}
+
 	}
 	class ContainerComponent : GameComponent {}
 }

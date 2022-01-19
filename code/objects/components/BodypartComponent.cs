@@ -24,12 +24,17 @@ namespace inspiral
 			ComponentType = typeof(BodypartComponent);
 			schemaFields = new List<DatabaseField>()
 			{
+				Field.Id,
 				Field.Parent,
 				Field.CanGrasp,
 				Field.CanStand,
 				Field.NaturalWeapon,
 				Field.EquipmentSlots
 			};
+		}
+		internal override GameComponent MakeComponent()
+		{
+			return new BodypartComponent();
 		}
 	}
 	internal class BodypartComponent : GameComponent 

@@ -36,6 +36,7 @@ namespace inspiral
 			ComponentType = typeof(PhysicsComponent);
 			schemaFields = new List<DatabaseField>() 
 			{ 
+				Field.Id,
 				Field.Parent,
 				Field.Length, 
 				Field.Width, 
@@ -44,6 +45,10 @@ namespace inspiral
 				Field.StrikeArea, 
 				Field.Edged
 			};
+		}
+		internal override GameComponent MakeComponent()
+		{
+			return new PhysicsComponent();
 		}
 	}
 	class PhysicsComponent : GameComponent
@@ -150,7 +155,7 @@ namespace inspiral
 			}
 			else
 			{
-				GenderObject genderObj = Program.Game.Mods.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
+				GenderObject genderObj = Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 				You = Text.Capitalize(genderObj.They);
 				are = genderObj.Is;
 				if(are == "is")

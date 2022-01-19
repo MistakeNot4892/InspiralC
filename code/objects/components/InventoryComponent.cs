@@ -21,9 +21,14 @@ namespace inspiral
 			ComponentType = typeof(InventoryComponent);
 			schemaFields = new List<DatabaseField>()
 			{
+				Field.Id,
 				Field.Parent,
 				Field.EquippedSlots
 			};
+		}
+		internal override GameComponent MakeComponent()
+		{
+			return new InventoryComponent();
 		}
 	}
 	class InventoryComponent : GameComponent
@@ -228,12 +233,12 @@ namespace inspiral
 				}
 				if(success && parent != null)
 				{
-					Program.Game.Repos.Objects.QueueForUpdate(parent);
+					Repositories.Objects.QueueForUpdate(parent);
 					string collectionMessage1p = $"You pick up {equipping.GetShortDesc()}";
 					string collectionMessage3p = $"{Text.Capitalize(parent.GetShortDesc())} picks up {equipping.GetShortDesc()}";
 					if(slot != null && slot != "default")
 					{
-						GenderObject genderObj = Program.Game.Mods.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
+						GenderObject genderObj = Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 						collectionMessage1p = $"{collectionMessage1p} with your {slot}";
 						collectionMessage3p = $"{collectionMessage1p} with {genderObj.Their} {slot}";
 					}
@@ -345,13 +350,13 @@ namespace inspiral
 				carrying.Add(slot, equipping);
 				if(!silent)
 				{
-					GenderObject genderObj = Program.Game.Mods.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
+					GenderObject genderObj = Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 					parent.ShowNearby(parent, 
 						$"You equip {equipping.GetShortDesc()} to your {slot}.",
 						$"{Text.Capitalize(parent.GetShortDesc())} equips {equipping.GetShortDesc()} to {genderObj.Their} {slot}."
 					);
 				}
-				Program.Game.Repos.Objects.QueueForUpdate(parent);
+				Repositories.Objects.QueueForUpdate(parent);
 				return true;
 			}
 			return false; 
@@ -384,12 +389,12 @@ namespace inspiral
 							carrying.Remove(otherSlot);
 						}
 					}
-					GenderObject genderObj = Program.Game.Mods.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
+					GenderObject genderObj = Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 					parent.ShowNearby(parent, 
 						$"You remove {unequipping.GetShortDesc()} from your {removingSlot}.",
 						$"{Text.Capitalize(parent.GetShortDesc())} removes {unequipping.GetShortDesc()} from {genderObj.Their} {removingSlot}."
 					);
-					Program.Game.Repos.Objects.QueueForUpdate(parent);
+					Repositories.Objects.QueueForUpdate(parent);
 				}
 				return true;
 			}

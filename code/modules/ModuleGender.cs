@@ -10,28 +10,21 @@ namespace inspiral
 	{
 		internal const string GenderInanimate = "inanimate";
 	}
-	internal partial class Modules
+	internal static partial class Modules
 	{
-		internal GenderModule Gender = new GenderModule();
+		internal static GenderModule Gender { get { return (GenderModule)GetModule<GenderModule>(); } }
 	}
 	internal class GenderModule : GameModule
 	{
-		public Dictionary<string, GenderObject> AllGenders = new Dictionary<string, GenderObject>();
-		public List<string> Tokens = new List<string>();
-
-		internal GenderObject DefaultGender;
-		internal GenderModule()
-		{
-			DefaultGender = new GenderObject(this);
-		} 
+		internal GenderObject DefaultGender = new GenderObject();
 		internal override void Initialize() 
 		{
-			Program.Game.LogError("Loading gender definitions.");
-			if(Tokens.Contains("it"))
+			Game.LogError("Loading gender definitions.");
+			if(GenderObject.Tokens.Contains("it"))
 			{
-				Tokens.Remove("it");
+				GenderObject.Tokens.Remove("it");
 			}
-			Program.Game.LogError($"Done.");
+			Game.LogError($"Done.");
 		}
 		internal GenderObject GetByTerm(string? term)
 		{
@@ -40,9 +33,9 @@ namespace inspiral
 				return DefaultGender;
 			}
 			term = term.ToLower();
-			if(AllGenders.ContainsKey(term))
+			if(GenderObject.AllGenders.ContainsKey(term))
 			{
-				return AllGenders[term];
+				return GenderObject.AllGenders[term];
 			}
 			return DefaultGender;
 		}

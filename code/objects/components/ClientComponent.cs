@@ -19,9 +19,14 @@ namespace inspiral
 			ComponentType = typeof(ClientComponent);
 			schemaFields = new List<DatabaseField>()
 			{
+				Field.Id,
 				Field.Parent,
 				Field.ClientId
 			};
+		}
+		internal override GameComponent MakeComponent()
+		{
+			return new ClientComponent();
 		}
 	}
 	internal class ClientComponent : GameComponent 

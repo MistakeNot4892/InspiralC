@@ -3,58 +3,54 @@ using System.Linq;
 
 namespace inspiral
 {
-	internal partial class Modules
+	internal static partial class Modules
 	{
-		internal ComponentModule Components = new ComponentModule();
+		internal static ComponentModule Components { get { return (ComponentModule)GetModule<ComponentModule>(); } }
 	}
 	internal partial class ComponentModule : GameModule
 	{
 		private Dictionary<System.Type, List<GameComponent>> allComponents = new Dictionary<System.Type, List<GameComponent>>();
 		internal Dictionary<System.Type, GameComponentBuilder> builders = new Dictionary<System.Type, GameComponentBuilder>();
+		internal Dictionary<string, GameComponentBuilder> buildersByString = new Dictionary<string, GameComponentBuilder>();
 		internal override void Initialize()
 		{
-			Program.Game.LogError($"Initializing component builders.");
-			foreach(var t in (from domainAssembly in System.AppDomain.CurrentDomain.GetAssemblies()
-				from assemblyType in domainAssembly.GetTypes()
-				where assemblyType.IsSubclassOf(typeof(GameComponentBuilder))
-				select assemblyType))
+			Game.LogError($"Initializing component builders.");
+			foreach(GameComponentBuilder gameCompBuild in Game.InstantiateSubclasses<GameComponentBuilder>())
 			{
-				var builder = System.Activator.CreateInstance(t);
-				if(builder != null)
+				if(gameCompBuild.ComponentType != null)
 				{
-					GameComponentBuilder gameCompBuild = (GameComponentBuilder)builder;
-					if(gameCompBuild.ComponentType != null)
-					{
-						builders.Add(gameCompBuild.ComponentType, gameCompBuild);
-						allComponents.Add(gameCompBuild.ComponentType, new List<GameComponent>());
-					}
+					builders.Add(gameCompBuild.ComponentType, gameCompBuild);
+					buildersByString.Add(gameCompBuild.ComponentType.ToString(), gameCompBuild);
+					allComponents.Add(gameCompBuild.ComponentType, new List<GameComponent>());
 				}
 			}
-			Program.Game.LogError($"Done.");
+			Game.LogError($"Done.");
 		}
-
-		internal GameComponent? MakeComponent<T>()
+		internal GameComponent? MakeAndConfigureComponent(GameComponentBuilder builder)
 		{
-			return MakeComponent(typeof(T));
+			GameComponent? newComp = builder.MakeComponent();
+			if(newComp != null)
+			{
+				foreach(DatabaseField field in builder.schemaFields)
+				{
+					newComp.Fields[field] = field.fieldDefault;
+				}
+				newComp.Fields[Field.ComponentType] = newComp.GetType().ToString();
+				allComponents[newComp.GetType()].Add(newComp);
+			}
+			return newComp;
+		}
+		internal GameComponent? MakeComponent(string compType)
+		{
+			return MakeAndConfigureComponent(buildersByString[compType]);
 		}
 		internal GameComponent? MakeComponent(System.Type compType)
 		{
-			GameComponentBuilder builder = builders[compType];
-			if(builder.ComponentType != null)
-			{
-				var returning = System.Activator.CreateInstance(builder.ComponentType);
-				if(returning != null)
-				{
-					GameComponent gameCompMade = (GameComponent)returning;
-					allComponents[compType].Add(gameCompMade);
-					foreach(DatabaseField field in builder.schemaFields)
-					{
-						gameCompMade.Fields[field] = field.fieldDefault;
-					}
-					return gameCompMade;
-				}
-			}
-			return null;
+			return MakeAndConfigureComponent(builders[compType]);
+		}
+		internal GameComponent? MakeComponent<T>()
+		{
+			return MakeAndConfigureComponent(builders[typeof(T)]);
 		}
 		internal List<GameComponent> GetComponents<T>()
 		{

@@ -3,9 +3,9 @@ using Newtonsoft.Json;
 
 namespace inspiral
 {
-	internal partial class Repositories
+	internal static partial class Repositories
 	{
-		internal ComponentRepository Components = new ComponentRepository();
+		internal static ComponentRepository Components { get { return (ComponentRepository)Repositories.GetRepository<ComponentRepository>(); } }
 	}
 	internal class ComponentRepository : GameRepository
 	{
@@ -15,6 +15,7 @@ namespace inspiral
 			dbPath = "data/components.sqlite";
 			schemaFields = new List<DatabaseField>() 
 			{ 
+				Field.Id,
 				Field.Name,
 				Field.Gender, 
 				Field.Aliases,
@@ -26,9 +27,21 @@ namespace inspiral
 		internal override void PostInitialize() 
 		{
 		}
-		internal override IGameEntity CreateRepositoryType() 
+		internal override IGameEntity CreateRepositoryType(string? additionalClassInfo) 
 		{
+			if(additionalClassInfo != null && Modules.Components.buildersByString.ContainsKey(additionalClassInfo))
+			{
+				var newComp = Modules.Components.MakeComponent(additionalClassInfo);
+				if(newComp != null)
+				{
+					return newComp;
+				}
+			}
 			return new GameComponent();
+		}
+		internal override string? GetAdditionalClassInfo(Dictionary<DatabaseField, object> record)
+		{
+			return (string)record[Field.ComponentType];
 		}
 	}
 }

@@ -18,7 +18,7 @@ namespace inspiral
 				return;
 			}
 
-			PlayerAccount? acct = Program.Game.Repos.Accounts.FindAccount(cmd.ObjTarget);
+			PlayerAccount? acct = Repositories.Accounts.FindAccount(cmd.ObjTarget);
 			if(acct == null)
 			{
 				invoker.WriteLine($"Cannot find account for '{cmd.ObjTarget}'.", true);

@@ -4,9 +4,9 @@ using Newtonsoft.Json;
 namespace inspiral
 {
 
-	internal partial class Repositories
+	internal static partial class Repositories
 	{
-		internal AccountRepository Accounts = new AccountRepository();
+		internal static AccountRepository Accounts { get { return (AccountRepository)Repositories.GetRepository<AccountRepository>(); } }
 	}
 	internal static partial class Field
 	{
@@ -31,7 +31,7 @@ namespace inspiral
 		}
 		internal void AddRole(string roleName)
 		{
-			GameRole? role = Program.Game.Mods.Roles.GetRole(roleName);
+			GameRole? role = Modules.Roles.GetRole(roleName);
 			if(role != null)
 			{
 				AddRole(role);
@@ -70,7 +70,7 @@ namespace inspiral
 			{
 				foreach(string roleName in roleNames)
 				{
-					GameRole? role = Program.Game.Mods.Roles.GetRole(roleName);
+					GameRole? role = Modules.Roles.GetRole(roleName);
 					if(role != null)
 					{
 						roles.Add(role);
@@ -97,7 +97,8 @@ namespace inspiral
 		{
 			repoName = "accounts";
 			dbPath = "data/accounts.sqlite";
-			schemaFields = new List<DatabaseField>() { 
+			schemaFields = new List<DatabaseField>()
+			{ 
 				Field.Id, 
 				Field.Name, 
 				Field.PasswordHash, 
@@ -125,11 +126,11 @@ namespace inspiral
 
 				// Create the shell the client will be piloting around, saving data to, etc.
 				string myName = Text.Capitalize(userName);
-				GameObject gameObj = Program.Game.Repos.Objects.CreateFromTemplate(GlobalConfig.DefaultShellTemplate);
+				GameObject gameObj = Repositories.Objects.CreateFromTemplate(GlobalConfig.DefaultShellTemplate);
 				gameObj.SetValue(Field.Gender, GlobalConfig.DefaultPlayerGender);
 				gameObj.SetValue(Field.Aliases, new List<string>() { myName.ToLower() });
 
-				GenderObject genderObj = Program.Game.Mods.Gender.GetByTerm(gameObj.GetValue<string>(Field.Gender));
+				GenderObject genderObj = Modules.Gender.GetByTerm(gameObj.GetValue<string>(Field.Gender));
 				var visComp = gameObj.GetComponent<VisibleComponent>();
 				if(visComp != null)
 				{
@@ -137,7 +138,7 @@ namespace inspiral
 					vis.SetValue<string>(Field.ShortDesc,    $"{gameObj.GetValue<string>(Field.Name)}");
 					vis.SetValue<string>(Field.ExaminedDesc, $"and {genderObj.Is} completely uninteresting.");
 				}
-				Program.Game.Repos.Objects.QueueForUpdate(gameObj);
+				Repositories.Objects.QueueForUpdate(gameObj);
 
 				acct.SetValue<ulong>(Field.ShellId, gameObj.GetValue<ulong>(Field.Id));
 				
@@ -145,7 +146,7 @@ namespace inspiral
 				acct.AddRole("player");
 				if(accounts.Count <= 0)
 				{
-					Program.Game.LogError($"No accounts found, giving admin roles to {userName}.");
+					Game.LogError($"No accounts found, giving admin roles to {userName}.");
 					acct.AddRole("builder"); 
 					acct.AddRole("administrator");
 				}
@@ -157,7 +158,7 @@ namespace inspiral
 			}
 			return null;
 		}
-		internal override IGameEntity CreateRepositoryType() 
+		internal override IGameEntity CreateRepositoryType(string? additionalClassInfo) 
 		{
 			return new PlayerAccount();
 		}

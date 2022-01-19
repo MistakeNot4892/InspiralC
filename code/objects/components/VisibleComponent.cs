@@ -28,11 +28,16 @@ namespace inspiral
 			ComponentType = typeof(VisibleComponent);
 			schemaFields = new List<DatabaseField>()
 			{ 
+				Field.Id,
 				Field.Parent,
 				Field.ShortDesc,
 				Field.RoomDesc,
 				Field.ExaminedDesc
 			};
+		}
+		internal override GameComponent MakeComponent()
+		{
+			return new VisibleComponent();
 		}
 	}
 	internal class VisibleComponent : GameComponent
@@ -55,7 +60,7 @@ namespace inspiral
 				string startingToken;
 				string theyAre;
 				string their;
-				GenderObject genderObj = Program.Game.Mods.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
+				GenderObject genderObj = Modules.Gender.GetByTerm(parent.GetValue<string>(Field.Gender));
 				if(parent == viewer)
 				{
 					startingToken = "You're";
