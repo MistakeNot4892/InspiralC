@@ -29,7 +29,7 @@ namespace inspiral
             DatabaseHandler handler = GetConnection(dbPath);
             handler.UpdateRecord(tableName, entity);
         }
-        internal static void DeleteRecord(string tableName, long recordId)
+        internal static void DeleteRecord(string tableName, int recordId)
         {
         }
         internal static void BatchUpdateRecords(string dbPath, string tableName, List<IGameEntity> updateQueue)

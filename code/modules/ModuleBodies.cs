@@ -55,9 +55,9 @@ namespace inspiral
 		internal bool isVital = false;
 		internal bool isNaturalWeapon = false;
 		internal bool isEdged = false;
-		internal long length = 10;
-		internal long width = 10;
-		internal long height = 10;
+		internal int length = 10;
+		internal int width = 10;
+		internal int height = 10;
 		internal double strikeArea = 10;
 		internal List<string> equipmentSlots = new List<string>();
 		internal List<System.Tuple<string, string>> attackStrings = new List<System.Tuple<string, string>>();

@@ -24,9 +24,8 @@ namespace inspiral
 		{
 			Dictionary<string, List<string>> summary = new Dictionary<string, List<string>>();
 			GenderObject genderObj = Program.Game.Mods.Gender.GetByTerm(GetValue<string>(Field.Gender));
-			string fieldKey = $"Object summary for {GetValue<string>(Field.Name)} (#{GetValue<long>(Field.Id)})";
+			string fieldKey = $"Object summary for {GetValue<string>(Field.Name)} (#{GetValue<ulong>(Field.Id)})";
 			summary.Add(fieldKey, new List<string>());
-			List<string>? aliases = GetValue<List<string>>(Field.Aliases);
 			if(aliases != null)
 			{
 				summary[fieldKey].Add($"aliases:  {Text.EnglishList(aliases)}");
@@ -35,7 +34,7 @@ namespace inspiral
 
 			if(Location != null)
 			{
-				summary[fieldKey].Add($"location (read-only): {Location.GetShortDesc()} (#{Location.GetValue<long>(Field.Id)})");
+				summary[fieldKey].Add($"location (read-only): {Location.GetShortDesc()} (#{Location.GetValue<ulong>(Field.Id)})");
 			}
 			else
 			{

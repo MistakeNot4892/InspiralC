@@ -95,15 +95,11 @@ namespace inspiral
 					{
 						strikers.Add(limb.Key);
 					}
-					List<string>? slots = bp.GetValue<List<string>>(Field.EquipmentSlots);
-					if(slots != null)
+					foreach(string slot in bp.equipmentSlots)
 					{
-						foreach(string slot in slots)
+						if(!equipmentSlots.Contains(slot))
 						{
-							if(!equipmentSlots.Contains(slot))
-							{
-								equipmentSlots.Add(slot);
-							}
+							equipmentSlots.Add(slot);
 						}
 					}
 				}

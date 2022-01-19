@@ -18,10 +18,26 @@ namespace inspiral
 			typeof(string), false, false);
 		internal static DatabaseField ShellId = new DatabaseField(
 			"shellid", 0,
-			typeof(long), false, false);
+			typeof(int), false, false);
 	}
 	internal class PlayerAccount : IGameEntity
 	{
+		internal void AddRole(GameRole role)
+		{
+			if(!roles.Contains(role))
+			{
+				roles.Add(role);
+			}
+		}
+		internal void AddRole(string roleName)
+		{
+			GameRole? role = Program.Game.Mods.Roles.GetRole(roleName);
+			if(role != null)
+			{
+				AddRole(role);
+			}
+		}
+		internal List<GameRole> roles = new List<GameRole>();
 		internal Dictionary<DatabaseField, object> fields = new Dictionary<DatabaseField, object>()
 		{
 			{ Field.Id,           Field.Id.fieldDefault },
@@ -44,63 +60,40 @@ namespace inspiral
 		}
 		public void CopyFromRecord(Dictionary<DatabaseField, object> record) 
 		{
-			if(record.ContainsKey(Field.Roles))
+			fields = record;
+			BuildReferenceLists();
+		}
+		internal void BuildReferenceLists()
+		{
+			List<string>? roleNames = JsonConvert.DeserializeObject<List<string>>((string)fields[Field.Roles]);
+			if(roleNames != null)
 			{
-				List<GameRole> loadRoles = new List<GameRole>(); 
-				List<string>? roleNames = JsonConvert.DeserializeObject<List<string>>((string)record[Field.Roles]);
-				if(roleNames != null)
+				foreach(string roleName in roleNames)
 				{
-					foreach(string roleName in roleNames)
+					GameRole? role = Program.Game.Mods.Roles.GetRole(roleName);
+					if(role != null)
 					{
-						GameRole? role = Program.Game.Mods.Roles.GetRole(roleName);
-						if(role != null)
-						{
-							loadRoles.Add(role);
-						}
+						roles.Add(role);
 					}
 				}
-				fields[Field.Roles] = loadRoles;
-				record.Remove(Field.Roles);
-			}
-			foreach(KeyValuePair<DatabaseField, object> field in record)
-			{
-				fields[field.Key] = field.Value;
 			}
 		}
 		public Dictionary<DatabaseField, object> GetSaveData()
 		{
-			Dictionary<DatabaseField, object> saveData = new Dictionary<DatabaseField, object>();
-			foreach(KeyValuePair<DatabaseField, object> field in fields)
+			List<string> roleNames = new List<string>();
+			foreach(GameRole role in roles)
 			{
-				if(field.Key == Field.Roles)
-				{
-					List<string> roleNames = new List<string>();
-					foreach(GameRole role in (List<GameRole>)field.Value)
-					{
-						roleNames.Add(role.name);
-					}
-					if(roleNames.Count > 0)
-					{
-						saveData.Add(field.Key, JsonConvert.SerializeObject(roleNames));
-					}
-					else
-					{
-						saveData.Add(field.Key, "[]");
-					}
-				}
-				else
-				{
-					saveData.Add(field.Key, field.Value);
-				};
+				roleNames.Add(role.name);
 			}
-			return saveData;
+			fields[Field.Roles] = JsonConvert.SerializeObject(roleNames);
+			return fields;
 		}
 
 	}
 	internal class AccountRepository : GameRepository
 	{
 		private Dictionary<string, PlayerAccount> accounts = new Dictionary<string, PlayerAccount>();
-		internal override bool  Instantiate()
+		public AccountRepository()
 		{
 			repoName = "accounts";
 			dbPath = "data/accounts.sqlite";
@@ -111,7 +104,6 @@ namespace inspiral
 				Field.Roles, 
 				Field.ShellId
 			};
-			return true;
 		}
 		internal PlayerAccount? GetAccountByUser(string user)
 		{
@@ -147,30 +139,15 @@ namespace inspiral
 				}
 				Program.Game.Repos.Objects.QueueForUpdate(gameObj);
 
-				acct.SetValue<long>(Field.ShellId, gameObj.GetValue<long>(Field.Id));
+				acct.SetValue<ulong>(Field.ShellId, gameObj.GetValue<ulong>(Field.Id));
 				
 				// If the account DB is empty, give them admin roles.
-				List<GameRole> acctRoles = new List<GameRole>();
-				GameRole? role = Program.Game.Mods.Roles.GetRole("player");
-				if(role != null)
-				{
-					acctRoles.Add(role);
-				}
+				acct.AddRole("player");
 				if(accounts.Count <= 0)
 				{
 					Program.Game.LogError($"No accounts found, giving admin roles to {userName}.");
-					
-					role = Program.Game.Mods.Roles.GetRole("builder"); 
-					if(role != null)
-					{
-						acctRoles.Add(role);
-					}
-					role = Program.Game.Mods.Roles.GetRole("administrator");
-					if(role != null)
-					{
-						acctRoles.Add(role);
-					}
-					acct.SetValue<List<GameRole>>(Field.Roles, acctRoles);
+					acct.AddRole("builder"); 
+					acct.AddRole("administrator");
 				}
 
 				// Finalize everything.
@@ -191,7 +168,7 @@ namespace inspiral
 			{
 				string? myName = account.Value.GetValue<string>(Field.Name);
 				if(myName != null && (myName.ToLower() == searchstring ||
-					$"{account.Value.GetValue<long>(Field.Id)}" == searchstring))
+					$"{account.Value.GetValue<ulong>(Field.Id)}" == searchstring))
 				{
 					return account.Value;
 				}

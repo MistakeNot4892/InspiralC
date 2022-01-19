@@ -108,7 +108,7 @@ namespace inspiral
 		}
 		internal void Probed(GameObject invoker)
 		{
-			string reply = $"{GetShortDesc()} ({GetValue<string>(Field.Name)}#{GetValue<long>(Field.Id)})";
+			string reply = $"{GetShortDesc()} ({GetValue<string>(Field.Name)}#{GetValue<ulong>(Field.Id)})";
 			reply += "\nContents:";
 			if(Contents.Count > 0)
 			{
@@ -141,11 +141,11 @@ namespace inspiral
 						{
 							if(equip.GetWieldableSlots().Contains(equ.Key))
 							{
-								result.Add($"{equ.Value.GetShortDesc()} ({equ.Value.GetValue<string>(Field.Name)}#{equ.Value.GetValue<long>(Field.Id)}) ({equ.Key}, wielded)");
+								result.Add($"{equ.Value.GetShortDesc()} ({equ.Value.GetValue<string>(Field.Name)}#{equ.Value.GetValue<ulong>(Field.Id)}) ({equ.Key}, wielded)");
 							}
 							else
 							{
-								result.Add($"{equ.Value.GetShortDesc()} ({equ.Value.GetValue<string>(Field.Name)}#{equ.Value.GetValue<long>(Field.Id)}) ({equ.Key}, worn)");
+								result.Add($"{equ.Value.GetShortDesc()} ({equ.Value.GetValue<string>(Field.Name)}#{equ.Value.GetValue<ulong>(Field.Id)}) ({equ.Key}, worn)");
 							}
 						}
 						else
@@ -168,7 +168,7 @@ namespace inspiral
 				{
 					if(quickView)
 					{
-						result.Add($"{gameObj.GetShortDesc()} ({gameObj.GetValue<string>(Field.Name)}#{gameObj.GetValue<long>(Field.Id)})");
+						result.Add($"{gameObj.GetShortDesc()} ({gameObj.GetValue<string>(Field.Name)}#{gameObj.GetValue<ulong>(Field.Id)})");
 					}
 					else
 					{

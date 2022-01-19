@@ -22,13 +22,9 @@ namespace inspiral
 				PlayerAccount? account = invoker.GetAccount();
 				if(account != null)
 				{
-					List<GameRole>? roles = account.GetValue<List<GameRole>>(Field.Roles);
-					if(roles != null)
+					foreach(GameRole role in account.roles)
 					{
-						foreach(GameRole role in roles)
-						{
-							invoker.WriteLine(role.GetHelp());
-						}
+						invoker.WriteLine(role.GetHelp());
 					}
 				}
 				invoker.WriteLine("\nEnd of command list.");

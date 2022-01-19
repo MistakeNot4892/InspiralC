@@ -49,10 +49,10 @@ namespace inspiral
 	}
 	class PhysicsComponent : GameComponent
 	{
-		internal long length = 10;         // cm
-		internal long width = 10;          // cm
-		internal long height = 10;         // cm
-		internal long volume = 1;          // cm^3
+		internal int length = 10;         // cm
+		internal int width = 10;          // cm
+		internal int height = 10;         // cm
+		internal int volume = 1;          // cm^3
 		internal double density = 1.0;     // multiplier for mass to weight calc.
 		internal double mass = 1.0;        // kg
 		internal double surfaceArea = 1.0; // cm^2
@@ -88,7 +88,7 @@ namespace inspiral
 			}
 			else if(mass < 1.0)
 			{
-				return $"{(long)(mass * 1000)} grams";
+				return $"{(int)(mass * 1000)} grams";
 			}
 			else if(mass == 1.0)
 			{
@@ -108,7 +108,7 @@ namespace inspiral
 			}
 		}
 
-		private string FormatCentimetersForDisplay(long cm)
+		private string FormatCentimetersForDisplay(int cm)
 		{
 			if(cm < 100)
 			{

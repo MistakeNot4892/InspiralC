@@ -45,7 +45,7 @@ namespace inspiral
                     }
                     else
                     {
-                        long longVal = (long)fieldVal;
+                        int longVal = (int)fieldVal;
                         fields.Add(field, longVal);
                     }
                 }
@@ -57,11 +57,11 @@ namespace inspiral
     {
         private static Dictionary<System.Type, string> fieldTypes = new Dictionary<System.Type, string>()
         {
-            { typeof(string),                   "TEXT"    },
-            { typeof(int),                      "INTEGER" },
-            { typeof(long),                     "INTEGER" },
-            { typeof(bool),                     "INTEGER" },
-            { typeof(double),                   "DOUBLE"  }
+            { typeof(ulong),  "UNSIGNED BIG INT" },
+            { typeof(string), "TEXT"    },
+            { typeof(int),    "INTEGER" },
+            { typeof(bool),   "INTEGER" },
+            { typeof(double), "DOUBLE"  }
         };
         private string GetFieldTypeString(System.Type fieldType)
         {
@@ -81,7 +81,7 @@ namespace inspiral
         {
             using(SQLiteCommand command = new SQLiteCommand($"INSERT INTO {tableName} ( id ) VALUES ( @id );", connection))
             {
-                command.Parameters.AddWithValue("@id", entity.GetValue<long>(Field.Id));
+                command.Parameters.AddWithValue("@id", entity.GetValue<ulong>(Field.Id));
                 command.ExecuteNonQuery();
                 UpdateRecord(tableName, entity);
             }
@@ -113,7 +113,7 @@ namespace inspiral
                 {
                     if(field == Field.Id)
                     {
-                        tableFieldString = "id INTEGER PRIMARY KEY UNIQUE";
+                        tableFieldString = "id UNSIGNED BIG INT PRIMARY KEY UNIQUE";
                     }
                     else if(field.fieldType == typeof(string))
                     {

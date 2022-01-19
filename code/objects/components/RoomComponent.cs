@@ -33,7 +33,7 @@ namespace inspiral
 
 	internal class RoomComponent : GameComponent
 	{
-		internal Dictionary<string, long> exits = new Dictionary<string, long>();
+		internal Dictionary<string, ulong> exits = new Dictionary<string, ulong>();
 		internal string GetExitString()
 		{
 			if(exits.Count <= 0)
@@ -42,7 +42,7 @@ namespace inspiral
 			}
 			else if(exits.Count == 1)
 			{
-				KeyValuePair<string, long> exit = exits.ElementAt(0);
+				KeyValuePair<string, ulong> exit = exits.ElementAt(0);
 				return $"You can see a single exit leading {exit.Key}.";
 			}
 			else

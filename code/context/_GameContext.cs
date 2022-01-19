@@ -16,19 +16,15 @@ namespace inspiral
 			{
 				return false;
 			}
-			List<GameRole>? roles = invoker.account.GetValue<List<GameRole>>(Field.Roles);
-			if(roles != null)
+			foreach(GameRole role in invoker.account.roles)
 			{
-				foreach(GameRole role in roles)
+				if(role.AllCommands.ContainsKey(cmdStr))
 				{
-					if(role.AllCommands.ContainsKey(cmdStr))
-					{
-						GameCommand cmd = role.AllCommands[cmdStr];
-						CommandData cmdData = new CommandData(cmd, cmdStr, arguments);
-						cmd.InvokeCommand(invoker.shell, cmdData);
-						invoker.SendPrompt();
-						return true;
-					}
+					GameCommand cmd = role.AllCommands[cmdStr];
+					CommandData cmdData = new CommandData(cmd, cmdStr, arguments);
+					cmd.InvokeCommand(invoker.shell, cmdData);
+					invoker.SendPrompt();
+					return true;
 				}
 			}
 			return false;

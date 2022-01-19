@@ -81,22 +81,22 @@ namespace inspiral
 
 			if(unknownValue)
 			{
-				invoker.WriteLine($"Unknown field '{field}' of object {editing.GetValue<string>(Field.Name)}#{editing.GetValue<long>(Field.Id)} ({editing.GetShortDesc()}). Check that the object has the component and field that you are trying to edit.");
+				invoker.WriteLine($"Unknown field '{field}' of object {editing.GetValue<string>(Field.Name)}#{editing.GetValue<ulong>(Field.Id)} ({editing.GetShortDesc()}). Check that the object has the component and field that you are trying to edit.");
 			}
 			else if(invalidValue != null)
 			{
 				if(invalidValue != "")
 				{
-					invoker.WriteLine($"Invalid value '{value}' for field '{field}' of object {editing.GetValue<string>(Field.Name)}#{editing.GetValue<long>(Field.Id)} ({editing.GetShortDesc()}). {invalidValue}");
+					invoker.WriteLine($"Invalid value '{value}' for field '{field}' of object {editing.GetValue<string>(Field.Name)}#{editing.GetValue<ulong>(Field.Id)} ({editing.GetShortDesc()}). {invalidValue}");
 				}
 				else
 				{
-					invoker.WriteLine($"Invalid value '{value}' for field '{field}' of object {editing.GetValue<string>(Field.Name)}#{editing.GetValue<long>(Field.Id)} ({editing.GetShortDesc()}).");
+					invoker.WriteLine($"Invalid value '{value}' for field '{field}' of object {editing.GetValue<string>(Field.Name)}#{editing.GetValue<ulong>(Field.Id)} ({editing.GetShortDesc()}).");
 				}
 			}
 			else
 			{
-				invoker.WriteLine($"Set field '{field}' of object {editing.GetValue<string>(Field.Name)}#{editing.GetValue<long>(Field.Id)} ({editing.GetShortDesc()}) to '{newVal}'.\nFor reference, previous value was '{lastVal}'.");
+				invoker.WriteLine($"Set field '{field}' of object {editing.GetValue<string>(Field.Name)}#{editing.GetValue<ulong>(Field.Id)} ({editing.GetShortDesc()}) to '{newVal}'.\nFor reference, previous value was '{lastVal}'.");
 			}
 		}
 	}

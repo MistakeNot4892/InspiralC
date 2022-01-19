@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace inspiral
 {
@@ -6,9 +7,9 @@ namespace inspiral
 	{
 		internal static DatabaseField Id = new DatabaseField(
 			"id", 0,
-			typeof(long), true, false);
+			typeof(int), true, false);
 		internal static DatabaseField Name = new DatabaseField(
-			"name", "object",
+			"name", "unkn",
 			typeof(string), true, true);
 		internal static DatabaseField Gender = new DatabaseField(
 			"gender", Text.GenderInanimate,
@@ -24,11 +25,12 @@ namespace inspiral
 			typeof(int), true, true);
 		internal static DatabaseField Location = new DatabaseField(
 			"location", 0,
-			typeof(long), true, false);
+			typeof(int), true, false);
 	}
 
 	internal partial class GameObject : IGameEntity
 	{
+		internal List<string> aliases = new List<string>();
 		private Dictionary<DatabaseField, object> _fields = new Dictionary<DatabaseField, object>()
 		{
 			{ Field.Id,         Field.Id.fieldDefault },
@@ -54,7 +56,7 @@ namespace inspiral
 		{
 			get
 			{ 
-				var loc = Program.Game.Repos.Objects.GetById(GetValue<long>(Field.Location));
+				var loc = Program.Game.Repos.Objects.GetById(GetValue<ulong>(Field.Location));
 				if(loc != null)
 				{
 					return (GameObject)loc;
@@ -65,7 +67,7 @@ namespace inspiral
 			{ 
 				if(value != null)
 				{
-					SetValue<long>(Field.Location, (long)value.GetValue<long>(Field.Id));
+					SetValue<int>(Field.Location, (int)value.GetValue<ulong>(Field.Id));
 				}
 			}
 		}
@@ -113,77 +115,39 @@ namespace inspiral
 		}
 		public void CopyFromRecord(Dictionary<DatabaseField, object> record) 
 		{
-			foreach(DatabaseField field in Fields.Keys)
+			Fields = record;
+			List<string>? aliasStrings = JsonConvert.DeserializeObject<List<string>>((string)Fields[Field.Aliases]);
+			if(aliasStrings != null)
 			{
-				object? newVal = null;
-				if(field == Field.Aliases)
+				aliases = aliasStrings;
+			}
+			List<ulong>? componentIds = JsonConvert.DeserializeObject<List<ulong>>((string)Fields[Field.Components]);
+			if(componentIds != null)
+			{
+				foreach(ulong compId in componentIds)
 				{
-					newVal = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>((string)record[field]);
-				}
-				else if(field == Field.Components)
-				{
-					List<long>? components = Newtonsoft.Json.JsonConvert.DeserializeObject<List<long>>((string)record[field]);
-					if(components != null)
+					var compInstance = Program.Game.Repos.Components.GetById(compId);
+					if(compInstance != null)
 					{
-						Dictionary<System.Type, GameComponent> foundComps = new Dictionary<System.Type, GameComponent>();
-						foreach(long compId in components)
-						{
-							var findComp = Program.Game.Repos.Components.GetById(compId);
-							if(findComp != null)
-							{
-								GameComponent compInstance = (GameComponent)findComp;
-								foundComps.Add(compInstance.GetType(), compInstance);
-							}
-						}
+						Components.Add(compInstance.GetType(), (GameComponent)compInstance);
 					}
-				}
-				if(newVal != null)
-				{
-					Fields[field] = newVal; 
 				}
 			}
 		}
 		public Dictionary<DatabaseField, object> GetSaveData()
 		{
-			Dictionary<DatabaseField, object> record = new Dictionary<DatabaseField, object>();
-			foreach(DatabaseField field in Fields.Keys)
+			Fields[Field.Aliases] = JsonConvert.SerializeObject(aliases);
+			List<ulong> componentIds = new List<ulong>();
+			foreach(GameComponent comp in Components.Values)
 			{
-				object? saveVal = null;
-				if(field == Field.Aliases)
+				ulong compId = comp.GetValue<ulong>(Field.Id);
+				if(compId > 0)
 				{
-					saveVal = Newtonsoft.Json.JsonConvert.SerializeObject(Fields[Field.Aliases]);
-				}
-				else if(field == Field.Components)
-				{
-					Dictionary<System.Type, GameComponent>? components = GetValue<Dictionary<System.Type, GameComponent>>(Field.Components);
-					List<long> compIds = new List<long>();
-					if(components != null)
-					{
-						foreach(KeyValuePair<System.Type, GameComponent> compRecord in components)
-						{
-							long compId = compRecord.Value.GetValue<long>(Field.Id);
-							compIds.Add(compId);
-						}
-						if(compIds.Count > 0)
-						{
-							saveVal = Newtonsoft.Json.JsonConvert.SerializeObject(compIds);
-						}
-						else
-						{
-							saveVal = "[]";
-						}
-					}
-				}
-				else
-				{
-					saveVal = Fields[field];
-				}
-				if(saveVal != null)
-				{
-					record[field] = saveVal; 
+					componentIds.Add(compId);
 				}
 			}
-			return record;
+			Fields[Field.Components] = JsonConvert.SerializeObject(componentIds);
+			return Fields;
 		}
 		internal GameObject? FindGameObjectNearby(string token)
 		{
@@ -199,7 +163,7 @@ namespace inspiral
 			GameObject? location = Location;
 			if(location != null)
 			{
-				if(checkToken == "here" || checkToken == "room" || $"{location.GetValue<long>(Field.Id)}" == checkToken)
+				if(checkToken == "here" || checkToken == "room" || $"{location.GetValue<ulong>(Field.Id)}" == checkToken)
 				{
 					return location;
 				}
@@ -209,8 +173,7 @@ namespace inspiral
 				{
 					return location;
 				}
-				List<string>? checkingTokens = location.GetValue<List<string>>(Field.Aliases);
-				if(checkingTokens != null && checkingTokens.Contains(checkToken))
+				if(location.aliases.Contains(checkToken))
 				{
 					return location;
 				}
@@ -228,7 +191,7 @@ namespace inspiral
 			string checkToken = token.ToLower();
 			foreach(GameObject gameObj in Contents)
 			{
-				if($"{gameObj.GetValue<long>(Field.Id)}" == checkToken || $"{gameObj.GetValue<string>(Field.Name)}#{gameObj.GetValue<long>(Field.Id)}" == checkToken)
+				if($"{gameObj.GetValue<ulong>(Field.Id)}" == checkToken || $"{gameObj.GetValue<string>(Field.Name)}#{gameObj.GetValue<ulong>(Field.Id)}" == checkToken)
 				{
 					return gameObj;
 				}
@@ -238,8 +201,7 @@ namespace inspiral
 				{
 					return gameObj;
 				}
-				List<string>? checkingTokens = gameObj.GetValue<List<string>>(Field.Aliases);
-				if(checkingTokens != null && checkingTokens.Contains(checkToken))
+				if(gameObj.aliases.Contains(checkToken))
 				{
 					return gameObj;
 				}

@@ -40,13 +40,9 @@ namespace inspiral
 				}
 			}
 
-			List<GameRole>? roles = acct.GetValue<List<GameRole>>(Field.Roles);
-			if(roles != null)
+			foreach(GameRole role in acct.roles)
 			{
-				foreach(GameRole role in roles)
-				{
-					roleDetails[header].Add(Text.FormatPopup(invoker, role.name, role.GetSummary(), wrap + Text.NestedWrapwidthModifier));
-				}
+				roleDetails[header].Add(Text.FormatPopup(invoker, role.name, role.GetSummary(), wrap + Text.NestedWrapwidthModifier));
 			}
 			invoker.WriteLine(Text.FormatBlock(invoker, roleDetails, wrap), true);
 		}

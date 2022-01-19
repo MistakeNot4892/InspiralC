@@ -24,7 +24,7 @@ namespace inspiral
 					if(prop != null && invoker.Location != null)
 					{
 						prop.Move(invoker.Location);
-						invoker.WriteLine($"Created {prop.GetShortDesc()} ({prop.GetValue<string>(Field.Name)}#{prop.GetValue<long>(Field.Id)}).");
+						invoker.WriteLine($"Created {prop.GetShortDesc()} ({prop.GetValue<string>(Field.Name)}#{prop.GetValue<ulong>(Field.Id)}).");
 						msgSent = true;
 					}
 				}

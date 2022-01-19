@@ -37,19 +37,13 @@ namespace inspiral
 			}
 			else 
 			{
-				List<GameRole>? roles = acct.GetValue<List<GameRole>>(Field.Roles);
-				if(roles == null)
-				{
-					roles = new List<GameRole>();
-					acct.SetValue<List<GameRole>>(Field.Roles, roles);
-				}
-				if(roles.Contains(role))
+				if(acct.roles.Contains(role))
 				{
 					invoker.WriteLine($"They already have that role.");
 				}
 				else
 				{
-					roles.Add(role);
+					acct.AddRole(role);
 					Program.Game.Repos.Accounts.QueueForUpdate(acct);
 					invoker.WriteLine($"Added role '{role.name}' to '{acct.GetValue<string>(Field.Name)}'.");
 				}

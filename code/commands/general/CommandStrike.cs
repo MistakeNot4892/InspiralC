@@ -41,14 +41,14 @@ namespace inspiral
 					{
 						if(inv.carrying.ContainsKey(slot))
 						{
-							usingItem = $"{inv.carrying[slot].GetValue<long>(Field.Id)}";
+							usingItem = $"{inv.carrying[slot].GetValue<ulong>(Field.Id)}";
 							break;
 						}
 					}
 				}
 				else if(inv.GetWieldableSlots().Contains(usingItem) && inv.carrying.ContainsKey(usingItem))
 				{
-					usingItem = $"{inv.carrying[usingItem].GetValue<long>(Field.Id)}";
+					usingItem = $"{inv.carrying[usingItem].GetValue<ulong>(Field.Id)}";
 				}
 			}
 

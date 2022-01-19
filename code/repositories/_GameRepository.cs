@@ -20,11 +20,7 @@ namespace inspiral
 				var repo = System.Activator.CreateInstance(t);
 				if(repo != null)
 				{
-					GameRepository repoInstance = (GameRepository)repo;
-					if(repoInstance.Instantiate())
-					{
-						AllRepositories.Add(repoInstance);
-					}
+					AllRepositories.Add((GameRepository)repo);
 				}
 			}
 
@@ -76,14 +72,11 @@ namespace inspiral
 		internal string dbPath = "data/gamedata.sqlite";
 		internal List<DatabaseField>? schemaFields;
 		internal Dictionary<IGameEntity, Dictionary<DatabaseField, object>> loadingEntities = new Dictionary<IGameEntity, Dictionary<DatabaseField, object>>();
-		internal Dictionary<long, IGameEntity> records = new Dictionary<long, IGameEntity>();
+		internal Dictionary<ulong, IGameEntity> records = new Dictionary<ulong, IGameEntity>();
 		private List<IGameEntity> updateQueue = new List<IGameEntity>();
 		private bool killUpdateProcess = false;
-		internal virtual bool Instantiate()
-		{
-			return false;
-		}
 
+		public GameRepository() { }
 		internal void QueueForUpdate(GameComponent comp)
 		{
 			var parent = comp.GetParent();
@@ -106,12 +99,12 @@ namespace inspiral
 			{
 				foreach(Dictionary<DatabaseField, object> record in Database.GetAllRecords(dbPath, $"table_{repoName}", schemaFields))
 				{
-					long? eId = (long)record[Field.Id];
+					int? eId = (int)record[Field.Id];
 					if(eId == null)
 					{
 						continue;
 					}
-					IGameEntity newEntity = CreateNewInstance((long)eId);
+					IGameEntity newEntity = CreateNewInstance((ulong)eId);
 					loadingEntities.Add(newEntity, record);
 				}
 			}
@@ -148,27 +141,27 @@ namespace inspiral
 			Program.Game.LogError($"- Terminating periodic save thread for {repoName}.");
 		}
 
-		internal IGameEntity? GetById(long? id)
+		internal IGameEntity? GetById(ulong? id)
 		{
-			if(id != null && records.ContainsKey((long)id))
+			if(id != null && records.ContainsKey((ulong)id))
 			{
-				return records[(long)id];
+				return records[(ulong)id];
 			}
 			return null;
 		}
-		internal long GetUnusedIndex()
+		internal ulong GetUnusedIndex()
 		{
 			// TODO scrape for unused indices
-			return (long)records.Count+1;
+			return (ulong)records.Count+1;
 		}
 		internal virtual IGameEntity CreateNewInstance()
 		{
 			return CreateNewInstance(GetUnusedIndex());
 		}
-		internal virtual IGameEntity CreateNewInstance(long id)
+		internal virtual IGameEntity CreateNewInstance(ulong id)
 		{
 			IGameEntity newInstance = CreateRepositoryType();
-			newInstance.SetValue<long>(Field.Id, id);
+			newInstance.SetValue<ulong>(Field.Id, id);
 			return newInstance;
 		}
 		public virtual void DumpToConsole() 

@@ -35,26 +35,24 @@ namespace inspiral
 		{
 			commands.Add(command.GetType(), command);
 		}
-		internal GameCommand? GetCommand(System.Type cmdType)
+		internal GameCommand GetCommand(System.Type? cmdType)
 		{
-			if(commands.ContainsKey(cmdType))
+			if(cmdType != null && commands.ContainsKey(cmdType))
 			{
 				return commands[cmdType];
 			}
-			return null;
-
+			return new GameCommand();
 		}
-		internal GameCommand? GetCommand(string cmdClass)
+		internal GameCommand GetCommand(string cmdClass)
 		{
 			System.Type? cmdType = System.Type.GetType(cmdClass);
 			if(cmdType == null)
 			{
 				Program.Game.LogError($"Could not determine a valid command type from '{cmdClass}'.");
-				return null;
 			}
 			return GetCommand(cmdType);
 		}
-		internal GameCommand? GetCommand<T>()
+		internal GameCommand GetCommand<T>()
 		{
 			return GetCommand(typeof(T));
 		}

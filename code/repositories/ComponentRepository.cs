@@ -9,7 +9,7 @@ namespace inspiral
 	}
 	internal class ComponentRepository : GameRepository
 	{
-		internal override bool Instantiate()
+		public ComponentRepository()
 		{
 			repoName = "components";
 			dbPath = "data/components.sqlite";
@@ -22,7 +22,6 @@ namespace inspiral
 				Field.Flags,
 				Field.Location
 			};
-			return true;
 		}
 		internal override void PostInitialize() 
 		{

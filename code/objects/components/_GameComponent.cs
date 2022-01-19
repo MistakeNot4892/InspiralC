@@ -7,7 +7,7 @@ namespace inspiral
 	{
 		internal static DatabaseField Parent = new DatabaseField(
 			"parent", 0,
-			typeof(long), true, false);
+			typeof(int), true, false);
 	}
 	internal class GameComponentBuilder
 	{
@@ -53,7 +53,7 @@ namespace inspiral
 		internal virtual void FinalizeObjectLoad() {}
 		internal virtual void Added(GameObject addedTo)
 		{
-			SetValue<long>(Field.Parent, addedTo.GetValue<long>(Field.Id));
+			SetValue<ulong>(Field.Parent, addedTo.GetValue<ulong>(Field.Id));
 			if(isPersistent)
 			{
 				Program.Game.Repos.Objects.QueueForUpdate(addedTo);
@@ -63,7 +63,7 @@ namespace inspiral
 		{
 			if(takenFrom == GetParent())
 			{
-				SetValue<long>(Field.Parent, 0);
+				SetValue<int>(Field.Parent, 0);
 			}
 			if(isPersistent)
 			{
@@ -83,11 +83,11 @@ namespace inspiral
 					if(Program.Game.Mods.Components.builders[myType].editableFields != null && 
 						Program.Game.Mods.Components.builders[myType].editableFields.Contains(field))
 					{
-						result = $"{result}\n{field}: {GetValue<string>(field)}";
+						result = $"{result}\n{field.fieldName}: {GetValue<string>(field)}";
 					}
 					else
 					{
-						result = $"{result}\n{field} (read-only): {GetValue<string>(field)}";
+						result = $"{result}\n{field.fieldName} (read-only): {GetValue<string>(field)}";
 					}
 				}
 				return result;
@@ -138,7 +138,7 @@ namespace inspiral
 		}
 		internal GameObject? GetParent()
 		{
-			var parent = Program.Game.Repos.Objects.GetById(GetValue<long>(Field.Parent));
+			var parent = Program.Game.Repos.Objects.GetById(GetValue<ulong>(Field.Parent));
 			if(parent != null)
 			{
 				return (GameObject)parent;

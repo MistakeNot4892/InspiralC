@@ -10,7 +10,7 @@ namespace inspiral
 	internal class ObjectRepository : GameRepository
 	{
 		internal List<string> SelfReferenceTokens = new List<string>() { "me", "self", "myself" };
-		internal override bool Instantiate()
+		public ObjectRepository()
 		{
 			repoName = "objects";
 			dbPath = "data/objects.sqlite";
@@ -23,14 +23,13 @@ namespace inspiral
 				Field.Flags,
 				Field.Location
 			};
-			return true;
 		}
 		internal override void Initialize() 
 		{
 			base.Initialize();
 			foreach(KeyValuePair<IGameEntity, Dictionary<DatabaseField, object>> loadingEntity in loadingEntities)
 			{
-				var moveToLoc = Program.Game.Repos.Objects.GetById((long)loadingEntity.Value[Field.Location]);
+				var moveToLoc = Program.Game.Repos.Objects.GetById((ulong)loadingEntity.Value[Field.Location]);
 				if(moveToLoc != null)
 				{
 					((GameObject)loadingEntity.Key).Move((GameObject)moveToLoc);
@@ -41,13 +40,13 @@ namespace inspiral
 		internal GameObject CreateFromTemplate(string objString)
 		{
 			GameObject newObj = new GameObject();
-			newObj.SetValue<long>(Field.Id, GetUnusedIndex());
+			newObj.SetValue<ulong>(Field.Id, GetUnusedIndex());
 			newObj.AddComponent<VisibleComponent>();
 			switch(objString)
 			{
 				case "mob":
 					newObj.SetValue<string>(Field.Name, "mob");
-					newObj.SetValue<List<string>>(Field.Aliases, new List<string>() { "mob" });
+					newObj.aliases = new List<string>() { "mob" };
 					newObj.SetValue<string>(Field.ShortDesc,    "a generic creature");
 					newObj.SetValue<string>(Field.ExaminedDesc, "and is a very generic creature, instantiated from a template.");
 					newObj.SetValue<string>(Field.RoomDesc,     "$Short$ is here, being generic.");
@@ -64,15 +63,15 @@ namespace inspiral
 					break;
 				case "room":
 					newObj.SetValue<string>(Field.Name, "room");
-					newObj.SetValue<List<string>>(Field.Aliases, new List<string>() { "room" });
+					newObj.aliases = new List<string>() { "room" };
 					newObj.AddComponent<RoomComponent>();
 					newObj.SetValue<string>(Field.ShortDesc,    "an empty room");
 					newObj.SetValue<string>(Field.ExaminedDesc, "There is nothing here except silence.");
 					newObj.SetValue<string>(Field.RoomDesc,     "If you can see this, please tell a dev (roomDesc placeholder for room template).");
 					break;
 				default:
-					newObj.SetValue<string>(Field.Name, "object");
-					newObj.SetValue<List<string>>(Field.Aliases, new List<string>() { "object" });
+					newObj.SetValue<string>(Field.Name, "obj");
+					newObj.aliases = new List<string>() { "obj" };
 					newObj.SetValue<string>(Field.ShortDesc,    "a generic object");
 					newObj.SetValue<string>(Field.ExaminedDesc, "This is a very generic object, instantiated from a template.");
 					newObj.SetValue<string>(Field.RoomDesc,     "$Short$ is here, being generic.");

@@ -12,7 +12,7 @@ namespace inspiral
 			}
 			if(canMove)
 			{
-				SetValue<long>(Field.Location, destination.GetValue<long>(Field.Id));
+				SetValue<ulong>(Field.Location, destination.GetValue<ulong>(Field.Id));
 				if(destination != null)
 				{
 					destination.Entered(this);

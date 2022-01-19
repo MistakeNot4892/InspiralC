@@ -15,7 +15,53 @@ namespace inspiral
 		internal override void PostInitialize()
 		{
 			Program.Game.LogError("Loading role definitions.");
-			// TODO readd role repo.
+			
+			roles.Add("administrator", new GameRole(
+				"Administrator", 
+				"Contains role and game administration functions.", 
+				new List<GameCommand>
+				{
+					Program.Game.Mods.Commands.GetCommand<CommandTest>(), 
+					Program.Game.Mods.Commands.GetCommand<CommandViewRoles>(),
+					Program.Game.Mods.Commands.GetCommand<CommandAddRole>(),
+					Program.Game.Mods.Commands.GetCommand<CommandTakeRole>()
+				}));
+
+			roles.Add("builder", new GameRole(
+				"Builder", 
+				"Grants room and object viewing/modification functions.", 
+				new List<GameCommand>
+				{
+					Program.Game.Mods.Commands.GetCommand<CommandCreate>(),
+					Program.Game.Mods.Commands.GetCommand<CommandAddRoom>(),
+					Program.Game.Mods.Commands.GetCommand<CommandSet>(),
+					Program.Game.Mods.Commands.GetCommand<CommandView>()
+				}));
+
+			roles.Add("player", new GameRole(
+				"Player", 
+				"Grants general world interaction and communication commands.", 
+				new List<GameCommand>
+				{
+					Program.Game.Mods.Commands.GetCommand<CommandSay>(),
+					Program.Game.Mods.Commands.GetCommand<CommandEmote>(),
+					Program.Game.Mods.Commands.GetCommand<CommandTake>(),
+					Program.Game.Mods.Commands.GetCommand<CommandDrop>(),
+					Program.Game.Mods.Commands.GetCommand<CommandInventory>(),
+					Program.Game.Mods.Commands.GetCommand<CommandQuit>(),
+					Program.Game.Mods.Commands.GetCommand<CommandLook>(),
+					Program.Game.Mods.Commands.GetCommand<CommandExits>(),
+					Program.Game.Mods.Commands.GetCommand<CommandClient>(),
+					Program.Game.Mods.Commands.GetCommand<CommandHelp>(),
+					Program.Game.Mods.Commands.GetCommand<CommandConfig>(),
+					Program.Game.Mods.Commands.GetCommand<CommandEquip>(),
+					Program.Game.Mods.Commands.GetCommand<CommandUnequip>(),
+					Program.Game.Mods.Commands.GetCommand<CommandDescribe>(),
+					Program.Game.Mods.Commands.GetCommand<CommandInfo>(),
+					Program.Game.Mods.Commands.GetCommand<CommandPrompt>(),
+					Program.Game.Mods.Commands.GetCommand<CommandStrike>()
+				}));
+
 			Program.Game.LogError("Done.");
 		}
 		internal GameRole? GetRole(string key)

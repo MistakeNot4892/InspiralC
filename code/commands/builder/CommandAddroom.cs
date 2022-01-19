@@ -40,17 +40,17 @@ namespace inspiral
 					}
 					else
 					{
-						long roomId = -1;
+						ulong roomId = 0;
 						System.Console.WriteLine(cmd.StrArgs[1]);
 						if(cmd.StrArgs[1].ToLower() == "new")
 						{
-							roomId = Program.Game.Mods.Rooms.CreateEmpty().GetValue<long>(Field.Id);
+							roomId = Program.Game.Mods.Rooms.CreateEmpty().GetValue<ulong>(Field.Id);
 						}
 						else
 						{
 							try
 							{
-								roomId = System.Int32.Parse(cmd.StrArgs[0].ToLower());
+								roomId = System.UInt64.Parse(cmd.StrArgs[0].ToLower());
 							}
 							catch(System.Exception e)
 							{
@@ -60,7 +60,7 @@ namespace inspiral
 
 						GameObject? roomParent = room.GetParent();
 						var getRoom = Program.Game.Repos.Objects.GetById(roomId);
-						if(roomId == -1 || getRoom == null || roomParent == null)
+						if(roomId == 0 || getRoom == null || roomParent == null)
 						{
 							invoker.WriteLine("Please specify a valid room ID to link to, or 'new' to use a new room.");
 						}
@@ -72,7 +72,7 @@ namespace inspiral
 							{
 								room.exits.Add(exitToAdd, roomId);
 								saveEditedRoom = true;
-								invoker.WriteLine($"You have connected {roomParent.GetValue<long>(Field.Id)} to {roomId} via a one-way exit to the {exitToAdd}.");
+								invoker.WriteLine($"You have connected {roomParent.GetValue<ulong>(Field.Id)} to {roomId} via a one-way exit to the {exitToAdd}.");
 							}
 							else
 							{
@@ -85,19 +85,19 @@ namespace inspiral
 									{
 										room.exits.Add(exitToAdd, roomId);
 										saveEditedRoom = true;
-										invoker.WriteLine($"Target room already has an exit to the {otherExit}.\nYou have connected {roomParent.GetValue<long>(Field.Id)} to {roomId} via a one-way exit to the {exitToAdd}.");
+										invoker.WriteLine($"Target room already has an exit to the {otherExit}.\nYou have connected {roomParent.GetValue<ulong>(Field.Id)} to {roomId} via a one-way exit to the {exitToAdd}.");
 									}
 									else
 									{
 										room.exits.Add(exitToAdd, roomId);
 										saveEditedRoom = true;
-										otherRoom.exits.Add(otherExit, roomParent.GetValue<long>(Field.Id));
+										otherRoom.exits.Add(otherExit, roomParent.GetValue<ulong>(Field.Id));
 										GameObject? otherRoomParent = otherRoom.GetParent();
 										if(otherRoomParent != null)
 										{
 											Program.Game.Repos.Objects.QueueForUpdate(otherRoomParent);
 										}
-										invoker.WriteLine($"You have connected {roomParent.GetValue<long>(Field.Id)} to {roomId} via a bidirectional exit to the {exitToAdd}.");
+										invoker.WriteLine($"You have connected {roomParent.GetValue<ulong>(Field.Id)} to {roomId} via a bidirectional exit to the {exitToAdd}.");
 									}
 								}
 							}

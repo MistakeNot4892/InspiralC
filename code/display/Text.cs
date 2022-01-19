@@ -229,7 +229,7 @@ namespace inspiral
 			List<string> ids = new List<string>();
 			foreach(GameObject entry in input)
 			{
-				ids.Add($"{entry.GetValue<string>(Field.Name)} (#{entry.GetValue<long>(Field.Id)})");
+				ids.Add($"{entry.GetValue<string>(Field.Name)} (#{entry.GetValue<int>(Field.Id)})");
 			}
 			return EnglishList(ids);
 		}
@@ -247,7 +247,7 @@ namespace inspiral
 			}
 			if(!message.ToLower().Contains($"${token}"))
 			{
-				token = $"{other.GetValue<long>(Field.Id)}";
+				token = $"{other.GetValue<int>(Field.Id)}";
 			}
 			return ReplacePronouns(token, other, message, thirdPerson);
 		}

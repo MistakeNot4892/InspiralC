@@ -50,7 +50,7 @@ namespace inspiral
 			GameObject? wakeShell = null;
 			if(invoker.account != null)
 			{
-				var getShell = Program.Game.Repos.Objects.GetById(invoker.account.GetValue<long>(Field.ShellId));
+				var getShell = Program.Game.Repos.Objects.GetById(invoker.account.GetValue<ulong>(Field.ShellId));
 				if(getShell != null)
 				{
 					wakeShell = (GameObject)getShell;
@@ -97,7 +97,7 @@ namespace inspiral
 					}
 					else if(!ValidateUsername(newUser))
 					{
-						invoker.WriteLine($"Usernames must be 2 to 16 characters long and can only contain letters.");
+						invoker.WriteLine($"Usernames must be 2 to 16 characters int and can only contain letters.");
 					}
 					else
 					{
@@ -151,7 +151,7 @@ namespace inspiral
 
 						if(!ValidatePassword(rawCommand))
 						{
-							invoker.WriteLine($"Passwords must be 6 to 30 characters long and must contain at least one symbol or number.");
+							invoker.WriteLine($"Passwords must be 6 to 30 characters int and must contain at least one symbol or number.");
 						}
 						else
 						{

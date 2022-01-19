@@ -17,7 +17,7 @@ namespace inspiral
 			typeof(bool), true, true);
 		internal static DatabaseField MaxCapacity = new DatabaseField(
 			"maxcapacity", 10, 
-			typeof(long), true, true);
+			typeof(int), true, true);
 
 	}
 	internal class ContainerBuilder : GameComponentBuilder

@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace inspiral
 {
@@ -35,5 +33,8 @@ namespace inspiral
 			base.Initialize();
 		}
 	}
-	internal class BodypartComponent : GameComponent {}
+	internal class BodypartComponent : GameComponent 
+	{
+		internal List<string> equipmentSlots = new List<string>();
+	}
 }

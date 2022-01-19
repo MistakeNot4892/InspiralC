@@ -37,19 +37,13 @@ namespace inspiral
 			}
 			else
 			{
-				List<GameRole>? roles = acct.GetValue<List<GameRole>>(Field.Roles);
-				if(roles == null)
-				{
-					roles = new List<GameRole>();
-					acct.SetValue<List<GameRole>>(Field.Roles, roles);
-				}
-				if(!roles.Contains(role))
+				if(!acct.roles.Contains(role))
 				{
 					invoker.WriteLine($"They do not have that role.", true);
 				}
 				else
 				{
-					roles.Remove(role);
+					acct.roles.Remove(role);
 					Program.Game.Repos.Accounts.QueueForUpdate(acct);
 					invoker.WriteLine($"Removed role '{role.name}' from '{acct.GetValue<string>(Field.Name)}'.");
 				}
