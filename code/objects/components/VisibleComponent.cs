@@ -12,18 +12,18 @@ namespace inspiral
 	{
 		internal static DatabaseField ShortDesc = new DatabaseField(
 			"short", "",
-			typeof(string), true, true);
+			typeof(string), true, true, false);
 		internal static DatabaseField RoomDesc = new DatabaseField(
 			"room", "", 
-			typeof(string), true, true);
+			typeof(string), true, true, false);
 		internal static DatabaseField ExaminedDesc = new DatabaseField(
 			"examined", "",
-			typeof(string), true, true);
+			typeof(string), true, true, false);
 	}
 
 	internal class VisibleBuilder : GameComponentBuilder
 	{
-		internal override void Initialize()
+		public VisibleBuilder()
 		{
 			ComponentType = typeof(VisibleComponent);
 			schemaFields = new List<DatabaseField>()
@@ -33,7 +33,6 @@ namespace inspiral
 				Field.RoomDesc,
 				Field.ExaminedDesc
 			};
-			base.Initialize();
 		}
 	}
 	internal class VisibleComponent : GameComponent

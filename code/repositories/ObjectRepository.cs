@@ -39,14 +39,13 @@ namespace inspiral
 		// TODO: add templating engine.
 		internal GameObject CreateFromTemplate(string objString)
 		{
-			GameObject newObj = new GameObject();
-			newObj.SetValue<ulong>(Field.Id, GetUnusedIndex());
+			GameObject newObj = (GameObject)CreateNewInstance();
 			newObj.AddComponent<VisibleComponent>();
 			switch(objString)
 			{
-				case "mob":
-					newObj.SetValue<string>(Field.Name, "mob");
-					newObj.aliases = new List<string>() { "mob" };
+				case GlobalConfig.DefaultShellTemplate:
+					newObj.SetValue<string>(Field.Name, "creature");
+					newObj.aliases = new List<string>() { "creature" };
 					newObj.SetValue<string>(Field.ShortDesc,    "a generic creature");
 					newObj.SetValue<string>(Field.ExaminedDesc, "and is a very generic creature, instantiated from a template.");
 					newObj.SetValue<string>(Field.RoomDesc,     "$Short$ is here, being generic.");

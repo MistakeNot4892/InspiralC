@@ -14,6 +14,12 @@ namespace inspiral
             return recordField.Value;
 
         }
+        // Would be nice if we could make a generic using the fieldType of DatabaseField instead of needing the big else-if below
+        internal static void CastAndAdd<T>(Dictionary<DatabaseField, object> fields, DatabaseField field, object val)
+        {
+            T castVal = (T)val;
+            fields.Add(field, castVal);
+        }
         internal static Dictionary<DatabaseField, object> GetDataFromRecord(SQLiteDataReader record)
         {
             Dictionary<DatabaseField, object> fields = new Dictionary<DatabaseField, object>();
@@ -28,25 +34,25 @@ namespace inspiral
                     {
                         continue;
                     }
-                    if(field.fieldType == typeof(string))
+                    else if(field.fieldType == typeof(bool))
                     {
-                        string stringVal = (string)fieldVal;
-                        fields.Add(field, stringVal);
+                        CastAndAdd<bool>(fields, field, ((int)fieldVal >= 1));
+                    }
+                    else if(field.fieldType == typeof(string))
+                    {
+                        CastAndAdd<string>(fields, field, fieldVal);
                     }
                     else if(field.fieldType == typeof(double))
                     {
-                        double doubleVal = (double)fieldVal;
-                        fields.Add(field, doubleVal);
+                        CastAndAdd<double>(fields, field, fieldVal);
                     }
-                    else if(field.fieldType == typeof(bool))
+                    else if(field.fieldType == typeof(ulong))
                     {
-                        bool boolVal = ((int)fieldVal >= 1);
-                        fields.Add(field, boolVal);
+                        CastAndAdd<ulong>(fields, field, fieldVal);
                     }
                     else
                     {
-                        int longVal = (int)fieldVal;
-                        fields.Add(field, longVal);
+                        CastAndAdd<int>(fields, field, fieldVal);
                     }
                 }
             }

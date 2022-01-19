@@ -6,20 +6,20 @@ namespace inspiral
 	{
 		internal static DatabaseField CanGrasp = new DatabaseField(
 			"cangrasp", false,
-			typeof(bool), false, false);
+			typeof(bool), false, false, false);
 		internal static DatabaseField CanStand = new DatabaseField(
 			"canstand", false,
-			typeof(bool), false, false);
+			typeof(bool), false, false, false);
 		internal static DatabaseField NaturalWeapon = new DatabaseField(
 			"isnaturalweapon", false, 
-			typeof(bool), false, false);
+			typeof(bool), false, false, false);
 		internal static DatabaseField EquipmentSlots = new DatabaseField(
 			"equipmentslots", "", 
-			typeof(string), false, false);
+			typeof(string), false, false, true);
 	}
 	internal class BodypartBuilder : GameComponentBuilder
 	{
-		internal override void Initialize()
+		public BodypartBuilder()
 		{
 			ComponentType = typeof(BodypartComponent);
 			schemaFields = new List<DatabaseField>()
@@ -30,7 +30,6 @@ namespace inspiral
 				Field.NaturalWeapon,
 				Field.EquipmentSlots
 			};
-			base.Initialize();
 		}
 	}
 	internal class BodypartComponent : GameComponent 

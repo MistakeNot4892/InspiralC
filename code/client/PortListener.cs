@@ -22,7 +22,7 @@ namespace inspiral
 				System.Console.WriteLine($"{portId}: Connecting to address {ipAddress.ToString()} on port {port}");
 				server = new TcpListener(ipAddress, port);
 				server.Start();
-				while (true)
+				while(true)
 				{
 					System.Console.WriteLine("{0}: waiting for a connection...", portId);
 					TcpClient client = server.AcceptTcpClient();

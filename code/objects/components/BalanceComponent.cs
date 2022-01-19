@@ -5,7 +5,7 @@ namespace inspiral
 {
 	internal class BalanceBuilder : GameComponentBuilder
 	{
-		internal override void Initialize()
+		public BalanceBuilder()
 		{
 			ComponentType = typeof(BalanceComponent);
 			schemaFields = new List<DatabaseField>()
@@ -13,7 +13,6 @@ namespace inspiral
 				Field.Parent,
 				Field.Dummy
 			};
-			base.Initialize();
 		}
 	}
 

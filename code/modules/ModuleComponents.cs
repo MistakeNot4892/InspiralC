@@ -47,6 +47,10 @@ namespace inspiral
 				{
 					GameComponent gameCompMade = (GameComponent)returning;
 					allComponents[compType].Add(gameCompMade);
+					foreach(DatabaseField field in builder.schemaFields)
+					{
+						gameCompMade.Fields[field] = field.fieldDefault;
+					}
 					return gameCompMade;
 				}
 			}

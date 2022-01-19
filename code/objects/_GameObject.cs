@@ -6,26 +6,26 @@ namespace inspiral
 	internal static partial class Field
 	{
 		internal static DatabaseField Id = new DatabaseField(
-			"id", 0,
-			typeof(int), true, false);
+			"id", (ulong)0,
+			typeof(ulong), true, false, false);
 		internal static DatabaseField Name = new DatabaseField(
 			"name", "unkn",
-			typeof(string), true, true);
+			typeof(string), true, true, false);
 		internal static DatabaseField Gender = new DatabaseField(
 			"gender", Text.GenderInanimate,
-			typeof(string), true, true);
+			typeof(string), true, true, false);
 		internal static DatabaseField Aliases = new DatabaseField(
 			"aliases", "", 
-			typeof(string), true, true);
+			typeof(string), true, true, true);
 		internal static DatabaseField Components = new DatabaseField(
 			"components", "{}",
-			typeof(string), true, true);
+			typeof(string), true, true, true);
 		internal static DatabaseField Flags = new DatabaseField(
 			"flags", -1,
-			typeof(int), true, true);
+			typeof(int), true, true, false);
 		internal static DatabaseField Location = new DatabaseField(
-			"location", 0,
-			typeof(int), true, false);
+			"location", (ulong)0,
+			typeof(ulong), true, false, true);
 	}
 
 	internal partial class GameObject : IGameEntity

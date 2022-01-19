@@ -11,11 +11,11 @@ namespace inspiral
 	{
 		internal static DatabaseField WearableSlots = new DatabaseField(
 			"wearableslots", "[]",
-			typeof(string), true, true);
+			typeof(string), true, true, false);
 	}
 	internal class WearableBuilder : GameComponentBuilder
 	{
-		internal override void Initialize()
+		public WearableBuilder()
 		{
 			ComponentType = typeof(WearableComponent);
 			schemaFields = new List<DatabaseField>()
@@ -23,7 +23,6 @@ namespace inspiral
 				Field.Parent,
 				Field.WearableSlots
 			};
-			base.Initialize();
 		}
 	}
 	class WearableComponent : GameComponent 

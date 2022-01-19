@@ -4,7 +4,9 @@ namespace inspiral
 {
     internal static partial class Field
 	{
-		internal static DatabaseField Dummy = new DatabaseField("dummyfield", "", typeof(string), false, false);
+		internal static DatabaseField Dummy = new DatabaseField(
+            "dummyfield", "", typeof(string), 
+            false, false, false);
 		internal static Dictionary<string, DatabaseField> nameToField = new Dictionary<string, DatabaseField>();
 		internal static DatabaseField GetFieldFromName(string fieldName)
 		{
@@ -22,17 +24,21 @@ namespace inspiral
         internal System.Type fieldType;
         internal object fieldDefault;
         internal bool fieldIsViewable = true;
+        internal bool fieldIsReference = false;
         internal bool fieldIsEditable = false;
         // Defining this instead of overriding Equals() because hashing is scary
         internal bool IsField(DatabaseField otherField) 
         {
             return this == otherField;
         }
-        internal DatabaseField(string _key, object _default, System.Type _type, bool _view, bool _edit)
+        internal DatabaseField(string _key, object _default, System.Type _type, bool _view, bool _edit, bool _ref)
         {
-            fieldName =    _key;
-            fieldType =    _type;
-            fieldDefault = _default;
+            fieldName =        _key;
+            fieldType =        _type;
+            fieldIsEditable =  _edit;
+            fieldIsViewable =  _view;
+            fieldDefault =     _default;
+            fieldIsReference = _ref;
             if(Field.nameToField == null)
             {
                 Field.nameToField = new Dictionary<string, DatabaseField>();

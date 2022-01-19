@@ -12,13 +12,13 @@ namespace inspiral
 	{
 	internal static DatabaseField PasswordHash = new DatabaseField(
 			"passwordhash", "",
-			typeof(string), false, false);
+			typeof(string), false, false, false);
 		internal static DatabaseField Roles = new DatabaseField(
 			"roles", "[]",
-			typeof(string), false, false);
+			typeof(string), false, false, true);
 		internal static DatabaseField ShellId = new DatabaseField(
-			"shellid", 0,
-			typeof(int), false, false);
+			"shellid", (ulong)0,
+			typeof(ulong), false, false, true);
 	}
 	internal class PlayerAccount : IGameEntity
 	{

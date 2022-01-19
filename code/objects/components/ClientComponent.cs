@@ -6,7 +6,7 @@ namespace inspiral
 	{
 		internal static DatabaseField ClientId = new DatabaseField(
 			"clientId", "",
-			typeof(string), false, false);
+			typeof(string), false, false, false);
 	}
 	internal partial class ComponentModule : GameModule
 	{
@@ -14,7 +14,7 @@ namespace inspiral
 	}
 	internal class ClientBuilder : GameComponentBuilder
 	{
-		internal override void Initialize()
+		public ClientBuilder()
 		{
 			ComponentType = typeof(ClientComponent);
 			schemaFields = new List<DatabaseField>()
@@ -22,7 +22,6 @@ namespace inspiral
 				Field.Parent,
 				Field.ClientId
 			};
-			base.Initialize();
 		}
 	}
 	internal class ClientComponent : GameComponent 

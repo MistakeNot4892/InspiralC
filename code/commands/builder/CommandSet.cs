@@ -65,8 +65,7 @@ namespace inspiral
 				unknownValue = true;
 				foreach(KeyValuePair<System.Type, GameComponent> comp in editing.Components)
 				{
-					if(Program.Game.Mods.Components.builders[comp.Key].editableFields != null && 
-						Program.Game.Mods.Components.builders[comp.Key].editableFields.Contains(field))
+					if(field.fieldIsEditable)
 					{
 						unknownValue = false;
 						lastVal = comp.Value.GetValue<string>(field);

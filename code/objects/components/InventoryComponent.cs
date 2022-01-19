@@ -12,11 +12,11 @@ namespace inspiral
 	{
 		internal static DatabaseField EquippedSlots = new DatabaseField(
 			"equipped", "",
-			typeof(string), false, false);
+			typeof(string), false, false, true);
 	}
 	internal class InventoryBuilder : GameComponentBuilder
 	{
-		internal override void Initialize()
+		public InventoryBuilder()
 		{
 			ComponentType = typeof(InventoryComponent);
 			schemaFields = new List<DatabaseField>()
@@ -24,7 +24,6 @@ namespace inspiral
 				Field.Parent,
 				Field.EquippedSlots
 			};
-			base.Initialize();
 		}
 	}
 	class InventoryComponent : GameComponent

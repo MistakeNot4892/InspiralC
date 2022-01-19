@@ -11,18 +11,18 @@ namespace inspiral
 	{
 		internal static DatabaseField IsOpen = new DatabaseField(
 			"isopen", true,
-		     typeof(bool), true, true);
+		     typeof(bool), true, true, false);
 		internal static DatabaseField HasLid = new DatabaseField(
 			"haslid", false,
-			typeof(bool), true, true);
+			typeof(bool), true, true, false);
 		internal static DatabaseField MaxCapacity = new DatabaseField(
 			"maxcapacity", 10, 
-			typeof(int), true, true);
+			typeof(int), true, true, false);
 
 	}
 	internal class ContainerBuilder : GameComponentBuilder
 	{
-		internal override void Initialize()
+		public ContainerBuilder()
 		{
 			ComponentType = typeof(ContainerComponent);
 			schemaFields = new List<DatabaseField>() 
@@ -32,7 +32,6 @@ namespace inspiral
 				Field.HasLid,
 				Field.MaxCapacity
 			};
-			base.Initialize();
 		}
 	}
 	class ContainerComponent : GameComponent {}

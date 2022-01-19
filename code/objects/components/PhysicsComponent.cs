@@ -12,26 +12,26 @@ namespace inspiral
 	{
 		internal static DatabaseField Length = new DatabaseField(
 			"length", 1,
-			typeof(int), true, true);
+			typeof(int), true, true, false);
 		internal static DatabaseField Width = new DatabaseField(
 			"width", 1,
-			typeof(int), true, true);
+			typeof(int), true, true, false);
 		internal static DatabaseField Height = new DatabaseField(
 			"height", 1,
-			typeof(int), true, true);
+			typeof(int), true, true, false);
 		internal static DatabaseField Density = new DatabaseField(
 			"density", 1.0,
-			typeof(double), true, true);
+			typeof(double), true, true, false);
 		internal static DatabaseField StrikeArea = new DatabaseField(
 			"strikearea", 1.0,
-			typeof(double), true, true);
+			typeof(double), true, true, false);
 		internal static DatabaseField Edged = new DatabaseField(
 			"edged", 0,
-			typeof(int), true, true);
+			typeof(int), true, true, false);
 	}
 	internal class PhysicsBuilder : GameComponentBuilder
 	{
-		internal override void Initialize()
+		public PhysicsBuilder()
 		{
 			ComponentType = typeof(PhysicsComponent);
 			schemaFields = new List<DatabaseField>() 
@@ -44,7 +44,6 @@ namespace inspiral
 				Field.StrikeArea, 
 				Field.Edged
 			};
-			base.Initialize();
 		}
 	}
 	class PhysicsComponent : GameComponent

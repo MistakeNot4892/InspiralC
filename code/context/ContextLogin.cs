@@ -58,7 +58,7 @@ namespace inspiral
 			}
 			if(wakeShell == null)
 			{
-				wakeShell = new GameObject();
+				wakeShell = Program.Game.Repos.Objects.CreateFromTemplate(GlobalConfig.DefaultShellTemplate);
 			}
 			GameObject wakingShell = (GameObject)wakeShell;
 			wakingShell.ShowNearby(wakingShell, $"{wakingShell.GetShortDesc()} wakes up.");

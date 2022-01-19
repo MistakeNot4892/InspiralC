@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Collections.Generic;
+using System;
 
 // TODO: https://www.gammon.com.au/mushclient/addingservermxp.htm
 // TODO: truecolour
@@ -38,9 +39,12 @@ namespace inspiral
 
 		internal GameClient(TcpClient _client, string _id)
 		{
+			// TODO static initializer for dummy shell or something
+			DummyShell.SetValue<string>(Field.Name, "DummyShell");
+			shell = DummyShell;
+
 			client =   _client;
 			stream =   _client.GetStream();
-			shell =    DummyShell;
 			clientId = _id;
 			Program.Game.LogError($"{clientId}: client created.");
 			context = Contexts.Login;
@@ -82,13 +86,13 @@ namespace inspiral
 		{
 			int i;
 			byte[] socketBuffer = new byte[Telnet.MaxBufferSize];
-			//try
-			//{
-				// Prod them to check if they support GMCP first.
-				SendTelnetCommand(new byte[] {Telnet.IAC, Telnet.WILL, Telnet.GMCP});
+			// Prod them to check if they support GMCP first.
+			SendTelnetCommand(new byte[] {Telnet.IAC, Telnet.WILL, Telnet.GMCP});
 
-				// Now start the actual loop.
-				while ((i = stream.Read(socketBuffer, 0, socketBuffer.Length)) != 0)
+			// Now start the actual loop.
+			try
+			{
+				while((i = stream.Read(socketBuffer, 0, socketBuffer.Length)) != 0)
 				{
 					for(int j = 0;j<i;j++)
 					{
@@ -118,21 +122,19 @@ namespace inspiral
 						}
 					}
 				}
-			/*
 			}
-			catch (System.Exception e)
+			catch(ObjectDisposedException)
 			{
-				Program.Game.LogError($"{clientId}: disconnected ({e.Message}).");
+				Program.Game.LogError($"Ending client loop for {clientId}, stream has been disposed.");
 			}
 			finally
 			{
-			*/
 				Disconnect();
 				if(client != null)
 				{
 					client.Close();
 				}
-			//}
+			}
 		}
 		internal void Disconnect()
 		{
@@ -229,7 +231,14 @@ namespace inspiral
 
 		public void Flush()
 		{
-			stream.Write(outputBuffer, 0, outputBufferIndex+1);
+			try
+			{
+				stream.Write(outputBuffer, 0, outputBufferIndex+1);
+			}
+			catch(ObjectDisposedException)
+			{
+				Program.Game.LogError($"{clientId} cannot flush, stream has been disposed.");
+			}
 			outputBufferIndex = 0;
 		}
 		internal void Quit()

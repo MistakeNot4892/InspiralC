@@ -23,23 +23,29 @@ namespace inspiral
 		internal string GetStringSummary(GameObject viewer, int wrapWidth)
 		{
 			Dictionary<string, List<string>> summary = new Dictionary<string, List<string>>();
-			GenderObject genderObj = Program.Game.Mods.Gender.GetByTerm(GetValue<string>(Field.Gender));
 			string fieldKey = $"Object summary for {GetValue<string>(Field.Name)} (#{GetValue<ulong>(Field.Id)})";
 			summary.Add(fieldKey, new List<string>());
-			if(aliases != null)
-			{
-				summary[fieldKey].Add($"aliases:  {Text.EnglishList(aliases)}");
-			}
-			summary[fieldKey].Add($"gender:   {genderObj.Term}");
 
-			if(Location != null)
+
+			foreach(KeyValuePair<DatabaseField, object> field in Fields)
 			{
-				summary[fieldKey].Add($"location (read-only): {Location.GetShortDesc()} (#{Location.GetValue<ulong>(Field.Id)})");
+				if(!field.Key.fieldIsViewable) 
+				{
+					continue;
+				}
+				if(field.Key.fieldIsReference)
+				{
+					summary[fieldKey].Add($"reference field {field.Key.fieldName} skipped");
+					continue;
+				}
+				string fieldSummary = field.Key.fieldName;
+				if(!field.Key.fieldIsEditable)
+				{
+					fieldSummary = $"{fieldSummary} (read-only)";
+				}
+				summary[fieldKey].Add($"{fieldSummary}: {field.Value.ToString()}");
 			}
-			else
-			{
-				summary[fieldKey].Add($"location (read-only): null");
-			}
+
 			foreach(KeyValuePair<System.Type, GameComponent> comp in Components)
 			{
 				string compSummary = comp.Value.GetStringSummary();

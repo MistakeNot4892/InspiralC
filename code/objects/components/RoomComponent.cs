@@ -14,12 +14,12 @@ namespace inspiral
 	{
 		internal static DatabaseField Exits = new DatabaseField(
 			"exits", "[]", 
-			typeof(string), true, false);
+			typeof(string), true, false, true);
 	}
 
 	internal class RoomBuilder : GameComponentBuilder
 	{
-		internal override void Initialize()
+		public RoomBuilder()
 		{
 			ComponentType = typeof(RoomComponent);
 			schemaFields = new List<DatabaseField>()
@@ -27,7 +27,6 @@ namespace inspiral
 				Field.Parent,
 				Field.Exits
 			};
-			base.Initialize();
 		}
 	}
 

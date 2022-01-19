@@ -13,27 +13,27 @@ namespace inspiral
 	{
 		internal static DatabaseField EnterMessage = new DatabaseField(
 			"enter", $"'{Text.DefaultEnterMessage}'", 
-			typeof(string), true, true);
+			typeof(string), true, true, false);
 		internal static DatabaseField LeaveMessage = new DatabaseField(
 			"leave", $"'{Text.DefaultLeaveMessage}'",
-			typeof(string), true, true);
+			typeof(string), true, true, false);
 		internal static DatabaseField DeathMessage = new DatabaseField(
 			"death", $"'{Text.DefaultDeathMessage}'",
-			typeof(string), true, true);
+			typeof(string), true, true, false);
 		internal static DatabaseField Bodyplan = new DatabaseField(
 			"bodyplan",  "",
-			typeof(string), true, true);
+			typeof(string), true, true, false);
 		internal static DatabaseField Species = new DatabaseField(
 			"species", "",
-			typeof(string), true, true);
+			typeof(string), true, true, false);
 		internal static DatabaseField BodypartList = new DatabaseField(
 			"bodyparts", "[]",
-			typeof(string), true, true);
+			typeof(string), true, true, true);
 	}
 
 	internal class MobileBuilder : GameComponentBuilder
 	{
-		internal override void Initialize()
+		public MobileBuilder()
 		{
 			ComponentType = typeof(MobileComponent);
 			schemaFields = new List<DatabaseField>()
@@ -44,7 +44,6 @@ namespace inspiral
 				Field.DeathMessage,
 				Field.BodypartList
 			};
-			base.Initialize();
 		}
 	}
 

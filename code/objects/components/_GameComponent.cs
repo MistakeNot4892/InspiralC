@@ -6,36 +6,16 @@ namespace inspiral
 	internal static partial class Field
 	{
 		internal static DatabaseField Parent = new DatabaseField(
-			"parent", 0,
-			typeof(int), true, false);
+			"parent", (ulong)0,
+			typeof(ulong), true, false, false);
 	}
 	internal class GameComponentBuilder
 	{
 		internal GameComponentBuilder()
 		{
-			Initialize();
 		}
 		internal System.Type? ComponentType;
-		internal List<DatabaseField> editableFields = new List<DatabaseField>();
-		internal List<DatabaseField> viewableFields = new List<DatabaseField>();
 		internal List<DatabaseField> schemaFields = new List<DatabaseField>();
-		internal virtual void Initialize()
-		{
-			if(schemaFields != null)
-			{
-				foreach(DatabaseField schemaField in schemaFields)
-				{
-					if(schemaField.fieldIsViewable)
-					{
-						viewableFields.Add(schemaField);
-					}
-					if(schemaField.fieldIsEditable)
-					{
-						editableFields.Add(schemaField);
-					}
-				}
-			}
-		}
 	}
 
 	internal class GameComponent : IGameEntity
@@ -73,21 +53,36 @@ namespace inspiral
 		internal string GetStringSummary() 
 		{
 			System.Type myType = this.GetType();
-			if(Program.Game.Mods.Components.builders.ContainsKey(myType) && 
-				Program.Game.Mods.Components.builders[myType].viewableFields != null && 
-				Program.Game.Mods.Components.builders[myType].viewableFields.Count > 0)
+			if(Program.Game.Mods.Components.builders.ContainsKey(myType))
 			{
 				string result = "";
-				foreach(DatabaseField field in Program.Game.Mods.Components.builders[myType].viewableFields)
+				foreach(DatabaseField field in Program.Game.Mods.Components.builders[myType].schemaFields)
 				{
-					if(Program.Game.Mods.Components.builders[myType].editableFields != null && 
-						Program.Game.Mods.Components.builders[myType].editableFields.Contains(field))
+					if(!field.fieldIsViewable)
 					{
-						result = $"{result}\n{field.fieldName}: {GetValue<string>(field)}";
+						continue;
+					}
+
+					result = $"{result}\n{field.fieldName}";
+					if(!field.fieldIsEditable)
+					{
+						result = $"{result} (read-only)";
+					}
+
+					if(field.fieldIsReference)
+					{
+						result = $"{result}: reference skipped";
+						continue;
+					}
+
+					object? val = GetValue<object>(field);
+					if(val == null)
+					{
+						result = $"{result}: null";
 					}
 					else
 					{
-						result = $"{result}\n{field.fieldName} (read-only): {GetValue<string>(field)}";
+						result = $"{result}: {val.ToString()}";
 					}
 				}
 				return result;
@@ -97,9 +92,7 @@ namespace inspiral
 		internal bool SetValueOfEditableField<T>(DatabaseField field, T value) 
 		{
 			System.Type myType = this.GetType();
-			if(Program.Game.Mods.Components.builders.ContainsKey(myType) && 
-				Program.Game.Mods.Components.builders[myType].editableFields != null && 
-				Program.Game.Mods.Components.builders[myType].editableFields.Count > 0)
+			if(field.fieldIsEditable)
 			{
 				SetValue<T>(field, value);
 				Program.Game.Repos.Objects.QueueForUpdate(this);

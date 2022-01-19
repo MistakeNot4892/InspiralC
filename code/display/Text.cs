@@ -9,9 +9,9 @@ namespace inspiral
 		internal static List<string> exits = new List<string>();
 		internal static Dictionary<string, string> shortExits = new Dictionary<string, string>();
 		internal static Dictionary<string, string> reversedExits = new Dictionary<string, string>();
-		internal const string DefaultEnterMessage =        "$Short$ enters from the $dir$.";
-		internal const string DefaultLeaveMessage =        "$Short$ leaves to the $dir$";
-		internal const string DefaultDeathMessage =        "$Short$ lies here, dead.";
+		internal const string DefaultEnterMessage = "$Short$ enters from the $dir$.";
+		internal const string DefaultLeaveMessage = "$Short$ leaves to the $dir$";
+		internal const string DefaultDeathMessage = "$Short$ lies here, dead.";
 		internal static Dictionary<string, List<string>> speechVerbs = new Dictionary<string, List<string>>();
 		internal static Regex stripRegex = new Regex($"{'\u001b'}\\[\\d+;*\\d*m", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		internal static Regex mentionRegex = new Regex(@"\$([0-9a-z]+)_*([a-zA-Z]*)\$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
