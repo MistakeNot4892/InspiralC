@@ -4,7 +4,7 @@ namespace inspiral
 {
 	internal partial class ComponentModule : GameModule
 	{
-		internal List<GameComponent> Wearables => GetComponents<WearableComponent>();
+		internal List<GameComponent> Wearables => Repositories.Components.GetComponents<WearableComponent>();
 	}
 	internal static partial class Field
 	{

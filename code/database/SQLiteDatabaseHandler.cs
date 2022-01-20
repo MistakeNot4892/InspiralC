@@ -85,6 +85,11 @@ namespace inspiral
         }
         internal override void CreateRecord(string tableName, IGameEntity entity) 
         {
+            if(entity.GetValue<ulong>(Field.Id) == 0)
+            {
+                Game.LogError($"0-id entity {entity.ToString()} attempted db entry.");
+                return;
+            }
             using(SQLiteCommand command = new SQLiteCommand($"INSERT INTO {tableName} ( id ) VALUES ( @id );", connection))
             {
                 command.Parameters.AddWithValue("@id", entity.GetValue<ulong>(Field.Id));

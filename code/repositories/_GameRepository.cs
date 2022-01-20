@@ -68,6 +68,8 @@ namespace inspiral
 		internal List<DatabaseField>? schemaFields;
 		internal Dictionary<IGameEntity, Dictionary<DatabaseField, object>> loadingEntities = new Dictionary<IGameEntity, Dictionary<DatabaseField, object>>();
 		internal Dictionary<ulong, IGameEntity> records = new Dictionary<ulong, IGameEntity>();
+		internal ulong lastMaxIndex = 0;
+		internal List<ulong> unusedIndices = new List<ulong>();
 		private List<IGameEntity> updateQueue = new List<IGameEntity>();
 		private bool killUpdateProcess = false;
 
@@ -96,7 +98,7 @@ namespace inspiral
 		{
 			if(schemaFields != null)
 			{
-				foreach(Dictionary<DatabaseField, object> record in Database.GetAllRecords(dbPath, $"table_{repoName}", schemaFields))
+				foreach(Dictionary<DatabaseField, object> record in Database.GetAllRecords(dbPath, repoName, schemaFields))
 				{
 					ulong? eId = (ulong)record[Field.Id];
 					if(eId == null)
@@ -133,7 +135,7 @@ namespace inspiral
 			{
 				if(updateQueue.Count > 0)
 				{
-					Database.BatchUpdateRecords(dbPath, $"table_{repoName}", updateQueue);
+					Database.BatchUpdateRecords(dbPath, repoName, updateQueue);
 				}
 				Thread.Sleep(5000);
 			}
@@ -150,8 +152,15 @@ namespace inspiral
 		}
 		internal ulong GetUnusedIndex()
 		{
+			// TODO set unusedIndices based on gaps after records are loaded during init
+			if(unusedIndices.Count > 0)
+			{
+				ulong index = unusedIndices[Game.Random.Next(unusedIndices.Count)];
+				unusedIndices.Remove(index);
+				return index;
+			}
 			// TODO scrape for unused indices
-			return (ulong)records.Count+1;
+			return lastMaxIndex;
 		}
 		internal virtual IGameEntity CreateNewInstance()
 		{
@@ -169,6 +178,8 @@ namespace inspiral
 		{
 			IGameEntity newInstance = CreateRepositoryType(additionalClassInfo);
 			newInstance.SetValue<ulong>(Field.Id, id);
+			records.Add(id, newInstance);
+			lastMaxIndex = System.Math.Max(lastMaxIndex, id) + 1;
 			return newInstance;
 		}
 		public virtual void DumpToConsole() 

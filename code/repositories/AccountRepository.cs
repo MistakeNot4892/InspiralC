@@ -6,7 +6,7 @@ namespace inspiral
 
 	internal static partial class Repositories
 	{
-		internal static AccountRepository Accounts { get { return (AccountRepository)Repositories.GetRepository<AccountRepository>(); } }
+		internal static AccountRepository Accounts => (AccountRepository)Repositories.GetRepository<AccountRepository>();
 	}
 	internal static partial class Field
 	{
@@ -153,7 +153,7 @@ namespace inspiral
 
 				// Finalize everything.
 				accounts.Add(userName, acct);
-				Database.UpdateRecord(dbPath, $"table_{repoName}", acct);
+				Database.CreateRecord(dbPath, repoName, acct);
 				return acct;
 			}
 			return null;

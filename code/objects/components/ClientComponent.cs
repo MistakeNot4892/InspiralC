@@ -10,7 +10,7 @@ namespace inspiral
 	}
 	internal partial class ComponentModule : GameModule
 	{
-		private List<GameComponent> Clients => GetComponents<ClientComponent>();
+		private List<GameComponent> Clients => Repositories.Components.GetComponents<ClientComponent>();
 	}
 	internal class ClientBuilder : GameComponentBuilder
 	{

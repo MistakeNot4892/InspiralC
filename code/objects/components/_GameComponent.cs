@@ -50,7 +50,7 @@ namespace inspiral
 		{
 			if(takenFrom == GetParent())
 			{
-				SetValue<int>(Field.Parent, 0);
+				SetValue<ulong>(Field.Parent, (ulong)0);
 			}
 			if(isPersistent)
 			{
@@ -60,10 +60,10 @@ namespace inspiral
 		internal string GetStringSummary() 
 		{
 			System.Type myType = this.GetType();
-			if(Modules.Components.builders.ContainsKey(myType))
+			if(Repositories.Components.builders.ContainsKey(myType))
 			{
 				string result = "";
-				foreach(DatabaseField field in Modules.Components.builders[myType].schemaFields)
+				foreach(DatabaseField field in Repositories.Components.builders[myType].schemaFields)
 				{
 					if(!field.fieldIsViewable)
 					{
@@ -111,11 +111,20 @@ namespace inspiral
 		{
 			return "";
 		}
+		internal virtual void RebuildReferences(DatabaseField field)
+		{
+			return;
+		}
 		public bool SetValue<T>(DatabaseField field, T newValue)
 		{
 			if(Fields.ContainsKey(field) && newValue != null)
 			{
 				Fields[field] = newValue;
+				Repositories.Components.QueueForUpdate(this);
+				if(field.fieldIsReference)
+				{
+					RebuildReferences(field);
+				}
 				return true;
 			}
 			return false;

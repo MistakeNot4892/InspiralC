@@ -5,7 +5,7 @@ namespace inspiral
 {
 	internal static partial class Repositories
 	{
-		internal static ObjectRepository Objects { get { return (ObjectRepository)Repositories.GetRepository<ObjectRepository>(); } }
+		internal static ObjectRepository Objects => (ObjectRepository)Repositories.GetRepository<ObjectRepository>();
 	}
 	internal class ObjectRepository : GameRepository
 	{
@@ -40,7 +40,7 @@ namespace inspiral
 		// TODO: add templating engine.
 		internal GameObject CreateFromTemplate(string objString)
 		{
-			GameObject newObj = (GameObject)CreateNewInstance();
+			var newObj = (GameObject)CreateNewInstance();
 			newObj.AddComponent<VisibleComponent>();
 			switch(objString)
 			{
@@ -81,6 +81,7 @@ namespace inspiral
 					newObj.SetValue<int>(Field.Height, 20);
 					break;
 			}
+			Database.CreateRecord(dbPath, repoName, newObj);
 			return newObj;
 		}
 		internal List<string> GetTemplateNames()

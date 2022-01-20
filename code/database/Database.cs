@@ -29,6 +29,11 @@ namespace inspiral
             DatabaseHandler handler = GetConnection(dbPath);
             handler.UpdateRecord(tableName, entity);
         }
+        internal static void CreateRecord(string dbPath, string tableName, IGameEntity entity)
+        {
+            DatabaseHandler handler = GetConnection(dbPath);
+            handler.CreateRecord(tableName, entity);
+        }
         internal static void DeleteRecord(string tableName, int recordId)
         {
         }

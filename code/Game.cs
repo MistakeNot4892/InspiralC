@@ -12,8 +12,8 @@ namespace inspiral
 		internal static void Initialize() 
 		{
 			// Populate modules.
-			Modules.InitializeModules();
-			Modules.PostInitializeModules();
+			Modules.Initialize();
+			Modules.PostInitialize();
 
 			// Populate repos.
 			Repositories.Populate();

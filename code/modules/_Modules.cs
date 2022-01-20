@@ -18,7 +18,7 @@ namespace inspiral
 		{
 			return AllModules[typeof(T)];
 		}
-		internal static void InitializeModules()
+		internal static void Initialize()
 		{
 
 			Game.LogError($"Instantiating modules.");
@@ -33,7 +33,7 @@ namespace inspiral
 			}
 			Game.LogError($"Done.");
 		}
-		internal static void PostInitializeModules()
+		internal static void PostInitialize()
 		{
 			Game.LogError($"Post-initializing modules.");
 			foreach(KeyValuePair<System.Type, GameModule> module in AllModules)

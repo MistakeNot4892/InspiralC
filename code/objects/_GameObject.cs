@@ -77,8 +77,21 @@ namespace inspiral
 			get { return _components; }
 			set { _components = value; }
 		}
+		internal void RebuildReferences(DatabaseField field)
+		{
+			return;
+		}
 		public bool SetValue<T>(System.Type componentType, DatabaseField field, T newValue)
 		{
+			if(Fields.ContainsKey(field) && newValue != null)
+			{
+				Fields[field] = newValue;
+				Repositories.Components.QueueForUpdate(this);
+				if(field.fieldIsReference)
+				{
+					RebuildReferences(field);
+				}
+			}
 			GameComponent? comp = GetComponent(componentType);
 			if(comp != null)
 			{

@@ -5,7 +5,7 @@ namespace inspiral
 {
 	internal partial class ComponentModule : GameModule
 	{
-		internal List<GameComponent> Visibles => GetComponents<VisibleComponent>();
+		internal List<GameComponent> Visibles => Repositories.Components.GetComponents<VisibleComponent>();
 	}
 
 	internal static partial class Field

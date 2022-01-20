@@ -28,7 +28,7 @@ namespace inspiral
 			GameComponent? comp = GetComponent(compType);
 			if(comp == null)
 			{
-				comp = Modules.Components.MakeComponent(compType);
+				comp = Repositories.Components.MakeComponent(compType);
 				if(comp != null)
 				{
 					Components.Add(compType, comp);
