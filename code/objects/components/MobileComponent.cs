@@ -12,13 +12,13 @@ namespace inspiral
 	internal static partial class Field
 	{
 		internal static DatabaseField EnterMessage = new DatabaseField(
-			"enter", $"'{Text.DefaultEnterMessage}'", 
+			"enter", Text.DefaultEnterMessage, 
 			typeof(string), true, true, false);
 		internal static DatabaseField LeaveMessage = new DatabaseField(
-			"leave", $"'{Text.DefaultLeaveMessage}'",
+			"leave", Text.DefaultLeaveMessage,
 			typeof(string), true, true, false);
 		internal static DatabaseField DeathMessage = new DatabaseField(
-			"death", $"'{Text.DefaultDeathMessage}'",
+			"death", Text.DefaultDeathMessage,
 			typeof(string), true, true, false);
 		internal static DatabaseField Bodyplan = new DatabaseField(
 			"bodyplan",  "",
@@ -35,6 +35,7 @@ namespace inspiral
 	{
 		public MobileBuilder()
 		{
+			tableName = "mobiles";
 			ComponentType = typeof(MobileComponent);
 			schemaFields = new List<DatabaseField>()
 			{

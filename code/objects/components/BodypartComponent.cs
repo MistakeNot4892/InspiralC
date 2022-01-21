@@ -21,6 +21,7 @@ namespace inspiral
 	{
 		public BodypartBuilder()
 		{
+			tableName = "bodyparts";
 			ComponentType = typeof(BodypartComponent);
 			schemaFields = new List<DatabaseField>()
 			{

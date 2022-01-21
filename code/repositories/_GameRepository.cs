@@ -62,13 +62,11 @@ namespace inspiral
 	}
 	class GameRepository
 	{
-
 		internal string repoName = "repository";
-		internal string dbPath = "data/gamedata.sqlite";
 		internal List<DatabaseField>? schemaFields;
 		internal Dictionary<IGameEntity, Dictionary<DatabaseField, object>> loadingEntities = new Dictionary<IGameEntity, Dictionary<DatabaseField, object>>();
 		internal Dictionary<ulong, IGameEntity> records = new Dictionary<ulong, IGameEntity>();
-		internal ulong lastMaxIndex = 0;
+		internal ulong lastMaxIndex = 1;
 		internal List<ulong> unusedIndices = new List<ulong>();
 		private List<IGameEntity> updateQueue = new List<IGameEntity>();
 		private bool killUpdateProcess = false;
@@ -90,6 +88,10 @@ namespace inspiral
 				updateQueue.Add(obj);
 			}
 		}
+		internal virtual string GetDatabaseTableName(IGameEntity gameEntity)
+		{
+			return repoName;
+		}
 		internal virtual string? GetAdditionalClassInfo(Dictionary<DatabaseField, object> record)
 		{
 			return null;
@@ -98,15 +100,13 @@ namespace inspiral
 		{
 			if(schemaFields != null)
 			{
-				foreach(Dictionary<DatabaseField, object> record in Database.GetAllRecords(dbPath, repoName, schemaFields))
+				foreach(Dictionary<DatabaseField, object> record in Database.GetAllRecords(this, repoName, schemaFields))
 				{
 					ulong? eId = (ulong)record[Field.Id];
-					if(eId == null)
+					if(eId != null && eId > 0)
 					{
-						continue;
+						loadingEntities.Add(CreateNewInstance((ulong)eId, GetAdditionalClassInfo(record)), record);
 					}
-					IGameEntity newEntity = CreateNewInstance((ulong)eId, GetAdditionalClassInfo(record));
-					loadingEntities.Add(newEntity, record);
 				}
 			}
 		}
@@ -135,7 +135,7 @@ namespace inspiral
 			{
 				if(updateQueue.Count > 0)
 				{
-					Database.BatchUpdateRecords(dbPath, repoName, updateQueue);
+					Database.BatchUpdateRecords(updateQueue);
 				}
 				Thread.Sleep(5000);
 			}

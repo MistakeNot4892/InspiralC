@@ -16,6 +16,7 @@ namespace inspiral
 	{
 		public WearableBuilder()
 		{
+			tableName = "wearables";
 			ComponentType = typeof(WearableComponent);
 			schemaFields = new List<DatabaseField>()
 			{

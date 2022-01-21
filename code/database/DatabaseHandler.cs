@@ -56,8 +56,8 @@ namespace inspiral
         internal virtual void Open() {}
         internal virtual void Close() {}
         internal virtual void InitializeTable(string tableName, List<DatabaseField> tableFields) {}
-        internal virtual void UpdateRecord(string tableName, IGameEntity entity) {}
-        internal virtual void CreateRecord(string tableName, IGameEntity entity) {}
-        internal virtual void BatchUpdateRecords(string tableName, List<IGameEntity> updateQueue) {}   
+        internal virtual void UpdateRecord(IGameEntity entity) {}
+        internal virtual void CreateRecord( IGameEntity entity) {}
+        internal virtual void BatchUpdateRecords(List<IGameEntity> updateQueue) {}   
     }
 }

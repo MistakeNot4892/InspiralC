@@ -21,6 +21,7 @@ namespace inspiral
 	{
 		public RoomBuilder()
 		{
+			tableName = "rooms";
 			ComponentType = typeof(RoomComponent);
 			schemaFields = new List<DatabaseField>()
 			{

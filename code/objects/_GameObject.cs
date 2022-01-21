@@ -18,7 +18,7 @@ namespace inspiral
 			"aliases", "", 
 			typeof(string), true, true, true);
 		internal static DatabaseField Components = new DatabaseField(
-			"components", "{}",
+			"components", "[]",
 			typeof(string), true, true, true);
 		internal static DatabaseField Flags = new DatabaseField(
 			"flags", -1,
@@ -41,6 +41,10 @@ namespace inspiral
 			{ Field.Flags,      Field.Flags.fieldDefault },
 			{ Field.Location,   Field.Location.fieldDefault },
 		};
+		public string GetDatabaseTableName()
+		{
+			return "objects";
+		}
 		public Dictionary<DatabaseField, object> Fields
 		{
 			get { return _fields; }
@@ -67,7 +71,11 @@ namespace inspiral
 			{ 
 				if(value != null)
 				{
-					SetValue<int>(Field.Location, (int)value.GetValue<ulong>(Field.Id));
+					SetValue<ulong>(Field.Location, (ulong)value.GetValue<ulong>(Field.Id));
+				}
+				else
+				{
+					SetValue<ulong>(Field.Location, (ulong)0);
 				}
 			}
 		}
@@ -81,30 +89,37 @@ namespace inspiral
 		{
 			return;
 		}
-		public bool SetValue<T>(System.Type componentType, DatabaseField field, T newValue)
+		public bool SetValue<DataType, CompType>(DatabaseField field, DataType newValue) 
+			where CompType : GameComponent 
 		{
-			if(Fields.ContainsKey(field) && newValue != null)
-			{
-				Fields[field] = newValue;
-				Repositories.Components.QueueForUpdate(this);
-				if(field.fieldIsReference)
-				{
-					RebuildReferences(field);
-				}
-			}
-			GameComponent? comp = GetComponent(componentType);
+			GameComponent? comp = GetComponent(typeof(CompType));
 			if(comp != null)
 			{
-				return comp.SetValue<T>(field, newValue);
+				return comp.SetValue<DataType>(field, newValue);
 			}
 			return false;
 		}
 		public bool SetValue<T>(DatabaseField field, T? newValue)
 		{
-			if(newValue != null && Fields.ContainsKey(field))
+			if(newValue != null)
 			{
-				Fields[field] = newValue;
-				return true;
+				if(Fields.ContainsKey(field))
+				{
+					Fields[field] = newValue;
+					Repositories.Components.QueueForUpdate(this);
+					if(field.fieldIsReference)
+					{
+						RebuildReferences(field);
+					}
+					return true;
+				}
+				foreach(KeyValuePair<System.Type, GameComponent> comp in Components)
+				{
+					if(comp.Value.Fields.ContainsKey(field))
+					{
+						return comp.Value.SetValue<T>(field, newValue);
+					}
+				}
 			}
 			return false;
 		}
@@ -120,6 +135,13 @@ namespace inspiral
 
 		public T? GetValue<T>(DatabaseField field)
 		{
+			foreach(KeyValuePair<System.Type, GameComponent> comp in Components)
+			{
+				if(comp.Value.Fields.ContainsKey(field))
+				{
+					return comp.Value.GetValue<T>(field);
+				}
+			}
 			if(Fields.ContainsKey(field))
 			{
 				return (T)Fields[field];
@@ -137,6 +159,7 @@ namespace inspiral
 			List<ulong>? componentIds = JsonConvert.DeserializeObject<List<ulong>>((string)Fields[Field.Components]);
 			if(componentIds != null)
 			{
+				// TODO Handle saving/loading nonpersistent components (client and balance)
 				foreach(ulong compId in componentIds)
 				{
 					var compInstance = Repositories.Components.GetById(compId);

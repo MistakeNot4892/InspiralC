@@ -31,7 +31,7 @@ namespace inspiral
 					}
 					catch(System.Exception e) 
 					{
-						Game.LogError($"Tried to look up a non-int var in the global db ({e.Message})");
+						Game.LogError($"Tried to look up a non-int var in the global db: ({e.ToString()})");
 					}
 					invoker.WriteLine($"Cannot find '{cmd.ObjTarget}'.");
 				}

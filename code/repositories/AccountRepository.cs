@@ -22,6 +22,10 @@ namespace inspiral
 	}
 	internal class PlayerAccount : IGameEntity
 	{
+		public string GetDatabaseTableName()
+		{
+			return "accounts";
+		}
 		internal void AddRole(GameRole role)
 		{
 			if(!roles.Contains(role))
@@ -38,7 +42,7 @@ namespace inspiral
 			}
 		}
 		internal List<GameRole> roles = new List<GameRole>();
-		internal Dictionary<DatabaseField, object> fields = new Dictionary<DatabaseField, object>()
+		internal Dictionary<DatabaseField, object> Fields = new Dictionary<DatabaseField, object>()
 		{
 			{ Field.Id,           Field.Id.fieldDefault },
 			{ Field.Name,         Field.Name.fieldDefault },
@@ -52,30 +56,32 @@ namespace inspiral
 		}
 		public bool SetValue<T>(DatabaseField field, T newValue)
 		{
+			if(Fields.ContainsKey(field) && newValue != null)
+			{
+				Fields[field] = newValue;
+				Repositories.Accounts.QueueForUpdate(this);
+				if(field.fieldIsReference)
+				{
+					RebuildReferences(field);
+				}
+				return true;
+			}
 			return false;
 		}
 		public T? GetValue<T>(DatabaseField field)
 		{
+			if(Fields.ContainsKey(field))
+			{
+				return (T)Fields[field];
+			}
 			return default(T);
 		}
 		public void CopyFromRecord(Dictionary<DatabaseField, object> record) 
 		{
-			fields = record;
-			BuildReferenceLists();
-		}
-		internal void BuildReferenceLists()
-		{
-			List<string>? roleNames = JsonConvert.DeserializeObject<List<string>>((string)fields[Field.Roles]);
-			if(roleNames != null)
+			Fields = record;
+			foreach(KeyValuePair<DatabaseField, object> field in Fields)
 			{
-				foreach(string roleName in roleNames)
-				{
-					GameRole? role = Modules.Roles.GetRole(roleName);
-					if(role != null)
-					{
-						roles.Add(role);
-					}
-				}
+				RebuildReferences(field.Key);
 			}
 		}
 		public Dictionary<DatabaseField, object> GetSaveData()
@@ -85,10 +91,27 @@ namespace inspiral
 			{
 				roleNames.Add(role.name);
 			}
-			fields[Field.Roles] = JsonConvert.SerializeObject(roleNames);
-			return fields;
+			Fields[Field.Roles] = JsonConvert.SerializeObject(roleNames);
+			return Fields;
 		}
-
+		internal void RebuildReferences(DatabaseField field)
+		{
+			if(field == Field.Roles)
+			{
+				List<string>? roleNames = JsonConvert.DeserializeObject<List<string>>((string)Fields[Field.Roles]);
+				if(roleNames != null)
+				{
+					foreach(string roleName in roleNames)
+					{
+						GameRole? role = Modules.Roles.GetRole(roleName);
+						if(role != null)
+						{
+							roles.Add(role);
+						}
+					}
+				}
+			}
+		}
 	}
 	internal class AccountRepository : GameRepository
 	{
@@ -96,7 +119,6 @@ namespace inspiral
 		public AccountRepository()
 		{
 			repoName = "accounts";
-			dbPath = "data/accounts.sqlite";
 			schemaFields = new List<DatabaseField>()
 			{ 
 				Field.Id, 
@@ -153,7 +175,7 @@ namespace inspiral
 
 				// Finalize everything.
 				accounts.Add(userName, acct);
-				Database.CreateRecord(dbPath, repoName, acct);
+				Database.CreateRecord(this, acct);
 				return acct;
 			}
 			return null;

@@ -25,6 +25,7 @@ namespace inspiral
 	{
 		public VisibleBuilder()
 		{
+			tableName = "visibles";
 			ComponentType = typeof(VisibleComponent);
 			schemaFields = new List<DatabaseField>()
 			{ 

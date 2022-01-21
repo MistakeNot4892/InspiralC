@@ -48,11 +48,11 @@ namespace inspiral
                     }
                     else if(field.fieldType == typeof(ulong))
                     {
-                        CastAndAdd<ulong>(fields, field, fieldVal);
+                        CastAndAdd<ulong>(fields, field, System.Convert.ToUInt64(fieldVal));
                     }
                     else
                     {
-                        CastAndAdd<int>(fields, field, fieldVal);
+                        CastAndAdd<int>(fields, field, System.Convert.ToInt32(fieldVal));
                     }
                 }
             }
@@ -63,7 +63,7 @@ namespace inspiral
     {
         private static Dictionary<System.Type, string> fieldTypes = new Dictionary<System.Type, string>()
         {
-            { typeof(ulong),  "UNSIGNED BIG INT" },
+            { typeof(ulong),  "UNSIGNED BIGINT" },
             { typeof(string), "TEXT"    },
             { typeof(int),    "INTEGER" },
             { typeof(bool),   "INTEGER" },
@@ -81,10 +81,11 @@ namespace inspiral
         SQLiteConnection connection;
         internal SQLiteDatabaseHandler(string dbPath, string dbVersion) : base(dbPath, dbVersion)
         {
-            connection = new SQLiteConnection($"Data Source={dbPath};Version={dbVersion};");
+            connection = new SQLiteConnection($"Data Source=data/{dbPath}.sqlite;Version={dbVersion};");
         }
-        internal override void CreateRecord(string tableName, IGameEntity entity) 
+        internal override void CreateRecord(IGameEntity entity) 
         {
+            string tableName = entity.GetDatabaseTableName();
             if(entity.GetValue<ulong>(Field.Id) == 0)
             {
                 Game.LogError($"0-id entity {entity.ToString()} attempted db entry.");
@@ -94,11 +95,12 @@ namespace inspiral
             {
                 command.Parameters.AddWithValue("@id", entity.GetValue<ulong>(Field.Id));
                 command.ExecuteNonQuery();
-                UpdateRecord(tableName, entity);
+                UpdateRecord(entity);
             }
         }
-        internal override void UpdateRecord(string tableName, IGameEntity entity) 
+        internal override void UpdateRecord(IGameEntity entity) 
         {
+            string tableName = entity.GetDatabaseTableName();
             Dictionary<DatabaseField, object> entityFields = entity.GetSaveData();
             List<string> updateStrings = new List<string>();
             foreach(DatabaseField recordKey in entityFields.Keys)
@@ -124,7 +126,7 @@ namespace inspiral
                 {
                     if(field == Field.Id)
                     {
-                        tableFieldString = "id UNSIGNED BIG INT PRIMARY KEY UNIQUE";
+                        tableFieldString = "id UNSIGNED BIGINT PRIMARY KEY UNIQUE";
                     }
                     else if(field.fieldType == typeof(string))
                     {
@@ -156,16 +158,16 @@ namespace inspiral
             }
             return records;
         }
-        internal override void BatchUpdateRecords(string tableName, List<IGameEntity> updateQueue) 
+        internal override void BatchUpdateRecords(List<IGameEntity> updateQueue) 
         {
 			var saveTransaction = connection.BeginTransaction();
-			while(updateQueue.Count > 0)
-			{
+            while(updateQueue.Count > 0)
+            {
                 IGameEntity objInstance = updateQueue[0];
-                UpdateRecord(tableName, objInstance);
+                UpdateRecord(objInstance);
                 updateQueue.Remove(objInstance);
-			}
-			saveTransaction.Commit();            
+            }
+			saveTransaction.Commit();
         }
 
         internal override void Open()

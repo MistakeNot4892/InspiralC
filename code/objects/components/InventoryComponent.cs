@@ -18,6 +18,7 @@ namespace inspiral
 	{
 		public InventoryBuilder()
 		{
+			tableName = "inventories";
 			ComponentType = typeof(InventoryComponent);
 			schemaFields = new List<DatabaseField>()
 			{

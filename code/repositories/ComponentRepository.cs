@@ -14,50 +14,22 @@ namespace inspiral
 		public ComponentRepository()
 		{
 			repoName = "components";
-			dbPath = "data/components.sqlite";
-			schemaFields = new List<DatabaseField>() 
-			{ 
-				Field.Id,
-				Field.Name,
-				Field.Gender, 
-				Field.Aliases,
-				Field.Components,
-				Field.Flags,
-				Field.Location
-			};
+			schemaFields = new List<DatabaseField>() { Field.Id };
 		}
-		internal GameComponent? MakeAndConfigureComponent(GameComponentBuilder builder)
+		internal override string GetDatabaseTableName(IGameEntity gameEntity)
 		{
-			var newComp = (GameComponent)CreateRepositoryType(builder);
-			if(newComp != null)
+			GameComponent comp = (GameComponent)gameEntity;
+			GameComponentBuilder builder = buildersByString[gameEntity.GetType().ToString()];
+			if(builder.tableName != null)
 			{
-				foreach(DatabaseField field in builder.schemaFields)
-				{
-					newComp.Fields[field] = field.fieldDefault;
-				}
-				newComp.Fields[Field.ComponentType] = newComp.GetType().ToString();
-				allComponents[newComp.GetType()].Add(newComp);
+				return $"{repoName}_{builder.tableName}";
 			}
-			return newComp;
+			return repoName;
 		}
-		internal GameComponent? MakeComponent(string compType)
-		{
-			return MakeAndConfigureComponent(buildersByString[compType]);
-		}
-		internal GameComponent? MakeComponent(System.Type compType)
-		{
-			return MakeAndConfigureComponent(builders[compType]);
-		}
-		internal GameComponent? MakeComponent<T>()
-		{
-			return MakeAndConfigureComponent(builders[typeof(T)]);
-		}
-		internal List<GameComponent> GetComponents<T>()
-		{
-			return allComponents[typeof(T)];
-		}
+
 		internal override void Populate()
 		{
+
 			foreach(GameComponentBuilder gameCompBuild in Game.InstantiateSubclasses<GameComponentBuilder>())
 			{
 				if(gameCompBuild.ComponentType != null)
@@ -68,20 +40,41 @@ namespace inspiral
 					allComponents.Add(gameCompBuild.ComponentType, new List<GameComponent>());
 				}
 			}
-			base.Populate();
-		}
-		internal IGameEntity CreateRepositoryType(GameComponentBuilder builder) 
-		{
-			return builder.MakeComponent();
-		}
 
+			foreach(KeyValuePair<string, GameComponentBuilder> builder in Repositories.Components.buildersByString)
+			{
+				if(builder.Value.schemaFields != null && builder.Value.tableName != null)
+				{
+					foreach(Dictionary<DatabaseField, object> record in Database.GetAllRecords(this, $"{repoName}_{builder.Value.tableName}", builder.Value.schemaFields))
+					{
+						ulong? eId = (ulong)record[Field.Id];
+						if(eId != null && eId > 0)
+						{
+							loadingEntities.Add(CreateNewInstance((ulong)eId, GetAdditionalClassInfo(record)), record);
+						}
+					}
+				}
+			}
+
+		}
+		internal List<GameComponent> GetComponents<T>()
+		{
+			return allComponents[typeof(T)];
+		}
 		internal override IGameEntity CreateRepositoryType(string? additionalClassInfo) 
 		{
 			if(additionalClassInfo != null)
 			{
-				var newComp = MakeComponent(additionalClassInfo);
+				GameComponentBuilder builder = buildersByString[additionalClassInfo];
+				var newComp = builder.MakeComponent();
 				if(newComp != null)
 				{
+					foreach(DatabaseField field in builder.schemaFields)
+					{
+						newComp.Fields[field] = field.fieldDefault;
+					}
+					newComp.Fields[Field.ComponentType] = additionalClassInfo;
+					allComponents[newComp.GetType()].Add(newComp);
 					return newComp;
 				}
 			}

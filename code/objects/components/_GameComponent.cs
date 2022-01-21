@@ -17,6 +17,7 @@ namespace inspiral
 		internal GameComponentBuilder()
 		{
 		}
+		internal string? tableName = null;
 		internal System.Type? ComponentType;
 		internal List<DatabaseField> schemaFields = new List<DatabaseField>();
 		internal virtual GameComponent MakeComponent()
@@ -28,12 +29,16 @@ namespace inspiral
 	internal class GameComponent : IGameEntity
 	{
 
-		private Dictionary<DatabaseField, object> _fields = new Dictionary<DatabaseField, object>();
-		public Dictionary<DatabaseField, object> Fields
+		public string GetDatabaseTableName()
 		{
-			get { return _fields; }
-			set { _fields = value; }
+			GameComponentBuilder builder = Repositories.Components.builders[GetType()];
+			if(builder.tableName != null)
+			{
+				return builder.tableName;
+			}
+			return "components";
 		}
+		internal Dictionary<DatabaseField, object> Fields = new Dictionary<DatabaseField, object>();
 		internal bool isPersistent = true;
 		internal GameComponent() { InitializeComponent(); }
 		internal virtual void InitializeComponent() {}
@@ -102,7 +107,7 @@ namespace inspiral
 			if(field.fieldIsEditable)
 			{
 				SetValue<T>(field, value);
-				Repositories.Objects.QueueForUpdate(this);
+				Repositories.Components.QueueForUpdate(this);
 				return true;	
 			}
 			return false;

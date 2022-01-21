@@ -12,6 +12,7 @@ namespace inspiral
             if(DefaultRoom == null)
             {
                 DefaultRoom = CreateEmpty();
+                Game.LogError($"Created spawn room at {DefaultRoom.GetValue<ulong>(Field.Id)}.");
             }
             return DefaultRoom;
         }

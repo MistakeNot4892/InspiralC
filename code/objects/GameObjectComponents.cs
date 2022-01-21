@@ -28,11 +28,16 @@ namespace inspiral
 			GameComponent? comp = GetComponent(compType);
 			if(comp == null)
 			{
-				comp = Repositories.Components.MakeComponent(compType);
+				comp = (GameComponent)Repositories.Components.CreateNewInstance(compType.ToString());
 				if(comp != null)
 				{
 					Components.Add(compType, comp);
 					comp.Added(this);
+					if(comp.isPersistent)
+					{
+						Database.CreateRecord(Repositories.Components, comp);
+						Repositories.Objects.QueueForUpdate(this);
+					}
 				}
 			}
 			return comp;

@@ -33,6 +33,7 @@ namespace inspiral
 	{
 		public PhysicsBuilder()
 		{
+			tableName = "physics";
 			ComponentType = typeof(PhysicsComponent);
 			schemaFields = new List<DatabaseField>() 
 			{ 

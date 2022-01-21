@@ -11,7 +11,6 @@ namespace inspiral
 		public TemplateRepository()
 		{
 			repoName = "templates";
-			dbPath = "data/templates.sqlite";
 			schemaFields = new List<DatabaseField>() 
 			{ 
 				Field.Id,

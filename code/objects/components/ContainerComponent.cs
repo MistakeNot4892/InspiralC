@@ -24,6 +24,7 @@ namespace inspiral
 	{
 		public ContainerBuilder()
 		{
+			tableName = "containers";
 			ComponentType = typeof(ContainerComponent);
 			schemaFields = new List<DatabaseField>() 
 			{
