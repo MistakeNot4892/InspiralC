@@ -22,11 +22,12 @@ namespace inspiral
 		public BodypartBuilder()
 		{
 			tableName = "bodyparts";
-			ComponentType = typeof(BodypartComponent);
+			ComponentId = "bodypart";
 			schemaFields = new List<DatabaseField>()
 			{
 				Field.Id,
 				Field.Parent,
+				Field.ComponentId,
 				Field.CanGrasp,
 				Field.CanStand,
 				Field.NaturalWeapon,

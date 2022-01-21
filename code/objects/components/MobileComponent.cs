@@ -6,7 +6,7 @@ namespace inspiral
 {
 	internal partial class ComponentModule : GameModule
 	{
-		internal List<GameComponent> Mobiles =>  Repositories.Components.GetComponents<MobileComponent>();
+		internal List<GameComponent> Mobiles =>  Repositories.Components.GetComponents("mobile");
 	}
 
 	internal static partial class Field
@@ -36,11 +36,12 @@ namespace inspiral
 		public MobileBuilder()
 		{
 			tableName = "mobiles";
-			ComponentType = typeof(MobileComponent);
+			ComponentId = "mobile";
 			schemaFields = new List<DatabaseField>()
 			{
 				Field.Id,
 				Field.Parent,
+				Field.ComponentId,
 				Field.EnterMessage,
 				Field.LeaveMessage,
 				Field.DeathMessage,

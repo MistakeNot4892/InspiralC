@@ -7,11 +7,12 @@ namespace inspiral
 	{
 		public BalanceBuilder()
 		{
-			ComponentType = typeof(BalanceComponent);
+			ComponentId = "balance";
 			schemaFields = new List<DatabaseField>()
 			{
 				Field.Id,
 				Field.Parent,
+				Field.ComponentId,
 				Field.Dummy
 			};
 		}
@@ -24,6 +25,10 @@ namespace inspiral
 	internal class BalanceComponent : GameComponent 
 	{
 		private Dictionary<string, Timer> offBalanceTimers = new Dictionary<string, Timer>();
+		internal BalanceComponent()
+		{
+			isPersistent = false;
+		}
 		internal override void InitializeComponent()
 		{
 			AddBalanceTimer("poise");

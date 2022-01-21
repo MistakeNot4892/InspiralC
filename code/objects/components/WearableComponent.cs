@@ -4,7 +4,7 @@ namespace inspiral
 {
 	internal partial class ComponentModule : GameModule
 	{
-		internal List<GameComponent> Wearables => Repositories.Components.GetComponents<WearableComponent>();
+		internal List<GameComponent> Wearables => Repositories.Components.GetComponents("wearable");
 	}
 	internal static partial class Field
 	{
@@ -17,11 +17,12 @@ namespace inspiral
 		public WearableBuilder()
 		{
 			tableName = "wearables";
-			ComponentType = typeof(WearableComponent);
+			ComponentId = "wearable";
 			schemaFields = new List<DatabaseField>()
 			{
 				Field.Id,
 				Field.Parent,
+				Field.ComponentId,
 				Field.WearableSlots
 			};
 		}

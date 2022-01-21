@@ -10,17 +10,18 @@ namespace inspiral
 	}
 	internal partial class ComponentModule : GameModule
 	{
-		private List<GameComponent> Clients => Repositories.Components.GetComponents<ClientComponent>();
+		private List<GameComponent> Clients => Repositories.Components.GetComponents("client");
 	}
 	internal class ClientBuilder : GameComponentBuilder
 	{
 		public ClientBuilder()
 		{
-			ComponentType = typeof(ClientComponent);
+			ComponentId = "client";
 			schemaFields = new List<DatabaseField>()
 			{
 				Field.Id,
 				Field.Parent,
+				Field.ComponentId,
 				Field.ClientId
 			};
 		}

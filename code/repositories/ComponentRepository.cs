@@ -8,9 +8,8 @@ namespace inspiral
 	}
 	internal class ComponentRepository : GameRepository
 	{
-		private Dictionary<System.Type, List<GameComponent>> allComponents = new Dictionary<System.Type, List<GameComponent>>();
-		internal Dictionary<System.Type, GameComponentBuilder> builders = new Dictionary<System.Type, GameComponentBuilder>();
-		internal Dictionary<string, GameComponentBuilder> buildersByString = new Dictionary<string, GameComponentBuilder>();
+		private Dictionary<string, List<GameComponent>> AllComponents = new Dictionary<string, List<GameComponent>>();
+		internal Dictionary<string, GameComponentBuilder> AllBuilders = new Dictionary<string, GameComponentBuilder>();
 		public ComponentRepository()
 		{
 			repoName = "components";
@@ -19,11 +18,16 @@ namespace inspiral
 		internal override string GetDatabaseTableName(IGameEntity gameEntity)
 		{
 			GameComponent comp = (GameComponent)gameEntity;
-			GameComponentBuilder builder = buildersByString[gameEntity.GetType().ToString()];
-			if(builder.tableName != null)
+			string? compId = gameEntity.GetValue<string>(Field.ComponentId);
+			if(compId != null)
 			{
-				return $"{repoName}_{builder.tableName}";
+				GameComponentBuilder builder = AllBuilders[compId];
+				if(builder.tableName != null)
+				{
+					return $"{repoName}_{builder.tableName}";
+				}
 			}
+			Game.LogError($"Invalid builder trying to write to a table: {gameEntity.GetType().ToString()}");
 			return repoName;
 		}
 
@@ -32,16 +36,15 @@ namespace inspiral
 
 			foreach(GameComponentBuilder gameCompBuild in Game.InstantiateSubclasses<GameComponentBuilder>())
 			{
-				if(gameCompBuild.ComponentType != null)
+				if(gameCompBuild.ComponentId != null)
 				{
-					Game.LogError($"Built builder for {gameCompBuild.ComponentType.ToString()}");
-					builders.Add(gameCompBuild.ComponentType, gameCompBuild);
-					buildersByString.Add(gameCompBuild.ComponentType.ToString(), gameCompBuild);
-					allComponents.Add(gameCompBuild.ComponentType, new List<GameComponent>());
+					Game.LogError($"Built builder for {gameCompBuild.ComponentId}");
+					AllBuilders.Add(gameCompBuild.ComponentId, gameCompBuild);
+					AllComponents.Add(gameCompBuild.ComponentId, new List<GameComponent>());
 				}
 			}
 
-			foreach(KeyValuePair<string, GameComponentBuilder> builder in Repositories.Components.buildersByString)
+			foreach(KeyValuePair<string, GameComponentBuilder> builder in Repositories.Components.AllBuilders)
 			{
 				if(builder.Value.schemaFields != null && builder.Value.tableName != null)
 				{
@@ -57,15 +60,19 @@ namespace inspiral
 			}
 
 		}
-		internal List<GameComponent> GetComponents<T>()
+		internal List<GameComponent> GetComponents(string componentId)
 		{
-			return allComponents[typeof(T)];
+			if(AllComponents.ContainsKey(componentId))
+			{
+				return AllComponents[componentId];
+			}
+			return new List<GameComponent>();
 		}
 		internal override IGameEntity CreateRepositoryType(string? additionalClassInfo) 
 		{
 			if(additionalClassInfo != null)
 			{
-				GameComponentBuilder builder = buildersByString[additionalClassInfo];
+				GameComponentBuilder builder = AllBuilders[additionalClassInfo];
 				var newComp = builder.MakeComponent();
 				if(newComp != null)
 				{
@@ -73,8 +80,8 @@ namespace inspiral
 					{
 						newComp.Fields[field] = field.fieldDefault;
 					}
-					newComp.Fields[Field.ComponentType] = additionalClassInfo;
-					allComponents[newComp.GetType()].Add(newComp);
+					newComp.Fields[Field.ComponentId] = additionalClassInfo;
+					AllComponents[additionalClassInfo].Add(newComp);
 					return newComp;
 				}
 			}
@@ -82,7 +89,7 @@ namespace inspiral
 		}
 		internal override string? GetAdditionalClassInfo(Dictionary<DatabaseField, object> record)
 		{
-			return (string)record[Field.ComponentType];
+			return (string)record[Field.ComponentId];
 		}
 	}
 }

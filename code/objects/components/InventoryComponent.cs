@@ -5,7 +5,7 @@ namespace inspiral
 {
 	internal partial class ComponentModule : GameModule
 	{
-		internal List<GameComponent> Inventories => Repositories.Components.GetComponents<InventoryComponent>();
+		internal List<GameComponent> Inventories => Repositories.Components.GetComponents("inventory");
 	}
 
 	internal static partial class Field
@@ -19,11 +19,12 @@ namespace inspiral
 		public InventoryBuilder()
 		{
 			tableName = "inventories";
-			ComponentType = typeof(InventoryComponent);
+			ComponentId = "inventory";
 			schemaFields = new List<DatabaseField>()
 			{
 				Field.Id,
 				Field.Parent,
+				Field.ComponentId,
 				Field.EquippedSlots
 			};
 		}

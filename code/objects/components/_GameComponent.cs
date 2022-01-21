@@ -8,8 +8,8 @@ namespace inspiral
 		internal static DatabaseField Parent = new DatabaseField(
 			"parent", (ulong)0,
 			typeof(ulong), true, false, false);
-		internal static DatabaseField ComponentType = new DatabaseField(
-			"componenttype", "unset",
+		internal static DatabaseField ComponentId = new DatabaseField(
+			"componentid", "unset",
 			typeof(string), true, false, false);
 	}
 	internal class GameComponentBuilder
@@ -18,7 +18,7 @@ namespace inspiral
 		{
 		}
 		internal string? tableName = null;
-		internal System.Type? ComponentType;
+		internal string? ComponentId;
 		internal List<DatabaseField> schemaFields = new List<DatabaseField>();
 		internal virtual GameComponent MakeComponent()
 		{
@@ -31,12 +31,7 @@ namespace inspiral
 
 		public string GetDatabaseTableName()
 		{
-			GameComponentBuilder builder = Repositories.Components.builders[GetType()];
-			if(builder.tableName != null)
-			{
-				return builder.tableName;
-			}
-			return "components";
+			return Repositories.Components.GetDatabaseTableName(this);
 		}
 		internal Dictionary<DatabaseField, object> Fields = new Dictionary<DatabaseField, object>();
 		internal bool isPersistent = true;
@@ -64,11 +59,11 @@ namespace inspiral
 		}
 		internal string GetStringSummary() 
 		{
-			System.Type myType = this.GetType();
-			if(Repositories.Components.builders.ContainsKey(myType))
+			string result = "";
+			string? myCompId = GetValue<string>(Field.ComponentId);
+			if(myCompId != null)
 			{
-				string result = "";
-				foreach(DatabaseField field in Repositories.Components.builders[myType].schemaFields)
+				foreach(DatabaseField field in Repositories.Components.AllBuilders[myCompId].schemaFields)
 				{
 					if(!field.fieldIsViewable)
 					{
@@ -97,9 +92,8 @@ namespace inspiral
 						result = $"{result}: {val.ToString()}";
 					}
 				}
-				return result;
 			}
-			return "";
+			return result;
 		}
 		internal bool SetValueOfEditableField<T>(DatabaseField field, T value) 
 		{
@@ -145,11 +139,9 @@ namespace inspiral
 		public void CopyFromRecord(Dictionary<DatabaseField, object> record) 
 		{
 			Fields = record;
-			Fields[Field.ComponentType] = GetType().ToString();
 		}
 		public Dictionary<DatabaseField, object> GetSaveData()
 		{
-			Fields[Field.ComponentType] = GetType().ToString();
 			return Fields;
 		}
 		internal GameObject? GetParent()

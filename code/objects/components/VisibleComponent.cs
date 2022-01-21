@@ -5,7 +5,7 @@ namespace inspiral
 {
 	internal partial class ComponentModule : GameModule
 	{
-		internal List<GameComponent> Visibles => Repositories.Components.GetComponents<VisibleComponent>();
+		internal List<GameComponent> Visibles => Repositories.Components.GetComponents("visible");
 	}
 
 	internal static partial class Field
@@ -26,11 +26,12 @@ namespace inspiral
 		public VisibleBuilder()
 		{
 			tableName = "visibles";
-			ComponentType = typeof(VisibleComponent);
+			ComponentId = "visible";
 			schemaFields = new List<DatabaseField>()
 			{ 
 				Field.Id,
 				Field.Parent,
+				Field.ComponentId,
 				Field.ShortDesc,
 				Field.RoomDesc,
 				Field.ExaminedDesc

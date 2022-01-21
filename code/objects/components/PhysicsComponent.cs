@@ -5,7 +5,7 @@ namespace inspiral
 {
 	internal partial class ComponentModule : GameModule
 	{
-		internal List<GameComponent> Physics => Repositories.Components.GetComponents<PhysicsComponent>();
+		internal List<GameComponent> Physics => Repositories.Components.GetComponents("physics");
 	}
 
 	internal static partial class Field
@@ -34,11 +34,12 @@ namespace inspiral
 		public PhysicsBuilder()
 		{
 			tableName = "physics";
-			ComponentType = typeof(PhysicsComponent);
+			ComponentId = "physics";
 			schemaFields = new List<DatabaseField>() 
 			{ 
 				Field.Id,
 				Field.Parent,
+				Field.ComponentId,
 				Field.Length, 
 				Field.Width, 
 				Field.Height, 
